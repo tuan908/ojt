@@ -1,10 +1,50 @@
+"use client";
+
+import {useAppDispatch} from "@/lib/redux/hooks";
+import {setUser} from "@/lib/redux/slice/authSlice";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Link from "next/link";
+import {redirect} from "next/navigation";
+import {useEffect, useRef, useState, type SyntheticEvent} from "react";
+import {useFormState, useFormStatus} from "react-dom";
 import {login} from "../actions/login";
 
-export default async function Page() {
+export default function Page() {
+    const dispatch = useAppDispatch();
+    const ref = useRef<HTMLInputElement>(null);
+    const [state, formAction] = useFormState(login, {message: ""});
+    const [inputState, setState] = useState<{
+        type: "password" | "text";
+        show: boolean;
+    }>({type: "password", show: false});
+
+    useEffect(() => {
+        if (ref.current && state?.message) {
+            ref.current.focus();
+        }
+    }, [state?.message]);
+
+    useEffect(() => {
+        if (state.user) {
+            dispatch(setUser(state.user));
+            redirect("/student/list");
+        }
+    }, [dispatch, state.user]);
+
+    function showOrHidePassword(e: SyntheticEvent) {
+        e.preventDefault();
+        setState(x => ({
+            ...x,
+            show: !x.show,
+            type: x.type === "password" ? "text" : "password",
+        }));
+    }
+
     return (
-        <div className="flex flex-col h-full bg-white rounded-lg shadow-lg">
+        <div className="flex flex-col w-1/5 h-full bg-white rounded-lg shadow-lg">
             <div
                 className="rounded-t-lg h-36 bg-cover"
                 style={{
@@ -13,33 +53,73 @@ export default async function Page() {
                 }}
             ></div>
             <form
-                action={login}
-                className="p-12 bg-white flex flex-col gap-y-4"
+                action={formAction}
+                className="w-3/5 m-auto bg-white flex flex-col gap-y-4 py-12"
             >
                 <div className="flex">
-                    <div className="border-b border-b-[#333]">
+                    <div className="border-b border-b-default flex items-center">
                         <PersonOutline />
                     </div>
-                    <input type="text" className="border-b border-b-[#333]" />
+                    <input
+                        name="username"
+                        type="text"
+                        className="w-full pl-2 border-b border-b-default py-1 outline-none"
+                        autoComplete="off"
+                        placeholder="ユーザーネーム"
+                        ref={ref}
+                    />
                 </div>
-                <div className="flex">
-                    <div className="border-b border-b-[#333]">
+                <div className="flex relative">
+                    <div className="border-b border-b-default flex items-center">
                         <Https />
                     </div>
+
                     <input
-                        type="password"
-                        className="border-b border-b-[#333]"
+                        name="password"
+                        type={inputState.type}
+                        className="w-full pl-2 border-b border-b-default outline-none py-1"
+                        autoComplete="off"
+                        placeholder="パスワード"
                     />
+
+                    <div className="absolute top-1 right-2">
+                        <button
+                            className="border-none outline-none"
+                            onClick={e => showOrHidePassword(e)}
+                        >
+                            {inputState.show ? (
+                                <Visibility />
+                            ) : (
+                                <VisibilityOff />
+                            )}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="w-full h-full flex items-center justify-center py-2">
-                    <input
-                        type="submit"
-                        value="ログイン"
-                        className="bg-[#407ed9] text-white font-bold px-4 py-1 m-auto rounded-xl text-sm"
-                    />
+                    <SubmitButton />
                 </div>
+                <Link href="/forgot-password" className="m-auto pb-2">
+                    パスワードをお忘れですか？
+                </Link>
+                <span className="text-red-500 m-auto text-[0.875rem] leading-none">
+                    {state?.message}
+                </span>
             </form>
         </div>
+    );
+}
+
+function SubmitButton() {
+    const {pending} = useFormStatus();
+
+    return (
+        <button
+            type="submit"
+            className="bg-[#407ed9] text-white font-bold px-4 py-2 m-auto rounded-xl text-sm"
+            aria-disabled={pending}
+        >
+            ログイン
+        </button>
     );
 }

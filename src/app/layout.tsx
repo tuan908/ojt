@@ -3,6 +3,7 @@ import {CssBaseline} from "@mui/material";
 import {AppRouterCacheProvider} from "@mui/material-nextjs/v14-appRouter";
 import {ThemeProvider} from "@mui/material/styles";
 import type {Metadata} from "next";
+import ReduxProvider from "./ReduxProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,13 +21,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="text-default">
-                <AppRouterCacheProvider options={{enableCssLayer: true}}>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        {children}
-                    </ThemeProvider>
-                </AppRouterCacheProvider>
+            <body className="text-default w-full h-full min-h-dvh max-w-dvw">
+                <ReduxProvider>
+                    <AppRouterCacheProvider>
+                        <ThemeProvider theme={theme}>
+                            <CssBaseline />
+                            {children}
+                        </ThemeProvider>
+                    </AppRouterCacheProvider>
+                </ReduxProvider>
             </body>
         </html>
     );
