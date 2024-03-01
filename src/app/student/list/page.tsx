@@ -1,8 +1,10 @@
 "use client";
 
 import Clear from "@mui/icons-material/Clear";
+import Search from "@mui/icons-material/Search";
 import Autocomplete, {
-    AutocompleteCloseReason,
+    type AutocompleteChangeReason,
+    type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
@@ -20,19 +22,38 @@ export default function Page() {
 
     function handleInputChange(
         event: SyntheticEvent,
-        value: string | {label: string; value: string} | null
+        _value: string | {label: string; value: string} | null,
+        reason: AutocompleteInputChangeReason
     ): void {
         event?.preventDefault();
-        if (typeof value === "string" && value.startsWith("#")) {
-            setOpen(true);
-        } else {
-            handleClose(event);
+        if (_value !== null) {
+            switch (true) {
+                case typeof _value === "string":
+                    setInputValue(_value);
+                    if (_value.startsWith("#")) {
+                        setOpen(true);
+                    }
+                    break;
+
+                case typeof _value === "object":
+                    setInputValue(_value.value);
+                    break;
+
+                default:
+                    throw new Error("Invalid input");
+            }
+        }
+
+        if (reason === "reset") {
+            setInputValue("");
+            setOpen(false);
         }
     }
 
     function handleChange(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {label: string; value: string}>
+        _value: NonNullable<string | {label: string; value: string}>,
+        reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
         if (typeof _value === "string") {
@@ -42,33 +63,38 @@ export default function Page() {
         if (typeof _value === "object") {
             setSkills([...skills, _value.value]);
         }
-        handleClose(event);
+
+        if (reason === "selectOption" && open) {
+            setOpen(false);
+        }
     }
 
-    function handleClose(event: SyntheticEvent<Element, Event>): void {
-        event.preventDefault();
-        setOpen(false);
+    function handleSearch(event: SyntheticEvent): void {
+        event?.preventDefault();
+        throw new Error("Function not implemented.");
+    }
+
+    function handleRemove(_index: number): void {
+        setSkills(skills.filter((_, index) => index !== _index));
     }
 
     return (
-        <div className="bg-[#ededed] h-full p-12 flex flex-col gap-y-12">
+        <div className="bg-[#ededed] h-full p-12 flex flex-col gap-y-6">
             {/* Student info */}
             <div className="flex gap-x-8">
                 {/* Student name */}
-                <Input placeholder="学生の名前" className="bg-white" />
+                <Input
+                    placeholder="学生の名前"
+                    sx={{bgcolor: "#ffffff", paddingX: 1}}
+                />
+
                 {/* School's year */}
-                <select className="border-b border-b-default outline-none w-32 px-4">
-                    <option>学年</option>
-                    {[1, 2, 3, 4, 5].map(x => (
-                        <option key={x} className="p-4">
-                            小{x}
-                        </option>
-                    ))}
-                </select>
                 <Select
-                    labelId="selectSchoolYear"
                     variant="standard"
                     className="w-32"
+                    placeholder="学年"
+                    defaultValue="学年"
+                    sx={{bgcolor: "#ffffff", paddingX: 1}}
                     MenuProps={{
                         slotProps: {
                             paper: {
@@ -87,6 +113,33 @@ export default function Page() {
                         </MenuItem>
                     ))}
                 </Select>
+
+                {/* Event */}
+                <Select
+                    variant="standard"
+                    className="w-32"
+                    defaultValue="イベンド"
+                    sx={{bgcolor: "#ffffff", paddingX: 1}}
+                    MenuProps={{
+                        slotProps: {
+                            paper: {
+                                style: {
+                                    maxHeight:
+                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                                },
+                            },
+                        },
+                    }}
+                    suppressContentEditableWarning
+                >
+                    <MenuItem value="イベンド">イベンド</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                        <MenuItem key={x} value={x}>
+                            小{x}
+                        </MenuItem>
+                    ))}
+                </Select>
+
                 {/* Hashtag */}
                 <Autocomplete
                     sx={{
@@ -99,9 +152,9 @@ export default function Page() {
                         {label: "#Skill1", value: "#Skill1"},
                         {label: "#Skill2", value: "#Skill2"},
                     ]}
-                    renderInput={x => (
+                    renderInput={params => (
                         <TextField
-                            {...x}
+                            {...params}
                             placeholder="#ハッシュタグ"
                             variant="standard"
                         />
@@ -109,7 +162,7 @@ export default function Page() {
                     onInputChange={handleInputChange}
                     onChange={handleChange}
                     open={open}
-                    onClose={handleClose}
+                    inputValue={inputValue}
                     ChipProps={{
                         sx: {
                             bgcolor: "transparent",
@@ -121,12 +174,33 @@ export default function Page() {
                     disableClearable
                     disablePortal
                     freeSolo
-                    inputValue={inputValue}
                 />
+
+                {/* Search Button */}
+                <button
+                    className="border-none outline-none flex items-center justify-center"
+                    onClick={handleSearch}
+                >
+                    <Search
+                        className="text-icon-default"
+                        sx={{width: 32, height: 32}}
+                    />
+                </button>
             </div>
-            <div className="flex gap-x-2">
+            <div className="flex gap-x-2 flex-wrap">
                 {skills.map((x, index) => (
-                    <span key={index}>{x}</span>
+                    <div
+                        className="flex items-center justify-center leading-none bg-white shadow-md rounded-xl px-2 py-2 gap-x-2"
+                        key={`skill#${index}`}
+                    >
+                        <span>{x}</span>
+                        <button
+                            className="border-none outline-none flex items-center justify-center"
+                            onClick={() => handleRemove(index)}
+                        >
+                            <Clear sx={{width: 16, height: 16}} />
+                        </button>
+                    </div>
                 ))}
             </div>
             {/* Table */}
