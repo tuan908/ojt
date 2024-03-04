@@ -5,12 +5,15 @@ const rootReducer = combineReducers({
     [authSlice.name]: authSlice.reducer,
 });
 
-export const makeStore = () =>
-    configureStore({
+export function makeStore() {
+    const store = configureStore({
         reducer: rootReducer,
-        middleware: gDM => gDM(),
-        enhancers: gDE => gDE(),
+        middleware: getDefaultMiddlewares => getDefaultMiddlewares(),
+        enhancers: getDefaultEnhancers => getDefaultEnhancers(),
     });
+
+    return store;
+}
 
 export type AppStore = ReturnType<typeof makeStore>;
 export type RootState = ReturnType<AppStore["getState"]>;

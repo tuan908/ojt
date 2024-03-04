@@ -1,5 +1,9 @@
 "use client";
 
+import {
+    getStudentList,
+    type SearchStudentListDto,
+} from "@/app/actions/student-list";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -23,6 +27,7 @@ export default function Page() {
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
+    const [list, setList] = useState<SearchStudentListDto[]>([]);
 
     function handleInputChange(
         event: SyntheticEvent,
@@ -73,9 +78,10 @@ export default function Page() {
         }
     }
 
-    function handleSearch(event: SyntheticEvent): void {
+    async function handleSearch(event: SyntheticEvent) {
         event?.preventDefault();
-        throw new Error("Function not implemented.");
+        const data = await getStudentList();
+        setList(data);
     }
 
     function handleRemove(_index: number): void {
@@ -220,26 +226,38 @@ export default function Page() {
                     </tr>
                 </thead>
                 <tbody>
-                    <TableRow>
-                        <TableCell alignTextCenter>ST00001</TableCell>
-                        <TableCell alignTextCenter>明日香</TableCell>
-                        <TableCell alignTextCenter>四年生</TableCell>
-                        <TableCell fontSemibold textEllipsis>
-                            イベンド７，サッカ―，バドミントン
-                        </TableCell>
-                        <TableCell fontSemibold textEllipsis>
-                            <div className="w-full flex gap-x-2">
-                                <span className="text-[#f2afbb]">#主体性</span>
-                                <span className=" text-[#7071ef]">
-                                    #状況把握力
-                                </span>
-                                <span className=" text-[#b9c8d3]">#規律性</span>
-                            </div>
-                        </TableCell>
-                        <TableCell alignTextCenter>
-                            <Analytics className="text-icon-default" />
-                        </TableCell>
-                    </TableRow>
+                    {list!?.map(x => (
+                        <TableRow key={x.id}>
+                            <TableCell alignTextCenter>
+                                {x.studentCode}
+                            </TableCell>
+                            <TableCell alignTextCenter>
+                                {x.studentName}
+                            </TableCell>
+                            <TableCell alignTextCenter>
+                                {x.schoolYear}
+                            </TableCell>
+                            <TableCell fontSemibold textEllipsis>
+                                {x.events}
+                            </TableCell>
+                            <TableCell fontSemibold textEllipsis>
+                                <div className="w-full flex gap-x-2">
+                                    <span className="text-[#f2afbb]">
+                                        #主体性
+                                    </span>
+                                    <span className=" text-[#7071ef]">
+                                        #状況把握力
+                                    </span>
+                                    <span className=" text-[#b9c8d3]">
+                                        #規律性
+                                    </span>
+                                </div>
+                            </TableCell>
+                            <TableCell alignTextCenter>
+                                <Analytics className="text-icon-default" />
+                            </TableCell>
+                        </TableRow>
+                    ))}
                 </tbody>
             </table>
             {/*  */}

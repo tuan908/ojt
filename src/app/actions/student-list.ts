@@ -1,10 +1,23 @@
-"use client";
+"use server";
+
+import {Collection} from "@/constants";
+import db from "@/lib/db";
 
 export type SearchStudentListDto = Partial<{
-    name: string;
+    _id: string;
+    id: number;
+    studentCode: string;
+    studentName: string;
     schoolYear: string;
-    event: string;
-    skills: string[];
+    events: string[];
+    hashtags: {name: string; color: string};
+    __v: number;
 }>;
 
-export async function getStudentList(dto: SearchStudentListDto) {}
+export async function getStudentList(dto?: SearchStudentListDto) {
+    const eventCollection = await db.collection(Collection.Event);
+    const list = (await eventCollection
+        .find({...dto})
+        .toArray()) as SearchStudentListDto[];
+    return list;
+}

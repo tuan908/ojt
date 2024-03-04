@@ -1,5 +1,6 @@
 "use server";
 
+import {Collection} from "@/constants";
 import {getJwtSecretKey} from "@/lib/auth";
 import db from "@/lib/db";
 import * as argon2 from "argon2";
@@ -32,16 +33,16 @@ export async function login(_: LoginState, formData: FormData) {
     });
 
     if (!parse.success) {
-        return {message: "必須フィールドが欠落しています。"};
+        return {message: "A required field is missing."};
     }
 
     const data = parse.data;
-    const table = await db.collection("ojt_user");
-    const _user = await table.findOne({
+    const userCollection = await db.collection(Collection.User);
+    const _user = await userCollection.findOne({
         username: data.username,
     });
     if (!_user) {
-        return {message: "ユーザー名またはパスワードが間違っています。"};
+        return {message: "Incorrect username or password."};
     }
     const user = _user as UserDto;
 
@@ -65,12 +66,12 @@ export async function login(_: LoginState, formData: FormData) {
                     username: user.username,
                     role: user.role,
                 },
-                message: "ログインに成功しました",
+                message: "Login succeeded",
             };
         } else {
-            return {message: "ユーザー名またはパスワードが間違っています。"};
+            return {message: "Incorrect username or password."};
         }
     } catch (error) {
-        return {message: "ユーザー名またはパスワードが間違っています。"};
+        return {message: "Incorrect username or password."};
     }
 }
