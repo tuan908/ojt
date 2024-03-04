@@ -1,8 +1,8 @@
-import postgres from "postgres";
+import {AstraDB} from "@datastax/astra-db-ts";
 
-const sql = postgres({
-    host: process.env.PG_HOST,
-    ssl: "require",
-});
+const db = new AstraDB(
+    process.env["ASTRA_DB_APPLICATION_TOKEN"],
+    process.env["ASTRA_DB_API_ENDPOINT"]
+);
 
-export default sql;
+export default db;

@@ -1,5 +1,9 @@
 "use client";
 
+import TableCell from "@/components/TableCell";
+import TableHead from "@/components/TableHead";
+import TableRow from "@/components/TableRow";
+import Analytics from "@mui/icons-material/Analytics";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import Autocomplete, {
@@ -84,7 +88,7 @@ export default function Page() {
             <div className="flex gap-x-8">
                 {/* Student name */}
                 <Input
-                    placeholder="学生の名前"
+                    placeholder="Student Name"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                 />
 
@@ -92,8 +96,8 @@ export default function Page() {
                 <Select
                     variant="standard"
                     className="w-32"
-                    placeholder="学年"
-                    defaultValue="学年"
+                    placeholder="School Year"
+                    defaultValue="School Year"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     MenuProps={{
                         slotProps: {
@@ -106,10 +110,10 @@ export default function Page() {
                         },
                     }}
                 >
-                    <MenuItem value="学年">学年</MenuItem>
+                    <MenuItem value="School Year">School Year</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
                         <MenuItem key={x} value={x}>
-                            小{x}
+                            Year {x}
                         </MenuItem>
                     ))}
                 </Select>
@@ -118,7 +122,7 @@ export default function Page() {
                 <Select
                     variant="standard"
                     className="w-32"
-                    defaultValue="イベンド"
+                    defaultValue="Event"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     MenuProps={{
                         slotProps: {
@@ -132,10 +136,10 @@ export default function Page() {
                     }}
                     suppressContentEditableWarning
                 >
-                    <MenuItem value="イベンド">イベンド</MenuItem>
+                    <MenuItem value="Event">Event</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
                         <MenuItem key={x} value={x}>
-                            小{x}
+                            Event {x}
                         </MenuItem>
                     ))}
                 </Select>
@@ -155,7 +159,7 @@ export default function Page() {
                     renderInput={params => (
                         <TextField
                             {...params}
-                            placeholder="#ハッシュタグ"
+                            placeholder="#hashtag"
                             variant="standard"
                         />
                     )}
@@ -204,17 +208,39 @@ export default function Page() {
                 ))}
             </div>
             {/* Table */}
-            <table className="border border-collapse">
+            <table className="border border-table border-collapse align-middle">
                 <thead>
-                    <tr>
-                        <th className="border border-default">学生コード</th>
-                        <th className="border border-default">学生の名前</th>
-                        <th className="border border-default">学年</th>
-                        <th className="border border-default">イベント</th>
-                        <th className="border border-default">ハッシュタグ</th>
-                        <th className="border border-default">トラッキング</th>
+                    <tr className="bg-[#3f51b5] text-[#fffffc]">
+                        <TableHead>Student Code</TableHead>
+                        <TableHead>Student Name</TableHead>
+                        <TableHead>School Year</TableHead>
+                        <TableHead>Events</TableHead>
+                        <TableHead>Hashtags</TableHead>
+                        <TableHead>Trackings</TableHead>
                     </tr>
                 </thead>
+                <tbody>
+                    <TableRow>
+                        <TableCell alignTextCenter>ST00001</TableCell>
+                        <TableCell alignTextCenter>明日香</TableCell>
+                        <TableCell alignTextCenter>四年生</TableCell>
+                        <TableCell fontSemibold textEllipsis>
+                            イベンド７，サッカ―，バドミントン
+                        </TableCell>
+                        <TableCell fontSemibold textEllipsis>
+                            <div className="w-full flex gap-x-2">
+                                <span className="text-[#f2afbb]">#主体性</span>
+                                <span className=" text-[#7071ef]">
+                                    #状況把握力
+                                </span>
+                                <span className=" text-[#b9c8d3]">#規律性</span>
+                            </div>
+                        </TableCell>
+                        <TableCell alignTextCenter>
+                            <Analytics className="text-icon-default" />
+                        </TableCell>
+                    </TableRow>
+                </tbody>
             </table>
             {/*  */}
         </div>

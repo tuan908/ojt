@@ -44,9 +44,9 @@ export default function Page() {
     }
 
     return (
-        <div className="flex flex-col w-1/5 h-full bg-white rounded-lg shadow-lg">
+        <div className="flex flex-col w-1/3 lg:w-1/4 h-full bg-white rounded-lg shadow-lg">
             <div
-                className="rounded-t-lg h-36 bg-cover"
+                className="rounded-t-lg h-48 bg-cover"
                 style={{
                     backgroundImage:
                         "url('https://scontent.fsgn19-1.fna.fbcdn.net/v/t39.30808-6/418313608_855462943043217_191289349546480181_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=3635dc&_nc_ohc=DsKTzqTyTtgAX-HZbYl&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfAri_IB44mLxCPXcj_sxIwFkqyHFSMwK1DIEMdkR7WhMg&oe=65E37168')",
@@ -65,7 +65,7 @@ export default function Page() {
                         type="text"
                         className="w-full pl-2 border-b border-b-default py-1 outline-none"
                         autoComplete="off"
-                        placeholder="ユーザーネーム"
+                        placeholder="Username"
                         ref={ref}
                     />
                 </div>
@@ -79,7 +79,7 @@ export default function Page() {
                         type={inputState.type}
                         className="w-full pl-2 border-b border-b-default outline-none py-1"
                         autoComplete="off"
-                        placeholder="パスワード"
+                        placeholder="Password"
                     />
 
                     <div className="absolute top-1 right-2">
@@ -100,7 +100,7 @@ export default function Page() {
                     <SubmitButton />
                 </div>
                 <Link href="/forgot-password" className="m-auto pb-2">
-                    パスワードをお忘れですか？
+                    Forgot your password ?
                 </Link>
                 <span className="text-red-500 m-auto text-[0.875rem] leading-none">
                     {state?.message}
@@ -119,7 +119,7 @@ function SubmitButton() {
             className="bg-[#407ed9] text-white font-bold px-4 py-2 m-auto rounded-xl text-sm"
             aria-disabled={pending}
         >
-            ログイン
+            Login
         </button>
     );
 }

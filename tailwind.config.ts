@@ -10,11 +10,12 @@ const config: Config = {
         extend: {
             colors: {
                 default: "#575757",
-                "icon-default": "#31bafd"
+                "icon-default": "#31bafd",
             },
             borderColor: {
-                default: "#333333"
-            }
+                default: "#333333",
+                table: "#dee2e6",
+            },
         },
     },
     plugins: [],

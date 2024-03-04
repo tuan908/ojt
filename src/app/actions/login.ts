@@ -1,7 +1,7 @@
 "use server";
 
 import {getJwtSecretKey} from "@/lib/auth";
-import sql from "@/lib/db";
+import db from "@/lib/db";
 import * as argon2 from "argon2";
 import {SignJWT} from "jose";
 import {cookies} from "next/headers";
@@ -36,25 +36,20 @@ export async function login(_: LoginState, formData: FormData) {
     }
 
     const data = parse.data;
-    const user = await sql<UserDto[]>`
-        select
-            u.username
-            , u.password
-            , u.role
-        from
-            ojt_user as u
-        where
-            u.username = ${data.username}
-    `;
-    if (user.length === 0) {
+    const table = await db.collection("ojt_user");
+    const _user = await table.findOne({
+        username: data.username,
+    });
+    if (!_user) {
         return {message: "ユーザー名またはパスワードが間違っています。"};
     }
+    const user = _user as UserDto;
 
     try {
-        if (await argon2.verify(user[0].password, data.password)) {
+        if (await argon2.verify(user.password, data.password)) {
             const token = await new SignJWT({
-                username: user[0].username,
-                role: user[0].role,
+                username: user.username,
+                role: user.role,
             })
                 .setProtectedHeader({alg: "HS256"})
                 .setIssuedAt()
@@ -67,8 +62,8 @@ export async function login(_: LoginState, formData: FormData) {
             });
             return {
                 user: {
-                    username: user[0].username,
-                    role: user[0].role,
+                    username: user.username,
+                    role: user.role,
                 },
                 message: "ログインに成功しました",
             };

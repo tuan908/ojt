@@ -6,7 +6,9 @@ import UserInfo from "./UserInfo";
 export default async function Navbar() {
     return (
         <nav className="w-full shadow-md py-4 pl-10 pr-8 flex justify-between items-center">
-            <h1 className="text-[#1f5da3] font-bold text-3xl">社会人基礎カ</h1>
+            <h1 className="text-[#1f5da3] font-bold text-3xl">
+                Skill Management System
+            </h1>
             <div className="flex items-center justify-between gap-x-2">
                 {/* Back Button */}
                 <BackButton />

@@ -23,7 +23,7 @@ const UserInfo = memo(function UserInfo() {
     return (
         <div className="">
             <h1 className="text-2xl font-normal text-[#abb7bc]">
-                こんにちは {info?.username}
+                Hello {info?.username}
             </h1>
             <h1 className="text-[#c3cbcf]">{info?.role}</h1>
         </div>
