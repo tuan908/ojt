@@ -1,0 +1,39 @@
+{
+    "0": {
+        "id": 0,
+        "studentCode": "ST0001",
+        "studentName": "Minh Tran Binh",
+        "schoolYear": "Grade 8",
+        "events": [
+            {
+                "id": 0,
+                "name": "Event 7"
+            },
+            {
+                "id": 1,
+                "name": "Soccer"
+            },
+            {
+                "id": 2,
+                "name": "Badminton"
+            }
+        ],
+        "hashtags": [
+            {
+                "id": 0,
+                "name": "#independence",
+                "color": "#f2afbb"
+            },
+            {
+                "id": 1,
+                "name": "#ability to quickly grasp",
+                "color": "#7071ef"
+            },
+            {
+                "id": 2,
+                "name": "#discipline",
+                "color": "#b9c8d3"
+            }
+        ]
+    }
+}

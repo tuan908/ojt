@@ -14,14 +14,14 @@ export default function BackButton() {
 
     return (
         <div className="pr-2 h-full">
-            {pathname !== "/student/list" && (
+            {pathname !== "/student/list" ? (
                 <button
                     onClick={e => handleClick(e)}
                     className="border-none outline-none"
                 >
                     <ArrowBack className="text-4xl text-icon-default" />
                 </button>
-            )}
+            ) : null}
         </div>
     );
 }

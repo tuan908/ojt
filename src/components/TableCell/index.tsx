@@ -18,7 +18,7 @@ export default function TableCell({
         <td
             {...otherProps}
             className={cn(
-                "border border-table px-4 py-3 align-middle",
+                "border bg-white border-table px-4 py-3 align-middle",
                 fontSemibold && "font-semibold",
                 alignTextCenter && "text-center",
                 textEllipsis &&

@@ -5,7 +5,7 @@ import UserInfo from "./UserInfo";
 
 export default async function Navbar() {
     return (
-        <nav className="w-full shadow-md py-4 pl-10 pr-8 flex justify-between items-center">
+        <nav className="w-full py-4 pl-10 pr-8 flex justify-between items-center">
             <h1 className="text-[#1f5da3] font-bold text-3xl">
                 Skill Management System
             </h1>

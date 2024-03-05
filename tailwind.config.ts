@@ -16,6 +16,9 @@ const config: Config = {
                 default: "#333333",
                 table: "#dee2e6",
             },
+            width: {
+                "24/25": "96%"
+            }
         },
     },
     plugins: [],

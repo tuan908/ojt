@@ -1,9 +1,9 @@
 "use client";
 
-import {
-    getStudentList,
-    type SearchStudentListDto,
-} from "@/app/actions/student-list";
+import {getStudentList, type StudentDto} from "@/app/actions/student";
+import ColorHashtag from "@/components/ColorHashtag";
+import ColorTextHashtag from "@/components/ColorTextHashtag";
+import PageWrapper from "@/components/PageWrapper";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -14,20 +14,24 @@ import Autocomplete, {
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
+import CircularProgress from "@mui/material/CircularProgress";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {useState, type SyntheticEvent} from "react";
+import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {Suspense, useState, type SyntheticEvent} from "react";
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
+export const ITEM_HEIGHT = 48;
+export const ITEM_PADDING_TOP = 8;
 
 export default function Page() {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
-    const [list, setList] = useState<SearchStudentListDto[]>([]);
+    const [list, setList] = useState<StudentDto[]>([]);
 
     function handleInputChange(
         event: SyntheticEvent,
@@ -61,16 +65,16 @@ export default function Page() {
 
     function handleChange(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {label: string; value: string}>,
+        _value: NonNullable<string | {label: string; id: string}>,
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
-        if (typeof _value === "string") {
+        if (typeof _value === "string" && !skills.includes(_value)) {
             setSkills([...skills, _value]);
         }
 
-        if (typeof _value === "object") {
-            setSkills([...skills, _value.value]);
+        if (typeof _value === "object" && !skills.includes(_value.label)) {
+            setSkills([...skills, _value.label]);
         }
 
         if (reason === "selectOption" && open) {
@@ -84,24 +88,33 @@ export default function Page() {
         setList(data);
     }
 
-    function handleRemove(_index: number): void {
+    function handleRemoveHashtag(_index: number): void {
         setSkills(skills.filter((_, index) => index !== _index));
     }
 
+    function handleRowClick(
+        event: SyntheticEvent<HTMLTableRowElement, MouseEvent>,
+        studentCode: string
+    ): void {
+        event?.preventDefault();
+        router.push(`/student/${studentCode}`, {scroll: true});
+    }
+
     return (
-        <div className="bg-[#ededed] h-full p-12 flex flex-col gap-y-6">
+        <PageWrapper gapY>
             {/* Student info */}
-            <div className="flex gap-x-8">
+            <div className="w-full pl-12 pt-8 flex gap-x-8">
                 {/* Student name */}
                 <Input
                     placeholder="Student Name"
+                    className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                 />
 
                 {/* School's year */}
                 <Select
                     variant="standard"
-                    className="w-32"
+                    className="w-56"
                     placeholder="School Year"
                     defaultValue="School Year"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
@@ -118,7 +131,12 @@ export default function Page() {
                 >
                     <MenuItem value="School Year">School Year</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem key={x} value={x}>
+                        <MenuItem
+                            key={x}
+                            value={x}
+                            disableRipple
+                            disableTouchRipple
+                        >
                             Year {x}
                         </MenuItem>
                     ))}
@@ -127,9 +145,15 @@ export default function Page() {
                 {/* Event */}
                 <Select
                     variant="standard"
-                    className="w-32"
+                    className="w-56"
                     defaultValue="Event"
-                    sx={{bgcolor: "#ffffff", paddingX: 1}}
+                    sx={{
+                        bgcolor: "#ffffff",
+                        paddingX: 1,
+                        "& .MuiSelect-select:focus": {
+                            bgcolor: "transparent",
+                        },
+                    }}
                     MenuProps={{
                         slotProps: {
                             paper: {
@@ -144,7 +168,12 @@ export default function Page() {
                 >
                     <MenuItem value="Event">Event</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem key={x} value={x}>
+                        <MenuItem
+                            key={x}
+                            value={x}
+                            disableRipple
+                            disableTouchRipple
+                        >
                             Event {x}
                         </MenuItem>
                     ))}
@@ -153,19 +182,22 @@ export default function Page() {
                 {/* Hashtag */}
                 <Autocomplete
                     sx={{
-                        width: 240,
+                        width: 224,
                         "& .MuiAutocomplete-inputRoot": {
                             flexWrap: "nowrap",
+                            bgcolor: "#ffffff",
+                            paddingX: 1,
                         },
                     }}
                     options={[
-                        {label: "#Skill1", value: "#Skill1"},
-                        {label: "#Skill2", value: "#Skill2"},
+                        {label: "#independence", id: "0"},
+                        {label: "#ability to quickly grasp", id: "1"},
+                        {label: "#discipline", id: "2"},
                     ]}
                     renderInput={params => (
                         <TextField
                             {...params}
-                            placeholder="#hashtag"
+                            placeholder="#Hashtag"
                             variant="standard"
                         />
                     )}
@@ -197,70 +229,92 @@ export default function Page() {
                     />
                 </button>
             </div>
-            <div className="flex gap-x-2 flex-wrap">
-                {skills.map((x, index) => (
-                    <div
-                        className="flex items-center justify-center leading-none bg-white shadow-md rounded-xl px-2 py-2 gap-x-2"
+            <div className="w-full px-12 flex gap-x-2 flex-wrap">
+                {skills.map((skill, index) => (
+                    <ColorHashtag
                         key={`skill#${index}`}
+                        onRemove={() => handleRemoveHashtag(index)}
+                        index={index}
+                        color="#fb706c"
                     >
-                        <span>{x}</span>
-                        <button
-                            className="border-none outline-none flex items-center justify-center"
-                            onClick={() => handleRemove(index)}
-                        >
-                            <Clear sx={{width: 16, height: 16}} />
-                        </button>
-                    </div>
+                        {skill}
+                    </ColorHashtag>
                 ))}
             </div>
+
+            <hr className="border-table" />
+
             {/* Table */}
-            <table className="border border-table border-collapse align-middle">
-                <thead>
-                    <tr className="bg-[#3f51b5] text-[#fffffc]">
-                        <TableHead>Student Code</TableHead>
-                        <TableHead>Student Name</TableHead>
-                        <TableHead>School Year</TableHead>
-                        <TableHead>Events</TableHead>
-                        <TableHead>Hashtags</TableHead>
-                        <TableHead>Trackings</TableHead>
-                    </tr>
-                </thead>
-                <tbody>
-                    {list!?.map(x => (
-                        <TableRow key={x.id}>
-                            <TableCell alignTextCenter>
-                                {x.studentCode}
-                            </TableCell>
-                            <TableCell alignTextCenter>
-                                {x.studentName}
-                            </TableCell>
-                            <TableCell alignTextCenter>
-                                {x.schoolYear}
-                            </TableCell>
-                            <TableCell fontSemibold textEllipsis>
-                                {x.events}
-                            </TableCell>
-                            <TableCell fontSemibold textEllipsis>
-                                <div className="w-full flex gap-x-2">
-                                    <span className="text-[#f2afbb]">
-                                        #主体性
-                                    </span>
-                                    <span className=" text-[#7071ef]">
-                                        #状況把握力
-                                    </span>
-                                    <span className=" text-[#b9c8d3]">
-                                        #規律性
-                                    </span>
-                                </div>
-                            </TableCell>
-                            <TableCell alignTextCenter>
-                                <Analytics className="text-icon-default" />
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </tbody>
-            </table>
+            <div className="w-full px-12">
+                <table className="w-full border border-table border-collapse align-middle">
+                    <thead>
+                        <tr className="bg-[#3f51b5] text-[#fffffc]">
+                            <TableHead>Student Code</TableHead>
+                            <TableHead>Student Name</TableHead>
+                            <TableHead>School Year</TableHead>
+                            <TableHead>Event</TableHead>
+                            <TableHead>Hashtag</TableHead>
+                            <TableHead>Tracking</TableHead>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <Suspense fallback={<CircularProgress color="info" />}>
+                            {list
+                                ? list.map(item => (
+                                      <TableRow
+                                          key={item.id}
+                                          onClick={event =>
+                                              handleRowClick(
+                                                  event,
+                                                  item.studentCode!
+                                              )
+                                          }
+                                      >
+                                          <TableCell alignTextCenter>
+                                              {item.studentCode}
+                                          </TableCell>
+                                          <TableCell alignTextCenter>
+                                              {item.studentName}
+                                          </TableCell>
+                                          <TableCell alignTextCenter>
+                                              {item.schoolYear}
+                                          </TableCell>
+                                          <TableCell fontSemibold textEllipsis>
+                                              {item.events
+                                                  ?.map(x => x.name)
+                                                  .join(", ")}
+                                          </TableCell>
+                                          <TableCell fontSemibold textEllipsis>
+                                              <div className="w-full flex gap-x-2">
+                                                  {item.hashtags?.map(
+                                                      hashtag => (
+                                                          <ColorTextHashtag
+                                                              key={hashtag.id}
+                                                              color={
+                                                                  hashtag.color
+                                                              }
+                                                          >
+                                                              {hashtag.name}
+                                                          </ColorTextHashtag>
+                                                      )
+                                                  )}
+                                              </div>
+                                          </TableCell>
+                                          <TableCell alignTextCenter>
+                                              <Link
+                                                  href={`/tracking/${item.studentCode}`} className="z-[1001]"
+                                              >
+                                                  <Analytics className="text-icon-default z-[1001]" />
+                                              </Link>
+                                          </TableCell>
+                                      </TableRow>
+                                  ))
+                                : null}
+                        </Suspense>
+                    </tbody>
+                </table>
+            </div>
             {/*  */}
-        </div>
+        </PageWrapper>
     );
 }
