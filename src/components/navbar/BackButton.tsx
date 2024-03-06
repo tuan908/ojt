@@ -19,7 +19,10 @@ export default function BackButton() {
                     onClick={e => handleClick(e)}
                     className="border-none outline-none"
                 >
-                    <ArrowBack className="text-4xl text-icon-default" />
+                    <ArrowBack
+                        className="text-icon-default"
+                        sx={{width: 36, height: 36}}
+                    />
                 </button>
             ) : null}
         </div>

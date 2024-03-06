@@ -1,8 +1,10 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import {authSlice} from "./slice/authSlice";
+import {loadingSlice} from "./slice/loadingSlice";
 
 const rootReducer = combineReducers({
     [authSlice.name]: authSlice.reducer,
+    [loadingSlice.name]: loadingSlice.reducer,
 });
 
 export function makeStore() {
