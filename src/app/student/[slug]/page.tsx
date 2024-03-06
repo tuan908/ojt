@@ -4,18 +4,18 @@ import {StudentDto} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import TableHead from "@/components/TableHead";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import Search from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import {
-    ChangeEventHandler,
     Suspense,
-    SyntheticEvent,
     useEffect,
     useState,
+    type ChangeEventHandler,
+    type SyntheticEvent,
 } from "react";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "../list/page";
 
 type CheckboxState = {[x: string]: boolean};
 
