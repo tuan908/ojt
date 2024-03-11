@@ -1,15 +1,41 @@
-import type {NextRequest} from "next/server";
-import {NextResponse} from "next/server";
+import {NextRequest, NextResponse} from "next/server";
+import {UserRole} from "./constants";
+import {verifyJwtToken} from "./lib/auth";
 
 export const config = {
-    matcher: "/",
+    matcher: [
+        "/",
+        "/home",
+        "/student/list",
+        "/student/:slug*",
+        "/event/register",
+        "/tracking/student/:slug*",
+    ],
 };
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     const currentUrl = request.nextUrl.clone();
 
-    if ("/".indexOf(currentUrl.pathname) !== -1) {
+    const token = request.cookies.get("token")?.value ?? null;
+    const verifiedToken = await verifyJwtToken(token!);
+    const role = verifiedToken?.role as string;
+
+    if (!token && currentUrl.pathname !== "/login") {
+        return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    if (currentUrl.pathname === "/login") {
+        if (role !== UserRole.Student) {
+            return NextResponse.redirect(new URL("/student/list", request.url));
+        }
+    }
+
+    if (
+        ["/", "/home"].includes(currentUrl.pathname) &&
+        role !== UserRole.Student
+    ) {
         return NextResponse.redirect(new URL("/student/list", request.url));
     }
+
     return NextResponse.next();
 }

@@ -7,15 +7,21 @@
         "events": [
             {
                 "id": 0,
-                "name": "Event 7"
+                "name": "Event 7",
+                "status": 0,
+                "comments": 0
             },
             {
                 "id": 1,
-                "name": "Soccer"
+                "name": "Soccer",
+                "status": 0,
+                "comments": 0
             },
             {
                 "id": 2,
-                "name": "Badminton"
+                "name": "Badminton",
+                "status": 0,
+                "comments": 0
             }
         ],
         "hashtags": [

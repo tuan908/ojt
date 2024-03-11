@@ -312,7 +312,7 @@ export default function Page() {
                                       return (
                                           <TableRow
                                               key={item.id}
-                                              onClick={e =>
+                                              onDoubleClick={e =>
                                                   handleRowClick({
                                                       e,
                                                       studentCode:

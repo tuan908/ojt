@@ -1,6 +1,6 @@
-import PowerSettingsNew from "@mui/icons-material/PowerSettingsNew";
 import Avatar from "@mui/material/Avatar";
 import BackButton from "./BackButton";
+import LogoutButton from "./LogOut";
 import UserInfo from "./UserInfo";
 
 export default async function Navbar() {
@@ -13,13 +13,8 @@ export default async function Navbar() {
                 {/* Back Button */}
                 <BackButton />
 
-                {/* Button Logout */}
-                <div className="border-x px-2">
-                    <PowerSettingsNew
-                        className="text-icon-default text-bold"
-                        sx={{width: 36, height: 36}}
-                    />
-                </div>
+                <LogoutButton />
+
                 <div className="pr-2">
                     <Avatar sx={{width: 44, height: 44, bgcolor: "#31bafd"}} />
                 </div>

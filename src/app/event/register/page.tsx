@@ -1,21 +1,27 @@
 "use client";
 
 import {
-    CommentDto,
-    RegisterStudentEventDto,
     addComment,
     registerEvent,
+    type CommentDto,
+    type RegisterStudentEventDto,
 } from "@/app/actions/event";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
-import {cn} from "@/lib/utils/cn";
-import data, {type Emoji} from "@emoji-mart/data";
+
+import Textarea from "@/components/Textarea";
+import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
 import Send from "@mui/icons-material/Send";
 import SentimentSatisfiedAlt from "@mui/icons-material/SentimentSatisfiedAlt";
+import Autocomplete, {
+    type AutocompleteChangeReason,
+    type AutocompleteInputChangeReason,
+} from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
-import Select, {SelectProps} from "@mui/material/Select";
+import Select, {type SelectProps} from "@mui/material/Select";
+import TextField from "@mui/material/TextField";
 import {useState, type ComponentProps, type SyntheticEvent} from "react";
 import "./register.css";
 
@@ -37,14 +43,67 @@ export default function Page() {
         updatedDate: new Date(),
         username: "",
     });
+    const [openSuggest, setOpenSuggest] = useState(false);
 
-    const handleChangeComment: ComponentProps<"textarea">["onChange"] = e => {
-        e?.preventDefault();
-        setCommentData({
-            ...commentData,
-            [e?.target.name]: e?.target.value,
-        });
-    };
+    function handleInputCommentChange(
+        event: SyntheticEvent,
+        _value: string | {label: string; value: string} | null,
+        reason: AutocompleteInputChangeReason
+    ): void {
+        event?.preventDefault();
+        if (_value !== null) {
+            switch (true) {
+                case typeof _value === "string":
+                    setCommentData({...commentData, commentContent: _value});
+                    if (_value.startsWith("#")) {
+                        setOpenSuggest(true);
+                    }
+                    break;
+
+                case typeof _value === "object":
+                    setCommentData({
+                        ...commentData,
+                        commentContent: _value.value,
+                    });
+                    break;
+
+                default:
+                    throw new Error("Invalid input");
+            }
+        }
+
+        if (reason === "reset") {
+            setOpenSuggest(false);
+        }
+    }
+
+    function handleChangeComment(
+        event: SyntheticEvent<Element, Event>,
+        _value: NonNullable<string | {label: string; id: string}>,
+        reason: AutocompleteChangeReason
+    ): void {
+        event?.preventDefault();
+        if (typeof _value === "string") {
+            setCommentData({
+                ...commentData,
+                commentContent: commentData.commentContent.concat(_value, " "),
+            });
+        }
+
+        if (typeof _value === "object") {
+            setCommentData({
+                ...commentData,
+                commentContent: commentData.commentContent.concat(
+                    _value.label,
+                    " "
+                ),
+            });
+        }
+
+        if (reason === "selectOption" && openSuggest) {
+            setOpenSuggest(false);
+        }
+    }
 
     const handleSelectChange: SelectProps<string>["onChange"] = e => {
         setData({...registerData, eventName: e.target.value});
@@ -70,18 +129,16 @@ export default function Page() {
         await addComment(commentData);
     }
 
-    function handleSelect(emoji: Emoji) {
+    function handleSelect(emoji: any) {
+        if (!emoji?.native) return;
         setCommentData({
             ...commentData,
-            commentContent: commentData.commentContent.concat(
-                emoji.skins![0]?.native
-            ),
+            commentContent: commentData.commentContent.concat(emoji?.native),
         });
-        setOpen(false);
     }
 
     return (
-        <div className="w-full flex flex-col gap-y-8">
+        <div className="pt-12 w-full flex flex-col gap-y-8">
             <div className="w-1/2 m-auto bg-white rounded-xl shadow-2xl">
                 <div className="w-[90%] m-auto flex flex-col gap-y-6 py-6">
                     {/* Select */}
@@ -170,12 +227,39 @@ export default function Page() {
             <div className="w-3/5 m-auto flex items-center gap-x-8">
                 <Avatar sx={{width: 72, height: 72}} />
                 <div className="w-full flex items-center relative">
-                    <Textarea
-                        name="commentContent"
-                        placeholder="Add comment..."
+                    <Autocomplete
+                        className="w-full"
+                        sx={{
+                            "& .MuiAutocomplete-inputRoot": {
+                                flexWrap: "nowrap",
+                                bgcolor: "#ffffff",
+                                paddingX: 1,
+                            },
+                        }}
+                        options={[
+                            {label: "#independence", id: "0"},
+                            {label: "#ability to quickly grasp", id: "1"},
+                            {label: "#discipline", id: "2"},
+                        ]}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                placeholder="Input comment here..."
+                                multiline
+                                variant="outlined"
+                                rows={2}
+                            />
+                        )}
+                        onInputChange={handleInputCommentChange}
                         onChange={handleChangeComment}
-                        fullWidth
+                        open={openSuggest}
+                        inputValue={commentData.commentContent}
+                        disableListWrap
+                        disableClearable
+                        disablePortal
+                        freeSolo
                     />
+
                     <button
                         onClick={() => setOpen(!openPicker)}
                         className="absolute top-1 right-2"
@@ -211,26 +295,3 @@ export default function Page() {
         </div>
     );
 }
-
-const Textarea = ({
-    name,
-    placeholder,
-    onChange,
-    fullWidth,
-    ...otherProps
-}: ComponentProps<"textarea"> & {fullWidth?: boolean}) => {
-    return (
-        <textarea
-            {...otherProps}
-            className={cn(
-                "resize-none border rounded-md px-4 py-2 outline-blue-500",
-                fullWidth && "w-full"
-            )}
-            name={name}
-            placeholder={placeholder}
-            cols={30}
-            rows={2}
-            onChange={onChange}
-        />
-    );
-};

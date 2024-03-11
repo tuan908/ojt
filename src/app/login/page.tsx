@@ -6,11 +6,14 @@ import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import TextField from "@mui/material/TextField";
 import Link from "next/link";
 import {redirect} from "next/navigation";
 import {useEffect, useRef, useState, type SyntheticEvent} from "react";
 import {useFormState, useFormStatus} from "react-dom";
-import {login} from "../actions/login";
+import {login} from "../actions/auth";
 
 export default function Page() {
     const dispatch = useAppDispatch();
@@ -74,26 +77,33 @@ export default function Page() {
                         <Https />
                     </div>
 
-                    <input
+                    <TextField
+                        variant="standard"
+                        className="w-full"
                         name="password"
-                        type={inputState.type}
-                        className="w-full pl-2 border-b border-b-default outline-none py-1"
-                        autoComplete="off"
-                        placeholder="Password"
+                        InputProps={{
+                            type: inputState.type,
+                            className: "pl-2",
+                            autoComplete: "off",
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={showOrHidePassword}
+                                        onMouseDown={showOrHidePassword}
+                                        edge="end"
+                                        disableRipple
+                                    >
+                                        {inputState.show ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
                     />
-
-                    <div className="absolute top-1 right-2">
-                        <button
-                            className="border-none outline-none"
-                            onClick={e => showOrHidePassword(e)}
-                        >
-                            {inputState.show ? (
-                                <Visibility />
-                            ) : (
-                                <VisibilityOff />
-                            )}
-                        </button>
-                    </div>
                 </div>
 
                 <div className="w-full h-full flex items-center justify-center py-2">

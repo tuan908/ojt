@@ -1,4 +1,0 @@
-id,username,password,role
-1,tuanna,$argon2id$v=19$m=16,t=2,p=1$VGhpcyBpcyBhIHNhbHQgZm9yIG15IGFwcGxpY2F0aW9uLg$/RhCtAUyfQ4XP+88JvaBeQ,Counselor
-2,quannta,$argon2id$v=19$m=16,t=2,p=1$VGhpcyBpcyBhIHNhbHQgZm9yIG15IGFwcGxpY2F0aW9uLg$kcHT1h+rVM41evmSXhojjg,Teacher
-3,minhtb,$argon2id$v=19$m=16,t=2,p=1$VGhpcyBpcyBhIHNhbHQgZm9yIG15IGFwcGxpY2F0aW9uLg$K//Q/TV39udGFBkmVrV/4A,Student

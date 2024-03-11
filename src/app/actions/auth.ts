@@ -1,23 +1,29 @@
 "use server";
 
-import {Collection} from "@/constants";
+import {Collection, UserRole} from "@/constants";
 import {getJwtSecretKey} from "@/lib/auth";
-import db from "@/lib/db";
+import {astraDb} from "@/lib/db";
 import * as argon2 from "argon2";
 import {SignJWT} from "jose";
 import {cookies} from "next/headers";
+import {redirect} from "next/navigation";
 import {z} from "zod";
 
-export type UserDto = {
+export async function logOut() {
+    cookies().delete("token");
+    redirect("/login");
+}
+
+export type AccountDto = {
     username: string;
     password: string;
-    role: number;
+    role: string;
 };
 
 export type LoginState =
     | {
           message: string;
-          user?: Omit<UserDto, "password">;
+          user?: Omit<AccountDto, "password">;
       }
     | undefined;
 
@@ -37,14 +43,14 @@ export async function login(_: LoginState, formData: FormData) {
     }
 
     const data = parse.data;
-    const userCollection = await db.collection(Collection.User);
-    const _user = await userCollection.findOne({
+    const accountCollection = await astraDb.collection(Collection.Account);
+    const _user = await accountCollection.findOne({
         username: data.username,
     });
     if (!_user) {
         return {message: "Incorrect username or password."};
     }
-    const user = _user as UserDto;
+    const user = _user as AccountDto;
 
     try {
         if (await argon2.verify(user.password, data.password)) {
@@ -61,17 +67,19 @@ export async function login(_: LoginState, formData: FormData) {
                 value: token,
                 path: "/",
             });
-            return {
-                user: {
-                    username: user.username,
-                    role: user.role,
-                },
-                message: "Login succeeded",
-            };
         } else {
             return {message: "Incorrect username or password."};
         }
     } catch (error) {
         return {message: "Incorrect username or password."};
     }
+
+    let redirectPath = "";
+
+    if (user.role !== UserRole.Student) {
+        redirectPath = "/student/list";
+    } else {
+        redirectPath = `/student/ST0001`;
+    }
+    redirect(redirectPath);
 }

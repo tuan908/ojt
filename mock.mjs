@@ -5,22 +5,19 @@ const __dirname = import.meta.dirname;
 
 function generate() {
     let json = "{"
-    for (let i = 1; i <= 12; i++) {
-        json += `"${i - 1}":{"id": ${i},"name": "Grade ${i}"},`
+    let tempArr = []
+    for (let i = 1; i <= 4; i++) {
+        tempArr.push(`"${i - 1}":{"id":${i},"username":"test00${i}","role":"00${i}","password":""}`)
     }
 
-    json += `"12":{"id": 13,"name":"Primary School"},`
-
-    json += `"13":{"id":14,"name":"Secondary School"},`
-
-    json += `"14":{"id":15,"name":"High School"}`
+    json += tempArr.join(",")
 
     json += "}"
 
-    return json
+    return json.trim()
 }
 
-fs.writeFile(path.join(__dirname, "migrations", "grades.json"),
+fs.writeFile(path.join(__dirname, "migrations", "users.json"),
     generate(), { encoding: "utf8" }, (err) => {
         if (err) {
             console.log(err)

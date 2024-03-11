@@ -1,14 +1,18 @@
 "use client";
 
+import {type AccountDto} from "@/app/actions/auth";
 import {StudentDto} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import TableHead from "@/components/TableHead";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {useAuth} from "@/lib/hooks/useAuth";
+import AddCircle from "@mui/icons-material/AddCircle";
 import Search from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Link from "next/link";
 import {
     Suspense,
     useEffect,
@@ -20,6 +24,7 @@ import {
 type CheckboxState = {[x: string]: boolean};
 
 export default function Page({params}: {params: {slug: string}}) {
+    const auth = useAuth();
     const [response, setData] = useState<{
         data: StudentDto | null;
         errors: unknown[];
@@ -57,140 +62,167 @@ export default function Page({params}: {params: {slug: string}}) {
     }
 
     return (
-        <PageWrapper>
-            {response.isFetching ? <LoadingComponent /> : null}
-            {/* Student Info */}
-            <div className="border-b px-8 py-4 flex gap-x-12">
-                <span>{response.data?.studentName}</span>
-                <span>({response?.data?.studentCode})</span>
-                <span>{response?.data?.schoolYear}</span>
-            </div>
-
-            {/* ?? */}
-            <div className="border-b px-8 flex items-center py-4 gap-x-8">
-                {/* School's year */}
-                <Select
-                    variant="standard"
-                    className="w-48"
-                    placeholder="School Year"
-                    defaultValue="School Year"
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {bgcolor: "transparent"},
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
-                >
-                    <MenuItem value="School Year">School Year</MenuItem>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem
-                            key={x}
-                            value={x}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            Year {x}
-                        </MenuItem>
-                    ))}
-                </Select>
-
-                {/* Event */}
-                <Select
-                    variant="standard"
-                    className="w-48"
-                    defaultValue="Event"
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {bgcolor: "transparent"},
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
-                    suppressContentEditableWarning
-                >
-                    <MenuItem value="Event">Event</MenuItem>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem
-                            key={x}
-                            value={x}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            Event {x}
-                        </MenuItem>
-                    ))}
-                </Select>
-
-                <div className="flex items-center gap-x-8">
-                    <span>Status:</span>
-
-                    {/* Unconfirmed checkbox */}
-                    <Checkbox
-                        label="Unconfirmed"
-                        name="unconfirmed"
-                        checked={check.unconfirmed}
-                        handleChange={e => handleChange(e)}
-                    />
-
-                    {/* Confirmed checkbox */}
-                    <Checkbox
-                        label="Confirmed"
-                        name="confirmed"
-                        checked={check.confirmed}
-                        handleChange={handleChange}
-                    />
-
-                    {/* Finished checkbox*/}
-                    <Checkbox
-                        label="Finished"
-                        name="finished"
-                        checked={check.finished}
-                        handleChange={handleChange}
-                    />
+        <div className="flex flex-col w-full h-full m-auto">
+            {(auth as AccountDto)?.role === "Student" ? (
+                <div className="w-24/25 m-auto flex items-center pb-3">
+                    <Link
+                        href="/event/register"
+                        className="flex gap-x-2 items-center px-6 py-2 bg-[#33b5e5] text-white rounded-lg"
+                    >
+                        <AddCircle />
+                        <span>Add Event</span>
+                    </Link>
                 </div>
-                <button
-                    className="border-none outline-none flex items-center justify-center"
-                    onClick={handleSearch}
-                >
-                    <Search
-                        className="text-icon-default"
-                        sx={{width: 32, height: 32}}
-                    />
-                </button>
-            </div>
+            ) : null}
+            <PageWrapper>
+                {response.isFetching ? <LoadingComponent /> : null}
 
-            {/* Table */}
-            <div className="w-full px-10 pt-6">
-                <table className="w-full border border-table border-collapse align-middle">
-                    <thead>
-                        <tr className="bg-[#3f51b5] text-[#fffffc]">
-                            <TableHead>School Year</TableHead>
-                            <TableHead>Event</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Notification</TableHead>
-                            <TableHead>Action</TableHead>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <Suspense fallback={<CircularProgress color="info" />}>
-                            {/* {list
+                {/* Student Info */}
+                <>
+                    {(auth as AccountDto)?.role !== "001" ? (
+                        <>
+                            <div className="border-b px-8 py-4 flex gap-x-12">
+                                <span>{response.data?.studentName}</span>
+                                <span>({response?.data?.studentCode})</span>
+                                <span>{response?.data?.schoolYear}</span>
+                            </div>
+                        </>
+                    ) : null}
+
+                    {/* ?? */}
+                    <div className="border-b px-8 flex items-center py-4 gap-x-8">
+                        {/* School's year */}
+                        <Select
+                            variant="standard"
+                            className="w-48"
+                            placeholder="School Year"
+                            defaultValue="School Year"
+                            sx={{
+                                bgcolor: "#ffffff",
+                                paddingX: 1,
+                                "& .MuiSelect-select:focus": {
+                                    bgcolor: "transparent",
+                                },
+                            }}
+                            MenuProps={{
+                                slotProps: {
+                                    paper: {
+                                        style: {
+                                            maxHeight:
+                                                ITEM_HEIGHT * 4.5 +
+                                                ITEM_PADDING_TOP,
+                                        },
+                                    },
+                                },
+                            }}
+                        >
+                            <MenuItem value="School Year">School Year</MenuItem>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                                <MenuItem
+                                    key={x}
+                                    value={x}
+                                    disableRipple
+                                    disableTouchRipple
+                                >
+                                    Year {x}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        {/* Event */}
+                        <Select
+                            variant="standard"
+                            className="w-48"
+                            defaultValue="Event"
+                            sx={{
+                                bgcolor: "#ffffff",
+                                paddingX: 1,
+                                "& .MuiSelect-select:focus": {
+                                    bgcolor: "transparent",
+                                },
+                            }}
+                            MenuProps={{
+                                slotProps: {
+                                    paper: {
+                                        style: {
+                                            maxHeight:
+                                                ITEM_HEIGHT * 4.5 +
+                                                ITEM_PADDING_TOP,
+                                        },
+                                    },
+                                },
+                            }}
+                            suppressContentEditableWarning
+                        >
+                            <MenuItem value="Event">Event</MenuItem>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                                <MenuItem
+                                    key={x}
+                                    value={x}
+                                    disableRipple
+                                    disableTouchRipple
+                                >
+                                    Event {x}
+                                </MenuItem>
+                            ))}
+                        </Select>
+
+                        <div className="flex items-center gap-x-8">
+                            <span>Status:</span>
+
+                            {/* Unconfirmed checkbox */}
+                            <Checkbox
+                                label="Unconfirmed"
+                                name="unconfirmed"
+                                checked={check.unconfirmed}
+                                handleChange={e => handleChange(e)}
+                            />
+
+                            {/* Confirmed checkbox */}
+                            <Checkbox
+                                label="Confirmed"
+                                name="confirmed"
+                                checked={check.confirmed}
+                                handleChange={handleChange}
+                            />
+
+                            {/* Finished checkbox*/}
+                            <Checkbox
+                                label="Finished"
+                                name="finished"
+                                checked={check.finished}
+                                handleChange={handleChange}
+                            />
+                        </div>
+                        <button
+                            className="border-none outline-none flex items-center justify-center"
+                            onClick={handleSearch}
+                        >
+                            <Search
+                                className="text-icon-default"
+                                sx={{width: 32, height: 32}}
+                            />
+                        </button>
+                    </div>
+                </>
+
+                {/* Table */}
+                <div className="w-full px-10 pt-6">
+                    <table className="w-full border border-table border-collapse align-middle">
+                        <thead>
+                            <tr className="bg-[#3f51b5] text-[#fffffc]">
+                                <TableHead>School Year</TableHead>
+                                <TableHead>Event</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Notification</TableHead>
+                                <TableHead>Action</TableHead>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <Suspense
+                                fallback={<CircularProgress color="info" />}
+                            >
+                                {/* {list
                             ? list.map(item => (
                                   <TableRow key={item.id} onClick={(event) => handleRowClick(event, item.studentCode!)}>
                                       <TableCell alignTextCenter>
@@ -213,11 +245,12 @@ export default function Page({params}: {params: {slug: string}}) {
                                   </TableRow>
                               ))
                             : null} */}
-                        </Suspense>
-                    </tbody>
-                </table>
-            </div>
-        </PageWrapper>
+                            </Suspense>
+                        </tbody>
+                    </table>
+                </div>
+            </PageWrapper>
+        </div>
     );
 }
 

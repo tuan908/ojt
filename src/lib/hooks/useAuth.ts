@@ -1,12 +1,11 @@
 "use client";
 
-import {verifyJwtToken} from "@/lib/auth";
-import {type JWTPayload} from "jose";
+import {MyJwtPayload, verifyJwtToken} from "@/lib/auth";
 import {useEffect, useState} from "react";
 import Cookies from "universal-cookie";
 
 export function useAuth() {
-    const [auth, setAuth] = useState<JWTPayload | null>(null);
+    const [auth, setAuth] = useState<MyJwtPayload | null>(null);
 
     const getVerifiedToken = async () => {
         const cookies = new Cookies();

@@ -1,7 +1,7 @@
 "use server";
 
 import {Collection} from "@/constants";
-import db from "@/lib/db";
+import {astraDb} from "@/lib/db";
 
 type Event = Array<{id: number; name: string}>[number];
 
@@ -33,7 +33,7 @@ type StudentListRequestDto = {
  */
 export async function getStudentList(dto?: StudentListRequestDto) {
     try {
-        const eventCollection = await db.collection(Collection.Event);
+        const eventCollection = await astraDb.collection(Collection.Event);
         const list = await eventCollection.find({}).toArray();
         const result = list.map((x: StudentListResponseDto) => ({
             ...x,
@@ -51,7 +51,7 @@ export type StudentDto = Awaited<ReturnType<typeof getStudentList>>[number];
 
 export async function getStudentByCode(studentCode: string) {
     try {
-        const eventCollection = await db.collection(Collection.Event);
+        const eventCollection = await astraDb.collection(Collection.Event);
         const raw = await eventCollection.findOne({studentCode});
 
         if (!raw) {
