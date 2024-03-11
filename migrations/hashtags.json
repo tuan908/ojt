@@ -1,0 +1,122 @@
+[
+  {
+    "_id": 0,
+    "id": "HT00",
+    "name": "#Hashtag0",
+    "color": "#57f232"
+  },
+  {
+    "_id": 1,
+    "id": "HT01",
+    "name": "#Hashtag1",
+    "color": "#7d9363"
+  },
+  {
+    "_id": 2,
+    "id": "HT02",
+    "name": "#Hashtag2",
+    "color": "#8d638a"
+  },
+  {
+    "_id": 3,
+    "id": "HT03",
+    "name": "#Hashtag3",
+    "color": "#4d4735"
+  },
+  {
+    "_id": 4,
+    "id": "HT04",
+    "name": "#Hashtag4",
+    "color": "#76401e"
+  },
+  {
+    "_id": 5,
+    "id": "HT05",
+    "name": "#Hashtag5",
+    "color": "#403d32"
+  },
+  {
+    "_id": 6,
+    "id": "HT06",
+    "name": "#Hashtag6",
+    "color": "#d59f38"
+  },
+  {
+    "_id": 7,
+    "id": "HT07",
+    "name": "#Hashtag7",
+    "color": "#5bd9d9"
+  },
+  {
+    "_id": 8,
+    "id": "HT08",
+    "name": "#Hashtag8",
+    "color": "#ef698f"
+  },
+  {
+    "_id": 9,
+    "id": "HT09",
+    "name": "#Hashtag9",
+    "color": "#7b9841"
+  },
+  {
+    "_id": 10,
+    "id": "HT10",
+    "name": "#Hashtag10",
+    "color": "#d35fb7"
+  },
+  {
+    "_id": 11,
+    "id": "HT11",
+    "name": "#Hashtag11",
+    "color": "#c9a8f9"
+  },
+  {
+    "_id": 12,
+    "id": "HT12",
+    "name": "#Hashtag12",
+    "color": "#a5c2a4"
+  },
+  {
+    "_id": 13,
+    "id": "HT13",
+    "name": "#Hashtag13",
+    "color": "#aafe8"
+  },
+  {
+    "_id": 14,
+    "id": "HT14",
+    "name": "#Hashtag14",
+    "color": "#533c0d"
+  },
+  {
+    "_id": 15,
+    "id": "HT15",
+    "name": "#Hashtag15",
+    "color": "#3b4ce4"
+  },
+  {
+    "_id": 16,
+    "id": "HT16",
+    "name": "#Hashtag16",
+    "color": "#bcaeb8"
+  },
+  {
+    "_id": 17,
+    "id": "HT17",
+    "name": "#Hashtag17",
+    "color": "#c776ab"
+  },
+  {
+    "_id": 18,
+    "id": "HT18",
+    "name": "#Hashtag18",
+    "color": "#2a6216"
+  },
+  {
+    "_id": 19,
+    "id": "HT19",
+    "name": "#Hashtag19",
+    "color": "#b0986a"
+  }
+]

@@ -2,20 +2,24 @@
 
 import type {MyJwtPayload} from "@/lib/auth";
 import {useAuth} from "@/lib/hooks/useAuth";
-import {memo, useEffect, useState} from "react";
+import {convertRole} from "@/lib/utils/role";
+import {useEffect, useState} from "react";
+
+type UserPayload = Partial<Pick<MyJwtPayload, "username" | "role">>;
 
 // TODO: Remove flicker when set user info
-const UserInfo = memo(function UserInfo() {
-    const auth = useAuth();
-    const [info, setInfo] =
-        useState<Partial<Pick<MyJwtPayload, "username" | "role">>>();
+export default function UserInfo() {
+    const [auth] = useAuth();
+    const [info, setInfo] = useState<UserPayload | null>(null);
 
     useEffect(() => {
-        setInfo({
-            username: auth?.username,
-            role: auth?.role,
-        });
-    }, [auth?.role, auth?.username]);
+        if (auth !== null) {
+            setInfo({
+                username: auth.username,
+                role: convertRole(auth.role),
+            });
+        }
+    }, [auth]);
 
     return (
         <div className="flex flex-col">
@@ -25,6 +29,4 @@ const UserInfo = memo(function UserInfo() {
             <h1 className="text-[#c3cbcf]">{info ? info.role : null}</h1>
         </div>
     );
-});
-
-export default UserInfo;
+}

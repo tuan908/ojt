@@ -1,0 +1,74 @@
+{
+    "0": {
+        "id": "HT00001",
+        "_id": 1,
+        "name": "#Proactive",
+        "color": "#f2b2bf"
+    },
+    "1": {
+        "id": "HT00002",
+        "_id": 2,
+        "name": "#Influential",
+        "color": "#fb5252"
+    },
+    "2": {
+        "id": "HT00003",
+        "_id": 3,
+        "name": "#Actionable",
+        "color": "#fca120"
+    },
+    "3": {
+        "id": "HT00004",
+        "_id": 4,
+        "name": "#Problem-solving",
+        "color": "#edb183"
+    },
+    "4": {
+        "id": "HT00005",
+        "_id": 5,
+        "name": "#Strategic",
+        "color": "#fcde88"
+    },
+    "5": {
+        "id": "HT00006",
+        "_id": 6,
+        "name": "#Creative",
+        "color": "#bdd333"
+    },
+    "6": {
+        "id": "HT00007",
+        "_id": 7,
+        "name": "#Expressive",
+        "color": "#4ad295"
+    },
+    "7": {
+        "id": "HT00008",
+        "_id": 8,
+        "name": "#Receptive",
+        "color": "#92cdfa"
+    },
+    "8": {
+        "id": "HT00009",
+        "_id": 9,
+        "name": "#Flexible",
+        "color": "#1273eb"
+    },
+    "9": {
+        "id": "HT00010",
+        "_id": 10,
+        "name": "#Aware",
+        "color": "#8080f1"
+    },
+    "10": {
+        "id": "HT00011",
+        "_id": 11,
+        "name": "#Disciplined",
+        "color": "#bac8d3"
+    },
+    "11": {
+        "id": "HT00012",
+        "_id": 12,
+        "name": "#Stress-resistant",
+        "color": "#58595b"
+    }
+}

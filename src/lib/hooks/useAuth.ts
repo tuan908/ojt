@@ -7,16 +7,16 @@ import Cookies from "universal-cookie";
 export function useAuth() {
     const [auth, setAuth] = useState<MyJwtPayload | null>(null);
 
-    const getVerifiedToken = async () => {
+    async function getVerifiedToken() {
         const cookies = new Cookies();
         const token = cookies.get("token") ?? null;
         const verifiedToken = await verifyJwtToken(token);
         setAuth(verifiedToken);
-    };
+    }
 
     useEffect(() => {
         getVerifiedToken();
     }, []);
 
-    return auth;
+    return [auth];
 }

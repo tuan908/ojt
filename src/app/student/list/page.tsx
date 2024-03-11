@@ -2,12 +2,10 @@
 
 import {getStudentList, type StudentDto} from "@/app/actions/student";
 import ColorHashtag from "@/components/ColorHashtag";
-import ColorTextHashtag from "@/components/ColorTextHashtag";
+
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-import TableCell from "@/components/TableCell";
-import TableHead from "@/components/TableHead";
-import TableRow from "@/components/TableRow";
+
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
 import {
@@ -29,14 +27,14 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import {useRouter} from "next/navigation";
 import {Suspense, useEffect, useState, type SyntheticEvent} from "react";
+import StudentDataGrid from "./_StudentDataGrid";
 
 export default function Page() {
-    const router = useRouter();
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<string[]>([]);
     const [inputValue, setInputValue] = useState("");
-    const [list, setList] = useState<StudentDto[]>([]);
+    const [rows, setList] = useState<StudentDto[]>([]);
     const isFetching = useAppSelector(getLoadingOrFetchingState);
 
     async function init() {
@@ -120,32 +118,6 @@ export default function Page() {
     function handleRemoveHashtag(_index: number): void {
         setSkills(skills.filter((_, index) => index !== _index));
     }
-
-    const handleRowClick = ({
-        e,
-        studentCode,
-    }: {
-        e: SyntheticEvent<HTMLTableRowElement>;
-        studentCode?: string;
-    }) => {
-        e?.preventDefault();
-        router.push(`/student/${studentCode}`, {scroll: true});
-    };
-
-    /**
-     * We ensure that only the cell click handler is triggered when both row and cell have click handlers
-     * by using e.stopPropagation()
-     */
-    const handleCellClick = ({
-        e,
-        studentCode,
-    }: {
-        e: SyntheticEvent<HTMLTableCellElement>;
-        studentCode?: string;
-    }): void => {
-        e?.stopPropagation();
-        router.push(`/tracking/student/${studentCode}`);
-    };
 
     return (
         <PageWrapper gapY>
@@ -292,92 +264,7 @@ export default function Page() {
 
             <hr className="border-table" />
 
-            {/* Table */}
-            <div className="w-full px-12">
-                <table className="w-full border border-table border-collapse align-middle">
-                    <thead>
-                        <tr className="bg-[#3f51b5] text-[#fffffc]">
-                            <TableHead>Student Code</TableHead>
-                            <TableHead>Student Name</TableHead>
-                            <TableHead>School Year</TableHead>
-                            <TableHead>Event</TableHead>
-                            <TableHead>Hashtag</TableHead>
-                            <TableHead>Tracking</TableHead>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <Suspense fallback={<CircularProgress color="info" />}>
-                            {list
-                                ? list.map(item => {
-                                      return (
-                                          <TableRow
-                                              key={item.id}
-                                              onDoubleClick={e =>
-                                                  handleRowClick({
-                                                      e,
-                                                      studentCode:
-                                                          item.studentCode,
-                                                  })
-                                              }
-                                          >
-                                              <TableCell alignTextCenter>
-                                                  {item.studentCode}
-                                              </TableCell>
-                                              <TableCell alignTextCenter>
-                                                  {item.studentName}
-                                              </TableCell>
-                                              <TableCell alignTextCenter>
-                                                  {item.schoolYear}
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                              >
-                                                  {item.events
-                                                      ?.map(x => x.name)
-                                                      .join(", ")}
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                              >
-                                                  <div className="w-full flex gap-x-2">
-                                                      {item.hashtags?.map(
-                                                          hashtag => (
-                                                              <ColorTextHashtag
-                                                                  key={
-                                                                      hashtag.id
-                                                                  }
-                                                                  color={
-                                                                      hashtag.color
-                                                                  }
-                                                              >
-                                                                  {hashtag.name}
-                                                              </ColorTextHashtag>
-                                                          )
-                                                      )}
-                                                  </div>
-                                              </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  onClick={e =>
-                                                      handleCellClick({
-                                                          e,
-                                                          studentCode:
-                                                              item.studentCode,
-                                                      })
-                                                  }
-                                              >
-                                                  <Analytics className="text-icon-default" />
-                                              </TableCell>
-                                          </TableRow>
-                                      );
-                                  })
-                                : null}
-                        </Suspense>
-                    </tbody>
-                </table>
-            </div>
+            <StudentDataGrid rows={rows} />
             {/*  */}
         </PageWrapper>
     );

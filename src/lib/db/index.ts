@@ -1,2 +1,2 @@
-export {default as astraDb} from "./astra";
-export {default as pg} from "./pg";
+export {default as Astra} from "./astra";
+export {default as Postgres} from "./postgres";

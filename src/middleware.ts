@@ -1,5 +1,5 @@
-import {NextRequest, NextResponse} from "next/server";
-import {UserRole} from "./constants";
+import {NextResponse, type NextRequest} from "next/server";
+import {Route, UserRole} from "./constants";
 import {verifyJwtToken} from "./lib/auth";
 
 export const config = {
@@ -18,23 +18,23 @@ export async function middleware(request: NextRequest) {
 
     const token = request.cookies.get("token")?.value ?? null;
     const verifiedToken = await verifyJwtToken(token!);
-    const role = verifiedToken?.role as string;
+    const role = verifiedToken?.role;
 
-    if (!token && currentUrl.pathname !== "/login") {
-        return NextResponse.redirect(new URL("/login", request.url));
+    if (!token && currentUrl.pathname !== Route.Login) {
+        return NextResponse.redirect(new URL(Route.Login, request.url));
     }
 
-    if (currentUrl.pathname === "/login") {
-        if (role !== UserRole.Student) {
-            return NextResponse.redirect(new URL("/student/list", request.url));
+    if (role !== UserRole.Student) {
+        if (
+            currentUrl.pathname === Route.Login ||
+            [Route.Root, Route.Home]
+                .map(x => x.toString())
+                .includes(currentUrl.pathname)
+        ) {
+            return NextResponse.redirect(
+                new URL(Route.StudentList, request.url)
+            );
         }
-    }
-
-    if (
-        ["/", "/home"].includes(currentUrl.pathname) &&
-        role !== UserRole.Student
-    ) {
-        return NextResponse.redirect(new URL("/student/list", request.url));
     }
 
     return NextResponse.next();

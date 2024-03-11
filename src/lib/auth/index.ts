@@ -1,9 +1,7 @@
-import { type JWTPayload, jwtVerify } from "jose";
+import {jwtVerify, type JWTPayload} from "jose";
 
-export interface MyJwtPayload extends JWTPayload {
-    readonly username: string;
-    readonly role: string;
-}
+export type MyJwtPayload = JWTPayload &
+    Readonly<{username: string; role: string}>;
 
 export function getJwtSecretKey() {
     const secret = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;
@@ -15,7 +13,10 @@ export function getJwtSecretKey() {
 
 export async function verifyJwtToken(token: string) {
     try {
-        const {payload} = await jwtVerify<MyJwtPayload>(token, getJwtSecretKey());
+        const {payload} = await jwtVerify<MyJwtPayload>(
+            token,
+            getJwtSecretKey()
+        );
         return payload;
     } catch (error) {
         return null;

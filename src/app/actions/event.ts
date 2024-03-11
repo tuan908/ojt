@@ -1,9 +1,9 @@
 "use server";
 
-import {Collection} from "@/constants";
-import {astraDb} from "@/lib/db";
+import {CollectionName} from "@/constants";
+import {Astra} from "@/lib/db";
 import {revalidatePath} from "next/cache";
-import {RedirectType, permanentRedirect, redirect} from "next/navigation";
+import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 
 const schema = z.object({
@@ -23,9 +23,7 @@ export async function registerEvent(dto: RegisterStudentEventDto) {
     if (!result.success) {
         console.log(result.error.errors);
     } else {
-        console.log(result.data);
-        const collection = await astraDb.collection(Collection.EventDetail);
-        await collection.insertOne(result.data);
+        await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
         revalidatePath("/event/register");
         redirect("/event/register", RedirectType.push);
     }

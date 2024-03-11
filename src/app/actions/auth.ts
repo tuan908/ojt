@@ -1,10 +1,9 @@
 "use server";
 
-import {Collection, UserRole} from "@/constants";
-import {getJwtSecretKey} from "@/lib/auth";
-import {astraDb} from "@/lib/db";
+import {CollectionName, UserRole} from "@/constants";
+import {Astra} from "@/lib/db";
+import {generateJWT} from "@/lib/utils/jwt";
 import * as argon2 from "argon2";
-import {SignJWT} from "jose";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
@@ -20,17 +19,15 @@ export type AccountDto = {
     role: string;
 };
 
-export type LoginState =
-    | {
-          message: string;
-          user?: Omit<AccountDto, "password">;
-      }
-    | undefined;
+export type LoginState = {
+    message: string;
+    user: Omit<AccountDto, "password"> | null;
+};
 
-export async function login(_: LoginState, formData: FormData) {
+export async function login(_: any, formData: FormData) {
     const schema = z.object({
-        username: z.string().min(1),
-        password: z.string().min(1),
+        username: z.string().min(1, {message: "Please input username"}),
+        password: z.string().min(1, {message: "Please input password"}),
     });
 
     const parse = schema.safeParse({
@@ -39,39 +36,40 @@ export async function login(_: LoginState, formData: FormData) {
     });
 
     if (!parse.success) {
-        return {message: "A required field is missing."};
+        return {
+            user: null,
+            message: {
+                username: parse.error.format().username?._errors[0],
+                password: parse.error.format().password?._errors[0],
+            },
+        };
     }
 
     const data = parse.data;
-    const accountCollection = await astraDb.collection(Collection.Account);
-    const _user = await accountCollection.findOne({
+    const result = await Astra.findOne(CollectionName.Account, {
         username: data.username,
     });
-    if (!_user) {
-        return {message: "Incorrect username or password."};
+    if (!result) {
+        return {message: "Incorrect username or password.", user: null};
     }
-    const user = _user as AccountDto;
+    const user = result as AccountDto;
 
     try {
         if (await argon2.verify(user.password, data.password)) {
-            const token = await new SignJWT({
+            const token = await generateJWT({
                 username: user.username,
                 role: user.role,
-            })
-                .setProtectedHeader({alg: "HS256"})
-                .setIssuedAt()
-                .setExpirationTime("7 days")
-                .sign(getJwtSecretKey());
+            });
             cookies().set({
                 name: "token",
                 value: token,
                 path: "/",
             });
         } else {
-            return {message: "Incorrect username or password."};
+            return {message: "Incorrect username or password.", user: null};
         }
     } catch (error) {
-        return {message: "Incorrect username or password."};
+        return {message: "System Error", user: null};
     }
 
     let redirectPath = "";

@@ -1,15 +1,16 @@
 "use server";
 
-import {Collection} from "@/constants";
-import {astraDb} from "@/lib/db";
+import {CollectionName} from "@/constants";
+import {Astra} from "@/lib/db";
 
-export type ChartLabel = {id: number; name: string; color: string};
 export type Grade = Omit<ChartLabel, "color">;
 
-export async function getChartLabelList(): Promise<ChartLabel[] | null> {
+export async function getChartLabelList() {
     try {
-        const collection = await astraDb.collection(Collection.ChartLabel);
-        const list = await collection.find({}).toArray();
+        const list = await Astra.find(
+            CollectionName.Hashtag,
+            (x: ChartLabel) => x
+        );
         return list;
     } catch (error) {
         console.error(error);
@@ -17,10 +18,9 @@ export async function getChartLabelList(): Promise<ChartLabel[] | null> {
     }
 }
 
-export async function getGradeList(): Promise<Grade[] | null> {
+export async function getGradeList() {
     try {
-        const collection = await astraDb.collection(Collection.Grade);
-        const list = await collection.find({}).toArray();
+        const list = await Astra.find(CollectionName.Hashtag, (x: Grade) => x);
         return list;
     } catch (error) {
         console.error(error);

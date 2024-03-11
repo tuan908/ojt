@@ -1,11 +1,22 @@
 "use server";
 
-import {Collection} from "@/constants";
-import {astraDb} from "@/lib/db";
+import {CollectionName, PAGE_SIZE, SORT_ORDER_ASCENDING} from "@/constants";
+import {Astra} from "@/lib/db";
 
-type Event = Array<{id: number; name: string}>[number];
+type Event = Array<{
+    _id: number;
+    id: string;
+    name: string;
+    status: number;
+    comments: number;
+}>[number];
 
-type Hashtag = Array<{id: number; name: string; color: string}>[number];
+type Hashtag = Array<{
+    _id: number;
+    id: string;
+    name: string;
+    color: string;
+}>[number];
 
 type StudentListResponseDto = Partial<{
     _id: string;
@@ -13,9 +24,8 @@ type StudentListResponseDto = Partial<{
     studentCode: string;
     studentName: string;
     schoolYear: string;
-    events: string;
-    hashtags: string;
-    __v: number;
+    events: Event[];
+    hashtags: Hashtag[];
 }>;
 
 type StudentListRequestDto = {
@@ -33,13 +43,12 @@ type StudentListRequestDto = {
  */
 export async function getStudentList(dto?: StudentListRequestDto) {
     try {
-        const eventCollection = await astraDb.collection(Collection.Event);
-        const list = await eventCollection.find({}).toArray();
-        const result = list.map((x: StudentListResponseDto) => ({
-            ...x,
-            events: x.events ? (JSON.parse(x.events) as Event[]) : [],
-            hashtags: x.hashtags ? (JSON.parse(x.hashtags) as Hashtag[]) : [],
-        }));
+        const result = await Astra.find(
+            CollectionName.StudentEvent,
+            (x: StudentListResponseDto) => x,
+            dto,
+            {limit: PAGE_SIZE, sort: {studentCode: SORT_ORDER_ASCENDING}}
+        );
 
         return result;
     } catch (error: any) {
@@ -51,20 +60,10 @@ export type StudentDto = Awaited<ReturnType<typeof getStudentList>>[number];
 
 export async function getStudentByCode(studentCode: string) {
     try {
-        const eventCollection = await astraDb.collection(Collection.Event);
-        const raw = await eventCollection.findOne({studentCode});
-
-        if (!raw) {
-            return null;
-        } else {
-            return {
-                ...raw,
-                events: raw.events ? (JSON.parse(raw.events) as Event[]) : [],
-                hashtags: raw.hashtags
-                    ? (JSON.parse(raw.hashtags) as Hashtag[])
-                    : [],
-            };
-        }
+        const result = await Astra.findOne(CollectionName.StudentEvent, {
+            studentCode,
+        });
+        return result;
     } catch (error: any) {
         throw new Error(error?.message);
     }
