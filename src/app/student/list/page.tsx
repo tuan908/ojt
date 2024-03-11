@@ -2,10 +2,8 @@
 
 import {getStudentList, type StudentDto} from "@/app/actions/student";
 import ColorHashtag from "@/components/ColorHashtag";
-
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
 import {
@@ -13,20 +11,17 @@ import {
     hideIsLoadingOrFetching,
     showIsLoadingOrFetching,
 } from "@/lib/redux/slice/loadingSlice";
-import Analytics from "@mui/icons-material/Analytics";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import Autocomplete, {
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
-import CircularProgress from "@mui/material/CircularProgress";
 import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {useRouter} from "next/navigation";
-import {Suspense, useEffect, useState, type SyntheticEvent} from "react";
+import {useEffect, useState, type SyntheticEvent} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 export default function Page() {
@@ -129,6 +124,7 @@ export default function Page() {
                     placeholder="Student Name"
                     className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
+                    name="studentName"
                 />
 
                 {/* School's year */}
@@ -157,7 +153,7 @@ export default function Page() {
                             disableRipple
                             disableTouchRipple
                         >
-                            Year {x}
+                            Grade {x}
                         </MenuItem>
                     ))}
                 </Select>
