@@ -1,16 +1,19 @@
 "use server";
 
 import {CollectionName} from "@/constants";
-import {Astra} from "@/lib/db";
+import {sql} from "@/lib/db";
+import {HashtagDto} from "./student";
 
-export type Grade = Omit<ChartLabel, "color">;
+export type GradeDto = {id: number; name: string};
 
-export async function getChartLabelList() {
+export async function getHashtagList() {
     try {
-        const list = await Astra.find(
-            CollectionName.Hashtag,
-            (x: ChartLabel) => x
-        );
+        const list = await sql<HashtagDto[]>`
+            select
+                ${sql("id", "name", "color")}
+            from
+                ${sql(CollectionName.Hashtag)}
+        `;
         return list;
     } catch (error) {
         console.error(error);
@@ -20,7 +23,14 @@ export async function getChartLabelList() {
 
 export async function getGradeList() {
     try {
-        const list = await Astra.find(CollectionName.Hashtag, (x: Grade) => x);
+        const list = await sql<GradeDto[]>`
+            select
+              ${sql("id", "name")}
+            from
+               ${sql(CollectionName.Grade)}
+            where
+                ${sql("is_grade")} = true
+        `;
         return list;
     } catch (error) {
         console.error(error);

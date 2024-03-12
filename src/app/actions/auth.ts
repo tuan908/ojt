@@ -1,7 +1,7 @@
 "use server";
 
 import {CollectionName, UserRole} from "@/constants";
-import {Astra} from "@/lib/db";
+import {sql} from "@/lib/db";
 import {generateJWT} from "@/lib/utils/jwt";
 import * as argon2 from "argon2";
 import {cookies} from "next/headers";
@@ -46,13 +46,18 @@ export async function login(_: any, formData: FormData) {
     }
 
     const data = parse.data;
-    const result = await Astra.findOne(CollectionName.Account, {
-        username: data.username,
-    });
-    if (!result) {
+    const result = await sql<AccountDto[]>`
+        select
+            ${sql("username", "password", "role")}
+        from
+            ${sql(CollectionName.Account)}
+        where
+            username = ${data.username}
+    `;
+    if (result.length === 0) {
         return {message: "Incorrect username or password.", user: null};
     }
-    const user = result as AccountDto;
+    const user = result[0] as AccountDto;
 
     try {
         if (await argon2.verify(user.password, data.password)) {

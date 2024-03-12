@@ -3,7 +3,7 @@ export enum CollectionName {
     Event = "ojt_event",
     StudentEvent = "ojt_student_event",
     StudentEventDetail = "ojt_student_event_detail",
-    Grade = "ojt_student_grade",
+    Grade = "ojt_grade",
     Hashtag = "ojt_hashtag",
 }
 

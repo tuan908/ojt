@@ -24,7 +24,7 @@ import {
 type CheckboxState = {[x: string]: boolean};
 
 export default function Page({params}: {params: {slug: string}}) {
-    const auth = useAuth();
+    const [auth] = useAuth();
     const [response, setData] = useState<{
         data: StudentDto | null;
         errors: unknown[];
@@ -63,7 +63,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
-            {(auth as AccountDto)?.role === "Student" ? (
+            {auth && auth?.role === "Student" ? (
                 <div className="w-24/25 m-auto flex items-center pb-3">
                     <Link
                         href="/event/register"
@@ -79,7 +79,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
                 {/* Student Info */}
                 <>
-                    {(auth as AccountDto)?.role !== "001" ? (
+                    {auth && auth.role !== "001" ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
                                 <span>{response.data?.studentName}</span>
@@ -211,11 +211,11 @@ export default function Page({params}: {params: {slug: string}}) {
                     <table className="w-full border border-table border-collapse align-middle">
                         <thead>
                             <tr className="bg-[#3f51b5] text-[#fffffc]">
-                                <TableHead>School Year</TableHead>
-                                <TableHead>Event</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Notification</TableHead>
-                                <TableHead>Action</TableHead>
+                                <TableHead widthInRem={0}>School Year</TableHead>
+                                <TableHead widthInRem={0}>Event</TableHead>
+                                <TableHead widthInRem={0}>Status</TableHead>
+                                <TableHead widthInRem={0}>Notification</TableHead>
+                                <TableHead widthInRem={0}>Action</TableHead>
                             </tr>
                         </thead>
                         <tbody>

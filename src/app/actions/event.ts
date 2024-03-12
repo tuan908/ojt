@@ -1,7 +1,5 @@
 "use server";
 
-import {CollectionName} from "@/constants";
-import {Astra} from "@/lib/db";
 import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
@@ -23,7 +21,7 @@ export async function registerEvent(dto: RegisterStudentEventDto) {
     if (!result.success) {
         console.log(result.error.errors);
     } else {
-        await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
+        // await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
         revalidatePath("/event/register");
         redirect("/event/register", RedirectType.push);
     }

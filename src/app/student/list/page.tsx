@@ -1,6 +1,14 @@
 "use client";
 
-import {getStudentList, type StudentDto} from "@/app/actions/student";
+import {
+    EventDto,
+    HashtagDto,
+    StudentListRequestDto,
+    getEventList,
+    getStudentList,
+    type StudentDto,
+} from "@/app/actions/student";
+import {GradeDto, getGradeList, getHashtagList} from "@/app/actions/tracking";
 import ColorHashtag from "@/components/ColorHashtag";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
@@ -11,6 +19,7 @@ import {
     hideIsLoadingOrFetching,
     showIsLoadingOrFetching,
 } from "@/lib/redux/slice/loadingSlice";
+import {MaybeNull} from "@/types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import Autocomplete, {
@@ -24,19 +33,57 @@ import TextField from "@mui/material/TextField";
 import {useEffect, useState, type SyntheticEvent} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
+type DropdownOption = MaybeNull<{
+    grade: GradeDto[];
+    event: EventDto[];
+    hashtag: HashtagDto[];
+}>;
+
 export default function Page() {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
-    const [skills, setSkills] = useState<string[]>([]);
+    const [skills, setSkills] = useState<Array<{label: string; color: string}>>(
+        []
+    );
     const [inputValue, setInputValue] = useState("");
-    const [rows, setList] = useState<StudentDto[]>([]);
+    const [rows, setRows] = useState<StudentDto[]>([]);
+    const [searchOptions, setOptions] = useState<DropdownOption>({
+        event: null,
+        grade: null,
+        hashtag: null,
+    });
     const isFetching = useAppSelector(getLoadingOrFetchingState);
+    const [searchCondition, setCondition] = useState<StudentListRequestDto>({});
 
     async function init() {
         await dispatch(showIsLoadingOrFetching());
         try {
-            const data = await getStudentList();
-            setList(data);
+            const promises = await Promise.allSettled([
+                getGradeList(),
+                getEventList(),
+                getHashtagList(),
+                getStudentList(),
+            ]);
+
+            if (promises[0].status === "fulfilled") {
+                const grade = promises[0].value;
+                setOptions(x => ({...x, grade}));
+            }
+
+            if (promises[1].status === "fulfilled") {
+                const event = promises[1].value;
+                setOptions(x => ({...x, event}));
+            }
+
+            if (promises[2].status === "fulfilled") {
+                const hashtag = promises[2].value;
+                setOptions(x => ({...x, hashtag}));
+            }
+
+            if (promises[3].status === "fulfilled") {
+                const data = promises[3].value;
+                setRows(data);
+            }
         } catch (error: any) {
             throw new Error(error?.message);
         }
@@ -84,25 +131,61 @@ export default function Page() {
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
-        if (typeof _value === "string" && !skills.includes(_value)) {
-            setSkills([...skills, _value]);
+        if (
+            typeof _value === "string" &&
+            !skills.find(x => x.label === _value)
+        ) {
+            const hashtag = searchOptions?.hashtag?.find(
+                x => x.name === _value
+            );
+            setSkills([
+                ...skills,
+                {label: hashtag?.name!, color: hashtag?.color!},
+            ]);
         }
 
-        if (typeof _value === "object" && !skills.includes(_value.label)) {
-            setSkills([...skills, _value.label]);
+        if (
+            typeof _value === "object" &&
+            !skills.find(x => x.label === _value.label)
+        ) {
+            const hashtag = searchOptions?.hashtag?.find(
+                x => x.id === _value.id
+            );
+            setSkills([
+                ...skills,
+                {label: hashtag?.name!, color: hashtag?.color!},
+            ]);
         }
 
         if (reason === "selectOption" && open) {
             setOpen(false);
         }
+
+        setCondition(x => ({
+            ...x,
+            hashtags: skills.map(skill => skill.label).join(","),
+        }));
     }
 
     async function handleSearch(event: SyntheticEvent) {
         event?.preventDefault();
         await dispatch(showIsLoadingOrFetching());
         try {
-            const data = await getStudentList();
-            setList(data);
+            let request: StudentListRequestDto = {};
+            if (searchCondition.schoolYear !== "All Grade") {
+                request.schoolYear = searchCondition.schoolYear;
+            }
+
+            if (searchCondition.events !== "All Event") {
+                request.events = searchCondition.events;
+            }
+
+            const data = await getStudentList({
+                ...request,
+                hashtags: searchCondition.hashtags,
+                studentName: searchCondition.studentName,
+            });
+            setRows(data);
         } catch (error: any) {
             throw new Error(error?.message);
         }
@@ -125,14 +208,23 @@ export default function Page() {
                     className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     name="studentName"
+                    onChange={e =>
+                        setCondition(x => ({
+                            ...x,
+                            [e.target.name]: e.target.value,
+                        }))
+                    }
                 />
 
                 {/* School's year */}
                 <Select
                     variant="standard"
                     className="w-56"
-                    placeholder="School Year"
-                    defaultValue="School Year"
+                    defaultValue="All Grade"
+                    name="schoolYear"
+                    onChange={e =>
+                        setCondition(x => ({...x, schoolYear: e.target.value}))
+                    }
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     MenuProps={{
                         slotProps: {
@@ -145,24 +237,30 @@ export default function Page() {
                         },
                     }}
                 >
-                    <MenuItem value="School Year">School Year</MenuItem>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem
-                            key={x}
-                            value={x}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            Grade {x}
-                        </MenuItem>
-                    ))}
+                    <MenuItem value="All Grade">All Grade</MenuItem>
+                    {searchOptions.grade
+                        ? searchOptions.grade.map(x => (
+                              <MenuItem
+                                  key={x.id}
+                                  value={x.name}
+                                  disableRipple
+                                  disableTouchRipple
+                              >
+                                  {x.name}
+                              </MenuItem>
+                          ))
+                        : []}
                 </Select>
 
                 {/* Event */}
                 <Select
                     variant="standard"
                     className="w-56"
-                    defaultValue="Event"
+                    name="event"
+                    defaultValue="All Event"
+                    onChange={e =>
+                        setCondition(x => ({...x, events: e.target.value}))
+                    }
                     sx={{
                         bgcolor: "#ffffff",
                         paddingX: 1,
@@ -182,17 +280,19 @@ export default function Page() {
                     }}
                     suppressContentEditableWarning
                 >
-                    <MenuItem value="Event">Event</MenuItem>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
-                        <MenuItem
-                            key={x}
-                            value={x}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            Event {x}
-                        </MenuItem>
-                    ))}
+                    <MenuItem value="All Event">All Event</MenuItem>
+                    {searchOptions.event
+                        ? searchOptions.event.map(x => (
+                              <MenuItem
+                                  key={x.id}
+                                  value={x.name}
+                                  disableRipple
+                                  disableTouchRipple
+                              >
+                                  {x.name}
+                              </MenuItem>
+                          ))
+                        : []}
                 </Select>
 
                 {/* Hashtag */}
@@ -205,11 +305,14 @@ export default function Page() {
                             paddingX: 1,
                         },
                     }}
-                    options={[
-                        {label: "#independence", id: "0"},
-                        {label: "#ability to quickly grasp", id: "1"},
-                        {label: "#discipline", id: "2"},
-                    ]}
+                    options={
+                        searchOptions.hashtag
+                            ? searchOptions.hashtag.map(x => ({
+                                  id: x.id,
+                                  label: x.name,
+                              }))
+                            : []
+                    }
                     renderInput={params => (
                         <TextField
                             {...params}
@@ -251,9 +354,9 @@ export default function Page() {
                         key={`skill#${index}`}
                         onRemove={() => handleRemoveHashtag(index)}
                         index={index}
-                        color="#fb706c"
+                        color={skill.color}
                     >
-                        {skill}
+                        {skill.label}
                     </ColorHashtag>
                 ))}
             </div>

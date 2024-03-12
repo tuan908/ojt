@@ -1,11 +1,11 @@
-import {getChartLabelList, getGradeList} from "@/app/actions/tracking";
+import {getHashtagList, getGradeList} from "@/app/actions/tracking";
 import Card from "@/components/Card";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";
 import Avatar from "@mui/material/Avatar";
 
 export default async function Page() {
-    const labelList = await getChartLabelList();
+    const labelList = await getHashtagList();
     const gradeList = await getGradeList();
 
     return (

@@ -12,7 +12,6 @@
     "format": "prettier \"src/**/*.{ts,tsx}\" --write --ignore-unknown"
   },
   "dependencies": {
-    "@datastax/astra-db-ts": "^0.1.4",
     "@emoji-mart/data": "^1.1.2",
     "@emoji-mart/react": "^1.1.1",
     "@reduxjs/toolkit": "^2.2.1",
