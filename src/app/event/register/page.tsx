@@ -4,7 +4,7 @@ import {
     addComment,
     registerEvent,
     type CommentDto,
-    type RegisterStudentEventDto,
+    type RegisterEventDto,
 } from "@/app/actions/event";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 
@@ -26,7 +26,7 @@ import {useState, type ComponentProps, type SyntheticEvent} from "react";
 import "./register.css";
 
 export default function Page() {
-    const [registerData, setData] = useState<RegisterStudentEventDto>({
+    const [registerData, setData] = useState<RegisterEventDto>({
         eventName: "",
         eventsInSchoolLife: "",
         myAction: "",

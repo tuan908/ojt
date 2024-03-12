@@ -2,7 +2,7 @@
 
 import {CollectionName} from "@/constants";
 import {sql} from "@/lib/db";
-import {HashtagDto} from "./student";
+import {type HashtagDto} from "./student";
 
 export type GradeDto = {id: number; name: string};
 

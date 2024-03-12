@@ -4,7 +4,7 @@ import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 
-const schema = z.object({
+const registerEventSchema = z.object({
     eventName: z.string(),
     eventsInSchoolLife: z.string(),
     myAction: z.string(),
@@ -13,14 +13,15 @@ const schema = z.object({
     myThought: z.string(),
 });
 
-export type RegisterStudentEventDto = z.infer<typeof schema>;
+export type RegisterEventDto = z.infer<typeof registerEventSchema>;
 
-export async function registerEvent(dto: RegisterStudentEventDto) {
-    const result = await schema.safeParseAsync(dto);
+export async function registerEvent(dto: RegisterEventDto) {
+    const result = await registerEventSchema.safeParseAsync(dto);
 
     if (!result.success) {
         console.log(result.error.errors);
     } else {
+        // TODO: use postgres's insert here
         // await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
         revalidatePath("/event/register");
         redirect("/event/register", RedirectType.push);

@@ -5,6 +5,7 @@ export enum CollectionName {
     StudentEventDetail = "ojt_student_event_detail",
     Grade = "ojt_grade",
     Hashtag = "ojt_hashtag",
+    StudentHashTag = "ojt_student_hashtag",
 }
 
 export enum UserRole {

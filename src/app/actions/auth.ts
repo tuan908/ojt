@@ -8,11 +8,6 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
 
-export async function logOut() {
-    cookies().delete("token");
-    redirect("/login");
-}
-
 export type AccountDto = {
     username: string;
     password: string;
@@ -85,4 +80,9 @@ export async function login(_: any, formData: FormData) {
         redirectPath = `/student/ST0001`;
     }
     redirect(redirectPath);
+}
+
+export async function logOut() {
+    cookies().delete("token");
+    redirect("/login");
 }
