@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping(path = "/api/v1/event/**")
+@RequestMapping(path = "/api/v1/event")
 @RequiredArgsConstructor
 public class EventController {
 

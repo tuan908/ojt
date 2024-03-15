@@ -16,17 +16,23 @@ public class AccountServiceImpl implements AccountService {
   public AccountDto getOneBy(AccountDto request) {
     var qlString = """
           select
-            new com.tuanna.ojt.api.account.AccountDto(a.id, a.name, a.username, a.password, a.role)
+            a
           from
             com.tuanna.ojt.api.account.Account a
           where
             a.username = ?1
         """;
 
-    var query = this.em.createQuery(qlString, AccountDto.class);
+    var query = this.em.createQuery(qlString, Account.class);
     query.setParameter(1, request.username());
 
-    var result = query.getResultStream().findFirst().orElse(null);
+    AccountDto result = null;
+    var queryResult = query.getResultStream().findFirst().orElse(null);
+
+    if (queryResult != null) {
+      result = new AccountDto(queryResult.getId(), null, queryResult.getName(),
+          queryResult.getUsername(), queryResult.getPassword(), queryResult.getRole());
+    }
 
     return result;
 
