@@ -2,6 +2,7 @@ package com.tuanna.ojt.api.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -14,16 +15,10 @@ public abstract class BaseEntity implements Serializable {
 
   private static final long serialVersionUID = -6447104920246140053L;
 
-  @Column(name = "created_on", columnDefinition = "TIMESTAMP(6) DEFAULT NOW()", updatable = false)
-  private LocalDateTime createdOn;
+  @Column(nullable = false, updatable = false)
+  private LocalDateTime createAt;
 
-  @Column(name = "created_by", updatable = false)
-  private String createdBy;
-
-  @Column(name = "updated_on", columnDefinition = "TIMESTAMP(6) DEFAULT NOW()")
-  private LocalDateTime updatedOn;
-
-  @Column(name = "updated_by")
-  private String updatedBy;
+  @Column(nullable = false)
+  private LocalDateTime updatedAt;
 
 }

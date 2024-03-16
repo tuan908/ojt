@@ -1,12 +1,27 @@
 package com.tuanna.ojt.api.entity;
 
-import com.tuanna.ojt.api.constants.AccountRole;
-import com.tuanna.ojt.api.constants.converter.AccountRoleConverter;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
+
+import com.tuanna.ojt.api.constants.UserRole;
+import com.tuanna.ojt.api.constants.converter.UserRoleConverter;
+import com.tuanna.ojt.api.dto.UserDto;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,23 +36,41 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@NaturalIdCache
 public class User extends BaseEntity {
 
   private static final long serialVersionUID = -5925025823115269763L;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  
+
+  @Column(columnDefinition = "text")
+  private String code;
+
   @Column(columnDefinition = "text")
   private String name;
-  
-  @Convert(converter = AccountRoleConverter.class)
-  private AccountRole role;
-  
-  @OneToOne(mappedBy = "user")
-  private Account account;
-  
-  
+
+  @Column(unique = true, nullable = false, columnDefinition = "text")
+  @NaturalId
+  private String username;
+
+  @Column(nullable = false, columnDefinition = "text")
+  private String password; // Hashed password
+
+  @Convert(converter = UserRoleConverter.class)
+  @Column(columnDefinition = "text")
+  private UserRole role;
+
+  @ManyToMany(cascade = {
+      CascadeType.PERSIST,
+      CascadeType.MERGE
+  })
+  @JoinTable(name = "user_hashtag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
+  @Builder.Default
+  private Set<Hashtag> hashtags = new HashSet<>();
+
   @Override
   public boolean equals(final Object o) {
     if (o == this)
@@ -51,5 +84,10 @@ public class User extends BaseEntity {
   @Override
   public int hashCode() {
     return this.getClass().hashCode();
+  }
+
+  public UserDto toDto() {
+    var dto = new UserDto(this.id, this.name, this.username, this.role.getValue());
+    return dto;
   }
 }
