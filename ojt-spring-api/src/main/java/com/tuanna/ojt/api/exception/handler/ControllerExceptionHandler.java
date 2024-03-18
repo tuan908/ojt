@@ -12,12 +12,12 @@ import com.tuanna.ojt.api.exception.ResultNotFoundException;
 @RestControllerAdvice(annotations = RestController.class)
 public class ControllerExceptionHandler {
 
-    @ExceptionHandler(value = {ResultNotFoundException.class})
-    public ResponseEntity<?> handle(ResultNotFoundException ex) {
-        var responseBody = ErrorResponse.builder().code(ExceptionCode.ResultNotFound.getValue())
-                .title("Resource Not Found").message(ex.getMessage()).build();
+  @ExceptionHandler(value = {ResultNotFoundException.class})
+  public ResponseEntity<?> handle(ResultNotFoundException ex) {
+    var responseBody = ErrorResponse.builder().code(ExceptionCode.ResultNotFound.getValue())
+        .title("No data found").message(ex.getMessage()).build();
 
-        return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
-    }
+    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+  }
 
 }

@@ -5,10 +5,10 @@ import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,18 +26,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StudentEvent extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  private static final long serialVersionUID = 1025932825083679424L;
 
-    @ManyToOne()
-    @JoinColumn(name = "student_id")
-    private User student;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @ManyToOne()
-    @JoinColumn(name = "event_id")
-    private Event event;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Event detail;
 
-    @Convert(converter = EventStatusConverter.class)
-    private EventStatus eventStatus;
+  @Convert(converter = EventStatusConverter.class)
+  private EventStatus status;
+
 }

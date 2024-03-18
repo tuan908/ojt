@@ -1,27 +1,18 @@
 package com.tuanna.ojt.api.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
-
 import com.tuanna.ojt.api.constants.UserRole;
 import com.tuanna.ojt.api.constants.converter.UserRoleConverter;
 import com.tuanna.ojt.api.dto.UserDto;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,9 +38,6 @@ public class User extends BaseEntity {
   private Long id;
 
   @Column(columnDefinition = "text")
-  private String code;
-
-  @Column(columnDefinition = "text")
   private String name;
 
   @Column(unique = true, nullable = false, columnDefinition = "text")
@@ -62,14 +50,6 @@ public class User extends BaseEntity {
   @Convert(converter = UserRoleConverter.class)
   @Column(columnDefinition = "text")
   private UserRole role;
-
-  @ManyToMany(cascade = {
-      CascadeType.PERSIST,
-      CascadeType.MERGE
-  })
-  @JoinTable(name = "user_hashtag", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
-  @Builder.Default
-  private Set<Hashtag> hashtags = new HashSet<>();
 
   @Override
   public boolean equals(final Object o) {
@@ -90,4 +70,5 @@ public class User extends BaseEntity {
     var dto = new UserDto(this.id, this.name, this.username, this.role.getValue());
     return dto;
   }
+
 }

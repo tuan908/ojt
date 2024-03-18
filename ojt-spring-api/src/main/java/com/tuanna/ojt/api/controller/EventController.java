@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuanna.ojt.api.dto.EventDto;
-import com.tuanna.ojt.api.dto.EventRequestDto;
+import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.service.EventService;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ public class EventController {
 
   @PostMapping("/all")
   public ResponseEntity<List<EventDto>> getAll(
-      final EventRequestDto eventRequestDto) {
+      final StudentEventRequestDto eventRequestDto) {
     var body = this.eventService.getAll(eventRequestDto);
     return ResponseEntity.ok().body(body);
   }

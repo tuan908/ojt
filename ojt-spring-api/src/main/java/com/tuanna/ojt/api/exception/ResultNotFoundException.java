@@ -7,4 +7,8 @@ public class ResultNotFoundException extends Exception {
     public ResultNotFoundException(String s) {
         super(s);
     }
+
+    public ResultNotFoundException() {
+      // TODO Auto-generated constructor stub
+    }
 }
