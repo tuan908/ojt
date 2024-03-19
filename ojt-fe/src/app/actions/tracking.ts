@@ -2,7 +2,7 @@
 
 import {CollectionName} from "@/constants";
 import {sql} from "@/lib/db";
-import {type HashtagDto} from "./student";
+import {type HashtagDto} from "@/types/student.types";
 
 export type GradeDto = {id: number; name: string};
 
@@ -28,8 +28,6 @@ export async function getGradeList() {
               ${sql("id", "name")}
             from
                ${sql(CollectionName.Grade)}
-            where
-                ${sql("is_grade")} = true
         `;
         return list;
     } catch (error) {

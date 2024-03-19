@@ -40,3 +40,5 @@ export enum Route {
     Root = "/",
     Home = "/home",
 }
+
+export const STRING_EMPTY = "";

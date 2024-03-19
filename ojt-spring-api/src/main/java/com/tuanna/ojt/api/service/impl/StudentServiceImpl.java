@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -12,15 +13,15 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import com.tuanna.ojt.api.dto.EventDetailDto;
-import com.tuanna.ojt.api.dto.EventDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
-import com.tuanna.ojt.api.dto.StudentEventDetailResponseDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.service.StudentService;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -49,14 +50,14 @@ public class StudentServiceImpl implements StudentService {
                 1 = 1
                 """;
 
-    if (StringUtils.hasText(dto.studentName())) {
+    if (StringUtils.hasText(dto.name())) {
       qlString += " and s.name = :studentName";
-      parameters.put("studentName", dto.studentName());
+      parameters.put("studentName", dto.name());
     }
 
-    if (StringUtils.hasText(dto.schoolYear())) {
-      qlString += " and s.gradeLevel = :gradeLevel";
-      parameters.put("gradeLevel", dto.schoolYear());
+    if (StringUtils.hasText(dto.grade())) {
+      qlString += " and s.grade.name = :grade";
+      parameters.put("grade", dto.grade());
     }
 
     if (StringUtils.hasText(dto.event())) {
@@ -68,6 +69,8 @@ public class StudentServiceImpl implements StudentService {
       qlString += " and element(s.hashtagList).name in :hashtagList ";
       parameters.put("hashtagList", dto.hashtags());
     }
+
+    qlString += " order by s.code  ";
 
     var query = this.entityManager.createQuery(qlString, Student.class);
 
@@ -81,18 +84,23 @@ public class StudentServiceImpl implements StudentService {
       .map(student -> {
           var events = student.getEventList().stream()
             .map(event -> {
-                var eventDto = new EventDto(event.getId(), event.getDetail().getName());
+                var eventDto = new EventDetailDto(
+                  event.getId(),
+                  event.getDetail().getName(),
+                  event.getStatus().getValue(),
+                  event.getComments().stream().map(Comment::toDto).toList()
+                );
                 return eventDto;
               })
             .toList();
-          
+
           List<HashtagDto> hashtags = student.getHashtagList().stream()
             .map(hashtag -> {
                 var hashtagDto = new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor());
                 return hashtagDto;
               })
             .toList();
-          
+
           var responseDto = new StudentEventResponseDto(
                 student.getCode(),
                 student.getName(),
@@ -111,7 +119,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public StudentEventDetailResponseDto getByCode(String code) {
+  public StudentEventResponseDto getByCode(String code) {
     var qlString = """
         select
                 s
@@ -137,9 +145,9 @@ public class StudentServiceImpl implements StudentService {
               .toList();
 
             var eventDto = new EventDetailDto(
-                event.getId(), 
+                event.getId(),
                 event.getDetail().getName(),
-                event.getStatus().getValue(), 
+                event.getStatus().getValue(),
                 eventComments
             );
             return eventDto;
@@ -149,8 +157,8 @@ public class StudentServiceImpl implements StudentService {
       var hashtags = student.getHashtagList().stream()
         .map(hashtag -> {
             var hashtagDto = new HashtagDto(
-              hashtag.getId(), 
-              hashtag.getName(), 
+              hashtag.getId(),
+              hashtag.getName(),
               hashtag.getColor()
             );
             return hashtagDto;
@@ -158,8 +166,8 @@ public class StudentServiceImpl implements StudentService {
         .toList();
       // @formatter:on
 
-      var result =
-          new StudentEventDetailResponseDto(student.getCode(), student.getName(), events, hashtags);
+      var result = new StudentEventResponseDto(student.getCode(), student.getName(), student.getGrade().getName(),
+          events, hashtags);
       return result;
     }
     return null;

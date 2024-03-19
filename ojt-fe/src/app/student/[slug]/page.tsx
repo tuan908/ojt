@@ -1,12 +1,11 @@
 "use client";
 
-import {type AccountDto} from "@/app/actions/auth";
-import {StudentDto} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import TableHead from "@/components/TableHead";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
+import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Search from "@mui/icons-material/Search";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -26,7 +25,7 @@ type CheckboxState = {[x: string]: boolean};
 export default function Page({params}: {params: {slug: string}}) {
     const [auth] = useAuth();
     const [response, setData] = useState<{
-        data: StudentDto | null;
+        data: StudentResponseDto | null;
         errors: unknown[];
         isFetching: boolean;
     }>({data: null, errors: [], isFetching: true});
@@ -41,7 +40,7 @@ export default function Page({params}: {params: {slug: string}}) {
             `${process.env["NEXT_PUBLIC_URL"]}/api/student/${params.slug}`
         );
         const body = (await res.json()) as {
-            data: StudentDto | null;
+            data: StudentResponseDto | null;
             errors: unknown[];
         };
         setData({...body, isFetching: false});
@@ -82,9 +81,9 @@ export default function Page({params}: {params: {slug: string}}) {
                     {auth && auth.role !== "001" ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
-                                <span>{response.data?.studentName}</span>
-                                <span>({response?.data?.studentCode})</span>
-                                <span>{response?.data?.schoolYear}</span>
+                                <span>{response.data?.name}</span>
+                                <span>({response?.data?.code})</span>
+                                <span>{response?.data?.grade}</span>
                             </div>
                         </>
                     ) : null}
@@ -211,10 +210,14 @@ export default function Page({params}: {params: {slug: string}}) {
                     <table className="w-full border border-table border-collapse align-middle">
                         <thead>
                             <tr className="bg-[#3f51b5] text-[#fffffc]">
-                                <TableHead widthInRem={0}>School Year</TableHead>
+                                <TableHead widthInRem={0}>
+                                    School Year
+                                </TableHead>
                                 <TableHead widthInRem={0}>Event</TableHead>
                                 <TableHead widthInRem={0}>Status</TableHead>
-                                <TableHead widthInRem={0}>Notification</TableHead>
+                                <TableHead widthInRem={0}>
+                                    Notification
+                                </TableHead>
                                 <TableHead widthInRem={0}>Action</TableHead>
                             </tr>
                         </thead>

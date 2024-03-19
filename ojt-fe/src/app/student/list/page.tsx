@@ -5,7 +5,7 @@ import {GradeDto, getGradeList, getHashtagList} from "@/app/actions/tracking";
 import ColorHashtag from "@/components/ColorHashtag";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
 import {
     getLoadingOrFetchingState,
@@ -103,8 +103,8 @@ export default function Page() {
         if (_value !== null) {
             switch (true) {
                 case typeof _value === "string":
-                    setInputValue(_value);
-                    if (_value.startsWith("#")) {
+                    setInputValue(_value.trim());
+                    if (_value.trim().startsWith("#")) {
                         setOpen(true);
                     }
                     break;
@@ -119,7 +119,7 @@ export default function Page() {
         }
 
         if (reason === "reset") {
-            setInputValue("");
+            setInputValue(STRING_EMPTY);
             setOpen(false);
         }
     }
@@ -132,7 +132,7 @@ export default function Page() {
         event?.preventDefault();
         if (
             typeof _value === "string" &&
-            !skills.find(x => x.label === _value)
+            !skills.find(x => x.label === _value.trim())
         ) {
             const hashtag = searchOptions?.hashtag?.find(
                 x => x.name === _value
@@ -158,21 +158,24 @@ export default function Page() {
 
         if (reason === "selectOption" && open) {
             setOpen(false);
+            if (inputValue !== STRING_EMPTY) setInputValue(STRING_EMPTY);
         }
-
-        setCondition(x => ({
-            ...x,
-            hashtags: skills.map(skill => skill.label),
-        }));
     }
+
+    useEffect(() => {
+        setCondition({
+            ...searchCondition,
+            hashtags: skills.map(skill => skill.label),
+        });
+    }, [skills]);
 
     async function handleSearch(event: SyntheticEvent) {
         event?.preventDefault();
         await dispatch(showIsLoadingOrFetching());
         try {
             let request: StudentListRequestDto = {};
-            if (searchCondition.schoolYear !== "All Grade") {
-                request.schoolYear = searchCondition.schoolYear;
+            if (searchCondition.grade !== "All Grade") {
+                request.grade = searchCondition.grade;
             }
 
             if (searchCondition.events !== "All Event") {
@@ -182,7 +185,7 @@ export default function Page() {
             const data = await getStudentList({
                 ...request,
                 hashtags: searchCondition.hashtags,
-                studentName: searchCondition.studentName,
+                name: searchCondition.name,
             });
             setRows(data.content);
         } catch (error: any) {
@@ -222,7 +225,7 @@ export default function Page() {
                     defaultValue="All Grade"
                     name="schoolYear"
                     onChange={e =>
-                        setCondition(x => ({...x, schoolYear: e.target.value}))
+                        setCondition(x => ({...x, grade: e.target.value}))
                     }
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     MenuProps={{

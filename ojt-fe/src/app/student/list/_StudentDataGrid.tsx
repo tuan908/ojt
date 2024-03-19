@@ -66,12 +66,11 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                 ? rows.map(item => {
                                       return (
                                           <TableRow
-                                              key={item.id}
+                                              key={item.code}
                                               onDoubleClick={e =>
                                                   handleRowClick({
                                                       e,
-                                                      studentCode:
-                                                          item.studentCode,
+                                                      studentCode: item.code,
                                                   })
                                               }
                                           >
@@ -79,19 +78,19 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                                   alignTextCenter
                                                   widthInRem={9.141}
                                               >
-                                                  {item.studentCode}
+                                                  {item.code}
                                               </TableCell>
                                               <TableCell
                                                   alignTextCenter
                                                   widthInRem={9.616}
                                               >
-                                                  {item.studentName}
+                                                  {item.name}
                                               </TableCell>
                                               <TableCell
                                                   alignTextCenter
                                                   widthInRem={8.171}
                                               >
-                                                  {item.schoolYear}
+                                                  {item.grade}
                                               </TableCell>
                                               <TableCell
                                                   fontSemibold
@@ -129,7 +128,7 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                                       handleCellClick({
                                                           e,
                                                           studentCode:
-                                                              item.studentCode,
+                                                              item.code,
                                                       })
                                                   }
                                                   widthInRem={6.173}

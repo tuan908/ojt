@@ -16,11 +16,14 @@ export async function getStudentList(
     dto?: StudentListRequestDto
 ): Promise<Page<StudentResponseDto>> {
     try {
-        const body = JSON.stringify(dto);
+        const body = !!dto ? JSON.stringify(dto) : JSON.stringify({});
 
         const res = await fetch(process.env["SPRING_API"] + "/student", {
             method: "POST",
             body,
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
         const result = await res.json();
         return result;

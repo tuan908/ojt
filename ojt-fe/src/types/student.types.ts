@@ -15,16 +15,16 @@ type HashtagDto = Array<{
 
 type StudentResponseDto = Partial<{
     id: number;
-    studentCode: string;
-    studentName: string;
-    schoolYear: string;
+    code: string;
+    name: string;
+    grade: string;
     events: EventDto[];
     hashtags: HashtagDto[];
 }>;
 
 type StudentListRequestDto = MaybeUndefined<{
-    studentName: string;
-    schoolYear: string;
+    name: string;
+    grade: string;
     events: string;
     hashtags: string[];
 }>;
