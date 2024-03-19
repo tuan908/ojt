@@ -1,6 +1,6 @@
 package com.tuanna.ojt.api.entity;
 
-import jakarta.persistence.CascadeType;
+import com.tuanna.ojt.api.dto.CommentDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,37 +22,38 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment extends BaseEntity {
-    private static final long serialVersionUID = 5581420110882356388L;
+  private static final long serialVersionUID = 5581420110882356388L;
 
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-	
-	@OneToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String content;
+  @OneToOne
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User user;
 
-    private Boolean isDeleted;
-    
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "student_event_id", referencedColumnName = "id")
-    private StudentEvent studentEvent;
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof final Comment c)) {
-            return false;
-        }
-        return this.id != null && this.id.equals(c.getId());
+  private String content;
+
+  private Boolean isDeleted;
+
+  @Override
+  public boolean equals(final Object o) {
+    if (o == this)
+      return true;
+    if (!(o instanceof final Comment c)) {
+      return false;
     }
+    return this.id != null && this.id.equals(c.getId());
+  }
 
-    @Override
-    public int hashCode() {
-        return this.getClass().hashCode();
-    }
+  @Override
+  public int hashCode() {
+    return this.getClass().hashCode();
+  }
+
+  public CommentDto toDto() {
+    return new CommentDto(this.getId(), this.getUser().getName(), this.getCreatedAt(),
+        this.getIsDeleted());
+  }
 
 }

@@ -1,16 +1,16 @@
 "use client";
 
-import {type StudentDto} from "@/app/actions/student";
 import ColorTextHashtag from "@/components/ColorTextHashtag";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
+import type {StudentResponseDto} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
 import {Suspense, type SyntheticEvent} from "react";
 
-export default function StudentDataGrid({rows}: {rows: StudentDto[]}) {
+export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
     const router = useRouter();
 
     const handleRowClick = ({

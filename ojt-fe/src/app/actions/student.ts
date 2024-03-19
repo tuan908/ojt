@@ -1,146 +1,54 @@
 "use server";
 
-import {CollectionName} from "@/constants";
-import {sql} from "@/lib/db";
-import {type MaybeUndefined} from "@/types";
-
-type EventDto = Array<{
-    id: string;
-    name: string;
-    status: number;
-    comments: number;
-}>[number];
-
-type HashtagDto = Array<{
-    id: string;
-    name: string;
-    color: string;
-}>[number];
-
-type StudentListResponseDto = Partial<{
-    id: number;
-    studentCode: string;
-    studentName: string;
-    schoolYear: string;
-    event: string;
-    hashtag: string;
-}>;
-
-type StudentListRequestDto = MaybeUndefined<{
-    studentName: string;
-    schoolYear: string;
-    events: string;
-    hashtags: string;
-}>;
-
-type StudentDto = Awaited<ReturnType<typeof getStudentList>>[number];
+import type {
+    EventDto,
+    Page,
+    StudentListRequestDto,
+    StudentResponseDto,
+} from "@/types/student.types";
 
 /**
  * Get Student List By Conditions
  * @param dto Request Dto
  * @returns Student List
  */
-export async function getStudentList(dto?: StudentListRequestDto) {
+export async function getStudentList(
+    dto?: StudentListRequestDto
+): Promise<Page<StudentResponseDto>> {
     try {
-        let qlString = `
-            select
-                distinct oa."code" as "studentCode", oa."name" as "studentName", oa."role", ose.event_id as "eventId"
-            from
-                ojt_student_event ose
-            join ojt_account oa on
-                oa."id" = ose."student_id"
-            where
-                1 = 1
-        `;
+        const body = JSON.stringify(dto);
 
-        if (dto?.studentName) {
-            qlString += ` and oa."name" = ${dto.studentName} `;
-        }
-
-        let studentList = await sql.unsafe<
-            {
-                id: number;
-                studentCode: string;
-                studentName: string;
-                eventId: string;
-            }[]
-        >(qlString);
-        qlString = "";
-        studentList.forEach(async element => {
-            qlString = `
-                    select
-                        oe.id, oe.name
-                    from
-                        ojt_event oe
-                    where
-                        oe.id = ${element.eventId}
-                `;
-            const data =
-                await sql.unsafe<{id: number; name: string}[]>(qlString);
-            console.log(data);
+        const res = await fetch(process.env["SPRING_API"] + "/student", {
+            method: "POST",
+            body,
         });
-
-        if (dto?.schoolYear) {
-            qlString += ` and og.grade = ${dto.schoolYear} `;
-        }
-
-        if (dto?.events) {
-            qlString += ` and oe."name" = ${dto.events} `;
-        }
-
-        const result = await sql.unsafe<StudentListResponseDto[]>(qlString);
-
+        const result = await res.json();
         return result;
     } catch (error: any) {
         throw new Error(error?.message);
     }
 }
 
-export async function getStudentByCode(studentCode: string) {
+export async function getStudentByCode(
+    studentCode: string
+): Promise<StudentResponseDto | null> {
     try {
-        let qlString = `
-            select
-                oa."code" as "studentCode"
-                , oa."name" as "studentName"
-                , oe."name" as "events"
-                , oh."name" as "hashtags"
-                , og."name" as "schoolYear"
-            from
-                ojt_student_event ose
-            join ojt_account oa on
-                oa.id = ose.student_id
-            join ojt_event oe on
-                oe.id = ose.event_id
-            join ojt_student_hashtag osh on
-                osh.student_id = ose.student_id
-            join ojt_hashtag oh on
-                osh.hashtag_id = oh.id
-            join ojt_grade og on
-                og.id = oa.grade_id
-            where
-                og.is_grade = true
-                and oa."code" = ${studentCode}
-        `;
-
-        const [result] = await sql.unsafe<StudentDto[]>(qlString);
+        const res = await fetch(
+            process.env["SPRING_API"] + "/student/" + studentCode
+        );
+        const result = await res.json();
         return result;
     } catch (error: any) {
         throw new Error(error?.message);
     }
 }
 
-export async function getEventList() {
+export async function getEventList(): Promise<EventDto[]> {
     try {
-        const list = await sql<EventDto[]>`
-            select
-                ${sql("id", "name")}
-            from
-                ${sql(CollectionName.Event)}
-       `;
-        return list;
+        const res = await fetch(process.env["SPRING_API"] + "/event");
+        const result = await res.json();
+        return result;
     } catch (error: any) {
         throw new Error(error?.message);
     }
 }
-
-export type {EventDto, HashtagDto, StudentDto, StudentListRequestDto};

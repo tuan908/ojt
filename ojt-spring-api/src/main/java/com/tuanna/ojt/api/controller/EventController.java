@@ -4,10 +4,10 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuanna.ojt.api.dto.EventDto;
-import com.tuanna.ojt.api.dto.StudentEventRequestDto;
-import com.tuanna.ojt.api.service.EventService;
+import com.tuanna.ojt.api.service.EventDetailService;
 import lombok.RequiredArgsConstructor;
 
 
@@ -16,12 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventController {
 
-  private final EventService eventService;
+  private final EventDetailService eventService;
 
-  @PostMapping("/all")
-  public ResponseEntity<List<EventDto>> getAll(
-      final StudentEventRequestDto eventRequestDto) {
-    var body = this.eventService.getAll(eventRequestDto);
+  @PostMapping
+  @ResponseBody
+  public ResponseEntity<List<EventDto>> getAll() {
+    var body = this.eventService.getAll();
     return ResponseEntity.ok().body(body);
   }
 

@@ -41,18 +41,19 @@ export async function login(_: any, formData: FormData) {
     }
 
     const data = parse.data;
-    const result = await sql<AccountDto[]>`
+    const [user] = await sql<AccountDto[]>`
         select
-            ${sql("username", "password", "role")}
+            username
+            , password
+            , role
         from
-            ${sql(CollectionName.Account)}
+            ojt_user
         where
             username = ${data.username}
     `;
-    if (result.length === 0) {
+    if (!user) {
         return {message: "Incorrect username or password.", user: null};
     }
-    const user = result[0] as AccountDto;
 
     try {
         if (await argon2.verify(user.password, data.password)) {
@@ -77,7 +78,17 @@ export async function login(_: any, formData: FormData) {
     if (user.role !== UserRole.Student) {
         redirectPath = "/student/list";
     } else {
-        redirectPath = `/student/ST0001`;
+        const [result] = await sql<Array<{code: string}>>`
+            select
+                code
+            from
+                ojt_student os
+            join 
+                ojt_user ou on ou.id = os.user_id 
+            where
+                ou.username = ${data.username}
+        `
+        redirectPath = `/student/${result.code}`;
     }
     redirect(redirectPath);
 }

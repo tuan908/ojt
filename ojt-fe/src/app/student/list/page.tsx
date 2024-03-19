@@ -1,13 +1,6 @@
 "use client";
 
-import {
-    EventDto,
-    HashtagDto,
-    StudentListRequestDto,
-    getEventList,
-    getStudentList,
-    type StudentDto,
-} from "@/app/actions/student";
+import {getEventList, getStudentList} from "@/app/actions/student";
 import {GradeDto, getGradeList, getHashtagList} from "@/app/actions/tracking";
 import ColorHashtag from "@/components/ColorHashtag";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -20,6 +13,12 @@ import {
     showIsLoadingOrFetching,
 } from "@/lib/redux/slice/loadingSlice";
 import {MaybeNull} from "@/types";
+import type {
+    EventDto,
+    HashtagDto,
+    StudentListRequestDto,
+    StudentResponseDto,
+} from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import Autocomplete, {
@@ -46,7 +45,7 @@ export default function Page() {
         []
     );
     const [inputValue, setInputValue] = useState("");
-    const [rows, setRows] = useState<StudentDto[]>([]);
+    const [rows, setRows] = useState<StudentResponseDto[]>([]);
     const [searchOptions, setOptions] = useState<DropdownOption>({
         event: null,
         grade: null,
@@ -82,7 +81,7 @@ export default function Page() {
 
             if (promises[3].status === "fulfilled") {
                 const data = promises[3].value;
-                setRows(data);
+                setRows(data?.content);
             }
         } catch (error: any) {
             throw new Error(error?.message);
@@ -163,7 +162,7 @@ export default function Page() {
 
         setCondition(x => ({
             ...x,
-            hashtags: skills.map(skill => skill.label).join(","),
+            hashtags: skills.map(skill => skill.label),
         }));
     }
 
@@ -185,7 +184,7 @@ export default function Page() {
                 hashtags: searchCondition.hashtags,
                 studentName: searchCondition.studentName,
             });
-            setRows(data);
+            setRows(data.content);
         } catch (error: any) {
             throw new Error(error?.message);
         }

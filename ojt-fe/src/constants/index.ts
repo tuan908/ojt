@@ -1,5 +1,5 @@
 export enum CollectionName {
-    Account = "ojt_account",
+    User = "ojt_user",
     Event = "ojt_event",
     StudentEvent = "ojt_student_event",
     StudentEventDetail = "ojt_student_event_detail",
