@@ -38,5 +38,5 @@ public class Event extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "event_detail_id")
-  private java.util.Set<Comment> comments = new java.util.HashSet<>();
+  private java.util.Set<Comment> comments;
 }

@@ -1,5 +1,6 @@
 package com.tuanna.ojt.api.service.impl;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
+import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
@@ -40,11 +41,9 @@ public class StudentServiceImpl implements StudentService {
                 s
         from
                 com.tuanna.ojt.api.entity.Student s
-        join fetch
-                s.grade
-        join fetch
+        left join fetch
                 s.eventList
-        join fetch
+        left join fetch
                 s.hashtagList
         where
                 1 = 1
@@ -92,6 +91,7 @@ public class StudentServiceImpl implements StudentService {
                 );
                 return eventDto;
               })
+            .sorted(Comparator.comparing(EventDetailDto::name))
             .toList();
 
           List<HashtagDto> hashtags = student.getHashtagList().stream()
@@ -99,6 +99,7 @@ public class StudentServiceImpl implements StudentService {
                 var hashtagDto = new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor());
                 return hashtagDto;
               })
+            .sorted(Comparator.comparing(HashtagDto::name))
             .toList();
 
           var responseDto = new StudentEventResponseDto(
@@ -142,6 +143,7 @@ public class StudentServiceImpl implements StudentService {
         .map(event -> {
             var eventComments = event.getComments().stream()
               .map(Comment::toDto)
+              .sorted(Comparator.comparing(CommentDto::createdAt))
               .toList();
 
             var eventDto = new EventDetailDto(
@@ -152,7 +154,7 @@ public class StudentServiceImpl implements StudentService {
             );
             return eventDto;
           })
-        .collect(Collectors.toUnmodifiableList());
+        .toList();
 
       var hashtags = student.getHashtagList().stream()
         .map(hashtag -> {
@@ -163,6 +165,7 @@ public class StudentServiceImpl implements StudentService {
             );
             return hashtagDto;
           })
+        .sorted(Comparator.comparing(HashtagDto::name))
         .toList();
       // @formatter:on
 

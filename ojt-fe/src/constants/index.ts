@@ -16,9 +16,9 @@ export enum UserRole {
 }
 
 export enum EventStatus {
-    "To do" = 0,
-    Doing = 1,
-    Done = 2,
+    Unconfirmed = 1,
+    UnderReviewing = 2,
+    Confirmed = 3,
 }
 
 export const ITEM_HEIGHT = 48;
@@ -42,3 +42,8 @@ export enum Route {
 }
 
 export const STRING_EMPTY = "";
+
+export enum ScreenMode {
+    Chat = 0,
+    Update = 1,
+}

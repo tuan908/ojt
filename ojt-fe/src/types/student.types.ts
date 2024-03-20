@@ -1,6 +1,11 @@
+import {CommentDto} from "@/app/actions/event";
 import {MaybeUndefined} from ".";
 
 type EventDto = Array<{
+    studentCode: string;
+    studentName: string;
+    schoolYear: string;
+    events: any;
     id: string;
     name: string;
     status: number;
@@ -20,6 +25,7 @@ type StudentResponseDto = Partial<{
     grade: string;
     events: EventDto[];
     hashtags: HashtagDto[];
+    comments: CommentDto[];
 }>;
 
 type StudentListRequestDto = MaybeUndefined<{

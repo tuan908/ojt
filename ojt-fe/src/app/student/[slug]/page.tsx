@@ -1,13 +1,19 @@
 "use client";
 
+import ButtonBase from "@/components/ButtonBase";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
+import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import TableRow from "@/components/TableRow";
+import {Delete, Done, Edit} from "@/components/icon";
+import {EventStatus, ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
+import Notifications from "@mui/icons-material/Notifications";
 import Search from "@mui/icons-material/Search";
+import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -225,29 +231,66 @@ export default function Page({params}: {params: {slug: string}}) {
                             <Suspense
                                 fallback={<CircularProgress color="info" />}
                             >
-                                {/* {list
-                            ? list.map(item => (
-                                  <TableRow key={item.id} onClick={(event) => handleRowClick(event, item.studentCode!)}>
-                                      <TableCell alignTextCenter>
-                                          {item.studentCode}
-                                      </TableCell>
-                                      <TableCell alignTextCenter>
-                                          {item.studentName}
-                                      </TableCell>
-                                      <TableCell alignTextCenter>
-                                          {item.schoolYear}
-                                      </TableCell>
-                                      <TableCell fontSemibold textEllipsis>
-                                          {item.events
-                                              ?.map(x => x.name)
-                                              .join(", ")}
-                                      </TableCell>
-                                      <TableCell fontSemibold textEllipsis>
-                                         <button className="border-none outline-none"></button>
-                                      </TableCell>
-                                  </TableRow>
-                              ))
-                            : null} */}
+                                {response.data
+                                    ? response.data?.events!?.map(item => (
+                                          <TableRow key={item.id}>
+                                              <TableCell
+                                                  alignTextCenter
+                                                  widthInRem={0}
+                                              >
+                                                  {response.data?.code!}
+                                              </TableCell>
+                                              <TableCell
+                                                  alignTextCenter
+                                                  widthInRem={0}
+                                              >
+                                                  {response.data?.name!}
+                                              </TableCell>
+                                              <TableCell
+                                                  alignTextCenter
+                                                  widthInRem={0}
+                                              >
+                                                  {response.data?.grade!}
+                                              </TableCell>
+                                              <TableCell
+                                                  fontSemibold
+                                                  textEllipsis
+                                                  widthInRem={0}
+                                              >
+                                                  <ButtonBase>
+                                                      <Badge
+                                                          badgeContent={0}
+                                                          color="error"
+                                                      >
+                                                          <Notifications className="text-icon-default" />
+                                                      </Badge>
+                                                  </ButtonBase>
+                                              </TableCell>
+                                              <TableCell
+                                                  fontSemibold
+                                                  textEllipsis
+                                                  widthInRem={0}
+                                              >
+                                                  <div className="w-full flex justify-center items-center gap-x-6">
+                                                      <ButtonBase>
+                                                          <Edit />
+                                                      </ButtonBase>
+                                                      <ButtonBase>
+                                                          <Delete />
+                                                      </ButtonBase>
+                                                      <ButtonBase>
+                                                          <Done
+                                                              isDone={
+                                                                  item.status ===
+                                                                  EventStatus.Confirmed
+                                                              }
+                                                          />
+                                                      </ButtonBase>
+                                                  </div>
+                                              </TableCell>
+                                          </TableRow>
+                                      ))
+                                    : null}
                             </Suspense>
                         </tbody>
                     </table>

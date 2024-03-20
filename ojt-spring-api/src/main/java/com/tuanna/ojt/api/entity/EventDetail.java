@@ -37,8 +37,7 @@ public class EventDetail extends BaseEntity {
   private String description;
 
   @OneToMany(mappedBy = "detail", cascade = CascadeType.ALL, orphanRemoval = true)
-  @Builder.Default
-  private java.util.Set<Event> studentEvents = new java.util.HashSet<>();
+  private java.util.Set<Event> studentEvents;
 
   public EventDto toDto() {
     var dto = new EventDto(this.getId(), this.getName());

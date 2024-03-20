@@ -182,11 +182,13 @@ export default function Page() {
                 request.events = searchCondition.events;
             }
 
-            const data = await getStudentList({
+            const searchDto = {
                 ...request,
                 hashtags: searchCondition.hashtags,
                 name: searchCondition.name,
-            });
+            };
+
+            const data = await getStudentList(searchDto);
             setRows(data.content);
         } catch (error: any) {
             throw new Error(error?.message);
@@ -209,7 +211,7 @@ export default function Page() {
                     placeholder="Student Name"
                     className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
-                    name="studentName"
+                    name="name"
                     onChange={e =>
                         setCondition(x => ({
                             ...x,
@@ -223,7 +225,7 @@ export default function Page() {
                     variant="standard"
                     className="w-56"
                     defaultValue="All Grade"
-                    name="schoolYear"
+                    name="grade"
                     onChange={e =>
                         setCondition(x => ({...x, grade: e.target.value}))
                     }

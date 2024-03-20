@@ -39,7 +39,6 @@ public class Hashtag extends BaseEntity {
   private String color;
 
   @ManyToMany(mappedBy = "hashtagList")
-  @Builder.Default
-  private Set<Student> studentList = new HashSet<>();
+  private Set<Student> studentList;
 
 }

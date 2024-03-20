@@ -87,7 +87,7 @@ export async function login(_: any, formData: FormData) {
                 ojt_user ou on ou.id = os.user_id 
             where
                 ou.username = ${data.username}
-        `
+        `;
         redirectPath = `/student/${result.code}`;
     }
     redirect(redirectPath);
