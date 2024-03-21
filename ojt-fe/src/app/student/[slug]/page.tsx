@@ -1,30 +1,23 @@
 "use client";
 
-import ButtonBase from "@/components/ButtonBase";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-import TableCell from "@/components/TableCell";
-import TableHead from "@/components/TableHead";
-import TableRow from "@/components/TableRow";
-import {Delete, Done, Edit} from "@/components/icon";
-import {EventStatus, ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
-import Notifications from "@mui/icons-material/Notifications";
 import Search from "@mui/icons-material/Search";
-import Badge from "@mui/material/Badge";
-import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Link from "next/link";
 import {
-    Suspense,
     useEffect,
     useState,
     type ChangeEventHandler,
     type SyntheticEvent,
 } from "react";
+import {Checkbox} from "./_Checkbox";
+import {EventGrid} from "./_EventGrid";
 
 type CheckboxState = {[x: string]: boolean};
 
@@ -213,113 +206,9 @@ export default function Page({params}: {params: {slug: string}}) {
 
                 {/* Table */}
                 <div className="w-full px-10 pt-6">
-                    <table className="w-full border border-table border-collapse align-middle">
-                        <thead>
-                            <tr className="bg-[#3f51b5] text-[#fffffc]">
-                                <TableHead widthInRem={0}>
-                                    School Year
-                                </TableHead>
-                                <TableHead widthInRem={0}>Event</TableHead>
-                                <TableHead widthInRem={0}>Status</TableHead>
-                                <TableHead widthInRem={0}>
-                                    Notification
-                                </TableHead>
-                                <TableHead widthInRem={0}>Action</TableHead>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <Suspense
-                                fallback={<CircularProgress color="info" />}
-                            >
-                                {response.data
-                                    ? response.data?.events!?.map(item => (
-                                          <TableRow key={item.id}>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={0}
-                                              >
-                                                  {response.data?.code!}
-                                              </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={0}
-                                              >
-                                                  {response.data?.name!}
-                                              </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={0}
-                                              >
-                                                  {response.data?.grade!}
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                                  widthInRem={0}
-                                              >
-                                                  <ButtonBase>
-                                                      <Badge
-                                                          badgeContent={0}
-                                                          color="error"
-                                                      >
-                                                          <Notifications className="text-icon-default" />
-                                                      </Badge>
-                                                  </ButtonBase>
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                                  widthInRem={0}
-                                              >
-                                                  <div className="w-full flex justify-center items-center gap-x-6">
-                                                      <ButtonBase>
-                                                          <Edit />
-                                                      </ButtonBase>
-                                                      <ButtonBase>
-                                                          <Delete />
-                                                      </ButtonBase>
-                                                      <ButtonBase>
-                                                          <Done
-                                                              isDone={
-                                                                  item.status ===
-                                                                  EventStatus.Confirmed
-                                                              }
-                                                          />
-                                                      </ButtonBase>
-                                                  </div>
-                                              </TableCell>
-                                          </TableRow>
-                                      ))
-                                    : null}
-                            </Suspense>
-                        </tbody>
-                    </table>
+                    <EventGrid data={response.data} />
                 </div>
             </PageWrapper>
-        </div>
-    );
-}
-
-function Checkbox({
-    label,
-    name,
-    checked,
-    handleChange,
-}: {
-    label: string;
-    name: string;
-    checked: boolean;
-    handleChange: ChangeEventHandler<HTMLInputElement>;
-}) {
-    return (
-        <div className="flex gap-x-4">
-            <label htmlFor="unconfirmed">{label}</label>
-            <input
-                type="checkbox"
-                name={name}
-                checked={checked}
-                onChange={handleChange}
-            />
         </div>
     );
 }

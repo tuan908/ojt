@@ -1,15 +1,12 @@
-import {CommentDto} from "@/app/actions/event";
-import {MaybeUndefined} from ".";
+import type {CommentDto} from "@/app/actions/event";
+import type {MaybeUndefined} from ".";
 
 type EventDto = Array<{
-    studentCode: string;
-    studentName: string;
-    schoolYear: string;
-    events: any;
     id: string;
     name: string;
+    grade: string;
     status: number;
-    comments: number;
+    comments: CommentDto[];
 }>[number];
 
 type HashtagDto = Array<{
@@ -25,7 +22,6 @@ type StudentResponseDto = Partial<{
     grade: string;
     events: EventDto[];
     hashtags: HashtagDto[];
-    comments: CommentDto[];
 }>;
 
 type StudentListRequestDto = MaybeUndefined<{

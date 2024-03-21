@@ -1,6 +1,5 @@
 package com.tuanna.ojt.api.entity;
 
-import java.util.HashSet;
 import java.util.Set;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;

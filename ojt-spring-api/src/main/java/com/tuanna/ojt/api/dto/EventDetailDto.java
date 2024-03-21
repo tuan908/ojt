@@ -2,6 +2,6 @@ package com.tuanna.ojt.api.dto;
 
 import java.util.List;
 
-public record EventDetailDto(Long id, String name, Integer status, List<CommentDto> comments) {
+public record EventDetailDto(Long id, String grade, String name, Integer status, List<CommentDto> comments) {
 
 }

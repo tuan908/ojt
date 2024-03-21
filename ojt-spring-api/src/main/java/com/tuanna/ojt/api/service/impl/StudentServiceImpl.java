@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +20,6 @@ import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.service.StudentService;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -85,6 +82,7 @@ public class StudentServiceImpl implements StudentService {
             .map(event -> {
                 var eventDto = new EventDetailDto(
                   event.getId(),
+                  event.getGrade().getName(),
                   event.getDetail().getName(),
                   event.getStatus().getValue(),
                   event.getComments().stream().map(Comment::toDto).toList()
@@ -126,7 +124,7 @@ public class StudentServiceImpl implements StudentService {
                 s
         from
                 com.tuanna.ojt.api.entity.Student s
-        join fetch
+        left join fetch
                 s.eventList
         where
                 1 = 1
@@ -148,12 +146,14 @@ public class StudentServiceImpl implements StudentService {
 
             var eventDto = new EventDetailDto(
                 event.getId(),
+                event.getGrade().getName(),
                 event.getDetail().getName(),
                 event.getStatus().getValue(),
                 eventComments
             );
             return eventDto;
           })
+        .sorted(Comparator.comparing(EventDetailDto::id))
         .toList();
 
       var hashtags = student.getHashtagList().stream()

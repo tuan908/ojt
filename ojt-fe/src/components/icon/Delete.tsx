@@ -1,4 +1,6 @@
-export function Delete() {
+import {cn} from "@/lib/utils/cn";
+
+export function Delete({disabled}: {disabled?: boolean}) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -6,7 +8,10 @@ export function Delete() {
             viewBox="0 0 24 24"
             strokeWidth={1.75}
             stroke="currentColor"
-            className="w-6 h-6 text-red-500"
+            className={cn(
+                "w-6 h-6 text-red-500",
+                !!disabled && "text-[#7d7e7e]"
+            )}
         >
             <path
                 strokeLinecap="round"

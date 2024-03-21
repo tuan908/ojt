@@ -37,7 +37,8 @@ export async function getStudentByCode(
 ): Promise<StudentResponseDto | null> {
     try {
         const res = await fetch(
-            process.env["SPRING_API"] + "/student/" + studentCode
+            process.env["SPRING_API"] + "/student/" + studentCode,
+            {cache: "no-cache"}
         );
         const result = await res.json();
         return result;
