@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "predev": "rimraf .next",
-    "dev": "next dev",
+    "dev": "next dev -p 3002",
     "prebuild": "rimraf .next",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3002",
     "lint": "next lint",
     "format": "prettier \"src/**/*.{ts,tsx}\" --write --ignore-unknown"
   },

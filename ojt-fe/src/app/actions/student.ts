@@ -1,11 +1,13 @@
 "use server";
 
+import {OjtStatusCode} from "@/types";
 import type {
     EventDto,
     Page,
     StudentListRequestDto,
     StudentResponseDto,
 } from "@/types/student.types";
+import {revalidatePath} from "next/cache";
 
 /**
  * Get Student List By Conditions
@@ -54,5 +56,38 @@ export async function getEventList(): Promise<EventDto[]> {
         return result;
     } catch (error: any) {
         throw new Error(error?.message);
+    }
+}
+
+/**
+ * Update Event Status
+ * @param dto Update Event Status Dto
+ * @param code Student Code
+ * @author Tuanna
+ */
+export async function updateEventStatus(
+    dto: {
+        id: number;
+        updatedBy: string;
+        studentId: string;
+    }
+) {
+    try {
+        const response = await fetch(process.env["SPRING_API"] + "/event", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dto),
+        });
+        revalidatePath(`/student/[slug]`, "page");
+        const responseBody = await response.json()
+        return responseBody;
+    } catch (error) {
+        return {
+            code: OjtStatusCode.Error,
+            title: "Server Error",
+            message: "Server error, please contact your administrator",
+        };
     }
 }

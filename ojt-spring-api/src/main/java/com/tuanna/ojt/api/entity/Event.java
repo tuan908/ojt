@@ -1,8 +1,11 @@
 package com.tuanna.ojt.api.entity;
 
+import org.hibernate.annotations.Type;
 import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,4 +46,29 @@ public class Event extends BaseEntity {
   
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;
+  
+  private String createdBy;
+  
+  private String updatedBy;
+  
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private EventData data;
+  
+  
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public class EventData {
+    private String eventName;
+    private String eventsInSchoolLife;
+    private String myAction;
+    private String myThought;
+    private String shownPower;
+    private String strengthGrown;
+    
+  }
 }
+
+

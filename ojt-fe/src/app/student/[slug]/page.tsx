@@ -2,7 +2,7 @@
 
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
@@ -61,10 +61,10 @@ export default function Page({params}: {params: {slug: string}}) {
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
-            {auth && auth?.role === "Student" ? (
+            {auth && auth?.role === UserRole.Student ? (
                 <div className="w-24/25 m-auto flex items-center pb-3">
                     <Link
-                        href="/event/register"
+                        href="/event?mode=new"
                         className="flex gap-x-2 items-center px-6 py-2 bg-[#33b5e5] text-white rounded-lg"
                     >
                         <AddCircle />
@@ -77,11 +77,11 @@ export default function Page({params}: {params: {slug: string}}) {
 
                 {/* Student Info */}
                 <>
-                    {auth && auth.role !== "001" ? (
+                    {auth && auth.role !== UserRole.Student ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
                                 <span>{response.data?.name}</span>
-                                <span>({response?.data?.code})</span>
+                                <span>{response?.data?.code}</span>
                                 <span>{response?.data?.grade}</span>
                             </div>
                         </>

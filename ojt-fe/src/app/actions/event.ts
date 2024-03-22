@@ -1,5 +1,7 @@
 "use server";
 
+import {type ErrorResponseDto} from "@/types";
+import {type StudentResponseDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";

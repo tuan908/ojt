@@ -2,7 +2,7 @@ import type {CommentDto} from "@/app/actions/event";
 import type {MaybeUndefined} from ".";
 
 type EventDto = Array<{
-    id: string;
+    id: number;
     name: string;
     grade: string;
     status: number;
@@ -10,7 +10,7 @@ type EventDto = Array<{
 }>[number];
 
 type HashtagDto = Array<{
-    id: string;
+    id: number;
     name: string;
     color: string;
 }>[number];
