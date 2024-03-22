@@ -26,7 +26,7 @@ import {useState, type ComponentProps, type SyntheticEvent} from "react";
 import "./register.css";
 
 export default function Page() {
-    const [registerData, setData] = useState<RegisterEventDto>({
+    const [registerData, setData] = useState<RegisterEventDto["data"]>({
         eventName: "",
         eventsInSchoolLife: "",
         myAction: "",
@@ -119,7 +119,9 @@ export default function Page() {
 
     async function handleClick(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
-        await registerEvent(registerData);
+        await registerEvent({
+            data: registerData,
+        });
     }
 
     async function handleAddComment(

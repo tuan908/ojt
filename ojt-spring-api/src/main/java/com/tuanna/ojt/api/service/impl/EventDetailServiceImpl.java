@@ -3,24 +3,40 @@ package com.tuanna.ojt.api.service.impl;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.dto.EventDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
+import com.tuanna.ojt.api.dto.RegisterEventResponseDto;
 import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.entity.Event;
 import com.tuanna.ojt.api.entity.EventDetail;
+import com.tuanna.ojt.api.repository.EventDetailRepository;
+import com.tuanna.ojt.api.repository.GradeRepository;
 import com.tuanna.ojt.api.service.EventDetailService;
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional(readOnly = true)
 public class EventDetailServiceImpl implements EventDetailService {
 
-  @PersistenceContext
-  private EntityManager entityManager;
+  private final EntityManager entityManager;
+
+  private final EventDetailRepository eventDetailRepository;
+
+  private final GradeRepository gradeRepository;
+
+  public EventDetailServiceImpl(JpaContext jpaContext, EventDetailRepository eventDetailRepository,
+      GradeRepository gradeRepository) {
+    this.entityManager = jpaContext.getEntityManagerByManagedType(EventDetail.class);
+    this.eventDetailRepository = eventDetailRepository;
+    this.gradeRepository = gradeRepository;
+  }
 
   @Override
   public List<EventDto> getAll() {
@@ -56,11 +72,27 @@ public class EventDetailServiceImpl implements EventDetailService {
   }
 
   @Override
-  public Object register(RegisterEventDto dto) {
-    var event = new Event();
-    event.setData(dto.data());
+  @Transactional
+  public RegisterEventResponseDto register(RegisterEventDto dto) {
+
+    var detail = this.eventDetailRepository.findById(dto.getEventDetailId());
+
+    var grade = this.gradeRepository.findByName(dto.getGradeName());
+
+    // @formatter:off
+    var event = Event.builder()
+        .status(EventStatus.UNCONFIRMED)
+        .detail(detail.orElse(null))
+        .grade(grade.orElse(null))
+        .data(dto.getData())
+        .createdBy(dto.getUsername())
+        .updatedBy(dto.getUsername())
+        .build();
+    // @formatter:on
+
     this.entityManager.persist(event);
-    return null;
+    var response = new RegisterEventResponseDto(event.getId());
+    return response;
   }
 
 }

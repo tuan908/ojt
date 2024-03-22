@@ -1,18 +1,21 @@
 "use server";
 
-import {type ErrorResponseDto} from "@/types";
-import {type StudentResponseDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 
 const registerEventSchema = z.object({
-    eventName: z.string(),
-    eventsInSchoolLife: z.string(),
-    myAction: z.string(),
-    shownPower: z.string(),
-    strengthGrown: z.string(),
-    myThought: z.string(),
+    username: z.string(),
+    eventDetailId: z.number(),
+    gradeName: z.string(),
+    data: z.object({
+        eventName: z.string(),
+        eventsInSchoolLife: z.string().optional(),
+        myAction: z.string().optional(),
+        shownPower: z.string().optional(),
+        strengthGrown: z.string().optional(),
+        myThought: z.string().optional(),
+    }),
 });
 
 export type RegisterEventDto = z.infer<typeof registerEventSchema>;
@@ -25,8 +28,8 @@ export async function registerEvent(dto: RegisterEventDto) {
     } else {
         // TODO: use postgres's insert here
         // await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
-        revalidatePath("/event/register");
-        redirect("/event/register", RedirectType.push);
+        revalidatePath("/event");
+        redirect("/event", RedirectType.push);
     }
 }
 
