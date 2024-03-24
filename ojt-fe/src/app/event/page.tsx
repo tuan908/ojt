@@ -9,6 +9,7 @@ import {
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 
 import Textarea from "@/components/Textarea";
+import {useAuth} from "@/lib/hooks/useAuth";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -22,10 +23,13 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import {useSearchParams} from "next/navigation";
 import {useState, type ComponentProps, type SyntheticEvent} from "react";
 import "./register.css";
 
 export default function Page() {
+    const {auth} = useAuth();
+    const params = useSearchParams();
     const [registerData, setData] = useState<RegisterEventDto["data"]>({
         eventName: "",
         eventsInSchoolLife: "",
@@ -120,6 +124,9 @@ export default function Page() {
     async function handleClick(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
         await registerEvent({
+            username: auth?.username!,
+            gradeName: auth?.grade!,
+            eventDetailId: parseInt(params.get("id")!),
             data: registerData,
         });
     }

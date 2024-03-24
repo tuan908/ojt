@@ -9,7 +9,7 @@ type UserPayload = Partial<Pick<MyJwtPayload, "username" | "role">>;
 
 // TODO: Remove flicker when set user info
 export default function UserInfo() {
-    const [auth] = useAuth();
+    const {auth} = useAuth();
     const [info, setInfo] = useState<UserPayload | null>(null);
 
     useEffect(() => {

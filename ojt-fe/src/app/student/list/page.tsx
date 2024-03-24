@@ -22,7 +22,7 @@ import type {
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import Autocomplete, {
-    type AutocompleteChangeReason,
+    AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
 import Input from "@mui/material/Input";
@@ -126,7 +126,7 @@ export default function Page() {
 
     function handleChange(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {label: string; id: string}>,
+        _value: NonNullable<string | {label: string; id: number}>,
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();

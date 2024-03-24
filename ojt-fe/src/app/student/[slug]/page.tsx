@@ -22,7 +22,7 @@ import {EventGrid} from "./_EventGrid";
 type CheckboxState = {[x: string]: boolean};
 
 export default function Page({params}: {params: {slug: string}}) {
-    const [auth] = useAuth();
+    const {auth} = useAuth();
     const [response, setData] = useState<{
         data: StudentResponseDto | null;
         errors: unknown[];

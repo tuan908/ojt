@@ -10,5 +10,5 @@ import com.tuanna.ojt.api.entity.EventDetail;
 public interface EventDetailRepository extends JpaRepository<EventDetail, Long> {
     @Override
     @NonNull
-    Optional<EventDetail> findById(@NonNull Long id);
+    Optional<EventDetail> findById(final @NonNull Long id);
 }

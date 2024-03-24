@@ -65,23 +65,24 @@ export async function getEventList(): Promise<EventDto[]> {
  * @param code Student Code
  * @author Tuanna
  */
-export async function updateEventStatus(
-    dto: {
-        id: number;
-        updatedBy: string;
-        studentId: string;
-    }
-) {
+export async function updateEventStatus(dto: {
+    id: number;
+    updatedBy: string;
+    studentId: string;
+}) {
     try {
-        const response = await fetch(process.env["SPRING_API"] + "/event", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(dto),
-        });
+        const response = await fetch(
+            process.env["SPRING_API"] + "/event/detail",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dto),
+            }
+        );
         revalidatePath(`/student/[slug]`, "page");
-        const responseBody = await response.json()
+        const responseBody = await response.json();
         return responseBody;
     } catch (error) {
         return {

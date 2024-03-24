@@ -2,7 +2,7 @@ package com.tuanna.ojt.api.constants;
 
 public enum Status {
   
-  Unconfirmed(1), UnderReview(2), Completed(3);
+  UNCONFIRMED(1), UNDER_REVIEWING(2), COMPLETED(3);
   
   private Integer value;
   
@@ -17,13 +17,13 @@ public enum Status {
   public static Status fromShortName(Integer dbValue) {
     return switch (dbValue) {
       case 1:
-        yield Status.Unconfirmed;
+        yield Status.UNCONFIRMED;
       
       case 2:
-        yield Status.UnderReview;
+        yield Status.UNDER_REVIEWING;
         
       case 3:
-        yield Status.Completed;
+        yield Status.COMPLETED;
         
       default:
         throw new IllegalArgumentException("Unexpected value: " + dbValue);

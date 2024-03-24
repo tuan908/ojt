@@ -14,14 +14,14 @@ import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
+import {useRouter} from "next/navigation";
 import {Suspense, useState, type SyntheticEvent} from "react";
 import {StatusLabel} from "./_StatusLabel";
-import { useRouter } from "next/navigation";
 
 export function EventGrid({data}: {data: StudentResponseDto | null}) {
-    const [auth] = useAuth();
+    const {auth} = useAuth();
     const [open, setOpen] = useState(false);
-    const router = useRouter()
+    const router = useRouter();
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -40,9 +40,24 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         handleClose();
     }
 
-    function handleEdit(event: SyntheticEvent<HTMLButtonElement, MouseEvent>, id: number): void {
-        event?.preventDefault()
-        router.push(`/event/${id}?mode=update`)
+    function handleEdit(
+        event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
+        id: number
+    ): void {
+        event?.preventDefault();
+        let url = "";
+        switch (auth?.role) {
+            case UserRole.Counselor:
+            case UserRole.Parent:
+            case UserRole.Teacher:
+                url = `/event?id=${id}&mode=chat`;
+                break;
+
+            default:
+                url = `/event?id=${id}&mode=edit`;
+                break;
+        }
+        router.push(url);
     }
 
     return (
@@ -131,7 +146,12 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                                                                   item.status ===
                                                                   EventStatus.Confirmed
                                                               }
-                                                              onClick={(e) => handleEdit(e, item.id)}
+                                                              onClick={e =>
+                                                                  handleEdit(
+                                                                      e,
+                                                                      item.id
+                                                                  )
+                                                              }
                                                           >
                                                               <Edit
                                                                   disabled={

@@ -1,10 +1,14 @@
 package com.tuanna.ojt.api.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 
+import com.tuanna.ojt.api.constants.UserRole;
 import com.tuanna.ojt.api.entity.User;
 
 import lombok.AllArgsConstructor;
@@ -24,8 +28,21 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		Collection<GrantedAuthority> authorities = new ArrayList<>();
+		String roleLabel = switch (this.user.getRole()) {
+			case UserRole.COUNSELOR:
+			case UserRole.TEACHER:
+			case UserRole.PARENT:
+			case UserRole.STUDENT:
+				yield this.user.getRole().getValue();
+	
+			default:
+				yield "";
+		};
+		if (StringUtils.hasLength(roleLabel)) {
+			authorities.add(new SimpleGrantedAuthority(roleLabel));
+		}
+		return authorities;
 	}
 
 	@Override

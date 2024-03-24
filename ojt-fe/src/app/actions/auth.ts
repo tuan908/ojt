@@ -1,6 +1,6 @@
 "use server";
 
-import {CollectionName, UserRole} from "@/constants";
+import {UserRole} from "@/constants";
 import {sql} from "@/lib/db";
 import {generateJWT} from "@/lib/utils/jwt";
 import * as argon2 from "argon2";
@@ -12,6 +12,7 @@ export type AccountDto = {
     username: string;
     password: string;
     role: string;
+    grade: string;
 };
 
 export type LoginState = {
@@ -60,6 +61,7 @@ export async function login(_: any, formData: FormData) {
             const token = await generateJWT({
                 username: user.username,
                 role: user.role,
+                grade: user.grade,
             });
             cookies().set({
                 name: "token",
@@ -83,8 +85,8 @@ export async function login(_: any, formData: FormData) {
                 code
             from
                 ojt_student os
-            join 
-                ojt_user ou on ou.id = os.user_id 
+            join
+                ojt_user ou on ou.id = os.user_id
             where
                 ou.username = ${data.username}
         `;

@@ -18,5 +18,5 @@ export function useAuth() {
         getVerifiedToken();
     }, []);
 
-    return [auth];
+    return {auth};
 }
