@@ -1,5 +1,8 @@
 "use server";
 
+import {fetchNoCache} from "@/lib/utils/fetchNoCache";
+import {EventDto} from "@/types/event.types";
+import {EventDetailDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
@@ -35,11 +38,31 @@ export async function registerEvent(dto: RegisterEventDto) {
 
 const commentSchema = z.object({
     username: z.string(),
-    commentContent: z.string(),
-    createdDate: z.date(),
-    updatedDate: z.date(),
+    content: z.string(),
 });
 
-export type CommentDto = z.infer<typeof commentSchema>;
+export type AddCommentDto = z.infer<typeof commentSchema>;
 
-export async function addComment(dto: CommentDto) {}
+export type CommentDto = AddCommentDto & {
+    id: number;
+    createdAt: string;
+    isDeleted: boolean;
+};
+
+export async function addComment(dto: AddCommentDto) {}
+
+export async function getEventById(id: number): Promise<EventDetailDto | null> {
+    const response = await fetchNoCache(
+        `${process.env["SPRING_API"]}/student/event/${id}`
+    );
+    const result = await response.json();
+    return result;
+}
+
+export async function getEventDetailList(): Promise<EventDto[] | null> {
+    const response = await fetchNoCache(
+        `${process.env["SPRING_API"]}/event-detail`
+    );
+    const result = await response.json();
+    return result;
+}

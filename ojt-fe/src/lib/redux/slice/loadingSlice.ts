@@ -8,7 +8,7 @@ export const loadingSlice = createAppSlice({
     name: "LOADING",
     initialState,
     reducers: create => ({
-        showIsLoadingOrFetching: create.asyncThunk(
+        showLoading: create.asyncThunk(
             async (_arg: void) => {
                 return true;
             },
@@ -18,7 +18,7 @@ export const loadingSlice = createAppSlice({
                 },
             }
         ),
-        hideIsLoadingOrFetching: create.asyncThunk(
+        hideLoading: create.asyncThunk(
             async (_arg: void) => {
                 return false;
             },
@@ -31,11 +31,11 @@ export const loadingSlice = createAppSlice({
     }),
 
     selectors: {
-        getLoadingOrFetchingState: state => state.isLoading,
+        getLoadingState: state => state.isLoading,
     },
 });
 
 export const {
-    actions: {hideIsLoadingOrFetching, showIsLoadingOrFetching},
-    selectors: {getLoadingOrFetchingState},
+    actions: {showLoading, hideLoading},
+    selectors: {getLoadingState},
 } = loadingSlice;

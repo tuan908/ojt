@@ -1,18 +1,32 @@
 "use client";
 
 import {
+    CommentDto,
     addComment,
+    getEventDetailList,
     registerEvent,
-    type CommentDto,
+    type AddCommentDto,
     type RegisterEventDto,
 } from "@/app/actions/event";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
 
+import {getEventById} from "@/app/actions/event";
+import ButtonBase from "@/components/ButtonBase";
+import LoadingComponent from "@/components/LoadingComponent";
 import Textarea from "@/components/Textarea";
 import {useAuth} from "@/lib/hooks/useAuth";
+import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
+import {
+    getLoadingState,
+    hideLoading,
+    showLoading,
+} from "@/lib/redux/slice/loadingSlice";
+import {type EventDto} from "@/types/event.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
+import Delete from "@mui/icons-material/Delete";
+import Edit from "@mui/icons-material/Edit";
 import Send from "@mui/icons-material/Send";
 import SentimentSatisfiedAlt from "@mui/icons-material/SentimentSatisfiedAlt";
 import Autocomplete, {
@@ -24,10 +38,17 @@ import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import {useSearchParams} from "next/navigation";
-import {useState, type ComponentProps, type SyntheticEvent} from "react";
+import {
+    useEffect,
+    useState,
+    type ComponentProps,
+    type SyntheticEvent,
+} from "react";
 import "./register.css";
 
 export default function Page() {
+    const dispatch = useAppDispatch();
+    const isLoading = useAppSelector(getLoadingState);
     const {auth} = useAuth();
     const params = useSearchParams();
     const [registerData, setData] = useState<RegisterEventDto["data"]>({
@@ -39,12 +60,61 @@ export default function Page() {
         strengthGrown: "",
     });
 
-    const [comments, setComments] = useState<[]>([]);
+    const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
+    const [comments, setComments] = useState<CommentDto[]>([]);
+    const [showState, setShow] = useState<
+        Array<{isShow: boolean; index: number}>
+    >([]);
+
+    async function init() {
+        await dispatch(showLoading());
+        let id = parseInt(params.get("id") ?? "");
+        const promises = await Promise.allSettled([
+            getEventById(id),
+            getEventDetailList(),
+        ]);
+
+        if (promises[0].status === "fulfilled") {
+            const eventDetail = promises[0].value;
+
+            if (eventDetail !== null) {
+                if (eventDetail.data !== null) {
+                    setData({
+                        eventName: eventDetail.name,
+                        eventsInSchoolLife: eventDetail.data.eventsInSchoolLife,
+                        myAction: eventDetail.data.myAction,
+                        myThought: eventDetail.data.myThought,
+                        shownPower: eventDetail.data.shownPower,
+                        strengthGrown: eventDetail.data.strengthGrown,
+                    });
+                }
+                setComments(eventDetail.comments);
+                setShow(
+                    eventDetail.comments.map(x => ({
+                        index: x.id,
+                        isShow: false,
+                    }))
+                );
+            }
+        }
+
+        if (promises[1].status === "fulfilled") {
+            const events = promises[1].value;
+            if (events !== null) {
+                setEventOptions(events);
+            }
+        }
+
+        await dispatch(hideLoading());
+    }
+
+    useEffect(() => {
+        init();
+    }, []);
+
     const [openPicker, setOpen] = useState(false);
-    const [commentData, setCommentData] = useState<CommentDto>({
-        commentContent: "",
-        createdDate: new Date(),
-        updatedDate: new Date(),
+    const [commentData, setCommentData] = useState<AddCommentDto>({
+        content: "",
         username: "",
     });
     const [openSuggest, setOpenSuggest] = useState(false);
@@ -58,7 +128,7 @@ export default function Page() {
         if (_value !== null) {
             switch (true) {
                 case typeof _value === "string":
-                    setCommentData({...commentData, commentContent: _value});
+                    setCommentData({...commentData, content: _value});
                     if (_value.startsWith("#")) {
                         setOpenSuggest(true);
                     }
@@ -67,7 +137,7 @@ export default function Page() {
                 case typeof _value === "object":
                     setCommentData({
                         ...commentData,
-                        commentContent: _value.value,
+                        content: _value.value,
                     });
                     break;
 
@@ -90,17 +160,14 @@ export default function Page() {
         if (typeof _value === "string") {
             setCommentData({
                 ...commentData,
-                commentContent: commentData.commentContent.concat(_value, " "),
+                content: commentData.content.concat(_value, " "),
             });
         }
 
         if (typeof _value === "object") {
             setCommentData({
                 ...commentData,
-                commentContent: commentData.commentContent.concat(
-                    _value.label,
-                    " "
-                ),
+                content: commentData.content.concat(_value.label, " "),
             });
         }
 
@@ -142,12 +209,37 @@ export default function Page() {
         if (!emoji?.native) return;
         setCommentData({
             ...commentData,
-            commentContent: commentData.commentContent.concat(emoji?.native),
+            content: commentData.content.concat(emoji?.native),
         });
     }
 
+    const handleOnMouseEnter = (
+        e: SyntheticEvent<HTMLDivElement, Event>,
+        index: number
+    ) => {
+        e.preventDefault();
+        console.log(`Show edit/delete button on comment #${index}`);
+        let ele = showState?.find(x => x.index === index);
+        if (ele) {
+            setShow(x => [...x, {index: ele?.index!, isShow: true}]);
+        }
+    };
+
+    const handleOnMouseLeave = (
+        e: SyntheticEvent<HTMLDivElement, Event>,
+        index: number
+    ) => {
+        e.preventDefault();
+        console.log(`Hide edit/delete button on comment #${index}`);
+        let ele = showState?.find(x => x.index === index);
+        if (ele) {
+            setShow(x => [...x, {index: ele?.index!, isShow: false}]);
+        }
+    };
+
     return (
         <div className="pt-12 w-full flex flex-col gap-y-8">
+            {isLoading ? <LoadingComponent /> : null}
             <div className="w-1/2 m-auto bg-white rounded-xl shadow-2xl">
                 <div className="w-[90%] m-auto flex flex-col gap-y-6 py-6">
                     {/* Select */}
@@ -173,14 +265,14 @@ export default function Page() {
                             onChange={handleSelectChange}
                         >
                             <MenuItem value="Event">Event</MenuItem>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                            {eventOptions.map(x => (
                                 <MenuItem
-                                    key={x}
-                                    value={`Event ${x}`}
+                                    key={x.id}
+                                    value={x.name}
                                     disableRipple
                                     disableTouchRipple
                                 >
-                                    Event {x}
+                                    {x.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -233,6 +325,37 @@ export default function Page() {
                 </div>
             </div>
 
+            <div className="w-1/2 m-auto flex flex-col gap-y-4">
+                {comments.map(x => {
+                    return (
+                        <div
+                            key={x.id}
+                            className="w-1/2 h-full bg-white flex flex-col px-4 py-2 rounded-lg relative hover:cursor-pointer"
+                            onMouseEnter={e => handleOnMouseEnter(e, x.id)}
+                            onMouseLeave={e => handleOnMouseLeave(e, x.id)}
+                        >
+                            <span className="pb-1">{x.content}</span>
+                            <span className="text-[12px]">{x.createdAt}</span>
+                            <div
+                                style={{
+                                    display: showState![x.id]!?.isShow
+                                        ? "block"
+                                        : "hidden",
+                                }}
+                                className="absolute left-2 top-1 bg-white flex gap-x-2 "
+                            >
+                                <ButtonBase classes="rounded-full shadow-lg border p-[0.125rem]">
+                                    <Edit className="text-icon-default" />
+                                </ButtonBase>
+                                <ButtonBase classes="rounded-full shadow-lg border p-[0.125rem]">
+                                    <Delete color="error" />
+                                </ButtonBase>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+
             <div className="w-3/5 m-auto flex items-center gap-x-8">
                 <Avatar sx={{width: 72, height: 72}} />
                 <div className="w-full flex items-center relative">
@@ -262,7 +385,7 @@ export default function Page() {
                         onInputChange={handleInputCommentChange}
                         onChange={handleChangeComment}
                         open={openSuggest}
-                        inputValue={commentData.commentContent}
+                        inputValue={commentData.content}
                         disableListWrap
                         disableClearable
                         disablePortal

@@ -1,10 +1,20 @@
 package com.tuanna.ojt.api.entity;
 
-import com.tuanna.ojt.api.dto.EventDto;
+import org.hibernate.annotations.Type;
+import com.tuanna.ojt.api.constants.EventStatus;
+import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
+import com.tuanna.ojt.api.dto.EventDetailDto;
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,31 +27,66 @@ import lombok.Setter;
 @Table(name = "ojt_event_detail")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
 public class EventDetail extends BaseEntity {
 
-  private static final long serialVersionUID = 1032972432116090594L;
+  private static final long serialVersionUID = 1025932825083679424L;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(columnDefinition = "text")
-  private String name;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Event detail;
 
-  @Column(columnDefinition = "text")
-  private String title;
+  @Convert(converter = EventStatusConverter.class)
+  private EventStatus status;
 
-  @Column(columnDefinition = "text")
-  private String description;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "event_detail_id")
+  private java.util.Set<Comment> comments;
 
-  @OneToMany(mappedBy = "detail", cascade = CascadeType.ALL, orphanRemoval = true)
-  private java.util.Set<Event> studentEvents;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Grade grade;
 
-  public EventDto toDto() {
-    var dto = new EventDto(this.getId(), this.getName());
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private EventData data;
+
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public class EventData {
+    private String eventName;
+    private String eventsInSchoolLife;
+    private String myAction;
+    private String myThought;
+    private String shownPower;
+    private String strengthGrown;
+  }
+
+  private String createdBy;
+
+  private String updatedBy;
+
+  public EventDetailDto toDto() {
+    // @formatter:off
+    final var dto = new EventDetailDto(
+          this.id, 
+          this.grade.getName(), 
+          this.detail.getName(), 
+          this.status.getValue(),
+          this.data,
+          this.comments.stream().map(Comment::toDto).toList()
+        );
+    // @formatter:on
+
     return dto;
   }
 
 }
+
+

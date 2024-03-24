@@ -51,7 +51,7 @@ public class Student extends BaseEntity {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "student_id")
   @Builder.Default
-  private java.util.Set<Event> eventList = new java.util.HashSet<>();
+  private java.util.Set<EventDetail> eventList = new java.util.HashSet<>();
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", referencedColumnName = "id")

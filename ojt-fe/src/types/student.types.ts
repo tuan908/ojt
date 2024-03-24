@@ -1,12 +1,20 @@
 import type {CommentDto} from "@/app/actions/event";
 import type {MaybeUndefined} from ".";
 
-type EventDto = Array<{
+type EventDetailDto = Array<{
     id: number;
     name: string;
     grade: string;
     status: number;
     comments: CommentDto[];
+    data: Partial<{
+        eventName: string;
+        eventsInSchoolLife: string;
+        myAction: string;
+        myThought: string;
+        shownPower: string;
+        strengthGrown: string;
+    }>;
 }>[number];
 
 type HashtagDto = Array<{
@@ -20,7 +28,7 @@ type StudentResponseDto = Partial<{
     code: string;
     name: string;
     grade: string;
-    events: EventDto[];
+    events: EventDetailDto[];
     hashtags: HashtagDto[];
 }>;
 
@@ -63,7 +71,7 @@ interface Page<T> {
 }
 
 export type {
-    EventDto,
+    EventDetailDto,
     HashtagDto,
     Page,
     StudentListRequestDto,

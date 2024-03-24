@@ -1,37 +1,54 @@
 package com.tuanna.ojt.api.service.impl;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
+import com.tuanna.ojt.api.dto.RegisterEventDto;
+import com.tuanna.ojt.api.dto.RegisterEventResponseDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.StudentEventResponseDto;
+import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.entity.Comment;
+import com.tuanna.ojt.api.entity.EventDetail;
 import com.tuanna.ojt.api.entity.Student;
+import com.tuanna.ojt.api.repository.EventRepository;
+import com.tuanna.ojt.api.repository.GradeRepository;
 import com.tuanna.ojt.api.service.StudentService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 
 @Service
 @Transactional(readOnly = true)
 public class StudentServiceImpl implements StudentService {
 
-  @PersistenceContext
-  private EntityManager entityManager;
+  private final EntityManager entityManager;
+
+  private final GradeRepository gradeRepository;
+
+  private final EventRepository eventRepository;
+
+  public StudentServiceImpl(JpaContext jpaCtx, GradeRepository gr, EventRepository ed) {
+    this.entityManager = jpaCtx.getEntityManagerByManagedType(Student.class);
+    this.gradeRepository = gr;
+    this.eventRepository = ed;
+  };
 
   @Override
-  public Page<StudentEventResponseDto> getAll(StudentEventRequestDto dto) {
+  public Page<StudentEventResponseDto> getStudentEventList(StudentEventRequestDto dto) {
     Map<String, Object> parameters = new HashMap<String, Object>();
     var qlString = """
         select
@@ -83,8 +100,11 @@ public class StudentServiceImpl implements StudentService {
                 var eventDto = new EventDetailDto(
                   event.getId(),
                   event.getGrade().getName(),
-                  event.getDetail().getName(),
+                  !StringUtils.hasText(event.getDetail().getName())
+                        ? ""
+                        : event.getDetail().getName(),
                   event.getStatus().getValue(),
+                  event.getData(),
                   event.getComments().stream().map(Comment::toDto).toList()
                 );
                 return eventDto;
@@ -92,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
             .sorted(Comparator.comparing(EventDetailDto::name))
             .toList();
 
-          List<HashtagDto> hashtags = student.getHashtagList().stream()
+          var hashtags = student.getHashtagList().stream()
             .map(hashtag -> {
                 var hashtagDto = new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor());
                 return hashtagDto;
@@ -118,7 +138,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public StudentEventResponseDto getByCode(String code) {
+  public StudentEventResponseDto getStudentEventListByStudentCode(String code) {
     var qlString = """
         select
                 s
@@ -149,6 +169,7 @@ public class StudentServiceImpl implements StudentService {
                 event.getGrade().getName(),
                 event.getDetail().getName(),
                 event.getStatus().getValue(),
+                event.getData(),
                 eventComments
             );
             return eventDto;
@@ -169,12 +190,81 @@ public class StudentServiceImpl implements StudentService {
         .toList();
       // @formatter:on
 
-      var result = new StudentEventResponseDto(student.getCode(), student.getName(), student.getGrade().getName(),
-          events, hashtags);
+      var result = new StudentEventResponseDto(student.getCode(), student.getName(),
+          student.getGrade().getName(), events, hashtags);
       return result;
     }
     return null;
 
+  }
+
+  @Override
+  @Transactional
+  public Boolean updateEventStatus(UpdateEventStatusDto dto) {
+    var qlString = """
+          update
+            com.tuanna.ojt.api.entity.Event
+          set
+            status = :status, updatedBy = :updatedBy, updatedAt = :updatedAt
+          where
+            id = :id
+        """;
+    var query = this.entityManager.createQuery(qlString);
+    query.setParameter("status", EventStatus.COMPLETED);
+    query.setParameter("id", dto.id());
+    query.setParameter("updatedBy", dto.updatedBy());
+    query.setParameter("updatedAt", LocalDateTime.now(ZoneId.of("UTC+7")));
+
+    var result = query.executeUpdate();
+
+    return result > 0 ? Boolean.TRUE : Boolean.FALSE;
+  }
+
+  @Override
+  @Transactional
+  public RegisterEventResponseDto registerEvent(RegisterEventDto dto) {
+
+    var detail = this.eventRepository.findById(dto.getEventDetailId());
+
+    var grade = this.gradeRepository.findByName(dto.getGradeName());
+
+    // @formatter:off
+    var event = EventDetail.builder()
+        .status(EventStatus.UNCONFIRMED)
+        .detail(detail.orElse(null))
+        .grade(grade.orElse(null))
+        .data(dto.getData())
+        .createdBy(dto.getUsername())
+        .updatedBy(dto.getUsername())
+        .build();
+    // @formatter:on
+
+    this.entityManager.persist(event);
+    var response = new RegisterEventResponseDto(event.getId());
+    return response;
+  }
+
+  @Override
+  public EventDetailDto getStudentEventById(Long id) {
+    var qlString = """
+        select
+              e
+        from
+              com.tuanna.ojt.api.entity.EventDetail e
+        join fetch
+              e.comments
+        where
+              e.id = :id
+        """;
+    var query = this.entityManager.createQuery(qlString, EventDetail.class);
+    query.setParameter("id", id);
+
+    var queryResult = query.getResultStream().findFirst().orElse(null);
+    if (queryResult != null) {
+      var eventDto = queryResult.toDto();
+      return eventDto;
+    }
+    return null;
   }
 
 }

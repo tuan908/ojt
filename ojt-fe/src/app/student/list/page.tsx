@@ -8,13 +8,13 @@ import PageWrapper from "@/components/PageWrapper";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
 import {
-    getLoadingOrFetchingState,
-    hideIsLoadingOrFetching,
-    showIsLoadingOrFetching,
+    getLoadingState,
+    hideLoading,
+    showLoading,
 } from "@/lib/redux/slice/loadingSlice";
 import {MaybeNull} from "@/types";
 import type {
-    EventDto,
+    EventDetailDto,
     HashtagDto,
     StudentListRequestDto,
     StudentResponseDto,
@@ -34,7 +34,7 @@ import StudentDataGrid from "./_StudentDataGrid";
 
 type DropdownOption = MaybeNull<{
     grade: GradeDto[];
-    event: EventDto[];
+    event: EventDetailDto[];
     hashtag: HashtagDto[];
 }>;
 
@@ -51,11 +51,11 @@ export default function Page() {
         grade: null,
         hashtag: null,
     });
-    const isFetching = useAppSelector(getLoadingOrFetchingState);
+    const isFetching = useAppSelector(getLoadingState);
     const [searchCondition, setCondition] = useState<StudentListRequestDto>({});
 
     async function init() {
-        await dispatch(showIsLoadingOrFetching());
+        await dispatch(showLoading());
         try {
             const promises = await Promise.allSettled([
                 getGradeList(),
@@ -87,7 +87,7 @@ export default function Page() {
             throw new Error(error?.message);
         }
 
-        await dispatch(hideIsLoadingOrFetching());
+        await dispatch(hideLoading());
     }
 
     useEffect(() => {
@@ -171,7 +171,7 @@ export default function Page() {
 
     async function handleSearch(event: SyntheticEvent) {
         event?.preventDefault();
-        await dispatch(showIsLoadingOrFetching());
+        await dispatch(showLoading());
         try {
             let request: StudentListRequestDto = {};
             if (searchCondition.grade !== "All Grade") {
@@ -194,7 +194,7 @@ export default function Page() {
             throw new Error(error?.message);
         }
 
-        await dispatch(hideIsLoadingOrFetching());
+        await dispatch(hideLoading());
     }
 
     function handleRemoveHashtag(_index: number): void {

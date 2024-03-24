@@ -1,8 +1,9 @@
 "use server";
 
+import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {OjtStatusCode} from "@/types";
 import type {
-    EventDto,
+    EventDetailDto,
     Page,
     StudentListRequestDto,
     StudentResponseDto,
@@ -20,13 +21,11 @@ export async function getStudentList(
     try {
         const body = !!dto ? JSON.stringify(dto) : JSON.stringify({});
 
-        const res = await fetch(process.env["SPRING_API"] + "/student", {
-            method: "POST",
-            body,
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
+        const res = await fetchNoCache(
+            process.env["SPRING_API"] + "/student",
+            "POST",
+            body
+        );
         const result = await res.json();
         return result;
     } catch (error: any) {
@@ -38,9 +37,8 @@ export async function getStudentByCode(
     studentCode: string
 ): Promise<StudentResponseDto | null> {
     try {
-        const res = await fetch(
-            process.env["SPRING_API"] + "/student/" + studentCode,
-            {cache: "no-cache"}
+        const res = await fetchNoCache(
+            process.env["SPRING_API"] + "/student/" + studentCode
         );
         const result = await res.json();
         return result;
@@ -49,9 +47,11 @@ export async function getStudentByCode(
     }
 }
 
-export async function getEventList(): Promise<EventDto[]> {
+export async function getEventList(): Promise<EventDetailDto[]> {
     try {
-        const res = await fetch(process.env["SPRING_API"] + "/event");
+        const res = await fetchNoCache(
+            process.env["SPRING_API"] + "/event-detail"
+        );
         const result = await res.json();
         return result;
     } catch (error: any) {
@@ -71,15 +71,10 @@ export async function updateEventStatus(dto: {
     studentId: string;
 }) {
     try {
-        const response = await fetch(
+        const response = await fetchNoCache(
             process.env["SPRING_API"] + "/event/detail",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dto),
-            }
+            "POST",
+            dto
         );
         revalidatePath(`/student/[slug]`, "page");
         const responseBody = await response.json();

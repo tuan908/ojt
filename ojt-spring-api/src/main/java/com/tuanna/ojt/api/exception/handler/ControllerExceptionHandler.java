@@ -19,5 +19,13 @@ public class ControllerExceptionHandler {
 
     return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
   }
+  
+  @ExceptionHandler(value = {Exception.class})
+  public ResponseEntity<?> handle(Exception ex) {
+    var responseBody = ErrorResponseDto.builder().code(OjtCode.EXCEPTION.getValue())
+        .title("Internal Server Error").message(ex.getMessage()).build();
+
+    return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
 }

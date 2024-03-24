@@ -2,9 +2,7 @@ package com.tuanna.ojt.api.dto;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
-import com.tuanna.ojt.api.entity.Event;
-
+import com.tuanna.ojt.api.entity.EventDetail;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +26,6 @@ public class RegisterEventDto {
     private String gradeName;
 
     @Nullable
-    private Event.EventData data;
+    private EventDetail.EventData data;
 
 }

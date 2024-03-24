@@ -1,5 +1,6 @@
 package com.tuanna.ojt.api.entity;
 
+import java.time.format.DateTimeFormatter;
 import com.tuanna.ojt.api.dto.CommentDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,8 +53,15 @@ public class Comment extends BaseEntity {
   }
 
   public CommentDto toDto() {
-    return new CommentDto(this.getId(), this.getUser().getName(), this.getCreatedAt(),
-        this.getIsDeleted());
+    // @formatter:off
+    return new CommentDto(
+          this.id,
+          this.user.getName(), 
+          this.content,
+          this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+          this.isDeleted
+        );
+    // @formatter:on
   }
 
 }

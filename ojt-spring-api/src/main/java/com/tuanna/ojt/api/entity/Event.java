@@ -1,19 +1,10 @@
 package com.tuanna.ojt.api.entity;
 
-import org.hibernate.annotations.Type;
-import com.tuanna.ojt.api.constants.EventStatus;
-import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
-import io.hypersistence.utils.hibernate.type.json.JsonType;
+import com.tuanna.ojt.api.dto.EventDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -26,52 +17,31 @@ import lombok.Setter;
 @Table(name = "ojt_event")
 @Getter
 @Setter
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Event extends BaseEntity {
 
-  private static final long serialVersionUID = 1025932825083679424L;
+  private static final long serialVersionUID = 1032972432116090594L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private EventDetail detail;
+  @Column(columnDefinition = "text")
+  private String name;
 
-  @Convert(converter = EventStatusConverter.class)
-  private EventStatus status;
+  @Column(columnDefinition = "text")
+  private String title;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "event_detail_id")
-  private java.util.Set<Comment> comments;
-  
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Grade grade;
-  
-  private String createdBy;
-  
-  private String updatedBy;
-  
-  @Type(JsonType.class)
-  @Column(columnDefinition = "jsonb")
-  private EventData data;
-  
-  
-  @Getter
-  @Setter
-  @AllArgsConstructor
-  @NoArgsConstructor
-  public class EventData {
-    private String eventName;
-    private String eventsInSchoolLife;
-    private String myAction;
-    private String myThought;
-    private String shownPower;
-    private String strengthGrown;
-    
+  @Column(columnDefinition = "text")
+  private String description;
+
+  @OneToMany(mappedBy = "detail", cascade = CascadeType.ALL, orphanRemoval = true)
+  private java.util.Set<EventDetail> eventDetails;
+
+  public EventDto toDto() {
+    var dto = new EventDto(this.getId(), this.getName());
+    return dto;
   }
+
 }
-
-

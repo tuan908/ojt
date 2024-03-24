@@ -45,18 +45,16 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         id: number
     ): void {
         event?.preventDefault();
-        let url = "";
-        switch (auth?.role) {
-            case UserRole.Counselor:
-            case UserRole.Parent:
-            case UserRole.Teacher:
-                url = `/event?id=${id}&mode=chat`;
-                break;
+        let url = `/event?id=${id}&mode=edit`;
+        router.push(url);
+    }
 
-            default:
-                url = `/event?id=${id}&mode=edit`;
-                break;
-        }
+    function handleNotificationIconClick(
+        event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
+        id: number
+    ) {
+        event?.preventDefault();
+        let url = `/event?id=${id}&mode=chat`;
         router.push(url);
     }
 
@@ -97,7 +95,14 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                                           widthInRem={0}
                                           alignTextCenter
                                       >
-                                          <ButtonBase>
+                                          <ButtonBase
+                                              onClick={e =>
+                                                  handleNotificationIconClick(
+                                                      e,
+                                                      item.id
+                                                  )
+                                              }
+                                          >
                                               <Badge
                                                   badgeContent={
                                                       item?.comments?.length
