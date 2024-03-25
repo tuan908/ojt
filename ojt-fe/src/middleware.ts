@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     const verifiedToken = await verifyJwtToken(token!);
     const role = verifiedToken?.role;
 
-    if (!token && currentUrl.pathname !== Route.Login) {
+    if ((!token || !verifiedToken) && currentUrl.pathname !== Route.Login) {
         return NextResponse.redirect(new URL(Route.Login, request.url));
     }
 

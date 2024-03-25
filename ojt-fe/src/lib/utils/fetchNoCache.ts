@@ -1,3 +1,12 @@
+/**
+ * fetch with no cache setup
+ * @param url Api URL
+ * @param method GET/POST only
+ * @param body raw body
+ * @returns Response
+ * @author Tuanna
+ * @since v1.0
+ */
 export function fetchNoCache(
     url: string,
     method?: "GET" | "POST",

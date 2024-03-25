@@ -22,6 +22,7 @@ import {
     showLoading,
 } from "@/lib/redux/slice/loadingSlice";
 import {type EventDto} from "@/types/event.types";
+import {type HashtagDto} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -44,6 +45,7 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
+import {getHashtagList} from "../actions/tracking";
 import "./register.css";
 
 export default function Page() {
@@ -65,6 +67,7 @@ export default function Page() {
     const [showState, setShow] = useState<
         Array<{isShow: boolean; index: number}>
     >([]);
+    const [hashtagList, setHashtagList] = useState<HashtagDto[]>([]);
 
     async function init() {
         await dispatch(showLoading());
@@ -72,6 +75,7 @@ export default function Page() {
         const promises = await Promise.allSettled([
             getEventById(id),
             getEventDetailList(),
+            getHashtagList(),
         ]);
 
         if (promises[0].status === "fulfilled") {
@@ -105,17 +109,26 @@ export default function Page() {
             }
         }
 
+        if (promises[2].status === "fulfilled") {
+            const hashtagList = promises[2].value;
+            if (hashtagList !== null) {
+                setHashtagList(hashtagList);
+            }
+        }
+
         await dispatch(hideLoading());
     }
 
     useEffect(() => {
         init();
     }, []);
+    console.log(auth);
 
     const [openPicker, setOpen] = useState(false);
     const [commentData, setCommentData] = useState<AddCommentDto>({
-        content: "",
+        eventDetailId: -1,
         username: "",
+        content: "",
     });
     const [openSuggest, setOpenSuggest] = useState(false);
 
@@ -153,7 +166,7 @@ export default function Page() {
 
     function handleChangeComment(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {label: string; id: string}>,
+        _value: NonNullable<string | {id: number; label: string}>,
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
@@ -202,7 +215,14 @@ export default function Page() {
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ) {
         event?.preventDefault();
-        await addComment(commentData);
+        if (auth && auth.username) {
+            let data: AddCommentDto = {
+                ...commentData,
+                eventDetailId: Number(params.get("id")),
+                username: auth.username,
+            };
+            await addComment(data);
+        }
     }
 
     function handleSelect(emoji: any) {
@@ -211,6 +231,7 @@ export default function Page() {
             ...commentData,
             content: commentData.content.concat(emoji?.native),
         });
+        setOpen(false);
     }
 
     const handleOnMouseEnter = (
@@ -221,7 +242,15 @@ export default function Page() {
         console.log(`Show edit/delete button on comment #${index}`);
         let ele = showState?.find(x => x.index === index);
         if (ele) {
-            setShow(x => [...x, {index: ele?.index!, isShow: true}]);
+            setShow(x => {
+                // Set others comment isShow to false
+                let array = x
+                    .filter(comment => comment.index !== index)
+                    .map(x => ({...x, isShow: false}));
+                // Set target comment isShow to true
+                array.push({index, isShow: true});
+                return array;
+            });
         }
     };
 
@@ -233,7 +262,11 @@ export default function Page() {
         console.log(`Hide edit/delete button on comment #${index}`);
         let ele = showState?.find(x => x.index === index);
         if (ele) {
-            setShow(x => [...x, {index: ele?.index!, isShow: false}]);
+            setShow(x => {
+                let array = x.filter(comment => comment.index !== index);
+                array.push({index, isShow: false});
+                return array;
+            });
         }
     };
 
@@ -338,9 +371,11 @@ export default function Page() {
                             <span className="text-[12px]">{x.createdAt}</span>
                             <div
                                 style={{
-                                    display: showState![x.id]!?.isShow
+                                    display: showState.find(
+                                        s => s.index === x.id
+                                    )!?.isShow
                                         ? "block"
-                                        : "hidden",
+                                        : "none",
                                 }}
                                 className="absolute left-2 top-1 bg-white flex gap-x-2 "
                             >
@@ -368,11 +403,10 @@ export default function Page() {
                                 paddingX: 1,
                             },
                         }}
-                        options={[
-                            {label: "#independence", id: "0"},
-                            {label: "#ability to quickly grasp", id: "1"},
-                            {label: "#discipline", id: "2"},
-                        ]}
+                        options={hashtagList.map(x => ({
+                            label: x.name,
+                            id: x.id,
+                        }))}
                         renderInput={params => (
                             <TextField
                                 {...params}

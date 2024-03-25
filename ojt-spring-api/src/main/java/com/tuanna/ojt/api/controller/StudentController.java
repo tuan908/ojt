@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuanna.ojt.api.constants.OjtCode;
+import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.SuccessResponseDto;
@@ -88,6 +89,22 @@ public class StudentController {
   public ResponseEntity<?> getStudentEventDetailById(@PathVariable(value = "id") Long id) {
     var result = this.studentService.getStudentEventById(id);
     return ResponseEntity.ok(result);
+  }
+  
+  @PostMapping("/event/comments")
+  public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
+    this.studentService.addCommentForEventDetailById(dto);
+
+    // @formatter:off
+    var data = new SuccessResponseDto(
+        OjtCode.ACTION_SUCCESS.getValue(),
+        "Added Comment", 
+        "Updated status for event " + dto.eventDetailId(), 
+        "/student/event/" + dto.eventDetailId()
+      );
+    // @formatter:on
+
+    return ResponseEntity.ok().body(data);
   }
 
 }

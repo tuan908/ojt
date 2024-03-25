@@ -19,7 +19,9 @@ export async function getStudentList(
     dto?: StudentListRequestDto
 ): Promise<Page<StudentResponseDto>> {
     try {
-        const body = !!dto ? JSON.stringify(dto) : JSON.stringify({});
+        // Use raw dto instead of JSON.stringify(dto) - dto already parse
+        // to JSON string in fetchNoCache
+        const body = !!dto ? dto : {};
 
         const res = await fetchNoCache(
             process.env["SPRING_API"] + "/student",

@@ -21,7 +21,6 @@ export default function Page() {
         type: "password" | "text";
         show: boolean;
     }>({type: "password", show: false});
-    console.log(state);
 
     useEffect(() => {
         if (state.user) {

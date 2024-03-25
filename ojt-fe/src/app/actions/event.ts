@@ -37,11 +37,12 @@ export async function registerEvent(dto: RegisterEventDto) {
 }
 
 const commentSchema = z.object({
+    eventDetailId: z.number(),
     username: z.string(),
     content: z.string(),
 });
 
-export type AddCommentDto = z.infer<typeof commentSchema>;
+export type AddCommentDto = z.infer<typeof commentSchema>
 
 export type CommentDto = AddCommentDto & {
     id: number;
@@ -49,7 +50,10 @@ export type CommentDto = AddCommentDto & {
     isDeleted: boolean;
 };
 
-export async function addComment(dto: AddCommentDto) {}
+export async function addComment(dto: AddCommentDto) {
+    await fetchNoCache(`${process.env["SPRING_API"]}/student/event/comments`, "POST", dto);
+    revalidatePath("/event")
+}
 
 export async function getEventById(id: number): Promise<EventDetailDto | null> {
     const response = await fetchNoCache(

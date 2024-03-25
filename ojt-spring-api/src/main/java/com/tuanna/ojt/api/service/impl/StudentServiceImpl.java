@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.tuanna.ojt.api.constants.EventStatus;
+import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
@@ -26,6 +27,7 @@ import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.entity.EventDetail;
 import com.tuanna.ojt.api.entity.Student;
+import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.EventRepository;
 import com.tuanna.ojt.api.repository.GradeRepository;
 import com.tuanna.ojt.api.service.StudentService;
@@ -265,6 +267,41 @@ public class StudentServiceImpl implements StudentService {
       return eventDto;
     }
     return null;
+  }
+
+  @Override
+  @Transactional
+  public void addCommentForEventDetailById(AddCommentDto dto) {
+    var queryStringBuilder = new StringBuilder();
+    queryStringBuilder.append("select ed from com.tuanna.ojt.api.entity.EventDetail ed join fetch ed.comments where ed.id = :id");
+    
+    var getEventDetailByIdQuery = this.entityManager.createQuery(queryStringBuilder.toString(), EventDetail.class);
+    getEventDetailByIdQuery.setParameter("id", dto.eventDetailId());
+    var eventDetail = getEventDetailByIdQuery.getResultStream().findFirst().orElse(null);
+    
+    if(eventDetail != null) {
+      queryStringBuilder.setLength(0);
+      queryStringBuilder.append("select u from com.tuanna.ojt.api.entity.User u where u.username = :username");
+      
+      var getUserByUsernameQuery = this.entityManager.createQuery(queryStringBuilder.toString(), User.class);
+      getUserByUsernameQuery.setParameter("username", dto.username());
+      
+      var user = getUserByUsernameQuery.getResultStream().findFirst().orElse(null);
+      if(user != null) {
+        var newComment = Comment.builder()
+            .user(user)
+            .content(dto.content())
+            .isDeleted(false)
+            .build();
+        
+        eventDetail.getComments().add(newComment);
+        
+        this.entityManager.persist(eventDetail);
+        this.entityManager.flush();
+      }
+      
+    }
+    
   }
 
 }
