@@ -53,10 +53,21 @@ public class Comment extends BaseEntity {
   }
 
   public CommentDto toDto() {
+    
+    var roleName = switch(this.user.getRole()) {
+      case COUNSELOR -> "Counselor";
+      case PARENT -> "Parent";
+      case STUDENT -> "Student";
+      case TEACHER -> "Teacher";
+      default -> throw new IllegalArgumentException("Invalid input");
+    };
+    
     // @formatter:off
     return new CommentDto(
           this.id,
-          this.user.getName(), 
+          this.user.getName(),
+          this.user.getUsername(),
+          roleName,
           this.content,
           this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
           this.isDeleted

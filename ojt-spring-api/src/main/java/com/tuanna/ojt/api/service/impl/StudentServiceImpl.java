@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -253,7 +254,7 @@ public class StudentServiceImpl implements StudentService {
               e
         from
               com.tuanna.ojt.api.entity.EventDetail e
-        join fetch
+        left join fetch
               e.comments
         where
               e.id = :id
@@ -271,9 +272,17 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional
-  public void addCommentForEventDetailById(AddCommentDto dto) {
+  public List<CommentDto> addCommentForEventDetailById(AddCommentDto dto) {
     var queryStringBuilder = new StringBuilder();
-    queryStringBuilder.append("select ed from com.tuanna.ojt.api.entity.EventDetail ed join fetch ed.comments where ed.id = :id");
+    queryStringBuilder.append("""
+              select 
+                ed 
+              from 
+                com.tuanna.ojt.api.entity.EventDetail ed 
+                left join fetch ed.comments 
+              where 
+                ed.id = : id
+            """);
     
     var getEventDetailByIdQuery = this.entityManager.createQuery(queryStringBuilder.toString(), EventDetail.class);
     getEventDetailByIdQuery.setParameter("id", dto.eventDetailId());
@@ -281,7 +290,14 @@ public class StudentServiceImpl implements StudentService {
     
     if(eventDetail != null) {
       queryStringBuilder.setLength(0);
-      queryStringBuilder.append("select u from com.tuanna.ojt.api.entity.User u where u.username = :username");
+      queryStringBuilder.append("""
+                select 
+                  u 
+                from 
+                  com.tuanna.ojt.api.entity.User u 
+                where 
+                  u.username = : username
+              """);
       
       var getUserByUsernameQuery = this.entityManager.createQuery(queryStringBuilder.toString(), User.class);
       getUserByUsernameQuery.setParameter("username", dto.username());
@@ -300,7 +316,24 @@ public class StudentServiceImpl implements StudentService {
         this.entityManager.flush();
       }
       
+      queryStringBuilder.setLength(0);
+      queryStringBuilder.append("""
+              select
+                c
+              from
+                com.tuanna.ojt.api.entity.Comment c
+              where
+                c.user.username = :username
+              """);
+      var getCommentsByUsernameQuery = this.entityManager.createQuery(queryStringBuilder.toString(), Comment.class);
+      getCommentsByUsernameQuery.setParameter("username", dto.username());
+      
+      var results = getCommentsByUsernameQuery.getResultStream().map(Comment::toDto).toList();
+      return results;
     }
+
+    
+    return null;
     
   }
 

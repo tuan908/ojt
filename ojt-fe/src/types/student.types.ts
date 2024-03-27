@@ -8,7 +8,6 @@ type EventDetailDto = Array<{
     status: number;
     comments: CommentDto[];
     data: Partial<{
-        eventName: string;
         eventsInSchoolLife: string;
         myAction: string;
         myThought: string;

@@ -1,7 +1,12 @@
 import {jwtVerify, type JWTPayload} from "jose";
 
 export type MyJwtPayload = JWTPayload &
-    Readonly<{username: string; grade: string; role: string}>;
+    Readonly<{
+        name: string;
+        username: string;
+        grade: string;
+        role: string;
+    }>;
 
 export function getJwtSecretKey() {
     const secret = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;

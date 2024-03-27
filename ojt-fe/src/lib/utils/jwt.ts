@@ -9,14 +9,8 @@ import {getJwtSecretKey} from "../auth";
  * @returns JWT Token
  * @author tuanna
  */
-export async function generateJWT({
-    username,
-    role,
-}: Omit<AccountDto, "password">) {
-    const token = await new SignJWT({
-        username: username,
-        role: role,
-    })
+export async function generateJWT(dto: Omit<AccountDto, "password">) {
+    const token = await new SignJWT(dto)
         .setProtectedHeader({alg: "HS256"})
         .setIssuedAt()
         .setExpirationTime("7 days")

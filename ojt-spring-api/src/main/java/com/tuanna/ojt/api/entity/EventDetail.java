@@ -60,7 +60,6 @@ public class EventDetail extends BaseEntity {
   @AllArgsConstructor
   @NoArgsConstructor
   public class EventData {
-    private String eventName;
     private String eventsInSchoolLife;
     private String myAction;
     private String myThought;

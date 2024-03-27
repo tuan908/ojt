@@ -15,11 +15,11 @@ export type ErrorResponseDto = {
     code: string;
     title: string;
     message: string;
-}
+};
 
 export enum OjtStatusCode {
     Error = "OJT_0000",
-    ResultNotFound= "OJT_0001",
+    ResultNotFound = "OJT_0001",
     UpdateError = "OJT_0002",
     UpdateSuccess = "OJT_0003",
 }

@@ -9,6 +9,7 @@ import {redirect} from "next/navigation";
 import {z} from "zod";
 
 export type AccountDto = {
+    name: string;
     username: string;
     password: string;
     role: string;
@@ -44,13 +45,14 @@ export async function login(_: any, formData: FormData) {
     const data = parse.data;
     const [user] = await sql<AccountDto[]>`
         select
-            username
-            , password
-            , role
+            u.name
+            , u.username
+            , u.password
+            , u.role
         from
-            ojt_user
+            ojt_user u
         where
-            username = ${data.username}
+            u.username = ${data.username}
     `;
     if (!user) {
         return {message: "Incorrect username or password.", user: null};
@@ -59,6 +61,7 @@ export async function login(_: any, formData: FormData) {
     try {
         if (await argon2.verify(user.password, data.password)) {
             const token = await generateJWT({
+                name: user.name,
                 username: user.username,
                 role: user.role,
                 grade: user.grade,

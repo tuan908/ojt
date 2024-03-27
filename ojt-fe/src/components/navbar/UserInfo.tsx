@@ -5,7 +5,7 @@ import {useAuth} from "@/lib/hooks/useAuth";
 import {convertRole} from "@/lib/utils/role";
 import {useEffect, useState} from "react";
 
-type UserPayload = Partial<Pick<MyJwtPayload, "username" | "role">>;
+type UserPayload = Partial<Pick<MyJwtPayload, "name" | "role">>;
 
 // TODO: Remove flicker when set user info
 export default function UserInfo() {
@@ -15,7 +15,7 @@ export default function UserInfo() {
     useEffect(() => {
         if (auth !== null) {
             setInfo({
-                username: auth.username,
+                name: auth.name,
                 role: convertRole(auth.role),
             });
         }
@@ -24,7 +24,7 @@ export default function UserInfo() {
     return (
         <div className="flex flex-col">
             <h1 className="text-2xl font-normal text-[#abb7bc]">
-                Hello {info ? info.username : null}
+                Hello {info ? info.name : null}
             </h1>
             <h1 className="text-[#c3cbcf]">{info ? info.role : null}</h1>
         </div>

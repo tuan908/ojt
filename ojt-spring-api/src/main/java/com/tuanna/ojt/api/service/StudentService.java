@@ -1,7 +1,9 @@
 package com.tuanna.ojt.api.service;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import com.tuanna.ojt.api.dto.AddCommentDto;
+import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.RegisterEventResponseDto;
@@ -21,5 +23,5 @@ public interface StudentService {
 
   EventDetailDto getStudentEventById(Long id);
   
-  void addCommentForEventDetailById(AddCommentDto dto);
+  List<CommentDto> addCommentForEventDetailById(AddCommentDto dto);
 }

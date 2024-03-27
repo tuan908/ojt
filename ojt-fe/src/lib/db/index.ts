@@ -5,6 +5,6 @@ export const sql = postgres({
     user: process.env["PGUSER"],
     password: process.env["PGPASSWORD"],
     database: process.env["PGDATABASE"],
-    // ssl: "require",
+    ssl: process.env["PGHOST"] !== "localhost" ? "require" : undefined,
     transform: postgres.camel,
 });

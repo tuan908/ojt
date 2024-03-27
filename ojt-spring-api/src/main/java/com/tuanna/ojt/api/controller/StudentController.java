@@ -93,16 +93,7 @@ public class StudentController {
   
   @PostMapping("/event/comments")
   public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
-    this.studentService.addCommentForEventDetailById(dto);
-
-    // @formatter:off
-    var data = new SuccessResponseDto(
-        OjtCode.ACTION_SUCCESS.getValue(),
-        "Added Comment", 
-        "Updated status for event " + dto.eventDetailId(), 
-        "/student/event/" + dto.eventDetailId()
-      );
-    // @formatter:on
+    final var data = this.studentService.addCommentForEventDetailById(dto);
 
     return ResponseEntity.ok().body(data);
   }

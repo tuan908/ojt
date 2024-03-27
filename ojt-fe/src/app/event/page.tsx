@@ -8,10 +8,9 @@ import {
     type AddCommentDto,
     type RegisterEventDto,
 } from "@/app/actions/event";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
 
-import {getEventById} from "@/app/actions/event";
-import ButtonBase from "@/components/ButtonBase";
+import {getEventDetailById} from "@/app/actions/event";
 import LoadingComponent from "@/components/LoadingComponent";
 import Textarea from "@/components/Textarea";
 import {useAuth} from "@/lib/hooks/useAuth";
@@ -26,8 +25,6 @@ import {type HashtagDto} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
-import Delete from "@mui/icons-material/Delete";
-import Edit from "@mui/icons-material/Edit";
 import Send from "@mui/icons-material/Send";
 import SentimentSatisfiedAlt from "@mui/icons-material/SentimentSatisfiedAlt";
 import Autocomplete, {
@@ -38,63 +35,59 @@ import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {
+    Fragment,
+    Suspense,
     useEffect,
     useState,
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
 import {getHashtagList} from "../actions/tracking";
+import BubbleMessage from "./_BubbleMessage";
 import "./register.css";
 
 export default function Page() {
     const dispatch = useAppDispatch();
+    const router = useRouter();
     const isLoading = useAppSelector(getLoadingState);
     const {auth} = useAuth();
     const params = useSearchParams();
-    const [registerData, setData] = useState<RegisterEventDto["data"]>({
-        eventName: "",
-        eventsInSchoolLife: "",
-        myAction: "",
-        myThought: "",
-        shownPower: "",
-        strengthGrown: "",
-    });
+    const [registerData, setData] = useState<RegisterEventDto["data"]>({});
 
     const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
     const [comments, setComments] = useState<CommentDto[]>([]);
     const [showState, setShow] = useState<
         Array<{isShow: boolean; index: number}>
     >([]);
+    const [isDisable, setDisable] = useState(false);
     const [hashtagList, setHashtagList] = useState<HashtagDto[]>([]);
 
     async function init() {
         await dispatch(showLoading());
         let id = parseInt(params.get("id") ?? "");
         const promises = await Promise.allSettled([
-            getEventById(id),
+            getEventDetailById(id),
             getEventDetailList(),
             getHashtagList(),
         ]);
 
         if (promises[0].status === "fulfilled") {
-            const eventDetail = promises[0].value;
+            const detail = promises[0].value;
 
-            if (eventDetail !== null) {
-                if (eventDetail.data !== null) {
-                    setData({
-                        eventName: eventDetail.name,
-                        eventsInSchoolLife: eventDetail.data.eventsInSchoolLife,
-                        myAction: eventDetail.data.myAction,
-                        myThought: eventDetail.data.myThought,
-                        shownPower: eventDetail.data.shownPower,
-                        strengthGrown: eventDetail.data.strengthGrown,
-                    });
-                }
-                setComments(eventDetail.comments);
+            if (detail !== null) {
+                setData({
+                    eventName: detail.name,
+                    eventsInSchoolLife: detail.data?.eventsInSchoolLife,
+                    myAction: detail?.data?.myAction,
+                    myThought: detail?.data?.myThought,
+                    shownPower: detail?.data?.shownPower,
+                    strengthGrown: detail?.data?.strengthGrown,
+                });
+                setComments(detail?.comments);
                 setShow(
-                    eventDetail.comments.map(x => ({
+                    detail?.comments?.map(x => ({
                         index: x.id,
                         isShow: false,
                     }))
@@ -121,8 +114,10 @@ export default function Page() {
 
     useEffect(() => {
         init();
+        if (params.get("mode") === "chat") {
+            setDisable(true);
+        }
     }, []);
-    console.log(auth);
 
     const [openPicker, setOpen] = useState(false);
     const [commentData, setCommentData] = useState<AddCommentDto>({
@@ -201,7 +196,9 @@ export default function Page() {
         });
     };
 
-    async function handleClick(e: SyntheticEvent<HTMLButtonElement>) {
+    async function handleUpdateEventDetail(
+        e: SyntheticEvent<HTMLButtonElement>
+    ) {
         e?.preventDefault();
         await registerEvent({
             username: auth?.username!,
@@ -216,12 +213,23 @@ export default function Page() {
     ) {
         event?.preventDefault();
         if (auth && auth.username) {
+            await dispatch(showLoading());
             let data: AddCommentDto = {
                 ...commentData,
                 eventDetailId: Number(params.get("id")),
                 username: auth.username,
             };
-            await addComment(data);
+            await addComment(data)
+                .then(async res => {
+                    if (res) {
+                        setComments(res);
+                        setCommentData({...commentData, content: ""});
+                        setShow(res.map(x => ({index: x.id, isShow: false})));
+                    }
+                })
+                .finally(async () => {
+                    await dispatch(hideLoading());
+                });
         }
     }
 
@@ -234,42 +242,6 @@ export default function Page() {
         setOpen(false);
     }
 
-    const handleOnMouseEnter = (
-        e: SyntheticEvent<HTMLDivElement, Event>,
-        index: number
-    ) => {
-        e.preventDefault();
-        console.log(`Show edit/delete button on comment #${index}`);
-        let ele = showState?.find(x => x.index === index);
-        if (ele) {
-            setShow(x => {
-                // Set others comment isShow to false
-                let array = x
-                    .filter(comment => comment.index !== index)
-                    .map(x => ({...x, isShow: false}));
-                // Set target comment isShow to true
-                array.push({index, isShow: true});
-                return array;
-            });
-        }
-    };
-
-    const handleOnMouseLeave = (
-        e: SyntheticEvent<HTMLDivElement, Event>,
-        index: number
-    ) => {
-        e.preventDefault();
-        console.log(`Hide edit/delete button on comment #${index}`);
-        let ele = showState?.find(x => x.index === index);
-        if (ele) {
-            setShow(x => {
-                let array = x.filter(comment => comment.index !== index);
-                array.push({index, isShow: false});
-                return array;
-            });
-        }
-    };
-
     return (
         <div className="pt-12 w-full flex flex-col gap-y-8">
             {isLoading ? <LoadingComponent /> : null}
@@ -280,9 +252,9 @@ export default function Page() {
                         <label htmlFor="selectEvent">Select Event:</label>
                         <Select
                             variant="outlined"
-                            className="w-full border-default"
+                            className="w-full border-default disabled:cursor-not-allowed"
                             placeholder="Select Event"
-                            defaultValue="Event"
+                            value={registerData.eventName ?? "Event"}
                             sx={{bgcolor: "#ffffff", paddingX: 1}}
                             MenuProps={{
                                 slotProps: {
@@ -296,6 +268,7 @@ export default function Page() {
                                 },
                             }}
                             onChange={handleSelectChange}
+                            disabled={isDisable}
                         >
                             <MenuItem value="Event">Event</MenuItem>
                             {eventOptions.map(x => (
@@ -313,25 +286,32 @@ export default function Page() {
 
                     {/* Events in school life */}
                     <Textarea
-                        className="resize-none border rounded-md px-4 py-2 outline-blue-500"
+                        className="resize-none border rounded-md px-4 py-2 outline-blue-500 disabled:cursor-not-allowed"
                         name="eventsInSchoolLife"
                         placeholder="Events in school life"
                         onChange={handleChange}
+                        value={registerData.eventsInSchoolLife}
+                        disabled={isDisable}
                     />
 
                     {/* My Actions */}
                     <Textarea
+                        className="disabled:cursor-not-allowed"
                         name="myAction"
                         placeholder="My Actions"
                         onChange={handleChange}
+                        value={registerData.myAction}
+                        disabled={isDisable}
                     />
 
                     {/* Shown power */}
                     <textarea
-                        className="resize-none border rounded-md px-4 py-2 outline-blue-500"
+                        className="resize-none border rounded-md px-4 py-2 outline-blue-500 disabled:cursor-not-allowed"
                         name="shownPower"
                         placeholder="Shown power"
                         onChange={handleChange}
+                        value={registerData.shownPower}
+                        disabled={isDisable}
                     />
 
                     {/* Strength that has grown */}
@@ -339,6 +319,9 @@ export default function Page() {
                         name="strengthGrown"
                         placeholder="Strength that has grown"
                         onChange={handleChange}
+                        value={registerData.strengthGrown}
+                        disabled={isDisable}
+                        className="disabled:cursor-not-allowed"
                     />
 
                     {/* What I thought */}
@@ -346,118 +329,137 @@ export default function Page() {
                         name="myThought"
                         placeholder="What I thought"
                         onChange={handleChange}
+                        value={registerData.myThought}
+                        disabled={isDisable}
+                        className="disabled:cursor-not-allowed"
                     />
 
                     <button
-                        className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer"
+                        className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
                         style={{backgroundColor: "#4285f4"}}
-                        onClick={async e => handleClick(e)}
+                        onClick={async e => handleUpdateEventDetail(e)}
+                        disabled={isDisable}
                     >
                         Add
                     </button>
                 </div>
             </div>
 
-            <div className="w-1/2 m-auto flex flex-col gap-y-4">
-                {comments.map(x => {
-                    return (
-                        <div
-                            key={x.id}
-                            className="w-1/2 h-full bg-white flex flex-col px-4 py-2 rounded-lg relative hover:cursor-pointer"
-                            onMouseEnter={e => handleOnMouseEnter(e, x.id)}
-                            onMouseLeave={e => handleOnMouseLeave(e, x.id)}
-                        >
-                            <span className="pb-1">{x.content}</span>
-                            <span className="text-[12px]">{x.createdAt}</span>
-                            <div
-                                style={{
-                                    display: showState.find(
-                                        s => s.index === x.id
-                                    )!?.isShow
-                                        ? "block"
-                                        : "none",
-                                }}
-                                className="absolute left-2 top-1 bg-white flex gap-x-2 "
-                            >
-                                <ButtonBase classes="rounded-full shadow-lg border p-[0.125rem]">
-                                    <Edit className="text-icon-default" />
-                                </ButtonBase>
-                                <ButtonBase classes="rounded-full shadow-lg border p-[0.125rem]">
-                                    <Delete color="error" />
-                                </ButtonBase>
-                            </div>
+            {params.get("mode") && params.get("mode") !== "new" ? (
+                <>
+                    <Suspense fallback={<>Loading comments...</>}>
+                        <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
+                            {comments?.map((x, index) => {
+                                return (
+                                    <Fragment key={x.id}>
+                                        {x.isDeleted ? (
+                                            <span className="text-red-500">
+                                                Deleted
+                                            </span>
+                                        ) : (
+                                            <BubbleMessage
+                                                data={x}
+                                                showState={showState}
+                                                setShow={setShow}
+                                                auth={auth}
+                                            />
+                                        )}
+                                    </Fragment>
+                                );
+                            })}
                         </div>
-                    );
-                })}
-            </div>
+                        <div className="w-3/5 m-auto flex items-center gap-x-8">
+                            <Avatar sx={{width: 72, height: 72}} />
+                            <div className="w-full flex items-center relative">
+                                {auth?.role === UserRole.Counselor ? (
+                                    <Autocomplete
+                                        className="w-full"
+                                        sx={{
+                                            "& .MuiAutocomplete-inputRoot": {
+                                                flexWrap: "nowrap",
+                                                bgcolor: "#ffffff",
+                                                paddingX: 1,
+                                            },
+                                        }}
+                                        options={hashtagList.map(x => ({
+                                            label: x.name,
+                                            id: x.id,
+                                        }))}
+                                        renderInput={params => (
+                                            <TextField
+                                                {...params}
+                                                placeholder="Input comment here..."
+                                                multiline
+                                                variant="outlined"
+                                                rows={2}
+                                            />
+                                        )}
+                                        onInputChange={handleInputCommentChange}
+                                        onChange={handleChangeComment}
+                                        open={openSuggest}
+                                        inputValue={commentData.content}
+                                        disableListWrap
+                                        disableClearable
+                                        disablePortal
+                                        freeSolo
+                                    />
+                                ) : (
+                                    <TextField
+                                        sx={{
+                                            width: "100%",
+                                            flexWrap: "nowrap",
+                                            bgcolor: "#ffffff",
+                                        }}
+                                        onChange={event =>
+                                            setCommentData({
+                                                ...commentData,
+                                                content: event.target.value,
+                                            })
+                                        }
+                                        value={commentData.content}
+                                        placeholder="Input comment here..."
+                                        multiline
+                                        variant="outlined"
+                                        rows={2}
+                                    />
+                                )}
 
-            <div className="w-3/5 m-auto flex items-center gap-x-8">
-                <Avatar sx={{width: 72, height: 72}} />
-                <div className="w-full flex items-center relative">
-                    <Autocomplete
-                        className="w-full"
-                        sx={{
-                            "& .MuiAutocomplete-inputRoot": {
-                                flexWrap: "nowrap",
-                                bgcolor: "#ffffff",
-                                paddingX: 1,
-                            },
-                        }}
-                        options={hashtagList.map(x => ({
-                            label: x.name,
-                            id: x.id,
-                        }))}
-                        renderInput={params => (
-                            <TextField
-                                {...params}
-                                placeholder="Input comment here..."
-                                multiline
-                                variant="outlined"
-                                rows={2}
-                            />
-                        )}
-                        onInputChange={handleInputCommentChange}
-                        onChange={handleChangeComment}
-                        open={openSuggest}
-                        inputValue={commentData.content}
-                        disableListWrap
-                        disableClearable
-                        disablePortal
-                        freeSolo
-                    />
-
-                    <button
-                        onClick={() => setOpen(!openPicker)}
-                        className="absolute top-1 right-2"
-                    >
-                        {!openPicker ? (
-                            <SentimentSatisfiedAlt
-                                sx={{width: 22, height: 22}}
-                            />
-                        ) : (
-                            <Close sx={{width: 22, height: 22}} />
-                        )}
-                    </button>
-                    {openPicker ? (
-                        <Picker
-                            data={data}
-                            onEmojiSelect={handleSelect}
-                            open={openPicker}
-                            previewPosition="none"
-                            onClickOutside={() => setOpen(false)}
-                        />
-                    ) : null}
-                </div>
-                <button
-                    className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3"
-                    onClick={handleAddComment}
-                >
-                    <Send
-                        className="-rotate-[50deg] text-icon-default"
-                        sx={{width: 32, height: 32}}
-                    />
-                </button>
-            </div>
+                                <button
+                                    onClick={() => setOpen(!openPicker)}
+                                    className="absolute top-1 right-2"
+                                >
+                                    {!openPicker ? (
+                                        <SentimentSatisfiedAlt
+                                            sx={{width: 22, height: 22}}
+                                        />
+                                    ) : (
+                                        <Close sx={{width: 22, height: 22}} />
+                                    )}
+                                </button>
+                                {openPicker ? (
+                                    <Picker
+                                        data={data}
+                                        onEmojiSelect={handleSelect}
+                                        open={openPicker}
+                                        previewPosition="none"
+                                        onClickOutside={() => setOpen(false)}
+                                    />
+                                ) : null}
+                            </div>
+                            <button
+                                className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
+                                onClick={handleAddComment}
+                                disabled={commentData.content.length === 0}
+                            >
+                                <Send
+                                    className="-rotate-[50deg] text-icon-default"
+                                    sx={{width: 32, height: 32}}
+                                />
+                            </button>
+                        </div>
+                    </Suspense>
+                </>
+            ) : null}
         </div>
     );
 }
