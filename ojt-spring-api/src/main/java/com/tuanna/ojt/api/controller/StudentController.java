@@ -5,12 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuanna.ojt.api.constants.OjtCode;
 import com.tuanna.ojt.api.dto.AddCommentDto;
+import com.tuanna.ojt.api.dto.DeleteCommentDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.SuccessResponseDto;
@@ -94,6 +96,22 @@ public class StudentController {
   @PostMapping("/event/comments")
   public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
     final var data = this.studentService.addCommentForEventDetailById(dto);
+
+    return ResponseEntity.ok().body(data);
+  }
+  
+  @PostMapping("/event/comments/{id}")
+  public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id, @RequestBody DeleteCommentDto dto) {
+    this.studentService.deleteCommentById(dto);
+
+    // @formatter:off
+    var data = new SuccessResponseDto(
+        OjtCode.ACTION_SUCCESS.getValue(),
+        "Deleted", 
+        "Deleted comment " + id+ " for event " + dto.eventDetailId(), 
+        "/student/comments/" + id
+      );
+    // @formatter:on
 
     return ResponseEntity.ok().body(data);
   }

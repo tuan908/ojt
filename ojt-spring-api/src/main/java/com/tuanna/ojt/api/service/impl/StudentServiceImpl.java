@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
+import com.tuanna.ojt.api.dto.DeleteCommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
@@ -275,66 +276,96 @@ public class StudentServiceImpl implements StudentService {
   public List<CommentDto> addCommentForEventDetailById(AddCommentDto dto) {
     var queryStringBuilder = new StringBuilder();
     queryStringBuilder.append("""
-              select 
-                ed 
-              from 
-                com.tuanna.ojt.api.entity.EventDetail ed 
-                left join fetch ed.comments 
-              where 
-                ed.id = : id
-            """);
-    
-    var getEventDetailByIdQuery = this.entityManager.createQuery(queryStringBuilder.toString(), EventDetail.class);
+          select
+            ed
+          from
+            com.tuanna.ojt.api.entity.EventDetail ed
+            left join fetch ed.comments
+          where
+            ed.id = : id
+        """);
+
+    var getEventDetailByIdQuery =
+        this.entityManager.createQuery(queryStringBuilder.toString(), EventDetail.class);
     getEventDetailByIdQuery.setParameter("id", dto.eventDetailId());
     var eventDetail = getEventDetailByIdQuery.getResultStream().findFirst().orElse(null);
-    
-    if(eventDetail != null) {
+
+    if (eventDetail != null) {
       queryStringBuilder.setLength(0);
       queryStringBuilder.append("""
-                select 
-                  u 
-                from 
-                  com.tuanna.ojt.api.entity.User u 
-                where 
-                  u.username = : username
-              """);
-      
-      var getUserByUsernameQuery = this.entityManager.createQuery(queryStringBuilder.toString(), User.class);
+            select
+              u
+            from
+              com.tuanna.ojt.api.entity.User u
+            where
+              u.username = : username
+          """);
+
+      var getUserByUsernameQuery =
+          this.entityManager.createQuery(queryStringBuilder.toString(), User.class);
       getUserByUsernameQuery.setParameter("username", dto.username());
-      
+
       var user = getUserByUsernameQuery.getResultStream().findFirst().orElse(null);
-      if(user != null) {
-        var newComment = Comment.builder()
-            .user(user)
-            .content(dto.content())
-            .isDeleted(false)
-            .build();
-        
+      if (user != null) {
+        var newComment =
+            Comment.builder().user(user).content(dto.content()).isDeleted(false).build();
+
         eventDetail.getComments().add(newComment);
-        
+
         this.entityManager.persist(eventDetail);
         this.entityManager.flush();
       }
-      
+
       queryStringBuilder.setLength(0);
       queryStringBuilder.append("""
-              select
-                c
-              from
-                com.tuanna.ojt.api.entity.Comment c
-              where
-                c.user.username = :username
-              """);
-      var getCommentsByUsernameQuery = this.entityManager.createQuery(queryStringBuilder.toString(), Comment.class);
-      getCommentsByUsernameQuery.setParameter("username", dto.username());
-      
-      var results = getCommentsByUsernameQuery.getResultStream().map(Comment::toDto).toList();
-      return results;
+          select
+            ed
+          from
+            com.tuanna.ojt.api.entity.EventDetail ed
+            left join fetch ed.comments
+          where
+            ed.id = : id
+          """);
+      var getUpdatedCommentList =
+          this.entityManager.createQuery(queryStringBuilder.toString(), EventDetail.class);
+      getUpdatedCommentList.setParameter("id", dto.eventDetailId());
+
+      var result = getUpdatedCommentList.getResultStream().findFirst().orElse(null);
+
+      if (result != null) {
+        // @formatter:off
+        var updatedCommentList = result.getComments()
+            .stream()
+            .sorted(Comparator.comparing(Comment::getCreatedAt))
+            .map(Comment::toDto)
+            .toList();
+        // @formatter:on
+
+        return updatedCommentList;
+      }
     }
 
-    
     return null;
-    
+
+  }
+
+  @Override
+  @Transactional
+  public void deleteCommentById(DeleteCommentDto dto) {
+    var qlString = """
+          update
+            com.tuanna.ojt.api.entity.Comment
+          set
+            isDeleted = true
+          where
+            id = ?1
+            and user.username = ?2
+        """;
+    var query = this.entityManager.createQuery(qlString);
+    query.setParameter(1, dto.id());
+    query.setParameter(2, dto.username());
+    query.executeUpdate();
+    entityManager.flush();
   }
 
 }

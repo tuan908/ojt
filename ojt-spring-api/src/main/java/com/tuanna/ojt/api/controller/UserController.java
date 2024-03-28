@@ -14,9 +14,9 @@ import com.tuanna.ojt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "/api/v1/account")
+@RequestMapping(path = "/api/v1/user")
 @RequiredArgsConstructor
-public class AccountController {
+public class UserController {
 
     private final UserService accountService;
 

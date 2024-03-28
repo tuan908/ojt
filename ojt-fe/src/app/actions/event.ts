@@ -60,11 +60,7 @@ export async function addComment(
     dto: AddCommentDto
 ): Promise<CommentDto[] | null> {
     try {
-        const res = await fetchNoCache(
-            `${process.env["SPRING_API"]}/student/event/comments`,
-            "POST",
-            dto
-        );
+        const res = await fetchNoCache(`/student/event/comments`, "POST", dto);
         const data = await res.json();
         return data;
     } catch (error) {
@@ -75,17 +71,13 @@ export async function addComment(
 export async function getEventDetailById(
     id: number
 ): Promise<EventDetailDto | null> {
-    const response = await fetchNoCache(
-        `${process.env["SPRING_API"]}/student/event/${id}`
-    );
+    const response = await fetchNoCache(`/student/event/${id}`);
     const result = await response.json();
     return result;
 }
 
 export async function getEventDetailList(): Promise<EventDto[] | null> {
-    const response = await fetchNoCache(
-        `${process.env["SPRING_API"]}/event-detail`
-    );
+    const response = await fetchNoCache(`/event-detail`);
     const result = await response.json();
     return result;
 }

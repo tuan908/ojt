@@ -23,11 +23,7 @@ export async function getStudentList(
         // to JSON string in fetchNoCache
         const body = !!dto ? dto : {};
 
-        const res = await fetchNoCache(
-            process.env["SPRING_API"] + "/student",
-            "POST",
-            body
-        );
+        const res = await fetchNoCache("/student", "POST", body);
         const result = await res.json();
         return result;
     } catch (error: any) {
@@ -39,9 +35,7 @@ export async function getStudentByCode(
     studentCode: string
 ): Promise<StudentResponseDto | null> {
     try {
-        const res = await fetchNoCache(
-            process.env["SPRING_API"] + "/student/" + studentCode
-        );
+        const res = await fetchNoCache(`/student/${studentCode}`);
         const result = await res.json();
         return result;
     } catch (error: any) {
@@ -51,9 +45,7 @@ export async function getStudentByCode(
 
 export async function getEventList(): Promise<EventDetailDto[]> {
     try {
-        const res = await fetchNoCache(
-            process.env["SPRING_API"] + "/event-detail"
-        );
+        const res = await fetchNoCache("/event-detail");
         const result = await res.json();
         return result;
     } catch (error: any) {
@@ -73,11 +65,7 @@ export async function updateEventStatus(dto: {
     studentId: string;
 }) {
     try {
-        const response = await fetchNoCache(
-            process.env["SPRING_API"] + "/event/detail",
-            "POST",
-            dto
-        );
+        const response = await fetchNoCache("/event/detail", "POST", dto);
         revalidatePath(`/student/[slug]`, "page");
         const responseBody = await response.json();
         return responseBody;
@@ -88,4 +76,9 @@ export async function updateEventStatus(dto: {
             message: "Server error, please contact your administrator",
         };
     }
+}
+
+export async function deleteComment(dto: {id: number; eventDetailId: number; username: string}) {
+    await fetchNoCache("/student/event/comments/" + dto.id, "POST", dto)
+    revalidatePath("/student/event/comments")
 }

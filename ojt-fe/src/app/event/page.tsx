@@ -137,7 +137,10 @@ export default function Page() {
             switch (true) {
                 case typeof _value === "string":
                     setCommentData({...commentData, content: _value});
-                    if (_value.startsWith("#")) {
+                    if (
+                        _value.startsWith("#") &&
+                        auth?.role === UserRole.Counselor
+                    ) {
                         setOpenSuggest(true);
                     }
                     break;
@@ -165,17 +168,20 @@ export default function Page() {
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
+        let content = [];
         if (typeof _value === "string") {
+            content.push(_value);
             setCommentData({
                 ...commentData,
-                content: commentData.content.concat(_value, " "),
+                content: content.join(","),
             });
         }
 
         if (typeof _value === "object") {
+            content.push(_value.label);
             setCommentData({
                 ...commentData,
-                content: commentData.content.concat(_value.label, " "),
+                content: content.join(","),
             });
         }
 
@@ -212,6 +218,7 @@ export default function Page() {
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ) {
         event?.preventDefault();
+        setOpenSuggest(false);
         if (auth && auth.username) {
             await dispatch(showLoading());
             let data: AddCommentDto = {
@@ -345,11 +352,11 @@ export default function Page() {
                 </div>
             </div>
 
-            {params.get("mode") && params.get("mode") !== "new" ? (
-                <>
-                    <Suspense fallback={<>Loading comments...</>}>
+            <Suspense fallback={<>Loading comments...</>}>
+                {params.get("mode") && params.get("mode") !== "new" ? (
+                    <>
                         <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
-                            {comments?.map((x, index) => {
+                            {comments!?.map(x => {
                                 return (
                                     <Fragment key={x.id}>
                                         {x.isDeleted ? (
@@ -371,62 +378,41 @@ export default function Page() {
                         <div className="w-3/5 m-auto flex items-center gap-x-8">
                             <Avatar sx={{width: 72, height: 72}} />
                             <div className="w-full flex items-center relative">
-                                {auth?.role === UserRole.Counselor ? (
-                                    <Autocomplete
-                                        className="w-full"
-                                        sx={{
-                                            "& .MuiAutocomplete-inputRoot": {
-                                                flexWrap: "nowrap",
-                                                bgcolor: "#ffffff",
-                                                paddingX: 1,
-                                            },
-                                        }}
-                                        options={hashtagList.map(x => ({
-                                            label: x.name,
-                                            id: x.id,
-                                        }))}
-                                        renderInput={params => (
-                                            <TextField
-                                                {...params}
-                                                placeholder="Input comment here..."
-                                                multiline
-                                                variant="outlined"
-                                                rows={2}
-                                            />
-                                        )}
-                                        onInputChange={handleInputCommentChange}
-                                        onChange={handleChangeComment}
-                                        open={openSuggest}
-                                        inputValue={commentData.content}
-                                        disableListWrap
-                                        disableClearable
-                                        disablePortal
-                                        freeSolo
-                                    />
-                                ) : (
-                                    <TextField
-                                        sx={{
-                                            width: "100%",
+                                <Autocomplete
+                                    className="w-full"
+                                    sx={{
+                                        "& .MuiAutocomplete-inputRoot": {
                                             flexWrap: "nowrap",
                                             bgcolor: "#ffffff",
-                                        }}
-                                        onChange={event =>
-                                            setCommentData({
-                                                ...commentData,
-                                                content: event.target.value,
-                                            })
-                                        }
-                                        value={commentData.content}
-                                        placeholder="Input comment here..."
-                                        multiline
-                                        variant="outlined"
-                                        rows={2}
-                                    />
-                                )}
+                                            paddingX: 1,
+                                        },
+                                    }}
+                                    options={hashtagList.map(x => ({
+                                        label: x.name,
+                                        id: x.id,
+                                    }))}
+                                    renderInput={params => (
+                                        <TextField
+                                            {...params}
+                                            placeholder="Input comment here..."
+                                            multiline
+                                            variant="outlined"
+                                            rows={2}
+                                        />
+                                    )}
+                                    onInputChange={handleInputCommentChange}
+                                    onChange={handleChangeComment}
+                                    open={openSuggest}
+                                    inputValue={commentData.content}
+                                    disableListWrap
+                                    disableClearable
+                                    disablePortal
+                                    freeSolo
+                                />
 
                                 <button
                                     onClick={() => setOpen(!openPicker)}
-                                    className="absolute top-1 right-2"
+                                    className="absolute top-1 right-2 z-50"
                                 >
                                     {!openPicker ? (
                                         <SentimentSatisfiedAlt
@@ -457,9 +443,9 @@ export default function Page() {
                                 />
                             </button>
                         </div>
-                    </Suspense>
-                </>
-            ) : null}
+                    </>
+                ) : null}
+            </Suspense>
         </div>
     );
 }
