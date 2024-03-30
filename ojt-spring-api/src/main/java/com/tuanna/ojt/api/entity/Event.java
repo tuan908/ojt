@@ -4,6 +4,8 @@ import com.tuanna.ojt.api.dto.EventDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -25,6 +27,7 @@ public class Event extends BaseEntity {
   private static final long serialVersionUID = 1032972432116090594L;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(columnDefinition = "text")

@@ -29,7 +29,7 @@ export default function Page() {
         }
     }, [dispatch, state.user]);
 
-    function showOrHidePassword(e: SyntheticEvent) {
+    function showOrHidePassword(e: SyntheticEvent<HTMLDivElement>) {
         e.preventDefault();
         setState(x => ({
             ...x,
@@ -89,17 +89,16 @@ export default function Page() {
                             </InputAdornment>
                         ),
                         endAdornment: (
-                            <InputAdornment position="end">
-                                <button
-                                    className="border-none outline-none"
-                                    onClick={e => showOrHidePassword(e)}
-                                >
-                                    {inputState.show ? (
-                                        <VisibilityOff />
-                                    ) : (
-                                        <Visibility />
-                                    )}
-                                </button>
+                            <InputAdornment
+                                position="end"
+                                className="hover:cursor-pointer"
+                                onClick={e => showOrHidePassword(e)}
+                            >
+                                {inputState.show ? (
+                                    <VisibilityOff />
+                                ) : (
+                                    <Visibility />
+                                )}
                             </InputAdornment>
                         ),
                     }}

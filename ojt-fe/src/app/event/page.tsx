@@ -1,11 +1,11 @@
 "use client";
 
 import {
-    CommentDto,
     addComment,
     getEventDetailList,
     registerEvent,
     type AddCommentDto,
+    type CommentDto,
     type RegisterEventDto,
 } from "@/app/actions/event";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
@@ -202,16 +202,14 @@ export default function Page() {
         });
     };
 
-    async function handleUpdateEventDetail(
-        e: SyntheticEvent<HTMLButtonElement>
-    ) {
+    async function handleAddOrUpdate(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
         await registerEvent({
             username: auth?.username!,
             gradeName: auth?.grade!,
-            eventDetailId: parseInt(params.get("id")!),
             data: registerData,
         });
+        router.back();
     }
 
     async function handleAddComment(
@@ -344,10 +342,10 @@ export default function Page() {
                     <button
                         className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
                         style={{backgroundColor: "#4285f4"}}
-                        onClick={async e => handleUpdateEventDetail(e)}
+                        onClick={async e => handleAddOrUpdate(e)}
                         disabled={isDisable}
                     >
-                        Add
+                        {params.get("mode") !== "new" ? "Update" : "Add"}
                     </button>
                 </div>
             </div>

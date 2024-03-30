@@ -3,6 +3,7 @@ package com.tuanna.ojt.api.entity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -25,7 +26,7 @@ public class Grade extends BaseEntity {
     private static final long serialVersionUID = 2442385200898045268L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     private String name;
@@ -36,6 +37,6 @@ public class Grade extends BaseEntity {
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")
-    private java.util.Set<Event> events;
+    private java.util.Set<EventDetail> events;
     
 }

@@ -12,7 +12,7 @@ export function fetchNoCache(
     method?: "GET" | "POST",
     body?: unknown
 ) {
-    const url = `${process.env["SPRING_API"]}${endpoint}` 
+    const url = `${process.env["SPRING_API"]}${endpoint}`;
 
     if (method && method === "POST") {
         return fetch(url, {

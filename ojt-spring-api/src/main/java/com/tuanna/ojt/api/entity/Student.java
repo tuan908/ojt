@@ -48,8 +48,7 @@ public class Student extends BaseEntity {
   @Builder.Default
   private Set<Hashtag> hashtagList = new java.util.HashSet<>();
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "student_id")
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
   @Builder.Default
   private java.util.Set<EventDetail> eventList = new java.util.HashSet<>();
 

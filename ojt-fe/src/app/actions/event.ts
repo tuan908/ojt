@@ -1,15 +1,14 @@
 "use server";
 
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {EventDto} from "@/types/event.types";
-import {EventDetailDto} from "@/types/student.types";
+import {type EventDto} from "@/types/event.types";
+import {type EventDetailDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 
 const registerEventSchema = z.object({
     username: z.string(),
-    eventDetailId: z.number(),
     gradeName: z.string(),
     data: z.object({
         eventName: z.string().optional(),
@@ -33,8 +32,7 @@ export async function registerEvent(dto: RegisterEventDto) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        // TODO: use postgres's insert here
-        // await Astra.insertOne(CollectionName.StudentEventDetail, result.data);
+        await fetchNoCache("/student/event/register", "POST", result.data);
         revalidatePath("/event");
         redirect("/event", RedirectType.push);
     }

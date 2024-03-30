@@ -1,9 +1,13 @@
 package com.tuanna.ojt.api.entity;
 
+import java.io.Serializable;
+
 import org.hibernate.annotations.Type;
+
 import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
 import com.tuanna.ojt.api.dto.EventDetailDto;
+
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,6 +54,9 @@ public class EventDetail extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;
+  
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Student student;
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -59,7 +66,9 @@ public class EventDetail extends BaseEntity {
   @Setter
   @AllArgsConstructor
   @NoArgsConstructor
-  public class EventData {
+  public static class EventData implements Serializable {
+	private static final long serialVersionUID = 6365386061637591425L;
+	private String eventName;
     private String eventsInSchoolLife;
     private String myAction;
     private String myThought;

@@ -1,24 +1,24 @@
 "use server";
 
 import {UserRole} from "@/constants";
-import {sql} from "@/lib/db";
+import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {generateJWT} from "@/lib/utils/jwt";
-import * as argon2 from "argon2";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
 
 export type AccountDto = {
+    id: number;
     name: string;
     username: string;
-    password: string;
     role: string;
     grade: string;
+    code: string;
 };
 
 export type LoginState = {
     message: string;
-    user: Omit<AccountDto, "password"> | null;
+    user: AccountDto | null;
 };
 
 export async function login(_: any, formData: FormData) {
@@ -43,37 +43,21 @@ export async function login(_: any, formData: FormData) {
     }
 
     const data = parse.data;
-    const [user] = await sql<AccountDto[]>`
-        select
-            u.name
-            , u.username
-            , u.password
-            , u.role
-        from
-            ojt_user u
-        where
-            u.username = ${data.username}
-    `;
-    if (!user) {
-        return {message: "Incorrect username or password.", user: null};
-    }
+    let user;
 
     try {
-        if (await argon2.verify(user.password, data.password)) {
-            const token = await generateJWT({
-                name: user.name,
-                username: user.username,
-                role: user.role,
-                grade: user.grade,
-            });
-            cookies().set({
-                name: "token",
-                value: token,
-                path: "/",
-            });
-        } else {
+        const response = await fetchNoCache("/auth/login", "POST", data);
+        const responseJson = await response.json();
+        if (!responseJson) {
             return {message: "Incorrect username or password.", user: null};
         }
+        user = responseJson as AccountDto;
+        const token = await generateJWT(user);
+        cookies().set({
+            name: "token",
+            value: token,
+            path: "/",
+        });
     } catch (error) {
         return {message: "System Error", user: null};
     }
@@ -83,17 +67,7 @@ export async function login(_: any, formData: FormData) {
     if (user.role !== UserRole.Student) {
         redirectPath = "/student/list";
     } else {
-        const [result] = await sql<Array<{code: string}>>`
-            select
-                code
-            from
-                ojt_student os
-            join
-                ojt_user ou on ou.id = os.user_id
-            where
-                ou.username = ${data.username}
-        `;
-        redirectPath = `/student/${result.code}`;
+        redirectPath = `/student/${user.code}`;
     }
     redirect(redirectPath);
 }

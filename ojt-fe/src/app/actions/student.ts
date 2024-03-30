@@ -78,7 +78,11 @@ export async function updateEventStatus(dto: {
     }
 }
 
-export async function deleteComment(dto: {id: number; eventDetailId: number; username: string}) {
-    await fetchNoCache("/student/event/comments/" + dto.id, "POST", dto)
-    revalidatePath("/student/event/comments")
+export async function deleteComment(dto: {
+    id: number;
+    eventDetailId: number;
+    username: string;
+}) {
+    await fetchNoCache("/student/event/comments/" + dto.id, "POST", dto);
+    revalidatePath("/student/event/comments");
 }

@@ -9,7 +9,7 @@ import {getJwtSecretKey} from "../auth";
  * @returns JWT Token
  * @author tuanna
  */
-export async function generateJWT(dto: Omit<AccountDto, "password">) {
+export async function generateJWT(dto: AccountDto) {
     const token = await new SignJWT(dto)
         .setProtectedHeader({alg: "HS256"})
         .setIssuedAt()

@@ -4,57 +4,90 @@ import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.tuanna.ojt.api.dto.LoginDto;
+import com.tuanna.ojt.api.dto.LoginResponseDto;
 import com.tuanna.ojt.api.dto.UserDto;
+import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.UserService;
+
 import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-  private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-  private final PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
-  private final EntityManager entityManager;
+	private final EntityManager entityManager;
 
-  public UserServiceImpl(JpaContext jpaContext, UserRepository userRepository,
-      final PasswordEncoder pe) {
-    this.entityManager = jpaContext.getEntityManagerByManagedType(User.class);
-    this.userRepository = userRepository;
-    this.passwordEncoder = pe;
-  }
+	public UserServiceImpl(JpaContext jpaContext, UserRepository userRepository, final PasswordEncoder pe) {
+		this.entityManager = jpaContext.getEntityManagerByManagedType(User.class);
+		this.userRepository = userRepository;
+		this.passwordEncoder = pe;
+	}
 
-  @Override
-  public UserDto getOneBy(UserDto request) {
-    var queryResult = this.userRepository.findByUsername(request.username());
+	@Override
+	public UserDto getOneBy(UserDto request) {
+		var queryResult = this.userRepository.findByUsername(request.username());
 
-    return queryResult.map(User::toDto).orElse(null);
+		return queryResult.map(User::toDto).orElse(null);
 
-  }
+	}
 
-  @Override
-  public UserDto login(LoginDto loginDto) {
-    final User queryResult = this.userRepository.findByUsername(loginDto.username()).orElse(null);
+	@Override
+	public LoginResponseDto login(LoginDto loginDto) {
+		var sb = new StringBuilder();
+		var user = this.userRepository.findByUsername(loginDto.username()).orElse(null);
+		if (user != null) {
+			sb.setLength(0);
 
-    if (queryResult != null
-        && passwordEncoder.matches(loginDto.password(), queryResult.getPassword())) {
-      // @formatter:off
-        var userDto = new UserDto(
-              queryResult.getId(), 
-              queryResult.getName(), 
-              queryResult.getUsername(), 
-              queryResult.getRole().getValue()
-            );  
-        // @formatter:on
+			sb.append("""
+					    select
+					      s
+					    from
+					      com.tuanna.ojt.api.entity.Student s
+					    where
+					      s.user.id = :id
+					""");
 
-      return userDto;
-    }
+			var query = this.entityManager.createQuery(sb.toString(), Student.class);
+			query.setParameter("id", user.getId());
+			var student = query.getResultStream().findFirst().orElse(null);
 
-    return null;
-  }
+			if (student != null && passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+				// @formatter:off
+		        var userDto = new LoginResponseDto(
+					  user.getId(),
+					  user.getName(),
+					  user.getUsername(),
+					  user.getRole().getValue(),
+					  student.getGrade().getName(),
+					  student.getCode()
+	        		);
+		        // @formatter:on
+
+				return userDto;
+			} else {
+				// @formatter:off
+		        var userDto = new LoginResponseDto(
+					  user.getId(),
+					  user.getName(),
+					  user.getUsername(),
+					  user.getRole().getValue(),
+					  null,
+					  null
+	        		);
+		        // @formatter:on
+		        
+				return userDto;
+			}
+		}
+
+		return null;
+	}
 }
-

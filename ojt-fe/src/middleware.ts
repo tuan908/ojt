@@ -8,7 +8,7 @@ export const config = {
         "/home",
         "/student/list",
         "/student/:slug*",
-        "/event/register",
+        "/event",
         "/tracking/student/:slug*",
     ],
 };
