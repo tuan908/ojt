@@ -1,15 +1,20 @@
 "use client";
 
+import {GradeDto, getGradeList} from "@/app/actions/common";
+import {getEventDetailList} from "@/app/actions/event";
+import {getEventListByStudentCodeWithQuery} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
+import {EventDto} from "@/types/event.types";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Search from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import {
     useEffect,
     useState,
@@ -21,8 +26,14 @@ import {EventGrid} from "./_EventGrid";
 
 type CheckboxState = {[x: string]: boolean};
 
+type Option = {
+    gradeList: GradeDto[];
+    eventList: EventDto[];
+};
+
 export default function Page({params}: {params: {slug: string}}) {
     const {auth} = useAuth();
+    const router = useRouter();
     const [response, setData] = useState<{
         data: StudentResponseDto | null;
         errors: unknown[];
@@ -33,6 +44,28 @@ export default function Page({params}: {params: {slug: string}}) {
         confirmed: false,
         finished: false,
     });
+
+    const [options, setOptions] = useState<Option>({
+        gradeList: [],
+        eventList: [],
+    });
+    const [grade, setGrade] = useState("");
+    const [eventName, setName] = useState("");
+
+    const init = async () => {
+        const promises = [getGradeList(), getEventDetailList()];
+        const promiseResults = await Promise.allSettled(promises);
+
+        if (promiseResults[0].status === "fulfilled") {
+            let gradeList = promiseResults[0].value ?? [];
+            setOptions(x => ({...x, gradeList}));
+        }
+
+        if (promiseResults[1].status === "fulfilled") {
+            let eventList = promiseResults[1].value ?? [];
+            setOptions(x => ({...x, eventList}));
+        }
+    };
 
     async function getStudentDetailByCode() {
         const res = await fetch(
@@ -47,6 +80,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
     useEffect(() => {
         getStudentDetailByCode();
+        init();
     }, []);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
@@ -56,7 +90,39 @@ export default function Page({params}: {params: {slug: string}}) {
     function handleSearch(
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ): void {
-        throw new Error("Function not implemented.");
+        event?.preventDefault();
+        const status = Object.keys(check)
+            .map((x, idx) => ({id: idx, checked: check[x]}))
+            .filter(x => x.checked)
+            .map(x => x.id)
+            .join(",");
+
+        getEventListByStudentCodeWithQuery(params.slug, {
+            grade: grade === "Event" || grade === "" ? undefined : grade,
+            eventName:
+                eventName === "Event" || eventName === ""
+                    ? undefined
+                    : eventName,
+            status,
+        });
+        let q = [];
+        let url = `/student/${params.slug}?`;
+
+        if (grade) {
+            q.push(`grade=${grade}`);
+        }
+
+        if (eventName) {
+            q.push(`event_name=${eventName}`);
+        }
+
+        if (status) {
+            q.push(`status=${status}`);
+        }
+
+        url += q.join("&");
+
+        router.push(url);
     }
 
     return (
@@ -95,6 +161,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             className="w-48"
                             placeholder="School Year"
                             defaultValue="School Year"
+                            onChange={e => setGrade(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
                                 paddingX: 1,
@@ -115,14 +182,14 @@ export default function Page({params}: {params: {slug: string}}) {
                             }}
                         >
                             <MenuItem value="School Year">School Year</MenuItem>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                            {options.gradeList.map(x => (
                                 <MenuItem
-                                    key={x}
-                                    value={x}
+                                    key={x.id}
+                                    value={x.name}
                                     disableRipple
                                     disableTouchRipple
                                 >
-                                    Year {x}
+                                    {x.name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -132,6 +199,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             variant="standard"
                             className="w-48"
                             defaultValue="Event"
+                            onChange={e => setName(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
                                 paddingX: 1,
@@ -153,14 +221,14 @@ export default function Page({params}: {params: {slug: string}}) {
                             suppressContentEditableWarning
                         >
                             <MenuItem value="Event">Event</MenuItem>
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(x => (
+                            {options.eventList.map(x => (
                                 <MenuItem
-                                    key={x}
-                                    value={x}
+                                    key={x.id}
+                                    value={x.name}
                                     disableRipple
                                     disableTouchRipple
                                 >
-                                    Event {x}
+                                    {x.name}
                                 </MenuItem>
                             ))}
                         </Select>

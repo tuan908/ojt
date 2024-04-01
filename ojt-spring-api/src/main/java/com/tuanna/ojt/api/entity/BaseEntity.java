@@ -18,6 +18,8 @@ public abstract class BaseEntity implements Serializable {
 
   private LocalDateTime updatedAt;
   
+  private Boolean isDeleted;
+  
   @PrePersist
   public void prePersist() {
     this.setCreatedAt(LocalDateTime.now());

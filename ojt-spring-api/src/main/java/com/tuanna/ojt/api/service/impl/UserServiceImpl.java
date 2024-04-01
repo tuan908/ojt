@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDto getOneBy(UserDto request) {
+	public UserDto findByUsername(UserDto request) {
 		var queryResult = this.userRepository.findByUsername(request.username());
 
 		return queryResult.map(User::toDto).orElse(null);

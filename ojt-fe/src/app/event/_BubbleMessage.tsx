@@ -1,4 +1,5 @@
 import ButtonBase from "@/components/ButtonBase";
+import CustomDialog from "@/components/CustomDialog";
 import {type MyJwtPayload} from "@/lib/auth";
 import {cn} from "@/lib/utils/cn";
 import Check from "@mui/icons-material/Check";
@@ -100,13 +101,14 @@ export default function BubbleMessage({
     };
 
     const handleDelete = () => {
-        setOpenDialog({...openDialog, delete: true});
         const dto = {
             id: data.id,
             username: data.username,
             eventDetailId: data.eventDetailId,
         };
+
         deleteComment(dto).then(_ => {
+            setOpenDialog({...openDialog, delete: false});
             router.refresh();
         });
     };
@@ -140,9 +142,16 @@ export default function BubbleMessage({
         }
     }, [editable]);
 
-    function cancelDelete(): void {
+    const handleCancelDelete = () => setOpenDialog({...openDialog, delete: false});
+
+    const openDeleteDialog = () =>
+        setOpenDialog({
+            ...openDialog,
+            delete: true,
+        });
+
+    const handleCloseDeleteDialog = () =>
         setOpenDialog({...openDialog, delete: false});
-    }
 
     return (
         <>
@@ -211,7 +220,7 @@ export default function BubbleMessage({
                             <ButtonBase classes="px-1" onClick={handleEdit}>
                                 <Edit className="text-icon-default" />
                             </ButtonBase>
-                            <ButtonBase onClick={handleDelete}>
+                            <ButtonBase onClick={openDeleteDialog}>
                                 <Delete color="error" />
                             </ButtonBase>
                         </div>
@@ -261,26 +270,15 @@ export default function BubbleMessage({
                 </DialogActions>
             </Dialog>
 
-            <Dialog
+            <CustomDialog
                 open={openDialog.delete}
-                onClose={() => setOpenDialog({...openDialog, delete: false})}
-            >
-                <DialogTitle>Do you want to delete this comment?</DialogTitle>
-                <DialogActions>
-                    <ButtonBase
-                        classes="px-4 py-2 border"
-                        onClick={cancelDelete}
-                    >
-                        Cancel
-                    </ButtonBase>
-                    <ButtonBase
-                        classes="px-4 py-1 border bg-red-400 rounded-md text-white"
-                        onClick={handleDelete}
-                    >
-                        Delete
-                    </ButtonBase>
-                </DialogActions>
-            </Dialog>
+                onClose={handleCloseDeleteDialog}
+                title="Do you want to delete this comment?"
+                actionName="Delete"
+                onCancelClick={handleCancelDelete}
+                onActionClick={handleDelete}
+                bg={"bg-red-400"}
+            />
         </>
     );
 }

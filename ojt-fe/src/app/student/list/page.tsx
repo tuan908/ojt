@@ -1,7 +1,8 @@
 "use client";
 
-import {getEventList, getStudentList} from "@/app/actions/student";
-import {GradeDto, getGradeList, getHashtagList} from "@/app/actions/tracking";
+import {getEventList, getGradeList, type GradeDto} from "@/app/actions/common";
+import {getStudentList} from "@/app/actions/student";
+import {getHashtagList} from "@/app/actions/tracking";
 import ColorHashtag from "@/components/ColorHashtag";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";

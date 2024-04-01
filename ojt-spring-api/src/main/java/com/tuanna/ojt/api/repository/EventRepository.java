@@ -10,13 +10,13 @@ import com.tuanna.ojt.api.entity.Event;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-	@Query("""
-			select
-				e
-			from
-				com.tuanna.ojt.api.entity.Event e
-			where
-				e.name = :name
-			  """)
+	@Query(value = """
+        select 
+          e 
+        from 
+          com.tuanna.ojt.api.entity.Event e 
+        where 
+          e.name = :name
+　　　　""")
 	Optional<Event> findByName(@Param("name") String name);
 }

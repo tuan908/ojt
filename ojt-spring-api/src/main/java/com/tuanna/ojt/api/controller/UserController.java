@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<UserDto> getOneBy(@RequestBody UserDto request)
             throws ResultNotFoundException {
-        var body = this.accountService.getOneBy(request);
+        var body = this.accountService.findByUsername(request);
         if (body == null) {
             throw new ResultNotFoundException("""
                     Sorry, We couldn't find what you're looking for. Please try again later.

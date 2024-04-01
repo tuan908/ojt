@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(Route.Login, request.url));
     }
 
-    if (role !== UserRole.Student) {
+    if (role !== UserRole.Student && currentUrl.pathname === Route.Login) {
         if (
             currentUrl.pathname === Route.Login ||
             [Route.Root, Route.Home]

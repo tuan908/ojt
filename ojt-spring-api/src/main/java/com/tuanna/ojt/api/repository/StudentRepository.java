@@ -9,13 +9,26 @@ import org.springframework.data.repository.query.Param;
 import com.tuanna.ojt.api.entity.Student;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
-	@Query("""
-  		select
- 			 s
- 		from
- 			com.tuanna.ojt.api.entity.Student s
- 		where
- 			s.user.username = :username
+	@Query(value = """
+        select 
+          s 
+        from 
+          com.tuanna.ojt.api.entity.Student s 
+        where 
+          s.user.username = :username
 	""")
-	Optional<Student> findByUsername(@Param("username") String username);
+	Optional<Student> findByUsername(@Param(value = "username") String username);
+	
+	@Query(value = """
+        select 
+          s 
+        from 
+          com.tuanna.ojt.api.entity.Student s 
+          left join fetch s.eventList 
+        where 
+          1 = 1 
+          and s.code = :code 
+          and element(s.eventList).isDeleted = false
+	""")
+	Optional<Student> findByCode(@Param(value = "code") String code);
 }

@@ -43,16 +43,6 @@ export async function getStudentByCode(
     }
 }
 
-export async function getEventList(): Promise<EventDetailDto[]> {
-    try {
-        const res = await fetchNoCache("/event-detail");
-        const result = await res.json();
-        return result;
-    } catch (error: any) {
-        throw new Error(error?.message);
-    }
-}
-
 /**
  * Update Event Status
  * @param dto Update Event Status Dto
@@ -86,3 +76,37 @@ export async function deleteComment(dto: {
     await fetchNoCache("/student/event/comments/" + dto.id, "POST", dto);
     revalidatePath("/student/event/comments");
 }
+
+export const getEventListByStudentCodeWithQuery = async (
+    code: string,
+    arg: {
+        grade?: string;
+        eventName?: string;
+        status?: string;
+    }
+) => {
+    let q = [];
+    let url = `/student/${code}/q?`;
+
+    if (arg.grade) {
+        q.push(`grade=${arg.grade}`);
+    }
+
+    if (arg.eventName) {
+        q.push(`event_name=${arg.eventName}`);
+    }
+
+    if (arg.status) {
+        q.push(`status=${arg.status}`);
+    }
+
+    url += q.join("&");
+
+    try {
+        const response = await fetchNoCache(url, "GET");
+        const responseJson = await response.json();
+        return responseJson;
+    } catch (error: any) {
+        return new Error(error?.message);
+    }
+};

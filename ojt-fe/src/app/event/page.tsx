@@ -114,7 +114,7 @@ export default function Page() {
 
     useEffect(() => {
         init();
-        if (params.get("mode") === "chat") {
+        if (params.get("mode") === "chat" && auth?.role !== UserRole.Student) {
             setDisable(true);
         }
     }, []);
@@ -339,14 +339,17 @@ export default function Page() {
                         className="disabled:cursor-not-allowed"
                     />
 
-                    <button
-                        className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
-                        style={{backgroundColor: "#4285f4"}}
-                        onClick={async e => handleAddOrUpdate(e)}
-                        disabled={isDisable}
-                    >
-                        {params.get("mode") !== "new" ? "Update" : "Add"}
-                    </button>
+                    {auth?.role === UserRole.Student &&
+                    ["new", "edit"].includes(params.get("mode")!) ? (
+                        <button
+                            className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
+                            style={{backgroundColor: "#4285f4"}}
+                            onClick={async e => handleAddOrUpdate(e)}
+                            disabled={isDisable}
+                        >
+                            {params.get("mode") !== "new" ? "Update" : "Add"}
+                        </button>
+                    ) : null}
                 </div>
             </div>
 
@@ -357,11 +360,7 @@ export default function Page() {
                             {comments!?.map(x => {
                                 return (
                                     <Fragment key={x.id}>
-                                        {x.isDeleted ? (
-                                            <span className="text-red-500">
-                                                Deleted
-                                            </span>
-                                        ) : (
+                                        {x.isDeleted ? null : (
                                             <BubbleMessage
                                                 data={x}
                                                 showState={showState}

@@ -74,6 +74,10 @@ export async function getEventDetailById(
     return result;
 }
 
+export async function deleteEventDetailById(id: number) {
+    await fetchNoCache(`/student/event/${id}`, "DELETE");
+}
+
 export async function getEventDetailList(): Promise<EventDto[] | null> {
     const response = await fetchNoCache(`/event-detail`);
     const result = await response.json();

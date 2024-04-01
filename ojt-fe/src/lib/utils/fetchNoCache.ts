@@ -9,7 +9,7 @@
  */
 export function fetchNoCache(
     endpoint: string,
-    method?: "GET" | "POST",
+    method?: "GET" | "POST" | "DELETE" | "PUT",
     body?: unknown
 ) {
     const url = `${process.env["SPRING_API"]}${endpoint}`;

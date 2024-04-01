@@ -16,12 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventController {
 
-  private final EventService es;
+  private final EventService eventService;
 
   @GetMapping
   @ResponseBody
   public ResponseEntity<List<EventDto>> getAll() {
-    var body = this.es.getAll();
+    var body = this.eventService.getAll();
     return ResponseEntity.ok().body(body);
   }
 

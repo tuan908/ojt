@@ -1,7 +1,9 @@
 "use client";
 
+import {deleteEventDetailById} from "@/app/actions/event";
 import {updateEventStatus} from "@/app/actions/student";
 import ButtonBase from "@/components/ButtonBase";
+import CustomDialog from "@/components/CustomDialog";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -12,8 +14,6 @@ import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import {useRouter} from "next/navigation";
 import {Suspense, useState, type SyntheticEvent} from "react";
 import {StatusLabel} from "./_StatusLabel";
@@ -21,23 +21,24 @@ import {StatusLabel} from "./_StatusLabel";
 export function EventGrid({data}: {data: StudentResponseDto | null}) {
     const {auth} = useAuth();
     const [open, setOpen] = useState(false);
+    const [deleteId, setId] = useState(-1);
     const router = useRouter();
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    const openDialog = () => setOpen(true);
+    const closeDialog = () => setOpen(false);
 
     async function handleDone(
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
         id: number
     ) {
         event.preventDefault();
-        handleOpen();
+        openDialog();
         const actionResponse = await updateEventStatus({
             id,
             studentId: data?.id!?.toString(),
             updatedBy: auth?.username!,
         });
-        handleClose();
+        closeDialog();
     }
 
     function handleEdit(
@@ -56,6 +57,15 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         event?.preventDefault();
         let url = `/event?id=${id}&mode=chat`;
         router.push(url);
+    }
+
+    function handleCancelClick(): void {
+        closeDialog();
+    }
+
+    function handleDeleteEventDetailById(): void {
+        deleteEventDetailById(deleteId);
+        closeDialog();
     }
 
     return (
@@ -170,6 +180,12 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                                                                   item.status ===
                                                                   EventStatus.Confirmed
                                                               }
+                                                              onClick={() => {
+                                                                  openDialog();
+                                                                  setId(
+                                                                      item.id
+                                                                  );
+                                                              }}
                                                           >
                                                               <Delete
                                                                   disabled={
@@ -189,9 +205,15 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                     </Suspense>
                 </tbody>
             </table>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Confirmation</DialogTitle>
-            </Dialog>
+            <CustomDialog
+                open={open}
+                onClose={closeDialog}
+                title="Do you want to delete this event?"
+                actionName="Delete"
+                onCancelClick={handleCancelClick}
+                onActionClick={handleDeleteEventDetailById}
+                bg={"bg-red-400"}
+            />
         </>
     );
 }

@@ -6,7 +6,7 @@ import com.tuanna.ojt.api.dto.UserDto;
 
 public interface UserService {
 
-  UserDto getOneBy(UserDto request);
+  UserDto findByUsername(UserDto request);
   
   /**
    * Login

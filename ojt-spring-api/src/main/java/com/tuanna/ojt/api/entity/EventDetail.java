@@ -66,6 +66,7 @@ public class EventDetail extends BaseEntity {
   @Setter
   @AllArgsConstructor
   @NoArgsConstructor
+  @Builder
   public static class EventData implements Serializable {
 	private static final long serialVersionUID = 6365386061637591425L;
 	private String eventName;
@@ -88,7 +89,11 @@ public class EventDetail extends BaseEntity {
           this.detail.getName(), 
           this.status.getValue(),
           this.data,
-          this.comments.stream().map(Comment::toDto).toList()
+          this.comments
+            .stream()
+            .filter(comment -> !comment.getIsDeleted())
+            .map(Comment::toDto)
+            .toList()
         );
     // @formatter:on
 
