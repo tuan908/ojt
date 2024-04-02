@@ -435,8 +435,12 @@ export default function Page() {
                                 disabled={commentData.content.length === 0}
                             >
                                 <Send
-                                    className="-rotate-[50deg] text-icon-default"
-                                    sx={{width: 32, height: 32}}
+                                    className="-rotate-[50deg]"
+                                    sx={{
+                                        width: 32,
+                                        height: 32,
+                                        color: "#0078ff",
+                                    }}
                                 />
                             </button>
                         </div>

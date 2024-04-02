@@ -1,12 +1,16 @@
-"use server"
+"use server";
 
-import { CollectionName } from "@/constants";
-import { sql } from "@/lib/db";
-import { fetchNoCache } from "@/lib/utils/fetchNoCache";
-import { EventDetailDto } from "@/types/student.types";
+import {CollectionName} from "@/constants";
+import {sql} from "@/lib/db";
+import {fetchNoCache} from "@/lib/utils/fetchNoCache";
+import {type EventDetailDto} from "@/types/student.types";
 
 export type GradeDto = {id: number; name: string};
 
+/**
+ * Get Grade List
+ * @returns Grade List
+ */
 export async function getGradeList() {
     try {
         const list = await sql<GradeDto[]>`
@@ -22,6 +26,10 @@ export async function getGradeList() {
     }
 }
 
+/**
+ * Get current event
+ * @returns Event List
+ */
 export async function getEventList(): Promise<EventDetailDto[]> {
     try {
         const res = await fetchNoCache("/event-detail");

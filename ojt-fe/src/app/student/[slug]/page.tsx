@@ -15,12 +15,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {
-    useEffect,
-    useState,
-    type ChangeEventHandler,
-    type SyntheticEvent,
-} from "react";
+import {useEffect, useState, type ChangeEventHandler} from "react";
 import {Checkbox} from "./_Checkbox";
 import {EventGrid} from "./_EventGrid";
 
@@ -87,42 +82,47 @@ export default function Page({params}: {params: {slug: string}}) {
         setCheck({...check, [event.target.name]: !check[event.target.name]});
     };
 
-    function handleSearch(
-        event: SyntheticEvent<HTMLButtonElement, MouseEvent>
-    ): void {
-        event?.preventDefault();
+    function handleSearch() {
+        // event?.preventDefault();
+        setData(x => ({...x, isFetching: true}));
         const status = Object.keys(check)
             .map((x, idx) => ({id: idx, checked: check[x]}))
             .filter(x => x.checked)
             .map(x => x.id)
             .join(",");
+        // let q = [];
+        // let url = `/student/${params.slug}?`;
+
+        // if (grade) {
+        //     q.push(`grade=${grade}`);
+        // }
+
+        // if (eventName) {
+        //     q.push(`event_name=${eventName}`);
+        // }
+
+        // if (status) {
+        //     q.push(`status=${status}`);
+        // }
+
+        // url += q.join("&");
+
+        // router.push(url);
 
         getEventListByStudentCodeWithQuery(params.slug, {
-            grade: grade === "Event" || grade === "" ? undefined : grade,
-            eventName:
-                eventName === "Event" || eventName === ""
-                    ? undefined
-                    : eventName,
+            grade,
+            eventName,
             status,
+        }).then(data => {
+            setData(x => {
+                return {
+                    ...x,
+                    data,
+                    errors: [],
+                    isFetching: false,
+                };
+            });
         });
-        let q = [];
-        let url = `/student/${params.slug}?`;
-
-        if (grade) {
-            q.push(`grade=${grade}`);
-        }
-
-        if (eventName) {
-            q.push(`event_name=${eventName}`);
-        }
-
-        if (status) {
-            q.push(`status=${status}`);
-        }
-
-        url += q.join("&");
-
-        router.push(url);
     }
 
     return (

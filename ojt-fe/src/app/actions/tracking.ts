@@ -4,8 +4,6 @@ import {CollectionName} from "@/constants";
 import {sql} from "@/lib/db";
 import {type HashtagDto} from "@/types/student.types";
 
-
-
 export async function getHashtagList() {
     try {
         const list = await sql<HashtagDto[]>`
@@ -20,4 +18,3 @@ export async function getHashtagList() {
         return null;
     }
 }
-

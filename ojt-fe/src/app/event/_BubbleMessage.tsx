@@ -142,7 +142,8 @@ export default function BubbleMessage({
         }
     }, [editable]);
 
-    const handleCancelDelete = () => setOpenDialog({...openDialog, delete: false});
+    const handleCancelDelete = () =>
+        setOpenDialog({...openDialog, delete: false});
 
     const openDeleteDialog = () =>
         setOpenDialog({

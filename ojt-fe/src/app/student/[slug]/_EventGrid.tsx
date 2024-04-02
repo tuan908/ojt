@@ -14,15 +14,56 @@ import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
+import {createAction, createReducer} from "@reduxjs/toolkit";
 import {useRouter} from "next/navigation";
-import {Suspense, useState, type SyntheticEvent} from "react";
+import {Suspense, useReducer, useState, type SyntheticEvent} from "react";
 import {StatusLabel} from "./_StatusLabel";
+
+const showDialogDelete = createAction<{id: number}>("MODAL/DELETE");
+const showDialogUpdateStatus = createAction<{id: number}>(
+    "MODAL/UPDATE_STATUS"
+);
+
+const hideDialogDelete = createAction("MODAL/DELETE");
+const hideDialogUpdateStatus = createAction("MODAL/UPDATE_STATUS");
+
+const initialState = {
+    delete: {
+        open: false,
+        id: -1,
+    },
+    updateStatus: {
+        open: false,
+        id: -1,
+    },
+};
+
+const reducer = createReducer(initialState, builder => {
+    builder
+        .addCase(showDialogDelete, (state, action) => {
+            state.delete.open = true;
+            state.delete.id = action.payload.id;
+        })
+        .addCase(hideDialogDelete, state => {
+            state.delete.open = false;
+            state.delete.id = -1;
+        })
+        .addCase(showDialogUpdateStatus, (state, action) => {
+            state.updateStatus.open = true;
+            state.updateStatus.id = action.payload.id;
+        })
+        .addCase(hideDialogUpdateStatus, state => {
+            state.updateStatus.open = false;
+            state.updateStatus.id = -1;
+        });
+});
 
 export function EventGrid({data}: {data: StudentResponseDto | null}) {
     const {auth} = useAuth();
     const [open, setOpen] = useState(false);
-    const [deleteId, setId] = useState(-1);
+    const [id, setId] = useState(-1);
     const router = useRouter();
+    const [state, localDispatch] = useReducer(reducer, initialState);
 
     const openDialog = () => setOpen(true);
     const closeDialog = () => setOpen(false);
@@ -32,7 +73,6 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         id: number
     ) {
         event.preventDefault();
-        openDialog();
         const actionResponse = await updateEventStatus({
             id,
             studentId: data?.id!?.toString(),
@@ -64,7 +104,7 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
     }
 
     function handleDeleteEventDetailById(): void {
-        deleteEventDetailById(deleteId);
+        deleteEventDetailById(id);
         closeDialog();
     }
 
@@ -136,10 +176,13 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                                                   {auth?.role! ===
                                                   UserRole.Counselor ? (
                                                       <ButtonBase
-                                                          onClick={async e =>
-                                                              handleDone(
-                                                                  e,
-                                                                  item.id!
+                                                          onClick={() =>
+                                                              localDispatch(
+                                                                  showDialogDelete(
+                                                                      {
+                                                                          id: item.id,
+                                                                      }
+                                                                  )
                                                               )
                                                           }
                                                           disabled={
@@ -206,13 +249,23 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                 </tbody>
             </table>
             <CustomDialog
-                open={open}
-                onClose={closeDialog}
+                open={state.delete.open}
+                onClose={() => localDispatch(hideDialogDelete())}
                 title="Do you want to delete this event?"
                 actionName="Delete"
                 onCancelClick={handleCancelClick}
                 onActionClick={handleDeleteEventDetailById}
-                bg={"bg-red-400"}
+                bg="bg-red-400"
+            />
+
+            <CustomDialog
+                open={state.updateStatus.open}
+                onClose={() => localDispatch(hideDialogUpdateStatus())}
+                title="Do you want to change status of this event?"
+                actionName="Update Status"
+                onCancelClick={() => localDispatch(hideDialogUpdateStatus())}
+                onActionClick={handleDeleteEventDetailById}
+                bg="bg-red-400"
             />
         </>
     );

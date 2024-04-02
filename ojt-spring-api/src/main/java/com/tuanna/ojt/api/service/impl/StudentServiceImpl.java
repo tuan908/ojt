@@ -351,14 +351,15 @@ public class StudentServiceImpl implements StudentService {
     }
 
     if (StringUtils.hasText(status)) {
-      qlString += " and ed.status in (:status) ";
-      var statuses = Stream.of(status.split(",")).map(x -> {
+      qlString += " and ed.status in :status ";
+      var converted = Stream.of(status.split(",")).map(x -> {
         return switch (Integer.valueOf(x)) {
           case 0:
             yield EventStatus.UNCONFIRMED;
 
           case 1:
             yield EventStatus.UNDER_REVIEW;
+            
           case 2:
             yield EventStatus.COMPLETED;
 
@@ -366,7 +367,7 @@ public class StudentServiceImpl implements StudentService {
             yield new Exception("Invalid event status");
         };
       }).collect(Collectors.toList());
-      parameters.put("status", status);
+      parameters.put("status", converted);
     }
 
     qlString += " order by ed.createdAt ";
