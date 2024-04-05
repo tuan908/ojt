@@ -3,7 +3,7 @@
 import {CollectionName} from "@/constants";
 import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {type EventDetailDto} from "@/types/student.types";
+import type {HashtagDto, EventDetailDto} from "@/types/student.types";
 
 export type GradeDto = {id: number; name: string};
 
@@ -37,5 +37,24 @@ export async function getEventList(): Promise<EventDetailDto[]> {
         return result;
     } catch (error: any) {
         throw new Error(error?.message);
+    }
+}
+
+/**
+ * Get hashtag list
+ * @returns Hashtag list
+ */
+export async function getHashtagList() {
+    try {
+        const list = await sql<HashtagDto[]>`
+            select
+                ${sql("id", "name", "color")}
+            from
+                ${sql(CollectionName.Hashtag)}
+        `;
+        return list;
+    } catch (error) {
+        console.error(error);
+        return null;
     }
 }

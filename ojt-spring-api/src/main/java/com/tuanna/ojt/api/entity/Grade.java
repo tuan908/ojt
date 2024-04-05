@@ -33,7 +33,7 @@ public class Grade extends BaseEntity {
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")
-    private java.util.Set<Student> studentList;
+    private java.util.Set<Student> students;
     
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")

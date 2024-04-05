@@ -1,13 +1,26 @@
 "use client";
 
-import {GradeDto, getGradeList} from "@/app/actions/common";
+import {type GradeDto, getGradeList} from "@/app/actions/common";
 import {getEventDetailList} from "@/app/actions/event";
-import {getEventListByStudentCodeWithQuery} from "@/app/actions/student";
+import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
+import {
+    EventStatus,
+    ITEM_HEIGHT,
+    ITEM_PADDING_TOP,
+    ScreenMode,
+    UserRole,
+} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
-import {EventDto} from "@/types/event.types";
+import {getEventListByStudentCode} from "@/lib/redux/api/studentApi";
+import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
+import {
+    getLoadingState,
+    hideLoading,
+    showLoading,
+} from "@/lib/redux/slice/loadingSlice";
+import {type EventDto} from "@/types/event.types";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Search from "@mui/icons-material/Search";
@@ -19,7 +32,12 @@ import {useEffect, useState, type ChangeEventHandler} from "react";
 import {Checkbox} from "./_Checkbox";
 import {EventGrid} from "./_EventGrid";
 
-type CheckboxState = {[x: string]: boolean};
+type CheckboxState = {
+    unconfirmed: boolean;
+    under_reviewing: boolean;
+    confirmed: boolean;
+    [x: string]: boolean;
+};
 
 type Option = {
     gradeList: GradeDto[];
@@ -29,15 +47,14 @@ type Option = {
 export default function Page({params}: {params: {slug: string}}) {
     const {auth} = useAuth();
     const router = useRouter();
-    const [response, setData] = useState<{
-        data: StudentResponseDto | null;
-        errors: unknown[];
-        isFetching: boolean;
-    }>({data: null, errors: [], isFetching: true});
+    const appDispatch = useAppDispatch();
+    const isAppLoading = useAppSelector(getLoadingState);
+    const [data, setData] = useState<StudentResponseDto | undefined>();
+    const [isFetching, setIsFetching] = useState(false);
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
+        under_reviewing: false,
         confirmed: false,
-        finished: false,
     });
 
     const [options, setOptions] = useState<Option>({
@@ -48,6 +65,7 @@ export default function Page({params}: {params: {slug: string}}) {
     const [eventName, setName] = useState("");
 
     const init = async () => {
+        await appDispatch(showLoading());
         const promises = [getGradeList(), getEventDetailList()];
         const promiseResults = await Promise.allSettled(promises);
 
@@ -60,21 +78,15 @@ export default function Page({params}: {params: {slug: string}}) {
             let eventList = promiseResults[1].value ?? [];
             setOptions(x => ({...x, eventList}));
         }
+
+        appDispatch(getEventListByStudentCode.initiate(params.slug))
+            .unwrap()
+            .then(res => setData(res));
+
+        await appDispatch(hideLoading());
     };
 
-    async function getStudentDetailByCode() {
-        const res = await fetch(
-            `${process.env["NEXT_PUBLIC_URL"]}/api/student/${params.slug}`
-        );
-        const body = (await res.json()) as {
-            data: StudentResponseDto | null;
-            errors: unknown[];
-        };
-        setData({...body, isFetching: false});
-    }
-
     useEffect(() => {
-        getStudentDetailByCode();
         init();
     }, []);
 
@@ -83,46 +95,59 @@ export default function Page({params}: {params: {slug: string}}) {
     };
 
     function handleSearch() {
-        // event?.preventDefault();
-        setData(x => ({...x, isFetching: true}));
-        const status = Object.keys(check)
-            .map((x, idx) => ({id: idx, checked: check[x]}))
-            .filter(x => x.checked)
-            .map(x => x.id)
-            .join(",");
-        // let q = [];
-        // let url = `/student/${params.slug}?`;
+        setIsFetching(true);
 
-        // if (grade) {
-        //     q.push(`grade=${grade}`);
-        // }
+        let status: EventStatus[] = [];
+        if (check.unconfirmed) {
+            status.push(EventStatus.UNCONFIRMED);
+        }
 
-        // if (eventName) {
-        //     q.push(`event_name=${eventName}`);
-        // }
+        if (check.under_reviewing) {
+            status.push(EventStatus.UNDER_REVIEWING);
+        }
 
-        // if (status) {
-        //     q.push(`status=${status}`);
-        // }
+        if (check.confirmed) {
+            status.push(EventStatus.CONFIRMED);
+        }
 
-        // url += q.join("&");
-
-        // router.push(url);
-
-        getEventListByStudentCodeWithQuery(params.slug, {
+        const promise = getEventsByStudentCodeWithQuery(params.slug, {
             grade,
             eventName,
             status,
-        }).then(data => {
-            setData(x => {
-                return {
-                    ...x,
-                    data,
-                    errors: [],
-                    isFetching: false,
-                };
-            });
         });
+
+        promise
+            .then(responseData => {
+                setData(x => {
+                    return {...x, events: responseData};
+                });
+            })
+            .catch(error => {
+                throw new Error(error?.message);
+            })
+            .finally(() => {
+                let url = new URL(
+                    `student/${params.slug}`,
+                    process.env["NEXT_PUBLIC_URL"]
+                );
+
+                if (grade !== "") {
+                    url.searchParams.append("grade", grade);
+                }
+
+                if (eventName !== "") {
+                    url.searchParams.append("event", eventName);
+                }
+
+                if (status.length > 0) {
+                    url.searchParams.append(
+                        "status",
+                        status.map(x => x.toString()).join(",")
+                    );
+                }
+                router.push(url.toString());
+                setIsFetching(false);
+            });
     }
 
     return (
@@ -130,7 +155,7 @@ export default function Page({params}: {params: {slug: string}}) {
             {auth && auth?.role === UserRole.Student ? (
                 <div className="w-24/25 m-auto flex items-center pb-3">
                     <Link
-                        href="/event?mode=new"
+                        href={`/event?mode=${ScreenMode.NEW}`}
                         className="flex gap-x-2 items-center px-6 py-2 bg-[#33b5e5] text-white rounded-lg"
                     >
                         <AddCircle />
@@ -139,16 +164,16 @@ export default function Page({params}: {params: {slug: string}}) {
                 </div>
             ) : null}
             <PageWrapper>
-                {response.isFetching ? <LoadingComponent /> : null}
+                {isFetching || isAppLoading ? <LoadingComponent /> : null}
 
                 {/* Student Info */}
                 <>
                     {auth && auth.role !== UserRole.Student ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
-                                <span>{response.data?.name}</span>
-                                <span>{response?.data?.code}</span>
-                                <span>{response?.data?.grade}</span>
+                                <span>{data?.name}</span>
+                                <span>{data?.code}</span>
+                                <span>{data?.grade}</span>
                             </div>
                         </>
                     ) : null}
@@ -246,17 +271,17 @@ export default function Page({params}: {params: {slug: string}}) {
 
                             {/* Confirmed checkbox */}
                             <Checkbox
-                                label="Confirmed"
-                                name="confirmed"
-                                checked={check.confirmed}
+                                label="UnderReviewing"
+                                name="under_reviewing"
+                                checked={check.under_reviewing}
                                 handleChange={handleChange}
                             />
 
                             {/* Finished checkbox*/}
                             <Checkbox
                                 label="Finished"
-                                name="finished"
-                                checked={check.finished}
+                                name="confirmed"
+                                checked={check.confirmed}
                                 handleChange={handleChange}
                             />
                         </div>
@@ -274,7 +299,11 @@ export default function Page({params}: {params: {slug: string}}) {
 
                 {/* Table */}
                 <div className="w-full px-10 pt-6">
-                    <EventGrid data={response.data} />
+                    <EventGrid
+                        data={data?.events!}
+                        studentId={data?.id}
+                        code={params.slug}
+                    />
                 </div>
             </PageWrapper>
         </div>

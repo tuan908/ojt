@@ -1,4 +1,3 @@
-import {cn} from "@/lib/utils/cn";
 import {type ComponentProps} from "react";
 
 type ColorTextHashtagProps = ComponentProps<"span"> & {

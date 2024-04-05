@@ -37,7 +37,7 @@ public class Hashtag extends BaseEntity {
 
   private String color;
 
-  @ManyToMany(mappedBy = "hashtagList")
-  private Set<Student> studentList;
+  @ManyToMany(mappedBy = "hashtags")
+  private Set<Student> students;
 
 }

@@ -49,7 +49,7 @@ public class StudentController {
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetail(@PathVariable("code") String code)
       throws ResultNotFoundException {
-    var body = this.studentService.getStudentEventListByStudentCode(code);
+    var body = this.studentService.getEventsByStudentCode(code);
 
     if (body == null) {
       throw new ResultNotFoundException();
@@ -66,7 +66,7 @@ public class StudentController {
       @RequestParam(value = "event_name", required = false) String eventName,
       @RequestParam(value = "status", required = false) String status)
       throws ResultNotFoundException {
-    var body = this.studentService.getEventListByStudentCode(code, grade, eventName, status);
+    var body = this.studentService.getEventsByStudentCode(code, grade, eventName, status);
 
     if (body == null) {
       throw new ResultNotFoundException();
@@ -109,20 +109,12 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
 
-  @DeleteMapping(path = "/event/{id}")
-  public ResponseEntity<?> deleteEventDetailById(@PathVariable(value = "id") Long id) {
-    this.studentService.deleteEventById(id);
+  @DeleteMapping(path = "/{code}/event/{id}")
+  public ResponseEntity<?> deleteEventDetailById(@PathVariable(value = "code") String code,
+      @PathVariable(value = "id") Long id) {
+    var updatedList = this.studentService.deleteEventById(code, id);
 
-    // @formatter:off
-    var data = new SuccessResponseDto(
-        OjtCode.ACTION_SUCCESS.getValue(),
-        "Deleted", 
-        "Deleted event " + id, 
-        "/student/event/" + id 
-      );
-    // @formatter:on
-
-    return ResponseEntity.ok().body(data);
+    return ResponseEntity.ok().body(updatedList);
   }
 
   @GetMapping(path = "/event/{id}")

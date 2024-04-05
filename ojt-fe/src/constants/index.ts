@@ -16,9 +16,9 @@ export enum UserRole {
 }
 
 export enum EventStatus {
-    Unconfirmed = 1,
-    UnderReviewing = 2,
-    Confirmed = 3,
+    UNCONFIRMED = 1,
+    UNDER_REVIEWING = 2,
+    CONFIRMED = 3,
 }
 
 export const ITEM_HEIGHT = 48;
@@ -44,6 +44,7 @@ export enum Route {
 export const STRING_EMPTY = "";
 
 export enum ScreenMode {
-    Chat = 0,
-    Update = 1,
+    NEW = 0,
+    EDIT = 1,
+    CHAT = 2,
 }

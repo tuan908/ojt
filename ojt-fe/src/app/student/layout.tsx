@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar";
+import type {LayoutProps} from "@/types";
 
-export default function Layout({
-    children,
-}: Readonly<{children: React.ReactNode}>) {
+export default function Layout({children}: LayoutProps) {
     return (
         <div className="pt-20 w-full h-full max-w-dvw min-h-dvh flex flex-col">
             <Navbar />

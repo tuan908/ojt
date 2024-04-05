@@ -7,6 +7,9 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
 
+/**
+ * Account Data
+ */
 export type AccountDto = {
     id: number;
     name: string;
@@ -16,11 +19,19 @@ export type AccountDto = {
     code: string;
 };
 
+/**
+ * Login State
+ */
 export type LoginState = {
     message: string;
     user: AccountDto | null;
 };
 
+/**
+ * Login
+ * @param _ ???
+ * @param formData FormData
+ */
 export async function login(_: any, formData: FormData) {
     const schema = z.object({
         username: z.string().min(1, {message: "Please input username"}),
@@ -72,6 +83,9 @@ export async function login(_: any, formData: FormData) {
     redirect(redirectPath);
 }
 
+/**
+ * Logout
+ */
 export async function logOut() {
     cookies().delete("token");
     redirect("/login");

@@ -3,7 +3,7 @@ import {UserRole} from "@/constants";
 /**
  * Convert role
  * @param role Database stored role
- * @returns Converted string
+ * @returns Converted string - from role
  */
 export function convertRole(role?: string) {
     switch (role) {

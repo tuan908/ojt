@@ -13,17 +13,23 @@ public interface StudentService {
 
   Page<StudentEventResponseDto> getEventList(StudentEventRequestDto dto);
 
-  StudentEventResponseDto getStudentEventListByStudentCode(String code);
+  StudentEventResponseDto getEventsByStudentCode(String code);
 
   Boolean updateEventStatus(UpdateEventStatusDto dto);
 
   RegisterEventResponseDto registerOrUpdateEvent(RegisterEventDto dto);
 
-  void deleteEventById(Long id);
+  /**
+   * Delete event and return updated list
+   * @param code Student code
+   * @param id Event id
+   * @return {@code List<EventDetailDto>}
+   */
+  List<EventDetailDto> deleteEventById(String code, Long id);
 
   EventDetailDto getStudentEventById(Long id);
 
-  List<EventDetailDto> getEventListByStudentCode(String code, String grade, String eventName,
+  List<EventDetailDto> getEventsByStudentCode(String code, String grade, String eventName,
       String status);
 
 }

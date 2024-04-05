@@ -20,6 +20,9 @@ const registerEventSchema = z.object({
     }),
 });
 
+/**
+ * RegisterEventDto
+ */
 export type RegisterEventDto = z.infer<typeof registerEventSchema>;
 
 /**
@@ -74,8 +77,20 @@ export async function getEventDetailById(
     return result;
 }
 
-export async function deleteEventDetailById(id: number) {
-    await fetchNoCache(`/student/event/${id}`, "DELETE");
+export async function deleteEventDetailById(
+    code: string,
+    id: number
+): Promise<EventDetailDto[] | undefined> {
+    try {
+        const res = await fetchNoCache(
+            `/student/${code}/event/${id}`,
+            "DELETE"
+        );
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        return undefined;
+    }
 }
 
 export async function getEventDetailList(): Promise<EventDto[] | null> {

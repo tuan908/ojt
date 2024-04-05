@@ -8,7 +8,7 @@ import {
     type CommentDto,
     type RegisterEventDto,
 } from "@/app/actions/event";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, UserRole} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
 
 import {getEventDetailById} from "@/app/actions/event";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -44,7 +44,7 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import {getHashtagList} from "../actions/tracking";
+import {getHashtagList} from "../actions/common";
 import BubbleMessage from "./_BubbleMessage";
 import "./register.css";
 
@@ -54,7 +54,10 @@ export default function Page() {
     const isLoading = useAppSelector(getLoadingState);
     const {auth} = useAuth();
     const params = useSearchParams();
-    const [registerData, setData] = useState<RegisterEventDto["data"]>({});
+    const [registerData, setData] = useState<
+        RegisterEventDto["data"] | undefined
+    >();
+    const [error, setError] = useState(false);
 
     const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
     const [comments, setComments] = useState<CommentDto[]>([]);
@@ -114,7 +117,10 @@ export default function Page() {
 
     useEffect(() => {
         init();
-        if (params.get("mode") === "chat" && auth?.role !== UserRole.Student) {
+        if (
+            params.get("mode")! === ScreenMode.CHAT.toString() &&
+            auth?.role !== UserRole.Student
+        ) {
             setDisable(true);
         }
     }, []);
@@ -204,10 +210,14 @@ export default function Page() {
 
     async function handleAddOrUpdate(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
+        if (registerData!?.eventName === "Event" || !registerData!?.eventName) {
+            setError(true);
+            return;
+        }
         await registerEvent({
             username: auth?.username!,
             gradeName: auth?.grade!,
-            data: registerData,
+            data: registerData!,
         });
         router.back();
     }
@@ -259,7 +269,7 @@ export default function Page() {
                             variant="outlined"
                             className="w-full border-default disabled:cursor-not-allowed"
                             placeholder="Select Event"
-                            value={registerData.eventName ?? "Event"}
+                            value={registerData!?.eventName ?? "Event"}
                             sx={{bgcolor: "#ffffff", paddingX: 1}}
                             MenuProps={{
                                 slotProps: {
@@ -273,10 +283,14 @@ export default function Page() {
                                 },
                             }}
                             onChange={handleSelectChange}
-                            disabled={isDisable}
+                            disabled={
+                                isDisable ||
+                                params.get("mode")! ===
+                                    ScreenMode.EDIT.toString()
+                            }
                         >
                             <MenuItem value="Event">Event</MenuItem>
-                            {eventOptions.map(x => (
+                            {eventOptions!?.map(x => (
                                 <MenuItem
                                     key={x.id}
                                     value={x.name}
@@ -289,33 +303,36 @@ export default function Page() {
                         </Select>
                     </div>
 
+                    {error ? (
+                        <span className="text-red-500 text-sm">
+                            Must select an event!
+                        </span>
+                    ) : null}
+
                     {/* Events in school life */}
                     <Textarea
-                        className="resize-none border rounded-md px-4 py-2 outline-blue-500 disabled:cursor-not-allowed"
                         name="eventsInSchoolLife"
                         placeholder="Events in school life"
                         onChange={handleChange}
-                        value={registerData.eventsInSchoolLife}
+                        value={registerData!?.eventsInSchoolLife}
                         disabled={isDisable}
                     />
 
                     {/* My Actions */}
                     <Textarea
-                        className="disabled:cursor-not-allowed"
                         name="myAction"
                         placeholder="My Actions"
                         onChange={handleChange}
-                        value={registerData.myAction}
+                        value={registerData!?.myAction}
                         disabled={isDisable}
                     />
 
                     {/* Shown power */}
-                    <textarea
-                        className="resize-none border rounded-md px-4 py-2 outline-blue-500 disabled:cursor-not-allowed"
+                    <Textarea
                         name="shownPower"
                         placeholder="Shown power"
                         onChange={handleChange}
-                        value={registerData.shownPower}
+                        value={registerData!?.shownPower}
                         disabled={isDisable}
                     />
 
@@ -324,9 +341,8 @@ export default function Page() {
                         name="strengthGrown"
                         placeholder="Strength that has grown"
                         onChange={handleChange}
-                        value={registerData.strengthGrown}
+                        value={registerData!?.strengthGrown}
                         disabled={isDisable}
-                        className="disabled:cursor-not-allowed"
                     />
 
                     {/* What I thought */}
@@ -334,27 +350,32 @@ export default function Page() {
                         name="myThought"
                         placeholder="What I thought"
                         onChange={handleChange}
-                        value={registerData.myThought}
+                        value={registerData!?.myThought}
                         disabled={isDisable}
-                        className="disabled:cursor-not-allowed"
                     />
 
                     {auth?.role === UserRole.Student &&
-                    ["new", "edit"].includes(params.get("mode")!) ? (
+                    [
+                        ScreenMode.NEW.toString(),
+                        ScreenMode.EDIT.toString(),
+                    ].includes(params.get("mode")!) ? (
                         <button
                             className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
                             style={{backgroundColor: "#4285f4"}}
                             onClick={async e => handleAddOrUpdate(e)}
-                            disabled={isDisable}
+                            disabled={isDisable || error}
                         >
-                            {params.get("mode") !== "new" ? "Update" : "Add"}
+                            {params.get("mode") !== ScreenMode.NEW.toString()
+                                ? "Update"
+                                : "Add"}
                         </button>
                     ) : null}
                 </div>
             </div>
 
             <Suspense fallback={<>Loading comments...</>}>
-                {params.get("mode") && params.get("mode") !== "new" ? (
+                {params.get("mode") &&
+                params.get("mode") !== ScreenMode.NEW.toString() ? (
                     <>
                         <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
                             {comments!?.map(x => {

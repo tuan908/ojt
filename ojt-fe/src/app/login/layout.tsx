@@ -1,6 +1,6 @@
-export default function Layout({
-    children,
-}: Readonly<{children: React.ReactNode}>) {
+import {type LayoutProps} from "@/types";
+
+export default function Layout({children}: LayoutProps) {
     return (
         <div
             className="w-full h-full max-w-dvw min-h-dvh flex items-center justify-center bg-cover"

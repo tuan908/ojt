@@ -4,17 +4,17 @@ export function StatusLabel({status}: {status: number}) {
     let labelText = "";
     let backgroundColor = "";
     switch (status) {
-        case EventStatus.Unconfirmed:
+        case EventStatus.UNCONFIRMED:
             labelText = "Unconfirmed";
             backgroundColor = "#33b5e5";
             break;
 
-        case EventStatus.UnderReviewing:
+        case EventStatus.UNDER_REVIEWING:
             labelText = "Under reviewing";
             backgroundColor = "#ffbb33";
             break;
 
-        case EventStatus.Confirmed:
+        case EventStatus.CONFIRMED:
             labelText = "Confirmed";
             backgroundColor = "#00c851";
             break;

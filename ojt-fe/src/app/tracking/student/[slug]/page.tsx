@@ -1,4 +1,4 @@
-import {getHashtagList, getGradeList} from "@/app/actions/tracking";
+import {getHashtagList, getGradeList} from "@/app/actions/common";
 import Card from "@/components/Card";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";

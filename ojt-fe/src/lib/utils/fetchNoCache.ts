@@ -4,8 +4,6 @@
  * @param method GET/POST only
  * @param body raw body
  * @returns Response
- * @author Tuanna
- * @since v1.0
  */
 export function fetchNoCache(
     endpoint: string,

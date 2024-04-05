@@ -43,14 +43,19 @@ public class Student extends BaseEntity {
   private String name;
 
   @ManyToMany
-  @JoinTable(name = "ojt_student_hashtag", joinColumns = @JoinColumn(name = "student_id"),
-      inverseJoinColumns = @JoinColumn(name = "hashtag_id"))
+  // @formatter:off
+  @JoinTable(
+      name = "ojt_student_hashtag", 
+      joinColumns = @JoinColumn(name = "student_id"),
+      inverseJoinColumns = @JoinColumn(name = "hashtag_id")
+    )
+  // @formatter:on
   @Builder.Default
-  private Set<Hashtag> hashtagList = new java.util.HashSet<>();
+  private Set<Hashtag> hashtags = new java.util.HashSet<>();
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
   @Builder.Default
-  private java.util.Set<EventDetail> eventList = new java.util.HashSet<>();
+  private java.util.Set<EventDetail> events = new java.util.HashSet<>();
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", referencedColumnName = "id")

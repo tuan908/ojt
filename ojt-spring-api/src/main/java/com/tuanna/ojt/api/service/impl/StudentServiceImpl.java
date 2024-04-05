@@ -2,6 +2,7 @@ package com.tuanna.ojt.api.service.impl;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,7 @@ public class StudentServiceImpl implements StudentService {
     // @formatter:off
     var list = students.stream()
       .map(student -> {
-          var events = student.getEventList().stream()
+          var events = student.getEvents().stream()
             .map(event -> {
                 var eventDto = new EventDetailDto(
                   event.getId(),
@@ -124,7 +125,7 @@ public class StudentServiceImpl implements StudentService {
             .sorted(Comparator.comparing(EventDetailDto::name))
             .toList();
 
-          var hashtags = student.getHashtagList().stream()
+          var hashtags = student.getHashtags().stream()
             .map(hashtag -> {
                 var hashtagDto = new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor());
                 return hashtagDto;
@@ -150,13 +151,14 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public StudentEventResponseDto getStudentEventListByStudentCode(String code) {
+  public StudentEventResponseDto getEventsByStudentCode(String code) {
     var student = this.studentRepository.findByCode(code).orElse(null);
 
     if (student != null) {
       // @formatter:off
-      var events = student.getEventList().stream()
+      var events = student.getEvents().stream()
         .filter(event -> !event.getIsDeleted())
+        .sorted(Comparator.comparing(EventDetail::getCreatedAt))
         .map(event -> {
             var eventComments = event.getComments().stream()
               .filter(comment -> !comment.getIsDeleted())
@@ -174,10 +176,9 @@ public class StudentServiceImpl implements StudentService {
             );
             return eventDto;
           })
-        .sorted(Comparator.comparing(EventDetailDto::id))
         .toList();
 
-      var hashtags = student.getHashtagList().stream()
+      var hashtags = student.getHashtags().stream()
         .map(hashtag -> {
             var hashtagDto = new HashtagDto(
               hashtag.getId(),
@@ -314,7 +315,7 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional
-  public void deleteEventById(Long id) {
+  public List<EventDetailDto> deleteEventById(String code, Long id) {
 
     var event = this.eventDetailRepository.findById(id).orElse(null);
 
@@ -323,10 +324,26 @@ public class StudentServiceImpl implements StudentService {
       this.eventDetailRepository.saveAndFlush(event);
     }
 
+
+    var student = this.studentRepository.findByCode(code).orElse(null);
+
+    if (student != null) {
+      // @formatter:off
+      return student.getEvents().stream()
+          .filter(ev -> !ev.getIsDeleted())
+          .sorted(Comparator.comparing(EventDetail::getCreatedAt))
+          .map(EventDetail::toDto)
+          .toList();
+      // @formatter:on
+    }
+
+    return new ArrayList<>();
+
+
   }
 
   @Override
-  public List<EventDetailDto> getEventListByStudentCode(String code, String grade, String eventName,
+  public List<EventDetailDto> getEventsByStudentCode(String code, String grade, String eventName,
       String status) {
     Map<String, Object> parameters = new HashMap<String, Object>();
     var qlString = """
@@ -354,13 +371,13 @@ public class StudentServiceImpl implements StudentService {
       qlString += " and ed.status in :status ";
       var converted = Stream.of(status.split(",")).map(x -> {
         return switch (Integer.valueOf(x)) {
-          case 0:
+          case 1:
             yield EventStatus.UNCONFIRMED;
 
-          case 1:
-            yield EventStatus.UNDER_REVIEW;
-            
           case 2:
+            yield EventStatus.UNDER_REVIEW;
+
+          case 3:
             yield EventStatus.COMPLETED;
 
           default:

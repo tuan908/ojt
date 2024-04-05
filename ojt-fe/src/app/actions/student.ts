@@ -1,5 +1,6 @@
 "use server";
 
+import {EventStatus} from "@/constants";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {OjtStatusCode} from "@/types";
 import type {
@@ -31,15 +32,20 @@ export async function getStudentList(
     }
 }
 
+/**
+ * Get student by code
+ * @param studentCode Student code
+ * @returns Student Response
+ */
 export async function getStudentByCode(
     studentCode: string
-): Promise<StudentResponseDto | null> {
+): Promise<StudentResponseDto | undefined> {
     try {
         const res = await fetchNoCache(`/student/${studentCode}`);
         const result = await res.json();
         return result;
     } catch (error: any) {
-        throw new Error(error?.message);
+        return undefined;
     }
 }
 
@@ -47,12 +53,11 @@ export async function getStudentByCode(
  * Update Event Status
  * @param dto Update Event Status Dto
  * @param code Student Code
- * @author Tuanna
  */
 export async function updateEventStatus(dto: {
     id: number;
     updatedBy: string;
-    studentId: string;
+    studentId: number;
 }) {
     try {
         const response = await fetchNoCache("/event/detail", "POST", dto);
@@ -68,6 +73,10 @@ export async function updateEventStatus(dto: {
     }
 }
 
+/**
+ * Delete comment
+ * @param dto Request dto
+ */
 export async function deleteComment(dto: {
     id: number;
     eventDetailId: number;
@@ -77,27 +86,33 @@ export async function deleteComment(dto: {
     revalidatePath("/student/event/comments");
 }
 
-export const getEventListByStudentCodeWithQuery = async (
+/**
+ * Get event by student code
+ * @param code Student code
+ * @param arg query params
+ * @returns events
+ */
+export const getEventsByStudentCodeWithQuery = async (
     code: string,
     arg: {
         grade?: string;
         eventName?: string;
-        status?: string;
+        status?: EventStatus[];
     }
-) => {
+): Promise<EventDetailDto[] | undefined> => {
     let q = [];
     let url = `/student/${code}/q?`;
 
-    if (arg.grade) {
+    if (arg.grade && arg.grade !== "School Year") {
         q.push(`grade=${arg.grade}`);
     }
 
-    if (arg.eventName) {
+    if (arg.eventName && arg.eventName !== "Event") {
         q.push(`event_name=${arg.eventName}`);
     }
 
     if (arg.status) {
-        q.push(`status=${arg.status}`);
+        q.push(`status=${arg.status.map(x => x.toString()).join(",")}`);
     }
 
     url += q.join("&");
@@ -107,6 +122,6 @@ export const getEventListByStudentCodeWithQuery = async (
         const responseJson = await response.json();
         return responseJson;
     } catch (error: any) {
-        return new Error(error?.message);
+        return undefined;
     }
 };

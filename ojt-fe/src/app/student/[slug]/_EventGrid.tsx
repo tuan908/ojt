@@ -8,26 +8,40 @@ import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
-import {EventStatus, UserRole} from "@/constants";
+import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
 import {createAction, createReducer} from "@reduxjs/toolkit";
+import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {Suspense, useReducer, useState, type SyntheticEvent} from "react";
+import {useEffect, useReducer, useState, type SyntheticEvent} from "react";
 import {StatusLabel} from "./_StatusLabel";
 
-const showDialogDelete = createAction<{id: number}>("MODAL/DELETE");
-const showDialogUpdateStatus = createAction<{id: number}>(
-    "MODAL/UPDATE_STATUS"
+interface DialogState {
+    open: boolean;
+    id: number;
+}
+
+interface LocalState {
+    delete: DialogState;
+    updateStatus: DialogState;
+    isUpdating: boolean;
+}
+
+const openDialogDelete = createAction<{id: number}>("MODAL_DELETE/OPEN");
+const openDialogUpdateStatus = createAction<{id: number}>(
+    "MODAL_UPDATE_STATUS/OPEN"
 );
 
-const hideDialogDelete = createAction("MODAL/DELETE");
-const hideDialogUpdateStatus = createAction("MODAL/UPDATE_STATUS");
+const hideDialogDelete = createAction("MODAL_DELETE/HIDE");
+const hideDialogUpdateStatus = createAction("MODAL_UPDATE_STATUS/HIDE");
 
-const initialState = {
+const setIsUpdating = createAction<boolean>("STATE_UPDATING");
+
+const initialState: LocalState = {
     delete: {
         open: false,
         id: -1,
@@ -36,11 +50,12 @@ const initialState = {
         open: false,
         id: -1,
     },
+    isUpdating: false,
 };
 
 const reducer = createReducer(initialState, builder => {
     builder
-        .addCase(showDialogDelete, (state, action) => {
+        .addCase(openDialogDelete, (state, action) => {
             state.delete.open = true;
             state.delete.id = action.payload.id;
         })
@@ -48,7 +63,7 @@ const reducer = createReducer(initialState, builder => {
             state.delete.open = false;
             state.delete.id = -1;
         })
-        .addCase(showDialogUpdateStatus, (state, action) => {
+        .addCase(openDialogUpdateStatus, (state, action) => {
             state.updateStatus.open = true;
             state.updateStatus.id = action.payload.id;
         })
@@ -58,15 +73,22 @@ const reducer = createReducer(initialState, builder => {
         });
 });
 
-export function EventGrid({data}: {data: StudentResponseDto | null}) {
+export function EventGrid({
+    data,
+    studentId,
+    code,
+}: {
+    data: StudentResponseDto["events"];
+    studentId?: number;
+    code: string;
+}) {
     const {auth} = useAuth();
-    const [open, setOpen] = useState(false);
-    const [id, setId] = useState(-1);
-    const router = useRouter();
-    const [state, localDispatch] = useReducer(reducer, initialState);
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const [rows, setRows] = useState<StudentResponseDto["events"]>(data);
 
-    const openDialog = () => setOpen(true);
-    const closeDialog = () => setOpen(false);
+    useEffect(() => setRows(data), [data]);
+
+    const router = useRouter();
 
     async function handleDone(
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
@@ -75,19 +97,10 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         event.preventDefault();
         const actionResponse = await updateEventStatus({
             id,
-            studentId: data?.id!?.toString(),
+            studentId: studentId!,
             updatedBy: auth?.username!,
         });
-        closeDialog();
-    }
-
-    function handleEdit(
-        event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
-        id: number
-    ): void {
-        event?.preventDefault();
-        let url = `/event?id=${id}&mode=edit`;
-        router.push(url);
+        dispatch(hideDialogUpdateStatus());
     }
 
     function handleNotificationIconClick(
@@ -95,18 +108,27 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
         id: number
     ) {
         event?.preventDefault();
-        let url = `/event?id=${id}&mode=chat`;
+        let url = `/event?id=${id}&mode=${ScreenMode.CHAT}`;
         router.push(url);
     }
 
-    function handleCancelClick(): void {
-        closeDialog();
+    function handleDeleteEventDetailById(): void {
+        dispatch(setIsUpdating(true));
+        deleteEventDetailById(code, state.delete.id)
+            .then(res => setRows(res ?? []))
+            .finally(() => {
+                dispatch(setIsUpdating(false));
+                dispatch(hideDialogDelete());
+            });
     }
 
-    function handleDeleteEventDetailById(): void {
-        deleteEventDetailById(id);
-        closeDialog();
-    }
+    const handleOpenDeleteDialog = (id: number) => {
+        dispatch(
+            openDialogDelete({
+                id,
+            })
+        );
+    };
 
     return (
         <>
@@ -126,144 +148,136 @@ export function EventGrid({data}: {data: StudentResponseDto | null}) {
                     </tr>
                 </thead>
                 <tbody>
-                    <Suspense fallback={<CircularProgress color="info" />}>
-                        {data
-                            ? data?.events!?.map(item => (
-                                  <TableRow key={item.id}>
-                                      <TableCell alignTextCenter widthInRem={0}>
-                                          {item?.grade}
-                                      </TableCell>
-                                      <TableCell alignTextCenter widthInRem={0}>
-                                          {item?.name}
-                                      </TableCell>
-                                      <TableCell alignTextCenter widthInRem={0}>
-                                          <StatusLabel status={item?.status} />
-                                      </TableCell>
-                                      <TableCell
-                                          fontSemibold
-                                          textEllipsis
-                                          widthInRem={0}
-                                          alignTextCenter
-                                      >
-                                          <ButtonBase
-                                              onClick={e =>
-                                                  handleNotificationIconClick(
-                                                      e,
-                                                      item.id
-                                                  )
-                                              }
-                                          >
-                                              <Badge
-                                                  badgeContent={
-                                                      item?.comments?.length
-                                                  }
-                                                  color="error"
-                                              >
-                                                  <Notifications className="text-icon-default" />
-                                              </Badge>
-                                          </ButtonBase>
-                                      </TableCell>
-                                      {[
-                                          UserRole.Student.toString(),
-                                          UserRole.Counselor.toString(),
-                                      ].indexOf(auth?.role!) > -1 ? (
-                                          <TableCell
-                                              fontSemibold
-                                              textEllipsis
-                                              widthInRem={0}
-                                          >
-                                              <div className="w-full flex justify-center items-center gap-x-6">
-                                                  {auth?.role! ===
-                                                  UserRole.Counselor ? (
-                                                      <ButtonBase
-                                                          onClick={() =>
-                                                              localDispatch(
-                                                                  showDialogDelete(
-                                                                      {
-                                                                          id: item.id,
-                                                                      }
-                                                                  )
-                                                              )
-                                                          }
-                                                          disabled={
-                                                              item?.status ===
-                                                              EventStatus.Confirmed
-                                                          }
-                                                      >
-                                                          <Done
-                                                              isDone={
-                                                                  item?.status !==
-                                                                  EventStatus.Confirmed
-                                                              }
-                                                          />
-                                                      </ButtonBase>
-                                                  ) : (
-                                                      <>
-                                                          <ButtonBase
-                                                              disabled={
-                                                                  item.status ===
-                                                                  EventStatus.Confirmed
-                                                              }
-                                                              onClick={e =>
-                                                                  handleEdit(
-                                                                      e,
-                                                                      item.id
-                                                                  )
-                                                              }
-                                                          >
-                                                              <Edit
-                                                                  disabled={
-                                                                      item.status ===
-                                                                      EventStatus.Confirmed
-                                                                  }
-                                                              />
-                                                          </ButtonBase>
-                                                          <ButtonBase
-                                                              disabled={
-                                                                  item.status ===
-                                                                  EventStatus.Confirmed
-                                                              }
-                                                              onClick={() => {
-                                                                  openDialog();
-                                                                  setId(
-                                                                      item.id
-                                                                  );
-                                                              }}
-                                                          >
-                                                              <Delete
-                                                                  disabled={
-                                                                      item.status ===
-                                                                      EventStatus.Confirmed
-                                                                  }
-                                                              />
-                                                          </ButtonBase>
-                                                      </>
-                                                  )}
-                                              </div>
-                                          </TableCell>
-                                      ) : null}
-                                  </TableRow>
-                              ))
-                            : null}
-                    </Suspense>
+                    {state.isUpdating ? (
+                        <CircularProgress color="info" />
+                    ) : (
+                        <>
+                            {rows!?.map(item => (
+                                <TableRow key={item.id}>
+                                    <TableCell alignTextCenter widthInRem={0}>
+                                        {item?.grade}
+                                    </TableCell>
+                                    <TableCell alignTextCenter widthInRem={0}>
+                                        {item?.name}
+                                    </TableCell>
+                                    <TableCell alignTextCenter widthInRem={0}>
+                                        <StatusLabel status={item?.status} />
+                                    </TableCell>
+                                    <TableCell
+                                        fontSemibold
+                                        textEllipsis
+                                        widthInRem={0}
+                                        alignTextCenter
+                                    >
+                                        <ButtonBase
+                                            onClick={e =>
+                                                handleNotificationIconClick(
+                                                    e,
+                                                    item.id
+                                                )
+                                            }
+                                        >
+                                            <Badge
+                                                badgeContent={
+                                                    item?.comments?.length
+                                                }
+                                                color="error"
+                                            >
+                                                <Notifications className="text-icon-default" />
+                                            </Badge>
+                                        </ButtonBase>
+                                    </TableCell>
+                                    {[
+                                        UserRole.Student.toString(),
+                                        UserRole.Counselor.toString(),
+                                    ].indexOf(auth?.role!) > -1 ? (
+                                        <TableCell
+                                            fontSemibold
+                                            textEllipsis
+                                            widthInRem={0}
+                                        >
+                                            <div className="w-full flex justify-center items-center gap-x-6">
+                                                {auth?.role! ===
+                                                UserRole.Counselor ? (
+                                                    <ButtonBase
+                                                        onClick={() =>
+                                                            dispatch(
+                                                                openDialogUpdateStatus(
+                                                                    {
+                                                                        id: item.id,
+                                                                    }
+                                                                )
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            item?.status ===
+                                                            EventStatus.CONFIRMED
+                                                        }
+                                                    >
+                                                        <Done
+                                                            isDone={
+                                                                item?.status !==
+                                                                EventStatus.CONFIRMED
+                                                            }
+                                                        />
+                                                    </ButtonBase>
+                                                ) : (
+                                                    <>
+                                                        <Link
+                                                            href={`/event?id=${item.id}&mode=${ScreenMode.EDIT}`}
+                                                        >
+                                                            <Edit
+                                                                disabled={
+                                                                    item.status ===
+                                                                    EventStatus.CONFIRMED
+                                                                }
+                                                            />
+                                                        </Link>
+                                                        <ButtonBase
+                                                            disabled={
+                                                                item.status ===
+                                                                EventStatus.CONFIRMED
+                                                            }
+                                                            onClick={() =>
+                                                                handleOpenDeleteDialog(
+                                                                    item.id
+                                                                )
+                                                            }
+                                                        >
+                                                            <Delete
+                                                                disabled={
+                                                                    item.status ===
+                                                                    EventStatus.CONFIRMED
+                                                                }
+                                                            />
+                                                        </ButtonBase>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                    ) : null}
+                                </TableRow>
+                            ))}
+                        </>
+                    )}
                 </tbody>
             </table>
             <CustomDialog
                 open={state.delete.open}
-                onClose={() => localDispatch(hideDialogDelete())}
+                onClose={() => dispatch(hideDialogDelete())}
                 title="Do you want to delete this event?"
                 actionName="Delete"
-                onCancelClick={handleCancelClick}
+                onCancelClick={() => dispatch(hideDialogDelete())}
                 onActionClick={handleDeleteEventDetailById}
                 bg="bg-red-400"
             />
 
             <CustomDialog
                 open={state.updateStatus.open}
-                onClose={() => localDispatch(hideDialogUpdateStatus())}
+                onClose={() => dispatch(hideDialogUpdateStatus())}
                 title="Do you want to change status of this event?"
                 actionName="Update Status"
-                onCancelClick={() => localDispatch(hideDialogUpdateStatus())}
+                onCancelClick={() => dispatch(hideDialogUpdateStatus())}
                 onActionClick={handleDeleteEventDetailById}
                 bg="bg-red-400"
             />
