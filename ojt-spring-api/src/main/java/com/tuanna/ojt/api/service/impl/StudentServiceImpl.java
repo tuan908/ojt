@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -70,8 +71,8 @@ public class StudentServiceImpl implements StudentService {
               s
             from
               com.tuanna.ojt.api.entity.Student s
-              left join fetch s.eventList
-              left join fetch s.hashtagList
+              left join fetch s.events
+              left join fetch s.hashtags
             where
               1 = 1
         """;
@@ -87,12 +88,12 @@ public class StudentServiceImpl implements StudentService {
     }
 
     if (StringUtils.hasText(dto.event())) {
-      qlString += " and element(s.eventList) in :eventName ";
+      qlString += " and element(s.events) in :eventName ";
       parameters.put("eventName", dto.event());
     }
 
     if (dto.hashtags() != null && dto.hashtags().size() > 0) {
-      qlString += " and element(s.hashtagList).name in :hashtagList ";
+      qlString += " and element(s.hashtags).name in :hashtags ";
       parameters.put("hashtagList", dto.hashtags());
     }
 
@@ -304,7 +305,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  public EventDetailDto getStudentEventById(Long id) {
+  public EventDetailDto getStudentEventById(@NonNull Long id) {
     var eventDetail = this.eventDetailRepository.findById(id).orElse(null);
     if (eventDetail != null) {
       var eventDto = eventDetail.toDto();
@@ -315,7 +316,7 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   @Transactional
-  public List<EventDetailDto> deleteEventById(String code, Long id) {
+  public List<EventDetailDto> deleteEventById(String code, @NonNull Long id) {
 
     var event = this.eventDetailRepository.findById(id).orElse(null);
 

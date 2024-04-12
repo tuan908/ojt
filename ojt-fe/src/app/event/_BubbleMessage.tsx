@@ -1,14 +1,14 @@
 import ButtonBase from "@/components/ButtonBase";
 import CustomDialog from "@/components/CustomDialog";
-import {type MyJwtPayload} from "@/lib/auth";
-import {cn} from "@/lib/utils/cn";
+import { type MyJwtPayload } from "@/lib/auth";
+import { cn } from "@/lib/utils/cn";
 import Check from "@mui/icons-material/Check";
 import Clear from "@mui/icons-material/Clear";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
-import {Dialog, DialogActions, DialogTitle} from "@mui/material";
+import { Dialog, DialogActions, DialogTitle } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     useEffect,
     useRef,
@@ -17,8 +17,7 @@ import {
     type SetStateAction,
     type SyntheticEvent,
 } from "react";
-import {CommentDto} from "../actions/event";
-import {deleteComment} from "../actions/student";
+import { CommentDto } from "../actions/event";
 
 interface BubbleMessageProps {
     data: CommentDto;
@@ -32,6 +31,15 @@ interface BubbleMessageProps {
         >
     >;
     auth: MyJwtPayload | null;
+    handleDelete: () => void;
+    openDialog: {
+        delete: boolean;
+        discard: boolean;
+    };
+    setOpenDialog: Dispatch<SetStateAction<{
+        delete: boolean;
+        discard: boolean;
+    }>>
 }
 
 export default function BubbleMessage({
@@ -39,16 +47,16 @@ export default function BubbleMessage({
     showState,
     setShow,
     auth,
+    handleDelete,
+    openDialog,
+    setOpenDialog
 }: BubbleMessageProps) {
     const router = useRouter();
     const inputCommentRef = useRef<HTMLTextAreaElement>(null);
     const isUser = auth?.username! !== data?.username!;
     const [editable, setEditable] = useState(false);
     const [commentData, setCommentData] = useState(data);
-    const [openDialog, setOpenDialog] = useState({
-        delete: false,
-        discard: false,
-    });
+
 
     const handleOnMouseEnter = (
         e: SyntheticEvent<HTMLDivElement, Event>,
@@ -100,18 +108,7 @@ export default function BubbleMessage({
         setEditable(true);
     };
 
-    const handleDelete = () => {
-        const dto = {
-            id: data.id,
-            username: data.username,
-            eventDetailId: data.eventDetailId,
-        };
 
-        deleteComment(dto).then(_ => {
-            setOpenDialog({...openDialog, delete: false});
-            router.refresh();
-        });
-    };
 
     const cancelDiscard = () => {
         const el = showState.find(s => s.index === data.id);

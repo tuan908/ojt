@@ -131,15 +131,14 @@ public class StudentController {
   }
 
   @DeleteMapping("/event/comments/{id}")
-  public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id,
-      @RequestBody DeleteCommentDto dto) {
+  public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id) {
     this.commentService.delete(id);
 
     // @formatter:off
     var data = new SuccessResponseDto(
         OjtCode.ACTION_SUCCESS.getValue(),
         "Deleted", 
-        "Deleted comment " + id+ " for event " + dto.eventDetailId(), 
+        "Deleted comment " + id, 
         "/student/comments/" + id
       );
     // @formatter:on

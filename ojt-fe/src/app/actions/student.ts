@@ -82,7 +82,7 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await fetchNoCache("/student/event/comments/" + dto.id, "POST", dto);
+    await fetchNoCache("/student/event/comments/" + dto.id, "DELETE");
     revalidatePath("/student/event/comments");
 }
 

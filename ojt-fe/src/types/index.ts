@@ -7,17 +7,10 @@ export type ServerActionResponseDto = {
 };
 
 /**
- * MaybeNull of type T
+ * Nullable of type T
  */
-export type MaybeNull<T> = {
+export type Nullable<T> = {
     [P in keyof T]: T[P] | null;
-};
-
-/**
- * MaybeUndefined of type T
- */
-export type MaybeUndefined<T> = {
-    [P in keyof T]?: T[P];
 };
 
 /**

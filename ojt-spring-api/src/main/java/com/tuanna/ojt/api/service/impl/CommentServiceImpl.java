@@ -4,10 +4,12 @@ import java.util.Comparator;
 import java.util.List;
 import jakarta.persistence.EntityManager;
 import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
+import com.tuanna.ojt.api.dto.DeleteCommentDto;
 import com.tuanna.ojt.api.dto.UpdateCommentDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.repository.CommentRepository;
@@ -86,7 +88,7 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public void update(Long id, UpdateCommentDto updateCommentDto) {
+  public void update(@NonNull Long id, UpdateCommentDto updateCommentDto) {
     var comment = this.commentRepository.findById(id).orElse(null);
 
     if (comment != null) {

@@ -32,6 +32,7 @@ import Autocomplete, {
     type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
@@ -45,6 +46,7 @@ import {
     type SyntheticEvent,
 } from "react";
 import {getHashtagList} from "../actions/common";
+import {deleteComment} from "../actions/student";
 import BubbleMessage from "./_BubbleMessage";
 import "./register.css";
 
@@ -54,10 +56,9 @@ export default function Page() {
     const isLoading = useAppSelector(getLoadingState);
     const {auth} = useAuth();
     const params = useSearchParams();
-    const [registerData, setData] = useState<
-        RegisterEventDto["data"] | undefined
-    >();
+    const [registerData, setData] = useState<RegisterEventDto["data"]>();
     const [error, setError] = useState(false);
+    const [isUpdatingComment, setUpdating] = useState(false);
 
     const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
     const [comments, setComments] = useState<CommentDto[]>([]);
@@ -66,6 +67,10 @@ export default function Page() {
     >([]);
     const [isDisable, setDisable] = useState(false);
     const [hashtagList, setHashtagList] = useState<HashtagDto[]>([]);
+    const [openDialog, setOpenDialog] = useState({
+        delete: false,
+        discard: false,
+    });
 
     async function init() {
         await dispatch(showLoading());
@@ -257,6 +262,20 @@ export default function Page() {
         setOpen(false);
     }
 
+    const handleDelete = ({id, username, eventDetailId}: CommentDto) => {
+        const dto = {
+            id: id,
+            username: username,
+            eventDetailId: eventDetailId,
+        };
+        setUpdating(true);
+        deleteComment(dto).then(_ => {
+            setOpenDialog({...openDialog, delete: false});
+            router.refresh();
+        });
+        setUpdating(false);
+    };
+
     return (
         <div className="pt-12 w-full flex flex-col gap-y-8">
             {isLoading ? <LoadingComponent /> : null}
@@ -378,6 +397,11 @@ export default function Page() {
                 params.get("mode") !== ScreenMode.NEW.toString() ? (
                     <>
                         <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
+                            {isUpdatingComment ? (
+                                <div className="bg-black opacity-50 absolute top-0 left-0 right-0 bottom-0">
+                                    <CircularProgress color="success" />
+                                </div>
+                            ) : null}
                             {comments!?.map(x => {
                                 return (
                                     <Fragment key={x.id}>
@@ -387,6 +411,11 @@ export default function Page() {
                                                 showState={showState}
                                                 setShow={setShow}
                                                 auth={auth}
+                                                handleDelete={() =>
+                                                    handleDelete(x)
+                                                }
+                                                openDialog={openDialog}
+                                                setOpenDialog={setOpenDialog}
                                             />
                                         )}
                                     </Fragment>
@@ -441,13 +470,17 @@ export default function Page() {
                                     )}
                                 </button>
                                 {openPicker ? (
-                                    <Picker
-                                        data={data}
-                                        onEmojiSelect={handleSelect}
-                                        open={openPicker}
-                                        previewPosition="none"
-                                        onClickOutside={() => setOpen(false)}
-                                    />
+                                    <div className="absolute right-0 -top-24">
+                                        <Picker
+                                            data={data}
+                                            onEmojiSelect={handleSelect}
+                                            open={openPicker}
+                                            previewPosition="none"
+                                            onClickOutside={() =>
+                                                setOpen(false)
+                                            }
+                                        />
+                                    </div>
                                 ) : null}
                             </div>
                             <button
