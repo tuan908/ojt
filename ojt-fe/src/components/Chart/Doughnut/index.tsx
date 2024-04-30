@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/components/Card";
+import OjtCard from "@/components/Card";
 import {ArcElement, Chart as ChartJS, Tooltip, type Plugin} from "chart.js";
 import {Doughnut} from "react-chartjs-2";
 
@@ -64,7 +64,7 @@ const loadPlugins = (text: string) => {
 
 export default function DoughnutChart({text}: {text: string}) {
     return (
-        <Card width={32} height={20}>
+        <OjtCard width={32} height={20}>
             <Doughnut
                 data={data}
                 plugins={loadPlugins(text)}
@@ -72,6 +72,6 @@ export default function DoughnutChart({text}: {text: string}) {
                     maintainAspectRatio: false,
                 }}
             />
-        </Card>
+        </OjtCard>
     );
 }

@@ -17,7 +17,7 @@ type CardProps = {
  * @param height height in rem
  * @param backgroundColor backgroundColor
  */
-export default function Card({
+export default function OjtCard({
     width,
     height,
     fullWidth,

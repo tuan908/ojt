@@ -2,8 +2,7 @@
 
 import {deleteEventDetailById} from "@/app/actions/event";
 import {updateEventStatus} from "@/app/actions/student";
-import ButtonBase from "@/components/ButtonBase";
-import CustomDialog from "@/components/CustomDialog";
+import OjtButtonBase from "@/components/ButtonBase";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -169,7 +168,7 @@ export function EventGrid({
                                         widthInRem={0}
                                         alignTextCenter
                                     >
-                                        <ButtonBase
+                                        <OjtButtonBase
                                             onClick={e =>
                                                 handleNotificationIconClick(
                                                     e,
@@ -185,7 +184,7 @@ export function EventGrid({
                                             >
                                                 <Notifications className="text-icon-default" />
                                             </Badge>
-                                        </ButtonBase>
+                                        </OjtButtonBase>
                                     </TableCell>
                                     {[
                                         UserRole.Student.toString(),
@@ -199,7 +198,7 @@ export function EventGrid({
                                             <div className="w-full flex justify-center items-center gap-x-6">
                                                 {auth?.role! ===
                                                 UserRole.Counselor ? (
-                                                    <ButtonBase
+                                                    <OjtButtonBase
                                                         onClick={() =>
                                                             dispatch(
                                                                 openDialogUpdateStatus(
@@ -220,7 +219,7 @@ export function EventGrid({
                                                                 EventStatus.CONFIRMED
                                                             }
                                                         />
-                                                    </ButtonBase>
+                                                    </OjtButtonBase>
                                                 ) : (
                                                     <>
                                                         <Link
@@ -233,7 +232,7 @@ export function EventGrid({
                                                                 }
                                                             />
                                                         </Link>
-                                                        <ButtonBase
+                                                        <OjtButtonBase
                                                             disabled={
                                                                 item.status ===
                                                                 EventStatus.CONFIRMED
@@ -250,7 +249,7 @@ export function EventGrid({
                                                                     EventStatus.CONFIRMED
                                                                 }
                                                             />
-                                                        </ButtonBase>
+                                                        </OjtButtonBase>
                                                     </>
                                                 )}
                                             </div>
@@ -262,25 +261,27 @@ export function EventGrid({
                     )}
                 </tbody>
             </table>
-            <CustomDialog
+            {/* <OjtDialog
                 open={state.delete.open}
                 onClose={() => dispatch(hideDialogDelete())}
-                title="Do you want to delete this event?"
-                actionName="Delete"
+                title="Delete Event"
+                contentText="Do you want to delete this event?"
+                actionButtonText="Delete"
                 onCancelClick={() => dispatch(hideDialogDelete())}
                 onActionClick={handleDeleteEventDetailById}
-                bg="bg-red-400"
+                actionButtonBackgroundColor="bg-red-400"
             />
 
-            <CustomDialog
+            <OjtDialog
                 open={state.updateStatus.open}
                 onClose={() => dispatch(hideDialogUpdateStatus())}
                 title="Do you want to change status of this event?"
-                actionName="Update Status"
+                contentText="Update Status"
+                actionButtonText="Update"
                 onCancelClick={() => dispatch(hideDialogUpdateStatus())}
                 onActionClick={handleDeleteEventDetailById}
-                bg="bg-red-400"
-            />
+                actionButtonBackgroundColor="bg-red-400"
+            /> */}
         </>
     );
 }

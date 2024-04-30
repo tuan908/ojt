@@ -3,7 +3,7 @@
 import {CollectionName} from "@/constants";
 import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import type {HashtagDto, EventDetailDto} from "@/types/student.types";
+import type {EventDetailDto, HashtagDto} from "@/types/student.types";
 
 export type GradeDto = {id: number; name: string};
 
@@ -11,7 +11,7 @@ export type GradeDto = {id: number; name: string};
  * Get Grade List
  * @returns Grade List
  */
-export async function getGradeList() {
+export async function getGrades() {
     try {
         const list = await sql<GradeDto[]>`
             select
@@ -22,7 +22,7 @@ export async function getGradeList() {
         return list;
     } catch (error) {
         console.error(error);
-        return null;
+        return undefined;
     }
 }
 
@@ -30,21 +30,16 @@ export async function getGradeList() {
  * Get current event
  * @returns Event List
  */
-export async function getEventList(): Promise<EventDetailDto[]> {
-    try {
-        const res = await fetchNoCache("/event-detail");
-        const result = await res.json();
-        return result;
-    } catch (error: any) {
-        throw new Error(error?.message);
-    }
+export async function getEvents() {
+    const data = await fetchNoCache<EventDetailDto[]>("/event-detail");
+    return data;
 }
 
 /**
  * Get hashtag list
  * @returns Hashtag list
  */
-export async function getHashtagList() {
+export async function getHashtags() {
     try {
         const list = await sql<HashtagDto[]>`
             select
@@ -55,6 +50,6 @@ export async function getHashtagList() {
         return list;
     } catch (error) {
         console.error(error);
-        return null;
+        return undefined;
     }
 }

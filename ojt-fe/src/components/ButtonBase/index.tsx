@@ -6,7 +6,7 @@ type ButtonBaseProps = ComponentProps<"button"> & {
     classes?: string;
 };
 
-export default function ButtonBase({
+export default function OjtButtonBase({
     color,
     children,
     classes,

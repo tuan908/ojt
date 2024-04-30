@@ -2,7 +2,6 @@
 
 import {EventStatus} from "@/constants";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {OjtStatusCode} from "@/types";
 import type {
     EventDetailDto,
     Page,
@@ -16,20 +15,17 @@ import {revalidatePath} from "next/cache";
  * @param dto Request Dto
  * @returns Student List
  */
-export async function getStudentList(
-    dto?: StudentListRequestDto
-): Promise<Page<StudentResponseDto>> {
-    try {
-        // Use raw dto instead of JSON.stringify(dto) - dto already parse
-        // to JSON string in fetchNoCache
-        const body = !!dto ? dto : {};
+export async function getStudents(dto?: StudentListRequestDto) {
+    // Use raw dto instead of JSON.stringify(dto) - dto already parse
+    // to JSON string in fetchNoCache
+    const body = !!dto ? dto : {};
 
-        const res = await fetchNoCache("/student", "POST", body);
-        const result = await res.json();
-        return result;
-    } catch (error: any) {
-        throw new Error(error?.message);
-    }
+    const data = await fetchNoCache<Page<StudentResponseDto>>(
+        "/student",
+        "POST",
+        body
+    );
+    return data;
 }
 
 /**
@@ -37,16 +33,11 @@ export async function getStudentList(
  * @param studentCode Student code
  * @returns Student Response
  */
-export async function getStudentByCode(
-    studentCode: string
-): Promise<StudentResponseDto | undefined> {
-    try {
-        const res = await fetchNoCache(`/student/${studentCode}`);
-        const result = await res.json();
-        return result;
-    } catch (error: any) {
-        return undefined;
-    }
+export async function getStudentByCode(studentCode: string) {
+    const data = await fetchNoCache<StudentResponseDto>(
+        `/student/${studentCode}`
+    );
+    return data;
 }
 
 /**
@@ -59,18 +50,9 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    try {
-        const response = await fetchNoCache("/event/detail", "POST", dto);
-        revalidatePath(`/student/[slug]`, "page");
-        const responseBody = await response.json();
-        return responseBody;
-    } catch (error) {
-        return {
-            code: OjtStatusCode.Error,
-            title: "Server Error",
-            message: "Server error, please contact your administrator",
-        };
-    }
+    const data = await fetchNoCache("/event/detail", "POST", dto);
+    revalidatePath(`/student/[slug]`, "page");
+    return data;
 }
 
 /**
@@ -99,7 +81,7 @@ export const getEventsByStudentCodeWithQuery = async (
         eventName?: string;
         status?: EventStatus[];
     }
-): Promise<EventDetailDto[] | undefined> => {
+) => {
     let q = [];
     let url = `/student/${code}/q?`;
 
@@ -117,11 +99,6 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += q.join("&");
 
-    try {
-        const response = await fetchNoCache(url, "GET");
-        const responseJson = await response.json();
-        return responseJson;
-    } catch (error: any) {
-        return undefined;
-    }
+    const data = await fetchNoCache<EventDetailDto[]>(url, "GET");
+    return data;
 };

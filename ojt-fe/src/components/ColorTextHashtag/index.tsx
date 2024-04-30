@@ -5,7 +5,7 @@ type ColorTextHashtagProps = ComponentProps<"span"> & {
     paddingXInRem?: number;
 };
 
-export default function ColorTextHashtag({
+export default function OjtColorTextHashtag({
     color,
     children,
     paddingXInRem,

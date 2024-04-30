@@ -21,7 +21,12 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public List<EventDto> getAll() {
-    var qlString = "select e from com.tuanna.ojt.api.entity.Event e";
+    var qlString = """
+		  	select 
+    		  	e 
+		  	from 
+    		  	com.tuanna.ojt.api.entity.Event e
+		""";
 
     var query = this.entityManager.createQuery(qlString, Event.class);
     var list = query.getResultStream().map(Event::toDto).toList();

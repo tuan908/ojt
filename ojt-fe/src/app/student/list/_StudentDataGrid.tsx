@@ -1,6 +1,6 @@
 "use client";
 
-import ColorTextHashtag from "@/components/ColorTextHashtag";
+import OjtColorTextHashtag from "@/components/ColorTextHashtag";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -108,7 +108,7 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                               >
                                                   {item.hashtags?.map(
                                                       (hashtag, index) => (
-                                                          <ColorTextHashtag
+                                                          <OjtColorTextHashtag
                                                               key={`${hashtag.id}#${index}`}
                                                               color={
                                                                   hashtag.color
@@ -118,7 +118,7 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                                               }
                                                           >
                                                               {hashtag.name}
-                                                          </ColorTextHashtag>
+                                                          </OjtColorTextHashtag>
                                                       )
                                                   )}
                                               </TableCell>

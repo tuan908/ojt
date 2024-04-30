@@ -17,8 +17,12 @@ const config: Config = {
                 table: "#dee2e6",
             },
             width: {
-                "24/25": "96%"
-            }
+                "24/25": "96%",
+            },
+            zIndex: {
+                /* z-index larger than Material UI's drawer - 1300 */
+                1301: "1301",
+            },
         },
     },
     plugins: [],

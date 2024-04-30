@@ -57,44 +57,32 @@ export type CommentDto = AddCommentDto & {
     isDeleted: boolean;
 };
 
-export async function addComment(
-    dto: AddCommentDto
-): Promise<CommentDto[] | null> {
-    try {
-        const res = await fetchNoCache(`/student/event/comments`, "POST", dto);
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        throw new Error("Failed to add comment");
-    }
+export async function addComment(dto: AddCommentDto) {
+    const data = await fetchNoCache<CommentDto[]>(
+        `/student/event/comments`,
+        "POST",
+        dto
+    );
+    return data;
 }
 
-export async function getEventDetailById(
-    id: number
-): Promise<EventDetailDto | null> {
-    const response = await fetchNoCache(`/student/event/${id}`);
-    const result = await response.json();
-    return result;
+export async function getEventDetailById(id: number) {
+    const response = await fetchNoCache<EventDetailDto>(`/student/event/${id}`);
+    return response;
 }
 
 export async function deleteEventDetailById(
     code: string,
     id: number
 ): Promise<EventDetailDto[] | undefined> {
-    try {
-        const res = await fetchNoCache(
-            `/student/${code}/event/${id}`,
-            "DELETE"
-        );
-        const data = await res.json();
-        return data;
-    } catch (error) {
-        return undefined;
-    }
+    const res = await fetchNoCache<EventDetailDto[]>(
+        `/student/${code}/event/${id}`,
+        "DELETE"
+    );
+    return res;
 }
 
-export async function getEventDetailList(): Promise<EventDto[] | null> {
-    const response = await fetchNoCache(`/event-detail`);
-    const result = await response.json();
-    return result;
+export async function getEventDetailList() {
+    const response = await fetchNoCache<EventDto[]>(`/event-detail`);
+    return response;
 }

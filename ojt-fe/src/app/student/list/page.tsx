@@ -1,9 +1,13 @@
 "use client";
 
-import {getEventList, getGradeList, type GradeDto} from "@/app/actions/common";
-import {getStudentList} from "@/app/actions/student";
-import {getHashtagList} from "@/app/actions/common";
-import ColorHashtag from "@/components/ColorHashtag";
+import {
+    getEvents,
+    getGrades,
+    getHashtags,
+    type GradeDto,
+} from "@/app/actions/common";
+import {getStudents} from "@/app/actions/student";
+import OjtColorHashtag from "@/components/ColorHashtag";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
@@ -13,7 +17,6 @@ import {
     hideLoading,
     showLoading,
 } from "@/lib/redux/slice/loadingSlice";
-import {MaybeNull} from "@/types";
 import type {
     EventDetailDto,
     HashtagDto,
@@ -33,7 +36,7 @@ import TextField from "@mui/material/TextField";
 import {useEffect, useState, type SyntheticEvent} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
-type DropdownOption = MaybeNull<{
+type DropdownOption = Partial<{
     grade: GradeDto[];
     event: EventDetailDto[];
     hashtag: HashtagDto[];
@@ -47,42 +50,43 @@ export default function Page() {
     );
     const [inputValue, setInputValue] = useState("");
     const [rows, setRows] = useState<StudentResponseDto[]>([]);
-    const [searchOptions, setOptions] = useState<DropdownOption>({
-        event: null,
-        grade: null,
-        hashtag: null,
-    });
+    const [searchOptions, setOptions] = useState<DropdownOption>();
     const isFetching = useAppSelector(getLoadingState);
     const [searchCondition, setCondition] = useState<StudentListRequestDto>({});
 
     async function init() {
         await dispatch(showLoading());
         try {
-            const promises = await Promise.allSettled([
-                getGradeList(),
-                getEventList(),
-                getHashtagList(),
-                getStudentList(),
+            const [
+                gradesPromise,
+                eventsPromise,
+                hashtagsPromise,
+                studentsPromises,
+            ] = await Promise.allSettled([
+                getGrades(),
+                getEvents(),
+                getHashtags(),
+                getStudents(),
             ]);
 
-            if (promises[0].status === "fulfilled") {
-                const grade = promises[0].value;
+            if (gradesPromise.status === "fulfilled") {
+                const grade = gradesPromise.value;
                 setOptions(x => ({...x, grade}));
             }
 
-            if (promises[1].status === "fulfilled") {
-                const event = promises[1].value;
+            if (eventsPromise.status === "fulfilled") {
+                const event = eventsPromise.value;
                 setOptions(x => ({...x, event}));
             }
 
-            if (promises[2].status === "fulfilled") {
-                const hashtag = promises[2].value;
+            if (hashtagsPromise.status === "fulfilled") {
+                const hashtag = hashtagsPromise.value;
                 setOptions(x => ({...x, hashtag}));
             }
 
-            if (promises[3].status === "fulfilled") {
-                const data = promises[3].value;
-                setRows(data?.content);
+            if (studentsPromises.status === "fulfilled") {
+                const students = studentsPromises.value;
+                setRows(students?.content!);
             }
         } catch (error: any) {
             throw new Error(error?.message);
@@ -189,8 +193,8 @@ export default function Page() {
                 name: searchCondition.name,
             };
 
-            const data = await getStudentList(searchDto);
-            setRows(data.content);
+            const students = await getStudents(searchDto);
+            setRows(students?.content!);
         } catch (error: any) {
             throw new Error(error?.message);
         }
@@ -243,7 +247,7 @@ export default function Page() {
                     }}
                 >
                     <MenuItem value="All Grade">All Grade</MenuItem>
-                    {searchOptions.grade
+                    {searchOptions!?.grade
                         ? searchOptions.grade.map(x => (
                               <MenuItem
                                   key={x.id}
@@ -286,7 +290,7 @@ export default function Page() {
                     suppressContentEditableWarning
                 >
                     <MenuItem value="All Event">All Event</MenuItem>
-                    {searchOptions.event
+                    {searchOptions!?.event
                         ? searchOptions.event.map(x => (
                               <MenuItem
                                   key={x.id}
@@ -311,7 +315,7 @@ export default function Page() {
                         },
                     }}
                     options={
-                        searchOptions.hashtag
+                        searchOptions!?.hashtag
                             ? searchOptions.hashtag.map(x => ({
                                   id: x.id,
                                   label: x.name,
@@ -355,14 +359,14 @@ export default function Page() {
             </div>
             <div className="w-full px-12 flex gap-x-2 flex-wrap">
                 {skills.map((skill, index) => (
-                    <ColorHashtag
+                    <OjtColorHashtag
                         key={`skill#${index}`}
                         onRemove={() => handleRemoveHashtag(index)}
                         index={index}
                         color={skill.color}
                     >
                         {skill.label}
-                    </ColorHashtag>
+                    </OjtColorHashtag>
                 ))}
             </div>
 

@@ -53,25 +53,18 @@ export async function login(_: any, formData: FormData) {
         };
     }
 
-    const data = parse.data;
-    let user;
+    const request = parse.data;
 
-    try {
-        const response = await fetchNoCache("/auth/login", "POST", data);
-        const responseJson = await response.json();
-        if (!responseJson) {
-            return {message: "Incorrect username or password.", user: null};
-        }
-        user = responseJson as AccountDto;
-        const token = await generateJWT(user);
-        cookies().set({
-            name: "token",
-            value: token,
-            path: "/",
-        });
-    } catch (error) {
-        return {message: "System Error", user: null};
+    const user = await fetchNoCache<AccountDto>("/auth/login", "POST", request);
+    if (!user) {
+        return {message: "Incorrect username or password.", user: null};
     }
+    const token = await generateJWT(user);
+    cookies().set({
+        name: "token",
+        value: token,
+        path: "/",
+    });
 
     let redirectPath = "";
 

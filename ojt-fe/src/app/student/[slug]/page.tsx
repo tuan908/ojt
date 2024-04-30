@@ -1,6 +1,6 @@
 "use client";
 
-import {type GradeDto, getGradeList} from "@/app/actions/common";
+import {getGrades, type GradeDto} from "@/app/actions/common";
 import {getEventDetailList} from "@/app/actions/event";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -66,7 +66,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
     const init = async () => {
         await appDispatch(showLoading());
-        const promises = [getGradeList(), getEventDetailList()];
+        const promises = [getGrades(), getEventDetailList()];
         const promiseResults = await Promise.allSettled(promises);
 
         if (promiseResults[0].status === "fulfilled") {

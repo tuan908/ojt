@@ -8,7 +8,7 @@ type ColorHashtagProps = {
     index: number;
 };
 
-export default function ColorHashtag({
+export default function OjtColorHashtag({
     color,
     onRemove: handleRemove,
     children,

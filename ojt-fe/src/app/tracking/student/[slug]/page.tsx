@@ -1,18 +1,18 @@
-import {getHashtagList, getGradeList} from "@/app/actions/common";
-import Card from "@/components/Card";
+import {getGrades, getHashtags} from "@/app/actions/common";
+import OjtCard from "@/components/Card";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";
 import Avatar from "@mui/material/Avatar";
 
 export default async function Page() {
-    const labelList = await getHashtagList();
-    const gradeList = await getGradeList();
+    const labelList = await getHashtags();
+    const gradeList = await getGrades();
 
     return (
         <>
             <div className="pt-20 w-full flex gap-x-10 justify-between items-center">
                 {/* Student Info */}
-                <Card
+                <OjtCard
                     width={30}
                     height={20}
                     paddingX="px-0"
@@ -43,9 +43,9 @@ export default async function Page() {
                             </div>
                         </div>
                     </div>
-                </Card>
+                </OjtCard>
                 <DoughnutChart text="1200" />
-                <Card width={48} height={20} backgroundColor="#ffffff">
+                <OjtCard width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
                         {labelList
                             ? labelList.map(label => (
@@ -62,7 +62,7 @@ export default async function Page() {
                               ))
                             : null}
                     </ul>
-                </Card>
+                </OjtCard>
             </div>
 
             <StackedBarChart

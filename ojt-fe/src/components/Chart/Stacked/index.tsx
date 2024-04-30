@@ -1,6 +1,6 @@
 "use client";
 
-import Card from "@/components/Card";
+import OjtCard from "@/components/Card";
 import {
     ArcElement,
     BarElement,
@@ -26,7 +26,7 @@ const data = {
 
 export default function StackedBarChart({labels}: {labels: string[]}) {
     return (
-        <Card fullWidth height={24}>
+        <OjtCard fullWidth height={24}>
             <Bar
                 data={{
                     labels,
@@ -36,6 +36,6 @@ export default function StackedBarChart({labels}: {labels: string[]}) {
                     maintainAspectRatio: false,
                 }}
             />
-        </Card>
+        </OjtCard>
     );
 }
