@@ -29,7 +29,7 @@ import Select from "@mui/material/Select";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useEffect, useState, type ChangeEventHandler} from "react";
-import {Checkbox} from "./_Checkbox";
+import {OjtCheckbox} from "./_Checkbox";
 import {EventGrid} from "./_EventGrid";
 
 type CheckboxState = {
@@ -267,7 +267,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             <span>ステータス：</span>
 
                             {/* 未確認 */}
-                            <Checkbox
+                            <OjtCheckbox
                                 label="未確認"
                                 name="unconfirmed"
                                 checked={check.unconfirmed}
@@ -275,7 +275,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             />
 
                             {/* 確認中 */}
-                            <Checkbox
+                            <OjtCheckbox
                                 label="確認中"
                                 name="under_reviewing"
                                 checked={check.under_reviewing}
@@ -283,7 +283,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             />
 
                             {/* 修了*/}
-                            <Checkbox
+                            <OjtCheckbox
                                 label="修了"
                                 name="confirmed"
                                 checked={check.confirmed}
