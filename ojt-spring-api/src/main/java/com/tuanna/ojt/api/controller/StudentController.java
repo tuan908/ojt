@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuanna.ojt.api.constants.OjtCode;
 import com.tuanna.ojt.api.dto.AddCommentDto;
-import com.tuanna.ojt.api.dto.DeleteCommentDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.SuccessResponseDto;

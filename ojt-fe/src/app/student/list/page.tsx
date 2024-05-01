@@ -179,11 +179,11 @@ export default function Page() {
         await dispatch(showLoading());
         try {
             let request: StudentListRequestDto = {};
-            if (searchCondition.grade !== "All Grade") {
+            if (searchCondition.grade !== "クラス名") {
                 request.grade = searchCondition.grade;
             }
 
-            if (searchCondition.events !== "All Event") {
+            if (searchCondition.events !== "イベント") {
                 request.events = searchCondition.events;
             }
 
@@ -211,9 +211,9 @@ export default function Page() {
             {isFetching ? <LoadingComponent /> : null}
             {/* Student info */}
             <div className="w-full pl-12 pt-8 flex gap-x-8">
-                {/* Student name */}
+                {/* 学生の名前 */}
                 <Input
-                    placeholder="Student Name"
+                    placeholder="学生の名前"
                     className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     name="name"
@@ -225,16 +225,24 @@ export default function Page() {
                     }
                 />
 
-                {/* School's year */}
+                {/* クラス名 */}
                 <Select
                     variant="standard"
                     className="w-56"
-                    defaultValue="All Grade"
-                    name="grade"
+                    defaultValue="クラス名"
                     onChange={e =>
-                        setCondition(x => ({...x, grade: e.target.value}))
+                        setCondition(x => ({
+                            ...x,
+                            grade: e.target.value as string,
+                        }))
                     }
-                    sx={{bgcolor: "#ffffff", paddingX: 1}}
+                    sx={{
+                        bgcolor: "#ffffff",
+                        paddingX: 1,
+                        "& .MuiSelect-select:focus": {
+                            bgcolor: "transparent",
+                        },
+                    }}
                     MenuProps={{
                         slotProps: {
                             paper: {
@@ -246,7 +254,7 @@ export default function Page() {
                         },
                     }}
                 >
-                    <MenuItem value="All Grade">All Grade</MenuItem>
+                    <MenuItem value="クラス名">クラス名</MenuItem>
                     {searchOptions!?.grade
                         ? searchOptions.grade.map(x => (
                               <MenuItem
@@ -261,14 +269,17 @@ export default function Page() {
                         : []}
                 </Select>
 
-                {/* Event */}
+                {/* イベント */}
                 <Select
                     variant="standard"
                     className="w-56"
                     name="event"
-                    defaultValue="All Event"
+                    defaultValue="イベント"
                     onChange={e =>
-                        setCondition(x => ({...x, events: e.target.value}))
+                        setCondition(x => ({
+                            ...x,
+                            events: e.target.value as string,
+                        }))
                     }
                     sx={{
                         bgcolor: "#ffffff",
@@ -289,7 +300,7 @@ export default function Page() {
                     }}
                     suppressContentEditableWarning
                 >
-                    <MenuItem value="All Event">All Event</MenuItem>
+                    <MenuItem value="イベント">イベント</MenuItem>
                     {searchOptions!?.event
                         ? searchOptions.event.map(x => (
                               <MenuItem
@@ -304,7 +315,7 @@ export default function Page() {
                         : []}
                 </Select>
 
-                {/* Hashtag */}
+                {/* ハッシュタグ */}
                 <Autocomplete
                     sx={{
                         width: 224,
@@ -316,7 +327,7 @@ export default function Page() {
                     }}
                     options={
                         searchOptions!?.hashtag
-                            ? searchOptions.hashtag.map(x => ({
+                            ? [...searchOptions.hashtag].map(x => ({
                                   id: x.id,
                                   label: x.name,
                               }))
@@ -325,7 +336,7 @@ export default function Page() {
                     renderInput={params => (
                         <TextField
                             {...params}
-                            placeholder="#Hashtag"
+                            placeholder="#ハッシュタグ"
                             variant="standard"
                         />
                     )}

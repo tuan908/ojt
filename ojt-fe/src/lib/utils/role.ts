@@ -8,16 +8,16 @@ import {UserRole} from "@/constants";
 export function convertRole(role?: string) {
     switch (role) {
         case UserRole.Counselor:
-            return "Counselor";
+            return "カウンセラー";
 
         case UserRole.Parent:
-            return "Parent";
+            return "家族";
 
         case UserRole.Student:
-            return "Student";
+            return "学生";
 
         case UserRole.Teacher:
-            return "Teacher";
+            return "先生";
 
         default:
             throw new Error("Invalid Role");

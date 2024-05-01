@@ -5,17 +5,17 @@ export function StatusLabel({status}: {status: number}) {
     let backgroundColor = "";
     switch (status) {
         case EventStatus.UNCONFIRMED:
-            labelText = "Unconfirmed";
+            labelText = "未確認";
             backgroundColor = "#33b5e5";
             break;
 
         case EventStatus.UNDER_REVIEWING:
-            labelText = "Under reviewing";
+            labelText = "確認中";
             backgroundColor = "#ffbb33";
             break;
 
         case EventStatus.CONFIRMED:
-            labelText = "Confirmed";
+            labelText = "修了";
             backgroundColor = "#00c851";
             break;
 
@@ -26,7 +26,7 @@ export function StatusLabel({status}: {status: number}) {
     return (
         <span
             style={{backgroundColor}}
-            className="text-white px-3  py-1 rounded-2xl shadow-md"
+            className="text-white px-4 py-2 font-medium rounded-2xl shadow-md"
         >
             {labelText}
         </span>

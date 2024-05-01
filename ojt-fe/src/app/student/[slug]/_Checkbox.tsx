@@ -1,6 +1,7 @@
+import {Checkbox} from "@mui/material";
 import {type ChangeEventHandler} from "react";
 
-export function Checkbox({
+export function OjtCheckbox({
     label,
     name,
     checked,
@@ -12,13 +13,16 @@ export function Checkbox({
     handleChange: ChangeEventHandler<HTMLInputElement>;
 }) {
     return (
-        <div className="flex gap-x-4">
+        <div className="flex items-center">
             <label htmlFor="unconfirmed">{label}</label>
-            <input
-                type="checkbox"
+            <Checkbox
                 name={name}
                 checked={checked}
+                sx={{"& .MuiSvgIcon-root": {fontSize: 20}}}
                 onChange={handleChange}
+                className="accent-icon-default"
+                disableFocusRipple
+                disableRipple
             />
         </div>
     );

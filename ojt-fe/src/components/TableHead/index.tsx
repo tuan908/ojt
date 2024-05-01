@@ -1,13 +1,10 @@
 import {type ComponentProps} from "react";
 
-type TableHeadProps = ComponentProps<"th"> & {widthInRem: number};
+type TableHeadProps = ComponentProps<"th"> & {};
 
-export default function TableHead({children, widthInRem}: TableHeadProps) {
+export default function TableHead({children}: TableHeadProps) {
     return (
-        <th
-            className="border border-table text-center px-4 py-2"
-            style={{width: `${widthInRem}rem`}}
-        >
+        <th className="border border-table text-center px-4 py-2 whitespace-nowrap">
             {children}
         </th>
     );

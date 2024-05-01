@@ -4,12 +4,16 @@ import {logOut} from "@/app/actions/auth";
 import PowerSettingsNew from "@mui/icons-material/PowerSettingsNew";
 
 export default function LogoutButton() {
+    const handleClick = async () => {
+        await logOut();
+    };
+
     return (
         <>
             {/* Button Logout */}
             <div
                 className="border-x px-2 hover:cursor-pointer"
-                onClick={async () => await logOut()}
+                onClick={handleClick}
             >
                 <PowerSettingsNew
                     className="text-icon-default text-bold"

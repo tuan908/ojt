@@ -1,6 +1,7 @@
 package com.tuanna.ojt.api.entity;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import org.hibernate.annotations.Type;
 
@@ -50,7 +51,7 @@ public class EventDetail extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "event_detail_id")
-  private java.util.Set<Comment> comments;
+  private Set<Comment> comments;
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;

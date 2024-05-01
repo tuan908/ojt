@@ -79,11 +79,17 @@ export default function Page({params}: {params: {slug: string}}) {
             setOptions(x => ({...x, eventList}));
         }
 
-        appDispatch(getEventListByStudentCode.initiate(params.slug))
+        appDispatch(
+            getEventListByStudentCode.initiate(params.slug, {
+                subscribe: false,
+                forceRefetch: true,
+            })
+        )
             .unwrap()
-            .then(res => setData(res));
-
-        await appDispatch(hideLoading());
+            .then(async res => {
+                setData(res);
+                await appDispatch(hideLoading());
+            });
     };
 
     useEffect(() => {
@@ -171,7 +177,7 @@ export default function Page({params}: {params: {slug: string}}) {
                     {auth && auth.role !== UserRole.Student ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
-                                <span>{data?.name}</span>
+                                <span>{data?.name} さん</span>
                                 <span>{data?.code}</span>
                                 <span>{data?.grade}</span>
                             </div>
@@ -180,12 +186,11 @@ export default function Page({params}: {params: {slug: string}}) {
 
                     {/* ?? */}
                     <div className="border-b px-8 flex items-center py-4 gap-x-8">
-                        {/* School's year */}
+                        {/* クラス名 */}
                         <Select
                             variant="standard"
                             className="w-48"
-                            placeholder="School Year"
-                            defaultValue="School Year"
+                            defaultValue="クラス名"
                             onChange={e => setGrade(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
@@ -206,7 +211,7 @@ export default function Page({params}: {params: {slug: string}}) {
                                 },
                             }}
                         >
-                            <MenuItem value="School Year">School Year</MenuItem>
+                            <MenuItem value="クラス名">クラス名</MenuItem>
                             {options.gradeList.map(x => (
                                 <MenuItem
                                     key={x.id}
@@ -219,11 +224,11 @@ export default function Page({params}: {params: {slug: string}}) {
                             ))}
                         </Select>
 
-                        {/* Event */}
+                        {/* イベント */}
                         <Select
                             variant="standard"
                             className="w-48"
-                            defaultValue="Event"
+                            defaultValue="イベント"
                             onChange={e => setName(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
@@ -245,7 +250,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             }}
                             suppressContentEditableWarning
                         >
-                            <MenuItem value="Event">Event</MenuItem>
+                            <MenuItem value="イベント">イベント</MenuItem>
                             {options.eventList.map(x => (
                                 <MenuItem
                                     key={x.id}
@@ -259,27 +264,27 @@ export default function Page({params}: {params: {slug: string}}) {
                         </Select>
 
                         <div className="flex items-center gap-x-8">
-                            <span>Status:</span>
+                            <span>ステータス：</span>
 
-                            {/* Unconfirmed checkbox */}
+                            {/* 未確認 */}
                             <Checkbox
-                                label="Unconfirmed"
+                                label="未確認"
                                 name="unconfirmed"
                                 checked={check.unconfirmed}
                                 handleChange={e => handleChange(e)}
                             />
 
-                            {/* Confirmed checkbox */}
+                            {/* 確認中 */}
                             <Checkbox
-                                label="UnderReviewing"
+                                label="確認中"
                                 name="under_reviewing"
                                 checked={check.under_reviewing}
                                 handleChange={handleChange}
                             />
 
-                            {/* Finished checkbox*/}
+                            {/* 修了*/}
                             <Checkbox
-                                label="Finished"
+                                label="修了"
                                 name="confirmed"
                                 checked={check.confirmed}
                                 handleChange={handleChange}

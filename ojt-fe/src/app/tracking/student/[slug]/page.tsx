@@ -44,7 +44,7 @@ export default async function Page() {
                         </div>
                     </div>
                 </OjtCard>
-                <DoughnutChart text="1200" />
+                <DoughnutChart text="90" />
                 <OjtCard width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
                         {labelList

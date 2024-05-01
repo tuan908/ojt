@@ -1,7 +1,5 @@
 package com.tuanna.ojt.api.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -94,7 +92,7 @@ public class StudentServiceImpl implements StudentService {
 
     if (dto.hashtags() != null && dto.hashtags().size() > 0) {
       qlString += " and element(s.hashtags).name in :hashtags ";
-      parameters.put("hashtagList", dto.hashtags());
+      parameters.put("hashtags", dto.hashtags());
     }
 
     qlString += " order by s.code  ";
@@ -211,19 +209,17 @@ public class StudentServiceImpl implements StudentService {
   public Boolean updateEventStatus(UpdateEventStatusDto dto) {
     var qlString = """
             update
-              com.tuanna.ojt.api.entity.Event
+              com.tuanna.ojt.api.entity.EventDetail
             set
               status = :status,
-              updatedBy = :updatedBy,
-              updatedAt = :updatedAt
+              updatedBy = :updatedBy
             where
-              id = : id
+              id = :id
         """;
     var query = this.entityManager.createQuery(qlString);
-    query.setParameter("status", EventStatus.COMPLETED);
     query.setParameter("id", dto.id());
+    query.setParameter("status", EventStatus.COMPLETED);
     query.setParameter("updatedBy", dto.updatedBy());
-    query.setParameter("updatedAt", LocalDateTime.now(ZoneId.of("UTC+7")));
 
     var result = query.executeUpdate();
 

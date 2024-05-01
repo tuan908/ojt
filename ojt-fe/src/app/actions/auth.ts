@@ -32,10 +32,13 @@ export type LoginState = {
  * @param _ ???
  * @param formData FormData
  */
-export async function login(_: any, formData: FormData) {
+export async function login(
+    _: any,
+    formData: FormData
+): Promise<{error?: string}> {
     const schema = z.object({
-        username: z.string().min(1, {message: "Please input username"}),
-        password: z.string().min(1, {message: "Please input password"}),
+        username: z.string().min(1),
+        password: z.string().min(1),
     });
 
     const parse = schema.safeParse({
@@ -45,11 +48,7 @@ export async function login(_: any, formData: FormData) {
 
     if (!parse.success) {
         return {
-            user: null,
-            message: {
-                username: parse.error.format().username?._errors[0],
-                password: parse.error.format().password?._errors[0],
-            },
+            error: process.env["MISSING_REQUIRED_FIELDS"],
         };
     }
 
@@ -57,7 +56,9 @@ export async function login(_: any, formData: FormData) {
 
     const user = await fetchNoCache<AccountDto>("/auth/login", "POST", request);
     if (!user) {
-        return {message: "Incorrect username or password.", user: null};
+        return {
+            error: process.env["WRONG_USER_NAME_OR_PASSWORD"],
+        };
     }
     const token = await generateJWT(user);
     cookies().set({

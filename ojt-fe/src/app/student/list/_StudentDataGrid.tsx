@@ -46,18 +46,12 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                 <table className="w-full border border-table border-collapse align-middle">
                     <thead>
                         <tr className="bg-[#3f51b5] text-[#fffffc]">
-                            <TableHead widthInRem={9.141}>
-                                Student Code
-                            </TableHead>
-                            <TableHead widthInRem={9.616}>
-                                Student Name
-                            </TableHead>
-                            <TableHead widthInRem={8.171}>
-                                School Year
-                            </TableHead>
-                            <TableHead widthInRem={40.648}>Event</TableHead>
-                            <TableHead widthInRem={22.612}>Hashtag</TableHead>
-                            <TableHead widthInRem={6.173}>Tracking</TableHead>
+                            <TableHead>学生コード</TableHead>
+                            <TableHead>学生の名前</TableHead>
+                            <TableHead>クラス名</TableHead>
+                            <TableHead>イベント</TableHead>
+                            <TableHead>ハッシュタグ</TableHead>
+                            <TableHead>トラッキング</TableHead>
                         </tr>
                     </thead>
                     <tbody>
@@ -74,28 +68,18 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                                   })
                                               }
                                           >
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={9.141}
-                                              >
+                                              <TableCell alignTextCenter>
                                                   {item.code}
                                               </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={9.616}
-                                              >
+                                              <TableCell alignTextCenter>
                                                   {item.name}
                                               </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  widthInRem={8.171}
-                                              >
+                                              <TableCell alignTextCenter>
                                                   {item.grade}
                                               </TableCell>
                                               <TableCell
                                                   fontSemibold
                                                   textEllipsis
-                                                  widthInRem={40.648}
                                               >
                                                   {item.events
                                                       ?.map(x => x.name)
@@ -104,7 +88,6 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                               <TableCell
                                                   fontSemibold
                                                   textEllipsis
-                                                  widthInRem={22.612}
                                               >
                                                   {item.hashtags?.map(
                                                       (hashtag, index) => (
@@ -131,7 +114,6 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                                                               item.code,
                                                       })
                                                   }
-                                                  widthInRem={6.173}
                                               >
                                                   <Analytics className="text-icon-default" />
                                               </TableCell>

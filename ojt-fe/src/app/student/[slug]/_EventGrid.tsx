@@ -9,6 +9,8 @@ import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
 import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
+import {useAppDispatch} from "@/lib/redux/hooks";
+import {hideLoading, showLoading} from "@/lib/redux/slice/loadingSlice";
 import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
@@ -84,22 +86,22 @@ export function EventGrid({
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
     const [rows, setRows] = useState<StudentResponseDto["events"]>(data);
+    const appDispatch = useAppDispatch();
 
     useEffect(() => setRows(data), [data]);
 
     const router = useRouter();
 
-    async function handleDone(
-        event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
-        id: number
-    ) {
-        event.preventDefault();
-        const actionResponse = await updateEventStatus({
-            id,
+    async function handleDone() {
+        await appDispatch(showLoading());
+        updateEventStatus({
+            id: state.updateStatus.id,
             studentId: studentId!,
             updatedBy: auth?.username!,
+        }).then(async () => {
+            await appDispatch(hideLoading());
+            dispatch(hideDialogUpdateStatus());
         });
-        dispatch(hideDialogUpdateStatus());
     }
 
     function handleNotificationIconClick(
@@ -134,15 +136,15 @@ export function EventGrid({
             <table className="w-full border border-table border-collapse align-middle">
                 <thead>
                     <tr className="bg-[#3f51b5] text-[#fffffc]">
-                        <TableHead widthInRem={0}>School Year</TableHead>
-                        <TableHead widthInRem={0}>Event</TableHead>
-                        <TableHead widthInRem={0}>Status</TableHead>
-                        <TableHead widthInRem={0}>Notification</TableHead>
+                        <TableHead>クラス名</TableHead>
+                        <TableHead>イベント</TableHead>
+                        <TableHead>ステータス</TableHead>
+                        <TableHead>通知</TableHead>
                         {[
                             UserRole.Student.toString(),
                             UserRole.Counselor.toString(),
                         ].indexOf(auth?.role!) > -1 ? (
-                            <TableHead widthInRem={0}>Action</TableHead>
+                            <TableHead>アクション</TableHead>
                         ) : null}
                     </tr>
                 </thead>
@@ -153,19 +155,18 @@ export function EventGrid({
                         <>
                             {rows!?.map(item => (
                                 <TableRow key={item.id}>
-                                    <TableCell alignTextCenter widthInRem={0}>
+                                    <TableCell alignTextCenter>
                                         {item?.grade}
                                     </TableCell>
-                                    <TableCell alignTextCenter widthInRem={0}>
+                                    <TableCell alignTextCenter>
                                         {item?.name}
                                     </TableCell>
-                                    <TableCell alignTextCenter widthInRem={0}>
+                                    <TableCell alignTextCenter>
                                         <StatusLabel status={item?.status} />
                                     </TableCell>
                                     <TableCell
                                         fontSemibold
                                         textEllipsis
-                                        widthInRem={0}
                                         alignTextCenter
                                     >
                                         <OjtButtonBase
@@ -182,7 +183,10 @@ export function EventGrid({
                                                 }
                                                 color="error"
                                             >
-                                                <Notifications className="text-icon-default" />
+                                                <Notifications
+                                                    className="text-icon-default"
+                                                    sx={{width: 24, height: 24}}
+                                                />
                                             </Badge>
                                         </OjtButtonBase>
                                     </TableCell>
@@ -190,11 +194,7 @@ export function EventGrid({
                                         UserRole.Student.toString(),
                                         UserRole.Counselor.toString(),
                                     ].indexOf(auth?.role!) > -1 ? (
-                                        <TableCell
-                                            fontSemibold
-                                            textEllipsis
-                                            widthInRem={0}
-                                        >
+                                        <TableCell fontSemibold textEllipsis>
                                             <div className="w-full flex justify-center items-center gap-x-6">
                                                 {auth?.role! ===
                                                 UserRole.Counselor ? (
@@ -215,7 +215,7 @@ export function EventGrid({
                                                     >
                                                         <Done
                                                             isDone={
-                                                                item?.status !==
+                                                                item?.status ===
                                                                 EventStatus.CONFIRMED
                                                             }
                                                         />

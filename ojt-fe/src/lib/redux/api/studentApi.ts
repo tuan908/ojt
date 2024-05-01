@@ -1,4 +1,4 @@
-import {EventDetailDto, StudentResponseDto} from "@/types/student.types";
+import {type StudentResponseDto} from "@/types/student.types";
 import {baseApi} from "../baseApi";
 
 const studentApi = baseApi.injectEndpoints({

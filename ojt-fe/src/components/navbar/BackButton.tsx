@@ -14,7 +14,7 @@ export default function BackButton() {
 
     return (
         <div className="pr-2 h-full">
-            {!pathname.includes("student") ? (
+            {pathname.includes("student") ? (
                 <button
                     onClick={e => handleClick(e)}
                     className="border-none outline-none"

@@ -24,7 +24,7 @@ export default function UserInfo() {
     return (
         <div className="flex flex-col">
             <h1 className="text-2xl font-normal text-[#abb7bc]">
-                Hello {info ? info.name : null}
+                こにちは {info ? info.name : null}
             </h1>
             <h1 className="text-[#c3cbcf]">{info ? info.role : null}</h1>
         </div>
