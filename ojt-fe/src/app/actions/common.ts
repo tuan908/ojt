@@ -1,6 +1,6 @@
 "use server";
 
-import {CollectionName} from "@/constants";
+import {OjtEntity} from "@/constants";
 import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import type {EventDetailDto, HashtagDto} from "@/types/student.types";
@@ -17,7 +17,7 @@ export async function getGrades() {
             select
               ${sql("id", "name")}
             from
-               ${sql(CollectionName.Grade)}
+               ${sql(OjtEntity.Grade)}
         `;
         return list;
     } catch (error) {
@@ -45,7 +45,7 @@ export async function getHashtags() {
             select
                 ${sql("id", "name", "color")}
             from
-                ${sql(CollectionName.Hashtag)}
+                ${sql(OjtEntity.Hashtag)}
         `;
         return list;
     } catch (error) {

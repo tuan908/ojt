@@ -6,11 +6,11 @@ import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import LoadingComponent from "@/components/LoadingComponent";
 import PageWrapper from "@/components/PageWrapper";
 import {
-    EventStatus,
     ITEM_HEIGHT,
     ITEM_PADDING_TOP,
-    ScreenMode,
-    UserRole,
+    OjtEventStatus,
+    OjtScreenMode,
+    OjtUserRole,
 } from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {getEventListByStudentCode} from "@/lib/redux/api/studentApi";
@@ -103,17 +103,17 @@ export default function Page({params}: {params: {slug: string}}) {
     function handleSearch() {
         setIsFetching(true);
 
-        let status: EventStatus[] = [];
+        let status: OjtEventStatus[] = [];
         if (check.unconfirmed) {
-            status.push(EventStatus.UNCONFIRMED);
+            status.push(OjtEventStatus.UNCONFIRMED);
         }
 
         if (check.under_reviewing) {
-            status.push(EventStatus.UNDER_REVIEWING);
+            status.push(OjtEventStatus.UNDER_REVIEWING);
         }
 
         if (check.confirmed) {
-            status.push(EventStatus.CONFIRMED);
+            status.push(OjtEventStatus.CONFIRMED);
         }
 
         const promise = getEventsByStudentCodeWithQuery(params.slug, {
@@ -158,14 +158,14 @@ export default function Page({params}: {params: {slug: string}}) {
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
-            {auth && auth?.role === UserRole.Student ? (
+            {auth && auth?.role === OjtUserRole.Student ? (
                 <div className="w-24/25 m-auto flex items-center pb-3">
                     <Link
-                        href={`/event?mode=${ScreenMode.NEW}`}
+                        href={`/event?mode=${OjtScreenMode.NEW}`}
                         className="flex gap-x-2 items-center px-6 py-2 bg-[#33b5e5] text-white rounded-lg"
                     >
                         <AddCircle />
-                        <span>Add Event</span>
+                        <span>新規作成</span>
                     </Link>
                 </div>
             ) : null}
@@ -174,7 +174,7 @@ export default function Page({params}: {params: {slug: string}}) {
 
                 {/* Student Info */}
                 <>
-                    {auth && auth.role !== UserRole.Student ? (
+                    {auth && auth.role !== OjtUserRole.Student ? (
                         <>
                             <div className="border-b px-8 py-4 flex gap-x-12">
                                 <span>{data?.name} さん</span>

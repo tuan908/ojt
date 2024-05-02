@@ -52,7 +52,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="username"
-                        placeholder="Username"
+                        placeholder="ユーザーネーム"
                         inputRef={ref}
                         className="w-full"
                         InputProps={{
@@ -69,7 +69,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="password"
-                        placeholder="Password"
+                        placeholder="パスワード"
                         type={inputState.type}
                         className="w-full"
                         InputProps={{

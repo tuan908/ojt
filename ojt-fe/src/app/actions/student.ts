@@ -1,6 +1,6 @@
 "use server";
 
-import {EventStatus} from "@/constants";
+import {OjtEventStatus} from "@/constants";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import type {
     EventDetailDto,
@@ -79,7 +79,7 @@ export const getEventsByStudentCodeWithQuery = async (
     arg: {
         grade?: string;
         eventName?: string;
-        status?: EventStatus[];
+        status?: OjtEventStatus[];
     }
 ) => {
     let q = [];

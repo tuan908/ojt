@@ -8,7 +8,12 @@ import {
     type CommentDto,
     type RegisterEventDto,
 } from "@/app/actions/event";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
+import {
+    ITEM_HEIGHT,
+    ITEM_PADDING_TOP,
+    OjtScreenMode,
+    OjtUserRole,
+} from "@/constants";
 
 import {getEventDetailById} from "@/app/actions/event";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -110,8 +115,8 @@ export default function Page() {
     useEffect(() => {
         init();
         if (
-            params.get("mode")! === ScreenMode.CHAT.toString() &&
-            auth?.role !== UserRole.Student
+            params.get("mode")! === OjtScreenMode.CHAT.toString() &&
+            auth?.role !== OjtUserRole.Student
         ) {
             setDisable(true);
         }
@@ -137,7 +142,7 @@ export default function Page() {
                     setCommentData({...commentData, content: _value});
                     if (
                         _value.startsWith("#") &&
-                        auth?.role === UserRole.Counselor
+                        auth?.role === OjtUserRole.Counselor
                     ) {
                         setOpenSuggest(true);
                     }
@@ -277,7 +282,7 @@ export default function Page() {
                                 disabled={
                                     isDisable ||
                                     params.get("mode")! ===
-                                        ScreenMode.EDIT.toString()
+                                        OjtScreenMode.EDIT.toString()
                                 }
                             >
                                 <MenuItem value="Event">Event</MenuItem>
@@ -338,10 +343,10 @@ export default function Page() {
                             value={registerData!?.myThought}
                             disabled={isDisable}
                         />
-                        {auth?.role === UserRole.Student &&
+                        {auth?.role === OjtUserRole.Student &&
                         [
-                            ScreenMode.NEW.toString(),
-                            ScreenMode.EDIT.toString(),
+                            OjtScreenMode.NEW.toString(),
+                            OjtScreenMode.EDIT.toString(),
                         ].includes(params.get("mode")!) ? (
                             <button
                                 className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
@@ -350,7 +355,7 @@ export default function Page() {
                                 disabled={isDisable || error}
                             >
                                 {params.get("mode") !==
-                                ScreenMode.NEW.toString()
+                                OjtScreenMode.NEW.toString()
                                     ? "DISCARD"
                                     : "Add"}
                             </button>
@@ -359,7 +364,7 @@ export default function Page() {
                 </div>
                 <Suspense fallback={<>Loading comments...</>}>
                     {params.get("mode") &&
-                    params.get("mode") !== ScreenMode.NEW.toString() ? (
+                    params.get("mode") !== OjtScreenMode.NEW.toString() ? (
                         <>
                             <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
                                 {isUpdatingComment ? (

@@ -1,6 +1,6 @@
 "use server";
 
-import {UserRole} from "@/constants";
+import {OjtUserRole} from "@/constants";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {generateJWT} from "@/lib/utils/jwt";
 import {cookies} from "next/headers";
@@ -69,7 +69,7 @@ export async function login(
 
     let redirectPath = "";
 
-    if (user.role !== UserRole.Student) {
+    if (user.role !== OjtUserRole.Student) {
         redirectPath = "/student/list";
     } else {
         redirectPath = `/student/${user.code}`;

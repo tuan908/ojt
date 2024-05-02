@@ -1,12 +1,24 @@
+"use client";
+
+import {OjtRoute, OjtUserRole} from "@/constants";
+import {useAuth} from "@/lib/hooks/useAuth";
 import Avatar from "@mui/material/Avatar";
+import Link from "next/link";
 import BackButton from "./BackButton";
 import LogoutButton from "./LogOut";
 import UserInfo from "./UserInfo";
 
-export default async function Navbar() {
+export default function Navbar() {
+    const {auth} = useAuth();
+    const href =
+        auth?.role !== OjtUserRole.Student
+            ? OjtRoute.StudentList
+            : `/student/${auth?.code}`;
     return (
-        <nav className="w-full py-4 pl-10 pr-8 flex justify-between items-center z-50 fixed top-0 left-0 shadow-md bg-white">
-            <h1 className="text-[#1f5da3] font-bold text-3xl">社会人基礎力</h1>
+        <nav className="w-full py-2 px-6 flex justify-between items-center z-50 fixed top-0 left-0 shadow-md bg-white">
+            <Link className="text-[#1f5da3] font-bold text-2xl" href={href}>
+                社会人基礎力
+            </Link>
             <div className="flex items-center justify-between gap-x-2">
                 {/* Back Button */}
                 <BackButton />

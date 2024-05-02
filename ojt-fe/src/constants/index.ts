@@ -1,4 +1,4 @@
-export enum CollectionName {
+export enum OjtEntity {
     User = "ojt_user",
     Event = "ojt_event",
     StudentEvent = "ojt_student_event",
@@ -8,14 +8,14 @@ export enum CollectionName {
     StudentHashTag = "ojt_student_hashtag",
 }
 
-export enum UserRole {
+export enum OjtUserRole {
     Student = "001",
     Parent = "002",
     Teacher = "003",
     Counselor = "004",
 }
 
-export enum EventStatus {
+export enum OjtEventStatus {
     UNCONFIRMED = 1,
     UNDER_REVIEWING = 2,
     CONFIRMED = 3,
@@ -33,7 +33,7 @@ export const SORT_ORDER_ASCENDING = 1;
 //Sort decrement
 export const SORT_ORDER_DESCENDING = 1;
 
-export enum Route {
+export enum OjtRoute {
     StudentList = "/student/list",
     RegisterEvent = "/event/register",
     Login = "/login",
@@ -43,7 +43,7 @@ export enum Route {
 
 export const STRING_EMPTY = "";
 
-export enum ScreenMode {
+export enum OjtScreenMode {
     NEW = 0,
     EDIT = 1,
     CHAT = 2,

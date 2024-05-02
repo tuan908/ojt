@@ -23,7 +23,7 @@ export default function UserInfo() {
 
     return (
         <div className="flex flex-col">
-            <h1 className="text-2xl font-normal text-[#abb7bc]">
+            <h1 className="text-xl font-normal text-[#abb7bc]">
                 こにちは {info ? info.name : null}
             </h1>
             <h1 className="text-[#c3cbcf]">{info ? info.role : null}</h1>

@@ -1,4 +1,4 @@
-import {UserRole} from "@/constants";
+import {OjtUserRole} from "@/constants";
 
 /**
  * Convert role
@@ -7,16 +7,16 @@ import {UserRole} from "@/constants";
  */
 export function convertRole(role?: string) {
     switch (role) {
-        case UserRole.Counselor:
+        case OjtUserRole.Counselor:
             return "カウンセラー";
 
-        case UserRole.Parent:
+        case OjtUserRole.Parent:
             return "家族";
 
-        case UserRole.Student:
+        case OjtUserRole.Student:
             return "学生";
 
-        case UserRole.Teacher:
+        case OjtUserRole.Teacher:
             return "先生";
 
         default:
