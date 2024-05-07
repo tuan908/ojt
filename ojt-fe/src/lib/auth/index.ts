@@ -1,6 +1,6 @@
 import {jwtVerify, type JWTPayload} from "jose";
 
-export type MyJwtPayload = JWTPayload &
+export type OjtJwtPayload = JWTPayload &
     Readonly<{
         name: string;
         username: string;
@@ -18,12 +18,12 @@ export function getJwtSecretKey() {
 
 export async function verifyJwtToken(token: string) {
     try {
-        const {payload} = await jwtVerify<MyJwtPayload>(
+        const {payload} = await jwtVerify<OjtJwtPayload>(
             token,
             getJwtSecretKey()
         );
         return payload;
     } catch (error) {
-        return null;
+        return undefined;
     }
 }

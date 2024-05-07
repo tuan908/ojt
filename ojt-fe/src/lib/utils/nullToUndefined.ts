@@ -1,4 +1,4 @@
-import {RecursivelyReplaceNullWithUndefined} from "@/types";
+import {type RecursivelyReplaceNullWithUndefined} from "@/types";
 
 export function nullsToUndefined<T>(
     obj: T

@@ -1,6 +1,6 @@
 "use client";
 
-import {cn} from "@/lib/utils/cn";
+import {cn} from "@/lib/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import Visibility from "@mui/icons-material/Visibility";

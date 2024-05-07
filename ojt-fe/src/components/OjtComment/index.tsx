@@ -1,6 +1,6 @@
 import {type CommentDto} from "@/app/actions/event";
 import OjtButtonBase from "@/components/ButtonBase";
-import {cn} from "@/lib/utils/cn";
+import {cn} from "@/lib/utils";
 import Check from "@mui/icons-material/Check";
 import Clear from "@mui/icons-material/Clear";
 import Delete from "@mui/icons-material/Delete";

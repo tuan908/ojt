@@ -1,5 +1,5 @@
 import {type StudentResponseDto} from "@/types/student.types";
-import {baseApi} from "../baseApi";
+import {baseApi} from "../base.api";
 
 const studentApi = baseApi.injectEndpoints({
     endpoints: builder => ({

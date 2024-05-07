@@ -1,11 +1,11 @@
 "use client";
 
-import type {MyJwtPayload} from "@/lib/auth";
+import type {OjtJwtPayload} from "@/lib/auth";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {convertRole} from "@/lib/utils/role";
 import {useEffect, useState} from "react";
 
-type UserPayload = Partial<Pick<MyJwtPayload, "name" | "role">>;
+type UserPayload = Partial<Pick<OjtJwtPayload, "name" | "role">>;
 
 // TODO: Remove flicker when set user info
 export default function UserInfo() {
@@ -13,7 +13,7 @@ export default function UserInfo() {
     const [info, setInfo] = useState<UserPayload | null>(null);
 
     useEffect(() => {
-        if (auth !== null) {
+        if (auth) {
             setInfo({
                 name: auth.name,
                 role: convertRole(auth.role),

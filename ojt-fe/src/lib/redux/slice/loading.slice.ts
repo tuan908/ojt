@@ -1,4 +1,4 @@
-import {createAppSlice} from "../baseSlice";
+import {createAppSlice} from "../base.slice";
 
 type LoadingState = {isLoading: boolean};
 

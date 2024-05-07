@@ -1,5 +1,5 @@
 import OjtButtonBase from "@/components/ButtonBase";
-import {cn} from "@/lib/utils/cn";
+import {cn} from "@/lib/utils";
 import {
     Dialog,
     DialogActions,
