@@ -25,7 +25,7 @@ import {
     getLoadingState,
     hideLoading,
     showLoading,
-} from "@/lib/redux/slice/loadingSlice";
+} from "@/lib/redux/slice/loading.slice";
 import {type EventDto} from "@/types/event.types";
 import {type HashtagDto} from "@/types/student.types";
 import data from "@emoji-mart/data";

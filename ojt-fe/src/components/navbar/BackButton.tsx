@@ -12,9 +12,11 @@ export default function BackButton() {
         router.back();
     }
 
+    const regex = /\/student\//;
+
     return (
         <div className="pr-2 h-full">
-            {pathname.includes("student") ? (
+            {!regex.test(pathname) ? (
                 <button
                     onClick={e => handleClick(e)}
                     className="border-none outline-none"

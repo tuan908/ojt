@@ -13,13 +13,13 @@ import {
     OjtUserRole,
 } from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
-import {getEventListByStudentCode} from "@/lib/redux/api/studentApi";
+import {getEventListByStudentCode} from "@/lib/redux/api/student.api";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
 import {
     getLoadingState,
     hideLoading,
     showLoading,
-} from "@/lib/redux/slice/loadingSlice";
+} from "@/lib/redux/slice/loading.slice";
 import {type EventDto} from "@/types/event.types";
 import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
@@ -43,6 +43,9 @@ type Option = {
     gradeList: GradeDto[];
     eventList: EventDto[];
 };
+
+const CLASS = "クラス名";
+const EVENT = "イベント";
 
 export default function Page({params}: {params: {slug: string}}) {
     const {auth} = useAuth();
@@ -88,8 +91,11 @@ export default function Page({params}: {params: {slug: string}}) {
             .unwrap()
             .then(async res => {
                 setData(res);
-                await appDispatch(hideLoading());
+            })
+            .catch(async err => {
+                console.error(err);
             });
+        await appDispatch(hideLoading());
     };
 
     useEffect(() => {
@@ -132,21 +138,21 @@ export default function Page({params}: {params: {slug: string}}) {
                 throw new Error(error?.message);
             })
             .finally(() => {
-                let url = new URL(
-                    `student/${params.slug}`,
-                    process.env["NEXT_PUBLIC_URL"]
-                );
+                let url = new URL(window.location.href);
+                url.searchParams.forEach((value, key) => {
+                    url.searchParams.delete(key, value);
+                });
 
-                if (grade !== "") {
-                    url.searchParams.append("grade", grade);
+                if (grade.length > 0 && grade !== "") {
+                    url.searchParams.set("grade", grade);
                 }
 
-                if (eventName !== "") {
-                    url.searchParams.append("event", eventName);
+                if (eventName.length > 0) {
+                    url.searchParams.set("event", eventName);
                 }
 
                 if (status.length > 0) {
-                    url.searchParams.append(
+                    url.searchParams.set(
                         "status",
                         status.map(x => x.toString()).join(",")
                     );
@@ -190,7 +196,7 @@ export default function Page({params}: {params: {slug: string}}) {
                         <Select
                             variant="standard"
                             className="w-48"
-                            defaultValue="クラス名"
+                            defaultValue={CLASS}
                             onChange={e => setGrade(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
@@ -211,7 +217,7 @@ export default function Page({params}: {params: {slug: string}}) {
                                 },
                             }}
                         >
-                            <MenuItem value="クラス名">クラス名</MenuItem>
+                            <MenuItem value={CLASS}>{CLASS}</MenuItem>
                             {options.gradeList.map(x => (
                                 <MenuItem
                                     key={x.id}
@@ -228,7 +234,7 @@ export default function Page({params}: {params: {slug: string}}) {
                         <Select
                             variant="standard"
                             className="w-48"
-                            defaultValue="イベント"
+                            defaultValue={EVENT}
                             onChange={e => setName(e.target.value)}
                             sx={{
                                 bgcolor: "#ffffff",
@@ -250,7 +256,7 @@ export default function Page({params}: {params: {slug: string}}) {
                             }}
                             suppressContentEditableWarning
                         >
-                            <MenuItem value="イベント">イベント</MenuItem>
+                            <MenuItem value={EVENT}>{EVENT}</MenuItem>
                             {options.eventList.map(x => (
                                 <MenuItem
                                     key={x.id}

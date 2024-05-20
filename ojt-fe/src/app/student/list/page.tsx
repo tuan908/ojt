@@ -16,7 +16,7 @@ import {
     getLoadingState,
     hideLoading,
     showLoading,
-} from "@/lib/redux/slice/loadingSlice";
+} from "@/lib/redux/slice/loading.slice";
 import type {
     EventDetailDto,
     HashtagDto,

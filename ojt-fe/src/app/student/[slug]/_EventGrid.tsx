@@ -10,7 +10,7 @@ import {Delete, Done, Edit} from "@/components/icon";
 import {OjtEventStatus, OjtScreenMode, OjtUserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {useAppDispatch} from "@/lib/redux/hooks";
-import {hideLoading, showLoading} from "@/lib/redux/slice/loadingSlice";
+import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
 import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
