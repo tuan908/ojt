@@ -1,7 +1,5 @@
 "use server";
 
-import {OjtEntity} from "@/constants";
-import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {ErrorResponseDto, OjtStatusCode} from "@/types";
 import {type EventDto} from "@/types/event.types";
@@ -45,9 +43,10 @@ export async function registerEvent(dto: RegisterEventDto) {
 }
 
 const commentSchema = z.object({
+    id: z.number().optional(),
     eventDetailId: z.number(),
     username: z.string(),
-    content: z.string(),
+    content: z.string().optional(),
 });
 
 export type AddCommentDto = z.infer<typeof commentSchema>;
@@ -103,6 +102,7 @@ export async function editComment(
                 content,
             }
         );
+        revalidatePath("/event");
         return result;
     } catch (error) {
         return {

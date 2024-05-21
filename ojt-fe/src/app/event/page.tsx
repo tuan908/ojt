@@ -2,6 +2,7 @@
 
 import {
     addComment,
+    editComment,
     getEventDetailList,
     registerEvent,
     type AddCommentDto,
@@ -16,16 +17,11 @@ import {
 } from "@/constants";
 
 import {getEventDetailById} from "@/app/actions/event";
-import ProgressIndicator from "@/components/ProgressIndicator";
 import OjtComment from "@/components/OjtComment";
 import Textarea from "@/components/Textarea";
 import {useAuth} from "@/lib/hooks/useAuth";
-import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
-import {
-    getLoadingState,
-    hideLoading,
-    showLoading,
-} from "@/lib/redux/slice/loading.slice";
+import {useAppDispatch} from "@/lib/redux/hooks";
+import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
 import {type EventDto} from "@/types/event.types";
 import {type HashtagDto} from "@/types/student.types";
 import data from "@emoji-mart/data";
@@ -38,7 +34,6 @@ import Autocomplete, {
     type AutocompleteInputChangeReason,
 } from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
-import CircularProgress from "@mui/material/CircularProgress";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
@@ -53,6 +48,18 @@ import {
 } from "react";
 import {getHashtags} from "../actions/common";
 
+const initComment = {
+    id: -1,
+    eventDetailId: -1,
+    content: "",
+    username: "",
+};
+
+const initEditState = {
+    id: -1,
+    isEditing: false,
+};
+
 export default function Page() {
     const appDispatch = useAppDispatch();
     const router = useRouter();
@@ -64,6 +71,11 @@ export default function Page() {
     const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
     const [isDisable, setDisable] = useState(false);
     const [hashtags, setHashtags] = useState<HashtagDto[]>([]);
+    const [openPicker, setOpen] = useState(false);
+    const [comment, setComment] = useState<AddCommentDto>(initComment);
+    const [openSuggest, setOpenSuggest] = useState(false);
+    const [editState, setEditState] =
+        useState<typeof initEditState>(initEditState);
 
     async function init() {
         await appDispatch(showLoading());
@@ -118,14 +130,6 @@ export default function Page() {
         }
     }, []);
 
-    const [openPicker, setOpen] = useState(false);
-    const [commentData, setCommentData] = useState<AddCommentDto>({
-        eventDetailId: -1,
-        username: "",
-        content: "",
-    });
-    const [openSuggest, setOpenSuggest] = useState(false);
-
     function handleInputCommentChange(
         event: SyntheticEvent,
         _value: string | {label: string; value: string} | null,
@@ -135,7 +139,7 @@ export default function Page() {
         if (_value !== null) {
             switch (true) {
                 case typeof _value === "string":
-                    setCommentData({...commentData, content: _value});
+                    setComment({...comment, content: _value});
                     if (
                         _value.startsWith("#") &&
                         auth?.role === OjtUserRole.Counselor
@@ -145,8 +149,8 @@ export default function Page() {
                     break;
 
                 case typeof _value === "object":
-                    setCommentData({
-                        ...commentData,
+                    setComment({
+                        ...comment,
                         content: _value.value,
                     });
                     break;
@@ -170,16 +174,16 @@ export default function Page() {
         let content = [];
         if (typeof _value === "string") {
             content.push(_value);
-            setCommentData({
-                ...commentData,
+            setComment({
+                ...comment,
                 content: content.join(","),
             });
         }
 
         if (typeof _value === "object") {
             content.push(_value.label);
-            setCommentData({
-                ...commentData,
+            setComment({
+                ...comment,
                 content: content.join(","),
             });
         }
@@ -219,34 +223,51 @@ export default function Page() {
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ) {
         event?.preventDefault();
-        setOpenSuggest(false);
-        if (auth && auth.username) {
-            await appDispatch(showLoading());
-            let data: AddCommentDto = {
-                ...commentData,
-                eventDetailId: Number(params.get("id")),
-                username: auth.username,
-            };
-            await addComment(data)
-                .then(async res => {
-                    if (res) {
-                        setComments(res);
-                        setCommentData({...commentData, content: ""});
-                    }
-                })
-                .finally(async () => {
-                    await appDispatch(hideLoading());
-                });
+        if (editState.isEditing) {
+            const response = await editComment(comment.id!, comment.content!);
+            if ("data" in response) {
+                setComments([
+                    ...comments.filter(x => x.id !== comment.id!),
+                    response.data as CommentDto,
+                ]);
+            }
+            setComment(initComment);
+            setEditState(initEditState);
+        } else {
+            setOpenSuggest(false);
+            if (auth && auth.username) {
+                await appDispatch(showLoading());
+                let data: AddCommentDto = {
+                    ...comment,
+                    eventDetailId: Number(params.get("id")),
+                    username: auth.username,
+                };
+                await addComment(data)
+                    .then(async res => {
+                        if (res) {
+                            setComments(res);
+                            setComment({...comment, content: ""});
+                        }
+                    })
+                    .finally(async () => {
+                        await appDispatch(hideLoading());
+                    });
+            }
         }
     }
 
     function handleSelect(emoji: any) {
         if (!emoji?.native) return;
-        setCommentData({
-            ...commentData,
-            content: commentData.content.concat(emoji?.native),
+        setComment({
+            ...comment,
+            content: comment?.content!?.concat(emoji?.native),
         });
     }
+
+    const exitEditComment = () => {
+        setComment(initComment);
+        setEditState(initEditState);
+    };
 
     return (
         <Fragment>
@@ -367,9 +388,12 @@ export default function Page() {
                                         <Fragment key={comment.id}>
                                             {comment.isDeleted ? null : (
                                                 <OjtComment
+                                                    comment={comment}
+                                                    setComment={setComment}
                                                     comments={comments}
                                                     setComments={setComments}
-                                                    comment={comment}
+                                                    editState={editState}
+                                                    setEditState={setEditState}
                                                     isCommentOfActiveUser={
                                                         auth?.username! ===
                                                         comment?.username!
@@ -408,7 +432,7 @@ export default function Page() {
                                         onInputChange={handleInputCommentChange}
                                         onChange={handleChangeComment}
                                         open={openSuggest}
-                                        inputValue={commentData.content}
+                                        inputValue={comment.content}
                                         disableListWrap
                                         disableClearable
                                         disablePortal
@@ -445,7 +469,7 @@ export default function Page() {
                                 <button
                                     className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
                                     onClick={handleAddComment}
-                                    disabled={commentData.content.length === 0}
+                                    disabled={comment?.content!?.length === 0}
                                 >
                                     <Send
                                         className="-rotate-[50deg]"
@@ -456,6 +480,23 @@ export default function Page() {
                                         }}
                                     />
                                 </button>
+                                {editState.isEditing ? (
+                                    <button
+                                        className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
+                                        onClick={exitEditComment}
+                                        disabled={
+                                            comment?.content!?.length === 0
+                                        }
+                                    >
+                                        <Close
+                                            sx={{
+                                                width: 32,
+                                                height: 32,
+                                                color: "#0078ff",
+                                            }}
+                                        />
+                                    </button>
+                                ) : null}
                             </div>
                         </>
                     ) : null}

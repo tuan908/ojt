@@ -1,57 +1,62 @@
-import {editComment, type CommentDto} from "@/app/actions/event";
+import {type CommentDto} from "@/app/actions/event";
 import {deleteComment} from "@/app/actions/student";
 import OjtButtonBase from "@/components/ButtonBase";
 import {cn} from "@/lib/utils";
-import Check from "@mui/icons-material/Check";
-import Clear from "@mui/icons-material/Clear";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
-import {useEffect, useOptimistic, useRef, useState, type MouseEventHandler} from "react";
+import {useState} from "react";
 
 interface BubbleMessageProps {
     comment: CommentDto;
     isCommentOfActiveUser: boolean;
-    setComments: (comments: CommentDto[]) => void
-    comments: CommentDto[]
+    editState: {
+        id: number;
+        isEditing: boolean;
+    };
+    setEditState: (value: {id: number; isEditing: boolean}) => void;
+    setComment: (
+        data: Pick<CommentDto, "id" | "content" | "eventDetailId" | "username">
+    ) => void;
+    comments: CommentDto[];
+    setComments: (comments: CommentDto[]) => void;
 }
 
 export default function OjtBubbleMessage(props: BubbleMessageProps) {
     const {comment, isCommentOfActiveUser} = props;
-    const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    const [commentData, setCommentData] = useState(comment);
     const [show, setShow] = useState(false);
-    const [editable, setEditable] = useState(false);
 
-    const handleOnMouseEnter = () => setShow(true);
+    const handleOnMouseEnter = () => {
+        if (
+            props.editState.id !== -1 &&
+            props.editState.id === comment.id &&
+            props.editState.isEditing
+        ) {
+            setShow(false);
+        } else {
+            setShow(true);
+        }
+    };
 
     const handleOnMouseLeave = () => setShow(false);
-
-    const acceptEdit = async () => {
-        setShow(false);
-        setEditable(false);
-        const response = await editComment(comment.id, commentData.content);
-        if ("data" in response) {
-            props.setComments([...props.comments.filter(x => x.id !== comment.id), response.data as CommentDto])
-        }
-    };
-
-    const enableEdit: MouseEventHandler<HTMLButtonElement> = event => {
-        event?.preventDefault();
-        setEditable(true);
-    };
-
-    useEffect(() => {
-        if (textAreaRef.current) {
-            const element = textAreaRef.current;
-            element.focus();
-            element.select();
-        }
-    }, [editable]);
 
     const handleDelete = async () => {
         await deleteComment({
             id: comment.id,
+            eventDetailId: comment.eventDetailId,
+            username: comment.username,
+        });
+        props.setComments(props.comments.filter(x => x.id !== comment.id));
+    };
+
+    const enableEdit = () => {
+        props.setEditState({
+            id: comment.id,
+            isEditing: true,
+        });
+        props.setComment({
+            id: comment.id,
+            content: comment.content,
             eventDetailId: comment.eventDetailId,
             username: comment.username,
         });
@@ -62,7 +67,7 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
             <div
                 className={cn(
                     "w-full h-full flex items-center gap-x-6",
-                    !isCommentOfActiveUser && "flex-row-reverse"
+                    isCommentOfActiveUser && "flex-row-reverse"
                 )}
             >
                 <div className="flex flex-col gap-y-2 items-center w-24">
@@ -80,69 +85,28 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                         <span className="font-semibold text-[#058af4]">
                             {comment?.username}
                         </span>
-
-                        {editable ? (
-                            <div className="h-full py-2">
-                                <textarea
-                                    className={cn(
-                                        "w-full border-none outline-none bg-transparent resize-none",
-                                        editable &&
-                                            "bg-white focus:outline-blue-500 rounded-sm px-2 py-1"
-                                    )}
-                                    disabled={!editable}
-                                    value={commentData.content}
-                                    onChange={e =>
-                                        setCommentData({
-                                            ...commentData,
-                                            content: e.target.value,
-                                        })
-                                    }
-                                    ref={textAreaRef}
-                                />
-                            </div>
-                        ) : (
-                            <span className="py-2">{comment?.content}</span>
-                        )}
-
-                        <span className="text-[12px]">{comment?.createdAt}</span>
-                        <div
-                            style={{
-                                display:
-                                    isCommentOfActiveUser && show && !editable
-                                        ? "block"
-                                        : "none",
-                            }}
-                            className={cn(
-                                "absolute top-1",
-                                !isCommentOfActiveUser ? "left-2" : "right-2",
-                                "bg-transparent flex"
-                            )}
-                        >
-                            <OjtButtonBase classes="px-1" onClick={enableEdit}>
-                                <Edit className="text-icon-default" />
-                            </OjtButtonBase>
-                            <OjtButtonBase onClick={handleDelete}>
-                                <Delete color="error" />
-                            </OjtButtonBase>
-                        </div>
-                        {editable ? (
+                        <span className="py-2">{comment?.content}</span>
+                        <span className="text-[12px]">
+                            {comment?.createdAt}
+                        </span>
+                        {isCommentOfActiveUser && show ? (
                             <div
                                 className={cn(
-                                    "absolute bottom-3",
+                                    "absolute top-1",
                                     !isCommentOfActiveUser
-                                        ? "left-3"
-                                        : "right-3",
+                                        ? "left-2"
+                                        : "right-2",
                                     "bg-transparent flex"
                                 )}
                             >
                                 <OjtButtonBase
-                                    classes="pr-2"
-                                    onClick={() => setEditable(false)}
+                                    classes="px-1"
+                                    onClick={enableEdit}
                                 >
-                                    <Clear color="error" />
+                                    <Edit className="text-icon-default" />
                                 </OjtButtonBase>
-                                <OjtButtonBase onClick={acceptEdit}>
-                                    <Check color="success" />
+                                <OjtButtonBase onClick={handleDelete}>
+                                    <Delete color="error" />
                                 </OjtButtonBase>
                             </div>
                         ) : null}

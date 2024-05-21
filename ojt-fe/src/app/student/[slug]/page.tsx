@@ -4,8 +4,8 @@ import {getGrades, type GradeDto} from "@/app/actions/common";
 import {getEventDetailList} from "@/app/actions/event";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import {OjtCheckbox} from "@/components/Checkbox";
-import ProgressIndicator from "@/components/ProgressIndicator";
 import PageWrapper from "@/components/PageWrapper";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import {
     ITEM_HEIGHT,
     ITEM_PADDING_TOP,
