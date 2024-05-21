@@ -18,7 +18,7 @@ public class ErrorResponseDto {
 
     private String code;
 
-    private String title;
+    private String type;
 
     private String message;
 }

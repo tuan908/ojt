@@ -2,19 +2,20 @@ package com.tuanna.ojt.api.service.impl;
 
 import java.util.Comparator;
 import java.util.List;
-import jakarta.persistence.EntityManager;
+
 import org.springframework.data.jpa.repository.JpaContext;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
-import com.tuanna.ojt.api.dto.UpdateCommentDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.repository.CommentRepository;
 import com.tuanna.ojt.api.repository.EventDetailRepository;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.CommentService;
+
+import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional(readOnly = true)
@@ -87,15 +88,17 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
-  public void update(@NonNull Long id, UpdateCommentDto updateCommentDto) {
-    var comment = this.commentRepository.findById(id).orElse(null);
-
-    if (comment != null) {
-      comment.setContent(updateCommentDto.content());
-      comment.setUpdatedAt(java.time.LocalDateTime.now());
-      this.commentRepository.saveAndFlush(comment);
+  public CommentDto update(CommentDto commentDto) {
+    var comment = this.commentRepository.findById(commentDto.id()).orElse(null);
+    
+    if(comment == null) {
+    	return null;
     }
 
+    comment.setContent(commentDto.content());
+	comment.setUpdatedAt(java.time.LocalDateTime.now());
+	this.commentRepository.saveAndFlush(comment);
+	return comment.toDto();
   }
 
   @Override

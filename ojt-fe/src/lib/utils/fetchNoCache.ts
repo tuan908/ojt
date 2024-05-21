@@ -1,4 +1,4 @@
-import {nullsToUndefined} from "./nullToUndefined";
+import {nullsToUndefined} from "./nullsToUndefined";
 
 /**
  * fetch with no cache setup
@@ -36,8 +36,7 @@ export async function fetchNoCache<T>(
         }
         const responseJson = (await response.json()) as T;
         return nullsToUndefined(responseJson);
-    } catch (error) {
-        console.error("There was an error when fetching data");
-        return undefined;
+    } catch (error: any) {
+        throw new Error(error?.message);
     }
 }

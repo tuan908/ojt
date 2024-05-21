@@ -6,6 +6,7 @@ export enum OjtEntity {
     Grade = "ojt_grade",
     Hashtag = "ojt_hashtag",
     StudentHashTag = "ojt_student_hashtag",
+    Comment = "ojt_comment",
 }
 
 export enum OjtUserRole {

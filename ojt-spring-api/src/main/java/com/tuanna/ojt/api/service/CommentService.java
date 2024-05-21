@@ -2,11 +2,8 @@ package com.tuanna.ojt.api.service;
 
 import java.util.List;
 
-import org.springframework.lang.NonNull;
-
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
-import com.tuanna.ojt.api.dto.UpdateCommentDto;
 import com.tuanna.ojt.api.entity.Comment;
 
 public interface CommentService {
@@ -17,7 +14,7 @@ public interface CommentService {
   
   List<CommentDto> add(AddCommentDto addCommentDto);
   
-  void update(@NonNull Long id, UpdateCommentDto updateCommentDto);
+  CommentDto update(CommentDto commentDto);
   
   void delete(Long id);
   

@@ -1,6 +1,9 @@
 "use server";
 
+import {OjtEntity} from "@/constants";
+import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
+import {ErrorResponseDto, OjtStatusCode} from "@/types";
 import {type EventDto} from "@/types/event.types";
 import {type EventDetailDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
@@ -85,4 +88,27 @@ export async function deleteEventDetailById(
 export async function getEventDetailList() {
     const response = await fetchNoCache<EventDto[]>(`/event-detail`);
     return response;
+}
+
+export async function editComment(
+    id: number,
+    content: string
+): Promise<{data: unknown} | ErrorResponseDto> {
+    try {
+        const result = await fetchNoCache<{data: unknown} | ErrorResponseDto>(
+            "/student/event/comments/p",
+            "POST",
+            {
+                id,
+                content,
+            }
+        );
+        return result;
+    } catch (error) {
+        return {
+            message: "Internal Server Error",
+            type: "InternalServerError",
+            code: OjtStatusCode.InternalServerError,
+        };
+    }
 }

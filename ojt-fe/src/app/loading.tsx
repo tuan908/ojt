@@ -1,7 +1,7 @@
 "use client";
 
-import LoadingComponent from "@/components/LoadingComponent";
+import ProgressIndicator from "@/components/ProgressIndicator";
 
 export default function Loading() {
-    return <LoadingComponent />;
+    return <ProgressIndicator />;
 }

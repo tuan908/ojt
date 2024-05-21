@@ -1,5 +1,7 @@
 package com.tuanna.ojt.api.controller;
 
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.tuanna.ojt.api.constants.OjtCode;
+
+import com.tuanna.ojt.api.constants.OjtResponseCode;
+import com.tuanna.ojt.api.constants.OjtResponseType;
 import com.tuanna.ojt.api.dto.AddCommentDto;
+import com.tuanna.ojt.api.dto.CommentDto;
+import com.tuanna.ojt.api.dto.ErrorResponseDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.SuccessResponseDto;
@@ -20,6 +26,7 @@ import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.exception.ResultNotFoundException;
 import com.tuanna.ojt.api.service.CommentService;
 import com.tuanna.ojt.api.service.StudentService;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -82,7 +89,7 @@ public class StudentController {
 
     // @formatter:off
     var data = new SuccessResponseDto(
-          OjtCode.ACTION_SUCCESS.getValue(),
+          OjtResponseCode.SUCCESS.getValue(),
           "Created",
           "Created event no" + result.id(),
           "/event/" + result.id()
@@ -98,7 +105,7 @@ public class StudentController {
 
     // @formatter:off
     var data = new SuccessResponseDto(
-        OjtCode.ACTION_SUCCESS.getValue(),
+        OjtResponseCode.SUCCESS.getValue(),
         "Updated", 
         "Updated status for event " + dto.id(), 
         "/student/" + dto.studentId()
@@ -135,7 +142,7 @@ public class StudentController {
 
     // @formatter:off
     var data = new SuccessResponseDto(
-        OjtCode.ACTION_SUCCESS.getValue(),
+        OjtResponseCode.SUCCESS.getValue(),
         "Deleted", 
         "Deleted comment " + id, 
         "/student/comments/" + id
@@ -143,6 +150,23 @@ public class StudentController {
     // @formatter:on
 
     return ResponseEntity.ok().body(data);
+  }
+  
+  @PostMapping("/event/comments/p")
+  public ResponseEntity<?> editComment(@RequestBody CommentDto commentDto) {
+	  var result = this.commentService.update(commentDto);
+	  if(result == null) {
+		  var responseBody = new ErrorResponseDto();
+		  responseBody.setType(OjtResponseType.ERROR.getValue());
+		  responseBody.setCode(OjtResponseCode.ERROR.getValue());
+		  responseBody.setMessage("Failed to update");
+		  return ResponseEntity.ok(responseBody);		  
+	  } else 
+	  {
+		  var map = new HashMap<String, Object>();
+		  map.put("data", result);
+		  return ResponseEntity.ok(map);
+	  }
   }
 
 }

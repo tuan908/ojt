@@ -17,9 +17,9 @@ export type Nullable<T> = {
  * ErrorResponseDto
  */
 export type ErrorResponseDto = {
-    code: string;
-    title: string;
     message: string;
+    type: string;
+    code: number;
 };
 
 /**
@@ -30,10 +30,10 @@ export type ErrorResponseDto = {
  *  - UpdateSuccess
  */
 export enum OjtStatusCode {
-    Error = "OJT_0000",
-    ResultNotFound = "OJT_0001",
-    UpdateError = "OJT_0002",
-    UpdateSuccess = "OJT_0003",
+    InternalServerError = 500,
+    ResultNotFound = 404,
+    Error = 0,
+    Success = 1,
 }
 
 /**

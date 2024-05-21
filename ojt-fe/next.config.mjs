@@ -2,7 +2,9 @@
 const nextConfig = {
     transpilePackages: ["@reduxjs/toolkit", "react-redux"],
     experimental: {
-        scrollRestoration: true
+        scrollRestoration: true,
+        ppr: true,
+        reactCompiler: true
     }
 };
 

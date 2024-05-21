@@ -1,4 +1,5 @@
-import {type CommentDto} from "@/app/actions/event";
+import {editComment, type CommentDto} from "@/app/actions/event";
+import {deleteComment} from "@/app/actions/student";
 import OjtButtonBase from "@/components/ButtonBase";
 import {cn} from "@/lib/utils";
 import Check from "@mui/icons-material/Check";
@@ -6,17 +7,19 @@ import Clear from "@mui/icons-material/Clear";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
-import {useEffect, useRef, useState, type MouseEventHandler} from "react";
+import {useEffect, useOptimistic, useRef, useState, type MouseEventHandler} from "react";
 
 interface BubbleMessageProps {
-    message: CommentDto;
+    comment: CommentDto;
     isCommentOfActiveUser: boolean;
+    setComments: (comments: CommentDto[]) => void
+    comments: CommentDto[]
 }
 
 export default function OjtBubbleMessage(props: BubbleMessageProps) {
-    const {message, isCommentOfActiveUser} = props;
+    const {comment, isCommentOfActiveUser} = props;
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
-    const [commentData, setCommentData] = useState(message);
+    const [commentData, setCommentData] = useState(comment);
     const [show, setShow] = useState(false);
     const [editable, setEditable] = useState(false);
 
@@ -24,12 +27,16 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
 
     const handleOnMouseLeave = () => setShow(false);
 
-    const acceptEdit = () => {
+    const acceptEdit = async () => {
         setShow(false);
         setEditable(false);
+        const response = await editComment(comment.id, commentData.content);
+        if ("data" in response) {
+            props.setComments([...props.comments.filter(x => x.id !== comment.id), response.data as CommentDto])
+        }
     };
 
-    const handleEdit: MouseEventHandler<HTMLButtonElement> = event => {
+    const enableEdit: MouseEventHandler<HTMLButtonElement> = event => {
         event?.preventDefault();
         setEditable(true);
     };
@@ -42,7 +49,13 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
         }
     }, [editable]);
 
-    const handleDelete = (id: number) => {};
+    const handleDelete = async () => {
+        await deleteComment({
+            id: comment.id,
+            eventDetailId: comment.eventDetailId,
+            username: comment.username,
+        });
+    };
 
     return (
         <>
@@ -55,7 +68,7 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                 <div className="flex flex-col gap-y-2 items-center w-24">
                     <Avatar sx={{width: 56, height: 56, bgcolor: "#d87579"}} />
                     <span className="bg-[#00c853] text-white font-medium rounded-xl text-center leading-none px-2 py-[0.125rem]">
-                        {message?.roleName}
+                        {comment?.roleName}
                     </span>
                 </div>
                 <div className="w-1/2 h-full relative">
@@ -65,7 +78,7 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                         onMouseLeave={handleOnMouseLeave}
                     >
                         <span className="font-semibold text-[#058af4]">
-                            {message.username}
+                            {comment?.username}
                         </span>
 
                         {editable ? (
@@ -88,10 +101,10 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                                 />
                             </div>
                         ) : (
-                            <span className="py-2">{message.content}</span>
+                            <span className="py-2">{comment?.content}</span>
                         )}
 
-                        <span className="text-[12px]">{message.createdAt}</span>
+                        <span className="text-[12px]">{comment?.createdAt}</span>
                         <div
                             style={{
                                 display:
@@ -105,12 +118,10 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                                 "bg-transparent flex"
                             )}
                         >
-                            <OjtButtonBase classes="px-1" onClick={handleEdit}>
+                            <OjtButtonBase classes="px-1" onClick={enableEdit}>
                                 <Edit className="text-icon-default" />
                             </OjtButtonBase>
-                            <OjtButtonBase
-                                onClick={() => handleDelete(message.id)}
-                            >
+                            <OjtButtonBase onClick={handleDelete}>
                                 <Delete color="error" />
                             </OjtButtonBase>
                         </div>

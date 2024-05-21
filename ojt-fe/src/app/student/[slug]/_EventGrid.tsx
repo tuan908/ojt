@@ -19,7 +19,7 @@ import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useEffect, useReducer, useState, type SyntheticEvent} from "react";
-import {StatusLabel} from "./_StatusLabel";
+import {StatusLabel} from "@/components/StatusLabel";
 
 interface DialogState {
     open: boolean;

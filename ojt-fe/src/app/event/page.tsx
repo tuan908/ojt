@@ -16,7 +16,7 @@ import {
 } from "@/constants";
 
 import {getEventDetailById} from "@/app/actions/event";
-import LoadingComponent from "@/components/LoadingComponent";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import OjtComment from "@/components/OjtComment";
 import Textarea from "@/components/Textarea";
 import {useAuth} from "@/lib/hooks/useAuth";
@@ -52,19 +52,15 @@ import {
     type SyntheticEvent,
 } from "react";
 import {getHashtags} from "../actions/common";
-import "./register.css";
 
 export default function Page() {
     const appDispatch = useAppDispatch();
     const router = useRouter();
     const [comments, setComments] = useState<CommentDto[]>([]);
-    const isLoading = useAppSelector(getLoadingState);
     const {auth} = useAuth();
     const params = useSearchParams();
     const [registerData, setData] = useState<RegisterEventDto["data"]>();
     const [error, setError] = useState(false);
-    const [isUpdatingComment, setUpdating] = useState(false);
-
     const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
     const [isDisable, setDisable] = useState(false);
     const [hashtags, setHashtags] = useState<HashtagDto[]>([]);
@@ -255,7 +251,6 @@ export default function Page() {
     return (
         <Fragment>
             <div className="pt-12 w-full flex flex-col gap-y-8">
-                {isLoading ? <LoadingComponent /> : null}
                 <div className="w-1/2 m-auto bg-white rounded-xl shadow-2xl">
                     <div className="w-[90%] m-auto flex flex-col gap-y-6 py-6">
                         {/* Select */}
@@ -366,18 +361,15 @@ export default function Page() {
                     {params.get("mode") &&
                     params.get("mode") !== OjtScreenMode.NEW.toString() ? (
                         <>
-                            <div className="w-1/2 h-full m-auto flex flex-col gap-y-8 relative">
-                                {isUpdatingComment ? (
-                                    <div className="bg-black opacity-50 absolute top-0 left-0 right-0 bottom-0">
-                                        <CircularProgress color="success" />
-                                    </div>
-                                ) : null}
+                            <div className="w-1/2 h-full m-auto flex flex-col gap-y-4 relative">
                                 {comments!?.map(comment => {
                                     return (
                                         <Fragment key={comment.id}>
                                             {comment.isDeleted ? null : (
                                                 <OjtComment
-                                                    message={comment}
+                                                    comments={comments}
+                                                    setComments={setComments}
+                                                    comment={comment}
                                                     isCommentOfActiveUser={
                                                         auth?.username! ===
                                                         comment?.username!

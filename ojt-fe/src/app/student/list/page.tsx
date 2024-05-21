@@ -8,7 +8,7 @@ import {
 } from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
 import OjtColorHashtag from "@/components/ColorHashtag";
-import LoadingComponent from "@/components/LoadingComponent";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import PageWrapper from "@/components/PageWrapper";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
 import {useAppDispatch, useAppSelector} from "@/lib/redux/hooks";
@@ -33,7 +33,7 @@ import Input from "@mui/material/Input";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {useEffect, useState, type SyntheticEvent} from "react";
+import {useEffect, useOptimistic, useState, type SyntheticEvent} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type DropdownOption = Partial<{
@@ -208,7 +208,7 @@ export default function Page() {
 
     return (
         <PageWrapper gapY>
-            {isFetching ? <LoadingComponent /> : null}
+            {isFetching ? <ProgressIndicator /> : null}
             {/* Student info */}
             <div className="w-full pl-12 pt-8 flex gap-x-8">
                 {/* 学生の名前 */}

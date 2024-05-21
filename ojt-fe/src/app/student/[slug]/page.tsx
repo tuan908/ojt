@@ -3,7 +3,8 @@
 import {getGrades, type GradeDto} from "@/app/actions/common";
 import {getEventDetailList} from "@/app/actions/event";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
-import LoadingComponent from "@/components/LoadingComponent";
+import {OjtCheckbox} from "@/components/Checkbox";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import PageWrapper from "@/components/PageWrapper";
 import {
     ITEM_HEIGHT,
@@ -25,11 +26,10 @@ import {type StudentResponseDto} from "@/types/student.types";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Search from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+import Select, {SelectChangeEvent} from "@mui/material/Select";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {useEffect, useState, type ChangeEventHandler} from "react";
-import {OjtCheckbox} from "./_Checkbox";
+import {ReactNode, useEffect, useState, type ChangeEventHandler} from "react";
 import {EventGrid} from "./_EventGrid";
 
 type CheckboxState = {
@@ -44,8 +44,13 @@ type Option = {
     eventList: EventDto[];
 };
 
-const CLASS = "クラス名";
-const EVENT = "イベント";
+const CLASS_OPTION_DEFAULT = "クラス名";
+const EVENT_OPTION_DEFAULT = "イベント";
+
+type MuiSelectChangeHandler = (
+    event: SelectChangeEvent<string>,
+    reactNode: ReactNode
+) => void;
 
 export default function Page({params}: {params: {slug: string}}) {
     const {auth} = useAuth();
@@ -64,8 +69,8 @@ export default function Page({params}: {params: {slug: string}}) {
         gradeList: [],
         eventList: [],
     });
-    const [grade, setGrade] = useState("");
-    const [eventName, setName] = useState("");
+    const [grade, setGrade] = useState(CLASS_OPTION_DEFAULT);
+    const [eventName, setEventName] = useState(EVENT_OPTION_DEFAULT);
 
     const init = async () => {
         await appDispatch(showLoading());
@@ -123,8 +128,9 @@ export default function Page({params}: {params: {slug: string}}) {
         }
 
         const promise = getEventsByStudentCodeWithQuery(params.slug, {
-            grade,
-            eventName,
+            grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
+            eventName:
+                eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
             status,
         });
 
@@ -143,11 +149,14 @@ export default function Page({params}: {params: {slug: string}}) {
                     url.searchParams.delete(key, value);
                 });
 
-                if (grade.length > 0 && grade !== "") {
+                if (grade.length > 0 && grade !== CLASS_OPTION_DEFAULT) {
                     url.searchParams.set("grade", grade);
                 }
 
-                if (eventName.length > 0) {
+                if (
+                    eventName.length > 0 &&
+                    eventName !== EVENT_OPTION_DEFAULT
+                ) {
                     url.searchParams.set("event", eventName);
                 }
 
@@ -161,6 +170,16 @@ export default function Page({params}: {params: {slug: string}}) {
                 setIsFetching(false);
             });
     }
+
+    const handleSelectGrade: MuiSelectChangeHandler = (event, _reactNode) => {
+        event?.preventDefault();
+        setGrade(event.target.value);
+    };
+
+    const handleSelectEvent: MuiSelectChangeHandler = (event, _reactNode) => {
+        event?.preventDefault();
+        setEventName(event.target.value);
+    };
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
@@ -176,7 +195,7 @@ export default function Page({params}: {params: {slug: string}}) {
                 </div>
             ) : null}
             <PageWrapper>
-                {isFetching || isAppLoading ? <LoadingComponent /> : null}
+                {isFetching || isAppLoading ? <ProgressIndicator /> : null}
 
                 {/* Student Info */}
                 <>
@@ -196,8 +215,8 @@ export default function Page({params}: {params: {slug: string}}) {
                         <Select
                             variant="standard"
                             className="w-48"
-                            defaultValue={CLASS}
-                            onChange={e => setGrade(e.target.value)}
+                            value={grade}
+                            onChange={handleSelectGrade}
                             sx={{
                                 bgcolor: "#ffffff",
                                 paddingX: 1,
@@ -217,7 +236,9 @@ export default function Page({params}: {params: {slug: string}}) {
                                 },
                             }}
                         >
-                            <MenuItem value={CLASS}>{CLASS}</MenuItem>
+                            <MenuItem value={CLASS_OPTION_DEFAULT}>
+                                {CLASS_OPTION_DEFAULT}
+                            </MenuItem>
                             {options.gradeList.map(x => (
                                 <MenuItem
                                     key={x.id}
@@ -234,8 +255,8 @@ export default function Page({params}: {params: {slug: string}}) {
                         <Select
                             variant="standard"
                             className="w-48"
-                            defaultValue={EVENT}
-                            onChange={e => setName(e.target.value)}
+                            value={eventName}
+                            onChange={handleSelectEvent}
                             sx={{
                                 bgcolor: "#ffffff",
                                 paddingX: 1,
@@ -256,7 +277,9 @@ export default function Page({params}: {params: {slug: string}}) {
                             }}
                             suppressContentEditableWarning
                         >
-                            <MenuItem value={EVENT}>{EVENT}</MenuItem>
+                            <MenuItem value={EVENT_OPTION_DEFAULT}>
+                                {EVENT_OPTION_DEFAULT}
+                            </MenuItem>
                             {options.eventList.map(x => (
                                 <MenuItem
                                     key={x.id}

@@ -1,12 +1,12 @@
 package com.tuanna.ojt.api.constants;
 
-public enum OjtCode {
+public enum OjtResponseCode {
 
-  EXCEPTION("OJT_0000"), ACTION_SUCCESS("OJT_0002"), ACTION_FAILED("OJT_0003");
+  INTERNAL_SERVER_ERROR("OJT_0000"), SUCCESS("OJT_0002"), ERROR("OJT_0003");
 
   private String value;
 
-  OjtCode(String code) {
+  OjtResponseCode(String code) {
     this.value = code;
   }
 
