@@ -42,5 +42,5 @@ tasks.named('test') {
 }
 
 bootRun {
-	jvmArgs = ["-Dspring.profiles.active=railway"]
+    systemProperty "spring.profiles.active", "railway"
 }
