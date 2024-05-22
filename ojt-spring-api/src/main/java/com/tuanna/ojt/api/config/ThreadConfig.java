@@ -13,13 +13,13 @@ public class ThreadConfig {
 
   @Bean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)
   AsyncTaskExecutor asyncTaskExecutor() {
-    return new TaskExecutorAdapter(Executors.newVirtualThreadPerTaskExecutor());
+    return new TaskExecutorAdapter(Executors.newCachedThreadPool());
   }
 
   @Bean
-  TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadExecutorCustomizer() {
+  TomcatProtocolHandlerCustomizer<?> protocolHandlerExecutorCustomizer() {
     return protocolHandler -> {
-      protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+      protocolHandler.setExecutor(Executors.newCachedThreadPool());
     };
   }
 
