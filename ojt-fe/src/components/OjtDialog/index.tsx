@@ -15,7 +15,10 @@ interface DialogWithModeProps {
     actionButtonText: string;
     contentText: string;
     onCancelClick: () => void;
-    onActionClick: () => void | ((args: unknown) => void);
+    onActionClick:
+        | (() => void)
+        | ((args: unknown) => void)
+        | (() => Promise<void>);
     actionButtonBackgroundColor: "bg-red-400" | "bg-blue-400" | "bg-green-400";
 }
 

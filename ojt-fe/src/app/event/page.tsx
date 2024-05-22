@@ -163,6 +163,10 @@ export default function Page() {
         if (reason === "reset") {
             setOpenSuggest(false);
         }
+
+        if (openSuggest) {
+            setOpenSuggest(false);
+        }
     }
 
     function handleChangeComment(
@@ -194,6 +198,9 @@ export default function Page() {
     }
 
     const handleSelectChange: SelectProps<string>["onChange"] = e => {
+        if(error) {
+            setError(false)
+        }
         setData({...registerData, eventName: e.target.value});
     };
 
@@ -209,14 +216,14 @@ export default function Page() {
         e?.preventDefault();
         if (registerData!?.eventName === "Event" || !registerData!?.eventName) {
             setError(true);
-            return;
+        } else {
+            await registerEvent({
+                username: auth?.username!,
+                gradeName: auth?.grade!,
+                data: registerData!,
+            });
+            router.back();
         }
-        await registerEvent({
-            username: auth?.username!,
-            gradeName: auth?.grade!,
-            data: registerData!,
-        });
-        router.back();
     }
 
     async function handleAddComment(
@@ -226,10 +233,12 @@ export default function Page() {
         if (editState.isEditing) {
             const response = await editComment(comment.id!, comment.content!);
             if ("data" in response) {
-                setComments([
-                    ...comments.filter(x => x.id !== comment.id!),
-                    response.data as CommentDto,
-                ]);
+                setComments(
+                    [
+                        ...comments.filter(x => x.id !== comment.id!),
+                        response.data as CommentDto,
+                    ].toSorted()
+                );
             }
             setComment(initComment);
             setEditState(initEditState);

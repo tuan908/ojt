@@ -63,41 +63,42 @@ public class StudentServiceImpl implements StudentService {
 
   @Override
   public Page<StudentEventResponseDto> getEventList(StudentEventRequestDto dto) {
-    Map<String, Object> parameters = new HashMap<String, Object>();
-    var qlString = """
-            select
-              s
-            from
-              com.tuanna.ojt.api.entity.Student s
-              left join fetch s.events
-              left join fetch s.hashtags
-            where
-              1 = 1
-        """;
+    var parameters = new HashMap<String, Object>();
+    var sb = new StringBuilder();
+    sb.append("""
+    		select
+    			s
+    		from
+    			com.tuanna.ojt.api.entity.Student s
+            left join fetch s.events
+            left join fetch s.hashtags
+          where
+            1 = 1
+      """);
 
     if (StringUtils.hasText(dto.name())) {
-      qlString += " and s.name = :studentName";
+      sb.append(" and s.name = :studentName");
       parameters.put("studentName", dto.name());
     }
 
     if (StringUtils.hasText(dto.grade())) {
-      qlString += " and s.grade.name = :grade";
+      sb.append(" and s.grade.name = :grade");
       parameters.put("grade", dto.grade());
     }
 
     if (StringUtils.hasText(dto.event())) {
-      qlString += " and element(s.events) in :eventName ";
+    	sb.append(" and element(s.events) in :eventName ");
       parameters.put("eventName", dto.event());
     }
 
     if (dto.hashtags() != null && dto.hashtags().size() > 0) {
-      qlString += " and element(s.hashtags).name in :hashtags ";
+     sb.append(" and element(s.hashtags).name in :hashtags ");
       parameters.put("hashtags", dto.hashtags());
     }
 
-    qlString += " order by s.code  ";
+    sb.append(" order by s.code  ");
 
-    var query = this.entityManager.createQuery(qlString, Student.class);
+    var query = this.entityManager.createQuery(sb.toString(), Student.class);
 
     for (String key : parameters.keySet()) {
       query.setParameter(key, parameters.get(key));
@@ -117,7 +118,11 @@ public class StudentServiceImpl implements StudentService {
                         : event.getDetail().getName(),
                   event.getStatus().getValue(),
                   event.getData(),
-                  event.getComments().stream().map(Comment::toDto).toList()
+                  event.getComments()
+                  	.stream()
+                  	.sorted(Comparator.comparing(Comment::getCreatedAt))
+                  	.map(Comment::toDto)
+                  	.toList()
                 );
                 return eventDto;
               })
@@ -125,10 +130,7 @@ public class StudentServiceImpl implements StudentService {
             .toList();
 
           var hashtags = student.getHashtags().stream()
-            .map(hashtag -> {
-                var hashtagDto = new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor());
-                return hashtagDto;
-              })
+            .map(hashtag -> new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor()))
             .sorted(Comparator.comparing(HashtagDto::name))
             .toList();
 

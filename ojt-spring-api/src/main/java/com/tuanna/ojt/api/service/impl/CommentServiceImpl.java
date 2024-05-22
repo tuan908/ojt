@@ -88,6 +88,7 @@ public class CommentServiceImpl implements CommentService {
   }
 
   @Override
+  @Transactional
   public CommentDto update(CommentDto commentDto) {
     var comment = this.commentRepository.findById(commentDto.id()).orElse(null);
     

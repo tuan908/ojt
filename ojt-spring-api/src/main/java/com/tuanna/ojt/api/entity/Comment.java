@@ -69,7 +69,7 @@ public class Comment extends BaseEntity {
           this.user.getUsername(),
           roleName,
           this.content,
-          this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+          this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")),
           this.isDeleted
         );
     // @formatter:on

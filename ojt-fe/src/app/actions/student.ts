@@ -50,7 +50,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await fetchNoCache("/event/detail", "POST", dto);
+    const data = await fetchNoCache("/student/event/detail", "POST", dto);
     revalidatePath(`/student/[slug]`, "page");
     return data;
 }

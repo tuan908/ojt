@@ -1,6 +1,7 @@
 package com.tuanna.ojt.api.entity;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Set;
 
 import org.hibernate.annotations.Type;
@@ -93,6 +94,7 @@ public class EventDetail extends BaseEntity {
           this.comments
             .stream()
             .filter(comment -> !comment.getIsDeleted())
+            .sorted(Comparator.comparing(Comment::getCreatedAt))
             .map(Comment::toDto)
             .toList()
         );

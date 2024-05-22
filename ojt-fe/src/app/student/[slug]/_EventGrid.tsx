@@ -20,6 +20,7 @@ import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useEffect, useReducer, useState, type SyntheticEvent} from "react";
 import {StatusLabel} from "@/components/StatusLabel";
+import OjtDialog from "@/components/OjtDialog";
 
 interface DialogState {
     open: boolean;
@@ -92,16 +93,15 @@ export function EventGrid({
 
     const router = useRouter();
 
-    async function handleDone() {
+    async function handleDone () {
+        dispatch(hideDialogUpdateStatus());
         await appDispatch(showLoading());
         updateEventStatus({
             id: state.updateStatus.id,
             studentId: studentId!,
             updatedBy: auth?.username!,
-        }).then(async () => {
-            await appDispatch(hideLoading());
-            dispatch(hideDialogUpdateStatus());
-        });
+        })
+        await appDispatch(hideLoading());
     }
 
     function handleNotificationIconClick(
@@ -261,7 +261,7 @@ export function EventGrid({
                     )}
                 </tbody>
             </table>
-            {/* <OjtDialog
+            <OjtDialog
                 open={state.delete.open}
                 onClose={() => dispatch(hideDialogDelete())}
                 title="Delete Event"
@@ -275,13 +275,13 @@ export function EventGrid({
             <OjtDialog
                 open={state.updateStatus.open}
                 onClose={() => dispatch(hideDialogUpdateStatus())}
-                title="Do you want to change status of this event?"
-                contentText="Update Status"
+                title="Update Status"
+                contentText="Do you want to change status of this event?"
                 actionButtonText="Update"
                 onCancelClick={() => dispatch(hideDialogUpdateStatus())}
-                onActionClick={handleDeleteEventDetailById}
-                actionButtonBackgroundColor="bg-red-400"
-            /> */}
+                onActionClick={handleDone}
+                actionButtonBackgroundColor="bg-blue-400"
+            />
         </>
     );
 }
