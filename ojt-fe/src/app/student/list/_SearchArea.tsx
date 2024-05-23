@@ -311,7 +311,7 @@ export default function SearchArea(props: SearchAreaProps) {
                 ))}
             </div>
             <hr className="border-table" />
-            <StudentDataGrid rows={props.rows} />
+            <StudentDataGrid rows={rows} />
         </>
     );
 }

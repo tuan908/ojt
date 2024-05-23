@@ -1,29 +1,28 @@
-import {jwtVerify, type JWTPayload} from "jose";
+import { jwtVerify, type JWTPayload } from "jose";
 
-export type OjtJwtPayload = JWTPayload &
-    Readonly<{
-        name: string;
-        username: string;
-        grade: string;
-        role: string;
-    }>;
+export type OjtJwtPayload = JWTPayload & {
+    code: string;
+    name: string;
+    username: string;
+    grade: string;
+    role: string;
+};
 
-export function getJwtSecretKey() {
-    const secret = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;
-    if (!secret) {
-        throw new Error("JWT Secret key is not matched");
-    }
-    return new TextEncoder().encode(secret);
+const JWT_SECRET_KEY = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;
+
+if (!JWT_SECRET_KEY) {
+    throw new Error("JWT Secret key is not defined");
 }
 
-export async function verifyJwtToken(token: string) {
+export function getJwtSecretKey(): Uint8Array {
+    return new TextEncoder().encode(JWT_SECRET_KEY);
+}
+
+export async function verifyJwtToken(token: string): Promise<OjtJwtPayload | undefined> {
     try {
-        const {payload} = await jwtVerify<OjtJwtPayload>(
-            token,
-            getJwtSecretKey()
-        );
-        return payload;
-    } catch (error) {
+        const { payload } = await jwtVerify(token, getJwtSecretKey());
+        return payload as OjtJwtPayload;
+    } catch {
         return undefined;
     }
 }

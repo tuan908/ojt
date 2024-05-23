@@ -1,41 +1,43 @@
-import {nullsToUndefined} from "./nullsToUndefined";
-import { unstable_noStore } from 'next/cache'
+import { nullsToUndefined } from "./nullsToUndefined";
+import { unstable_noStore } from 'next/cache';
+
+export type HttpMethod = "GET" | "POST" | "DELETE";
+
+interface RequestOptions {
+    method: HttpMethod;
+    headers: HeadersInit;
+    body?: BodyInit | null;
+}
 
 /**
- * fetch with no cache setup
- * @param url Api URL
- * @param method GET | POST | DELETE
- * @param body raw body
- * @returns Response
+ * Makes an API request without caching.
+ * @param endpoint API endpoint
+ * @param method HTTP method
+ * @param body Request body
+ * @returns Parsed JSON response
  */
 export async function fetchNoCache<T>(
     endpoint: string,
-    method?: "GET" | "POST" | "DELETE",
+    method: HttpMethod = "GET",
     body?: unknown
 ) {
     const url = `${process.env["SPRING_API"]}${endpoint}`;
-    unstable_noStore();
-    try {
-        let response;
-        if (method && method === "POST") {
-            response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-                cache: "no-cache",
-            });
-        } else {
-            response = await fetch(url, {
-                method,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                cache: "no-cache",
-            });
+    const requestOptions: RequestOptions = {
+        method,
+        headers: {
+            "Content-Type": "application/json",
         }
-        const responseJson = (await response.json()) as T;
+    };
+
+    if (method === "POST") {
+        requestOptions.body = JSON.stringify(body);
+    }
+
+    unstable_noStore();
+
+    try {
+        const response = await fetch(url, requestOptions);
+        const responseJson = await response.json() as T;
         return nullsToUndefined(responseJson);
     } catch (error: any) {
         throw new Error(error?.message);

@@ -1,15 +1,13 @@
-"use client";
-
+import {getVerifiedToken} from "@/app/actions/event";
 import {OjtRoute, OjtUserRole} from "@/constants";
-import {useAuth} from "@/lib/hooks/useAuth";
 import Avatar from "@mui/material/Avatar";
 import Link from "next/link";
 import BackButton from "./BackButton";
 import LogoutButton from "./LogOut";
 import UserInfo from "./UserInfo";
 
-export default function Navbar() {
-    const {auth} = useAuth();
+export default async function Navbar() {
+    const auth = await getVerifiedToken();
     const href =
         auth?.role !== OjtUserRole.Student
             ? OjtRoute.StudentList

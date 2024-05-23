@@ -1,7 +1,7 @@
 import {getGrades} from "@/app/actions/common";
 import {getEventDetails, getVerifiedToken} from "@/app/actions/event";
-import PageWrapper from "@/components/PageWrapper";
 import {getStudentByCode} from "@/app/actions/student";
+import PageWrapper from "@/components/PageWrapper";
 import {Suspense} from "react";
 import Header from "./_Header";
 import SearchArea from "./_SearchArea";
@@ -15,7 +15,9 @@ export default async function Page({params}: {params: {slug: string}}) {
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
-            <Header auth={auth} />
+            <Suspense fallback={<>Loading student info...</>}>
+                <Header auth={auth} />
+            </Suspense>
             <PageWrapper>
                 {/* Student Info */}
 

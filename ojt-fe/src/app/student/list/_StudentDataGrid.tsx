@@ -8,7 +8,7 @@ import type {StudentResponseDto} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
-import {Suspense, type SyntheticEvent} from "react";
+import {Suspense, startTransition, type SyntheticEvent} from "react";
 
 export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
     const router = useRouter();
@@ -36,7 +36,9 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
         studentCode?: string;
     }): void => {
         e?.stopPropagation();
-        router.push(`/tracking/student/${studentCode}`);
+       startTransition(() => {
+            router.push(`/tracking/student/${studentCode}`);
+       })
     };
 
     return (
