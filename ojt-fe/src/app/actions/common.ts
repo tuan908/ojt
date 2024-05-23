@@ -19,7 +19,7 @@ export async function getGrades() {
             from
                ${sql(OjtEntity.Grade)}
         `;
-        return list;
+        return Array.from(list);
     } catch (error) {
         console.error(error);
         return undefined;

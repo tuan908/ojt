@@ -3,6 +3,8 @@
 import {deleteEventDetailById} from "@/app/actions/event";
 import {updateEventStatus} from "@/app/actions/student";
 import OjtButtonBase from "@/components/ButtonBase";
+import OjtDialog from "@/components/OjtDialog";
+import {StatusLabel} from "@/components/StatusLabel";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
@@ -18,9 +20,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {useEffect, useReducer, useState, type SyntheticEvent} from "react";
-import {StatusLabel} from "@/components/StatusLabel";
-import OjtDialog from "@/components/OjtDialog";
+import {
+    Suspense,
+    useEffect,
+    useReducer,
+    useState,
+    type SyntheticEvent,
+} from "react";
 
 interface DialogState {
     open: boolean;
@@ -93,14 +99,14 @@ export function EventGrid({
 
     const router = useRouter();
 
-    async function handleDone () {
+    async function handleDone() {
         dispatch(hideDialogUpdateStatus());
         await appDispatch(showLoading());
-        updateEventStatus({
+        await updateEventStatus({
             id: state.updateStatus.id,
             studentId: studentId!,
             updatedBy: auth?.username!,
-        })
+        });
         await appDispatch(hideLoading());
     }
 
@@ -149,116 +155,126 @@ export function EventGrid({
                     </tr>
                 </thead>
                 <tbody>
-                    {state.isUpdating ? (
-                        <CircularProgress color="info" />
-                    ) : (
-                        <>
-                            {rows!?.map(item => (
-                                <TableRow key={item.id}>
-                                    <TableCell alignTextCenter>
-                                        {item?.grade}
-                                    </TableCell>
-                                    <TableCell alignTextCenter>
-                                        {item?.name}
-                                    </TableCell>
-                                    <TableCell alignTextCenter>
-                                        <StatusLabel status={item?.status} />
-                                    </TableCell>
-                                    <TableCell
-                                        fontSemibold
-                                        textEllipsis
-                                        alignTextCenter
-                                    >
-                                        <OjtButtonBase
-                                            onClick={e =>
-                                                handleNotificationIconClick(
-                                                    e,
-                                                    item.id
-                                                )
-                                            }
+                    <Suspense fallback={<CircularProgress color="info" />}>
+                        {state.isUpdating ? (
+                            <CircularProgress color="info" />
+                        ) : (
+                            <>
+                                {rows!?.map(item => (
+                                    <TableRow key={item.id}>
+                                        <TableCell alignTextCenter>
+                                            {item?.grade}
+                                        </TableCell>
+                                        <TableCell alignTextCenter>
+                                            {item?.name}
+                                        </TableCell>
+                                        <TableCell alignTextCenter>
+                                            <StatusLabel
+                                                status={item?.status}
+                                            />
+                                        </TableCell>
+                                        <TableCell
+                                            fontSemibold
+                                            textEllipsis
+                                            alignTextCenter
                                         >
-                                            <Badge
-                                                badgeContent={
-                                                    item?.comments?.length
+                                            <OjtButtonBase
+                                                onClick={e =>
+                                                    handleNotificationIconClick(
+                                                        e,
+                                                        item.id
+                                                    )
                                                 }
-                                                color="error"
                                             >
-                                                <Notifications
-                                                    className="text-icon-default"
-                                                    sx={{width: 24, height: 24}}
-                                                />
-                                            </Badge>
-                                        </OjtButtonBase>
-                                    </TableCell>
-                                    {[
-                                        OjtUserRole.Student.toString(),
-                                        OjtUserRole.Counselor.toString(),
-                                    ].indexOf(auth?.role!) > -1 ? (
-                                        <TableCell fontSemibold textEllipsis>
-                                            <div className="w-full flex justify-center items-center gap-x-6">
-                                                {auth?.role! ===
-                                                OjtUserRole.Counselor ? (
-                                                    <OjtButtonBase
-                                                        onClick={() =>
-                                                            dispatch(
-                                                                openDialogUpdateStatus(
-                                                                    {
-                                                                        id: item.id,
-                                                                    }
+                                                <Badge
+                                                    badgeContent={
+                                                        item?.comments?.length
+                                                    }
+                                                    color="error"
+                                                >
+                                                    <Notifications
+                                                        className="text-icon-default"
+                                                        sx={{
+                                                            width: 24,
+                                                            height: 24,
+                                                        }}
+                                                    />
+                                                </Badge>
+                                            </OjtButtonBase>
+                                        </TableCell>
+                                        {[
+                                            OjtUserRole.Student.toString(),
+                                            OjtUserRole.Counselor.toString(),
+                                        ].indexOf(auth?.role!) > -1 ? (
+                                            <TableCell
+                                                fontSemibold
+                                                textEllipsis
+                                            >
+                                                <div className="w-full flex justify-center items-center gap-x-6">
+                                                    {auth?.role! ===
+                                                    OjtUserRole.Counselor ? (
+                                                        <OjtButtonBase
+                                                            onClick={() =>
+                                                                dispatch(
+                                                                    openDialogUpdateStatus(
+                                                                        {
+                                                                            id: item.id,
+                                                                        }
+                                                                    )
                                                                 )
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            item?.status ===
-                                                            OjtEventStatus.CONFIRMED
-                                                        }
-                                                    >
-                                                        <Done
-                                                            isDone={
+                                                            }
+                                                            disabled={
                                                                 item?.status ===
                                                                 OjtEventStatus.CONFIRMED
                                                             }
-                                                        />
-                                                    </OjtButtonBase>
-                                                ) : (
-                                                    <>
-                                                        <Link
-                                                            href={`/event?id=${item.id}&mode=${OjtScreenMode.EDIT}`}
                                                         >
-                                                            <Edit
-                                                                disabled={
-                                                                    item.status ===
-                                                                    OjtEventStatus.CONFIRMED
-                                                                }
-                                                            />
-                                                        </Link>
-                                                        <OjtButtonBase
-                                                            disabled={
-                                                                item.status ===
-                                                                OjtEventStatus.CONFIRMED
-                                                            }
-                                                            onClick={() =>
-                                                                handleOpenDeleteDialog(
-                                                                    item.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <Delete
-                                                                disabled={
-                                                                    item.status ===
+                                                            <Done
+                                                                isDone={
+                                                                    item?.status ===
                                                                     OjtEventStatus.CONFIRMED
                                                                 }
                                                             />
                                                         </OjtButtonBase>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    ) : null}
-                                </TableRow>
-                            ))}
-                        </>
-                    )}
+                                                    ) : (
+                                                        <>
+                                                            <Link
+                                                                href={`/event?id=${item.id}&mode=${OjtScreenMode.EDIT}`}
+                                                            >
+                                                                <Edit
+                                                                    disabled={
+                                                                        item.status ===
+                                                                        OjtEventStatus.CONFIRMED
+                                                                    }
+                                                                />
+                                                            </Link>
+                                                            <OjtButtonBase
+                                                                disabled={
+                                                                    item.status ===
+                                                                    OjtEventStatus.CONFIRMED
+                                                                }
+                                                                onClick={() =>
+                                                                    handleOpenDeleteDialog(
+                                                                        item.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Delete
+                                                                    disabled={
+                                                                        item.status ===
+                                                                        OjtEventStatus.CONFIRMED
+                                                                    }
+                                                                />
+                                                            </OjtButtonBase>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        ) : null}
+                                    </TableRow>
+                                ))}
+                            </>
+                        )}
+                    </Suspense>
                 </tbody>
             </table>
             <OjtDialog

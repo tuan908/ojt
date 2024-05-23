@@ -1,10 +1,12 @@
 "use server";
 
+import {verifyJwtToken} from "@/lib/auth";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import {ErrorResponseDto, OjtStatusCode} from "@/types";
 import {type EventDto} from "@/types/event.types";
 import {type EventDetailDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
+import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 
@@ -84,7 +86,7 @@ export async function deleteEventDetailById(
     return res;
 }
 
-export async function getEventDetailList() {
+export async function getEventDetails() {
     const response = await fetchNoCache<EventDto[]>(`/event-detail`);
     return response;
 }
@@ -111,4 +113,12 @@ export async function editComment(
             code: OjtStatusCode.InternalServerError,
         };
     }
+}
+
+export async function getVerifiedToken() {
+    const token = cookies().get("token")?.value;
+    if (token && (await verifyJwtToken(token))) {
+        return await verifyJwtToken(token);
+    }
+    return undefined;
 }

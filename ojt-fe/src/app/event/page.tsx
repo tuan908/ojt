@@ -3,7 +3,7 @@
 import {
     addComment,
     editComment,
-    getEventDetailList,
+    getEventDetails,
     registerEvent,
     type AddCommentDto,
     type CommentDto,
@@ -83,7 +83,7 @@ export default function Page() {
         const [eventDetailsPromise, eventOptionsPromise, hashtagsPromise] =
             await Promise.allSettled([
                 getEventDetailById(id),
-                getEventDetailList(),
+                getEventDetails(),
                 getHashtags(),
             ]);
 
@@ -198,8 +198,8 @@ export default function Page() {
     }
 
     const handleSelectChange: SelectProps<string>["onChange"] = e => {
-        if(error) {
-            setError(false)
+        if (error) {
+            setError(false);
         }
         setData({...registerData, eventName: e.target.value});
     };
