@@ -1,4 +1,5 @@
 import {nullsToUndefined} from "./nullsToUndefined";
+import { unstable_noStore } from 'next/cache'
 
 /**
  * fetch with no cache setup
@@ -13,7 +14,7 @@ export async function fetchNoCache<T>(
     body?: unknown
 ) {
     const url = `${process.env["SPRING_API"]}${endpoint}`;
-
+    unstable_noStore();
     try {
         let response;
         if (method && method === "POST") {
