@@ -1,5 +1,5 @@
-import { nullsToUndefined } from "./nullsToUndefined";
-import { unstable_noStore } from 'next/cache';
+import {nullsToUndefined} from "./nullsToUndefined";
+import {unstable_noStore} from "next/cache";
 
 export type HttpMethod = "GET" | "POST" | "DELETE";
 
@@ -26,7 +26,7 @@ export async function fetchNoCache<T>(
         method,
         headers: {
             "Content-Type": "application/json",
-        }
+        },
     };
 
     if (method === "POST") {
@@ -37,7 +37,7 @@ export async function fetchNoCache<T>(
 
     try {
         const response = await fetch(url, requestOptions);
-        const responseJson = await response.json() as T;
+        const responseJson = (await response.json()) as T;
         return nullsToUndefined(responseJson);
     } catch (error: any) {
         throw new Error(error?.message);

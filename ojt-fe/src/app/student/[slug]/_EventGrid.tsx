@@ -215,12 +215,8 @@ export function EventGrid({
                                                     OjtUserRole.Counselor ? (
                                                         <OjtButtonBase
                                                             onClick={() =>
-                                                                dispatch(
-                                                                    openDialogUpdateStatus(
-                                                                        {
-                                                                            id: item.id,
-                                                                        }
-                                                                    )
+                                                                handleOpenDeleteDialog(
+                                                                    item.id
                                                                 )
                                                             }
                                                             disabled={

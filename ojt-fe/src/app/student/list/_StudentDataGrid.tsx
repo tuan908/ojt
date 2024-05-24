@@ -36,9 +36,10 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
         studentCode?: string;
     }): void => {
         e?.stopPropagation();
-       startTransition(() => {
-            router.push(`/tracking/student/${studentCode}`);
-       })
+        const path = `/tracking/student/${studentCode}`;
+        startTransition(() => {
+            router.push(path);
+        });
     };
 
     return (

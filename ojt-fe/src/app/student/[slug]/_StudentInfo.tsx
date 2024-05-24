@@ -5,7 +5,7 @@ import {type StudentResponseDto} from "@/types/student.types";
 type StudentInfoProps = {info?: StudentResponseDto; auth?: OjtJwtPayload};
 
 export default async function StudentInfo(props: StudentInfoProps) {
-    if (!props?.auth || props?.auth?.role === OjtUserRole.Student) {
+    if (props.auth === undefined || props?.auth?.role === OjtUserRole.Student) {
         return null;
     }
 
