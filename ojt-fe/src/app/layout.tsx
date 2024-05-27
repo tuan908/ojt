@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className="text-default w-full h-full min-h-dvh max-w-dvw">
+            <body className="text-default w-full h-full min-h-dvh max-w-dvw bg-[#ededed]">
                 <ReduxProvider>
                     <AppRouterCacheProvider>
                         <ThemeProvider theme={theme}>

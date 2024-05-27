@@ -1,12 +1,19 @@
 import {getGrades, getHashtags} from "@/app/actions/common";
+import {getStudentByCode} from "@/app/actions/student";
 import OjtCard from "@/components/Card";
-import DoughnutChart from "@/components/Chart/Doughnut";
-import StackedBarChart from "@/components/Chart/Stacked";
+import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";
+import dynamic from "next/dynamic";
+const DoughnutChart = dynamic(() => import("@/components/Chart/Doughnut"))
+const StackedBarChart = dynamic(() => import("@/components/Chart/Stacked"))
 
-export default async function Page() {
-    const labelList = await getHashtags();
-    const gradeList = await getGrades();
+
+export default async function Page(props: DynamicPageProps) {
+    const [labels, grades, studentInfo] = await Promise.all([
+        getHashtags(),
+        getGrades(),
+        getStudentByCode(props.params.slug),
+    ]);
 
     return (
         <>
@@ -26,10 +33,10 @@ export default async function Page() {
                                 <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-4 text-start font-bold text-lg text-[#060b0f]">
                                     <span>Student Code</span>
                                     <span>:</span>
-                                    <span>ST0001</span>
+                                    <span>{studentInfo?.code}</span>
                                     <span>Student Name</span>
                                     <span>:</span>
-                                    <span>Minh Tran Binh</span>
+                                    <span>{studentInfo?.name}</span>
                                 </div>
                                 <div className="flex justify-center items-center">
                                     <Avatar
@@ -47,8 +54,8 @@ export default async function Page() {
                 <DoughnutChart text="90" />
                 <OjtCard width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
-                        {labelList
-                            ? labelList.map(label => (
+                        {labels
+                            ? labels.map(label => (
                                   <li
                                       key={label.id}
                                       className="w-full text-left flex gap-x-4 items-center"
@@ -65,9 +72,7 @@ export default async function Page() {
                 </OjtCard>
             </div>
 
-            <StackedBarChart
-                labels={gradeList ? gradeList.map(x => x.name) : []}
-            />
+            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} />
         </>
     );
 }

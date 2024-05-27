@@ -40,19 +40,19 @@ const getBarChartOptions = ({
         ],
         series: [
             {
-                name: "Baidu",
+                name: "#Flexible",
                 type: "bar",
                 stack: "Search Engine",
                 data: [620, 732, 701, 734, 1090, 1130, 1120],
             },
             {
-                name: "Google",
+                name: "#Creative",
                 type: "bar",
                 stack: "Search Engine",
                 data: [120, 132, 101, 134, 290, 230, 220],
             },
             {
-                name: "Bing",
+                name: "#Strategic",
                 type: "bar",
                 stack: "Search Engine",
                 data: [60, 72, 71, 74, 190, 130, 110],

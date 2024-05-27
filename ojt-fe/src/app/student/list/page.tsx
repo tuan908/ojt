@@ -1,13 +1,15 @@
+import {getEvents, getGrades, getHashtags} from "@/app/actions/common";
+import {getStudents} from "@/app/actions/student";
 import PageWrapper from "@/components/PageWrapper";
 import SearchArea from "./_SearchArea";
-import {getGrades, getEvents, getHashtags} from "@/app/actions/common";
-import {getStudents} from "@/app/actions/student";
 
 export default async function Page() {
-    const grades = await getGrades();
-    const events = await getEvents();
-    const hashtags = await getHashtags();
-    const students = await getStudents();
+    const [grades, events, hashtags, students] = await Promise.all([
+        getGrades(),
+        getEvents(),
+        getHashtags(),
+        getStudents(),
+    ]);
 
     return (
         <PageWrapper gapY>

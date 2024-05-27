@@ -8,7 +8,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 
-import com.tuanna.ojt.api.constants.UserRole;
 import com.tuanna.ojt.api.entity.User;
 
 import lombok.AllArgsConstructor;

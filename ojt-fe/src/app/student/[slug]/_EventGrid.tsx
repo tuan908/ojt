@@ -13,6 +13,7 @@ import {OjtEventStatus, OjtScreenMode, OjtUserRole} from "@/constants";
 import {useAuth} from "@/lib/hooks/useAuth";
 import {useAppDispatch} from "@/lib/redux/hooks";
 import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
+import {cn} from "@/lib/utils";
 import {type StudentResponseDto} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
@@ -235,6 +236,11 @@ export function EventGrid({
                                                         <>
                                                             <Link
                                                                 href={`/event?id=${item.id}&mode=${OjtScreenMode.EDIT}`}
+                                                                className={cn(
+                                                                    item.status ===
+                                                                        OjtEventStatus.CONFIRMED &&
+                                                                        "pointer-events-none"
+                                                                )}
                                                             >
                                                                 <Edit
                                                                     disabled={

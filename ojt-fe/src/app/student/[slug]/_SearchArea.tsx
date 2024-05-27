@@ -12,6 +12,7 @@ import Select, {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
 import {useState, type ChangeEventHandler, type ReactNode} from "react";
 import {EventGrid} from "./_EventGrid";
+import type {SxProps, Theme, MenuProps} from "@mui/material";
 
 type SearchAreaProps = {
     params: {slug: string};
@@ -34,6 +35,24 @@ type CheckboxState = {
 
 const CLASS_OPTION_DEFAULT = "クラス名";
 const EVENT_OPTION_DEFAULT = "イベント";
+
+const menuProps: Partial<MenuProps> = {
+    slotProps: {
+        paper: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            },
+        },
+    },
+};
+
+const sx: SxProps<Theme> = {
+    bgcolor: "#ffffff",
+    paddingX: 1,
+    "& .MuiSelect-select:focus": {
+        bgcolor: "transparent",
+    },
+};
 
 export default function SearchArea(props: SearchAreaProps) {
     const router = useRouter();
@@ -121,30 +140,15 @@ export default function SearchArea(props: SearchAreaProps) {
 
     return (
         <>
-            <div className="border-b px-8 flex items-center py-4 gap-x-8">
+            <div className="border-b md:px-8 px-4 flex flex-col gap-y-4 md:flex-row md:items-center py-4 md:gap-x-8">
                 {/* クラス名 */}
                 <Select
                     variant="standard"
                     className="w-48"
                     value={grade}
                     onChange={handleSelectGrade}
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {
-                            bgcolor: "transparent",
-                        },
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
+                    sx={sx}
+                    MenuProps={menuProps}
                 >
                     <MenuItem value={CLASS_OPTION_DEFAULT}>
                         {CLASS_OPTION_DEFAULT}
@@ -167,23 +171,8 @@ export default function SearchArea(props: SearchAreaProps) {
                     className="w-48"
                     value={eventName}
                     onChange={handleSelectEvent}
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {
-                            bgcolor: "transparent",
-                        },
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
+                    sx={sx}
+                    MenuProps={menuProps}
                     suppressContentEditableWarning
                 >
                     <MenuItem value={EVENT_OPTION_DEFAULT}>
@@ -201,7 +190,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     ))}
                 </Select>
 
-                <div className="flex items-center gap-x-8">
+                <div className="flex flex-col items-center md:flex-row md:gap-x-8">
                     <span>ステータス：</span>
 
                     {/* 未確認 */}

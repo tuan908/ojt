@@ -5,7 +5,7 @@ import {cn} from "@/lib/utils";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
-import {useState} from "react";
+import {startTransition, useState} from "react";
 
 interface BubbleMessageProps {
     comment: CommentDto;
@@ -46,7 +46,9 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
             eventDetailId: comment.eventDetailId,
             username: comment.username,
         });
-        props.setComments(props.comments.filter(x => x.id !== comment.id));
+        startTransition(() => {
+            props.setComments(props.comments.filter(x => x.id !== comment.id));
+        });
     };
 
     const enableEdit = () => {
@@ -83,7 +85,7 @@ export default function OjtBubbleMessage(props: BubbleMessageProps) {
                         onMouseLeave={handleOnMouseLeave}
                     >
                         <span className="font-semibold text-[#058af4]">
-                            {comment?.username}
+                            {comment?.name}
                         </span>
                         <span className="py-2">{comment?.content}</span>
                         <span className="text-[12px]">

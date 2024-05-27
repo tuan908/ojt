@@ -37,17 +37,11 @@ export default function Page() {
                 backgroundImage: "url('/login-background.jpg')",
             }}
         >
-            <div className="flex flex-col w-1/3 lg:w-1/4 h-full bg-white rounded-lg shadow-lg">
-                <div
-                    className="rounded-t-lg h-48 bg-cover"
-                    style={{
-                        backgroundImage:
-                            "url('https://scontent.fsgn19-1.fna.fbcdn.net/v/t39.30808-6/418313608_855462943043217_191289349546480181_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=3635dc&_nc_ohc=DsKTzqTyTtgAX-HZbYl&_nc_ht=scontent.fsgn19-1.fna&oh=00_AfAri_IB44mLxCPXcj_sxIwFkqyHFSMwK1DIEMdkR7WhMg&oe=65E37168')",
-                    }}
-                ></div>
+            <div className="flex flex-col w-4/5 lg:w-1/4 h-full bg-white rounded-lg shadow-lg">
+                <h1 className="text-3xl text-center pt-8 md:pt-20">ログイン</h1>
                 <form
                     action={formAction}
-                    className="w-3/5 m-auto bg-white flex flex-col gap-y-4 py-12"
+                    className="w-10/12 md:w-3/5 m-auto bg-white flex flex-col gap-y-4 py-4 md:py-12"
                 >
                     <TextField
                         variant="standard"
@@ -121,8 +115,11 @@ export default function Page() {
                             )}
                         </button>
                     </div>
-                    <Link href="/forgot-password" className="m-auto pb-2">
-                        Forgot your password ?
+                    <Link
+                        href="/forgot-password"
+                        className="m-auto pb-2 font-medium"
+                    >
+                        パスワードを忘れた？
                     </Link>
                     {state.error ? (
                         <span className="text-red-500 m-auto text-[0.875rem] leading-none">

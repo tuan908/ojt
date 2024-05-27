@@ -47,7 +47,7 @@ export async function getHashtags() {
             from
                 ${sql(OjtEntity.Hashtag)}
         `;
-        return list;
+        return Array.from(list.values());
     } catch (error) {
         console.error(error);
         return undefined;

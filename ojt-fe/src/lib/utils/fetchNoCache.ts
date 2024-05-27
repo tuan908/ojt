@@ -7,6 +7,7 @@ interface RequestOptions {
     method: HttpMethod;
     headers: HeadersInit;
     body?: BodyInit | null;
+    cache: "no-store";
 }
 
 /**
@@ -27,6 +28,7 @@ export async function fetchNoCache<T>(
         headers: {
             "Content-Type": "application/json",
         },
+        cache: "no-store",
     };
 
     if (method === "POST") {

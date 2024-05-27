@@ -233,11 +233,16 @@ export default function Page() {
         if (editState.isEditing) {
             const response = await editComment(comment.id!, comment.content!);
             if ("data" in response) {
+                const updatedComments = [...comments];
                 setComments(
                     [
-                        ...comments.filter(x => x.id !== comment.id!),
+                        ...updatedComments.filter(x => x.id !== comment.id!),
                         response.data as CommentDto,
-                    ].toSorted()
+                    ].sort(
+                        (a, b) =>
+                            new Date(a.createdAt).getTime() -
+                            new Date(b.createdAt).getTime()
+                    )
                 );
             }
             setComment(initComment);
@@ -381,7 +386,7 @@ export default function Page() {
                             >
                                 {params.get("mode") !==
                                 OjtScreenMode.NEW.toString()
-                                    ? "DISCARD"
+                                    ? "Update"
                                     : "Add"}
                             </button>
                         ) : null}
@@ -389,7 +394,7 @@ export default function Page() {
                 </div>
                 <Suspense fallback={<>Loading comments...</>}>
                     {params.get("mode") &&
-                    params.get("mode") !== OjtScreenMode.NEW.toString() ? (
+                    params.get("mode") === OjtScreenMode.CHAT.toString() ? (
                         <>
                             <div className="w-1/2 h-full m-auto flex flex-col gap-y-4 relative">
                                 {comments!?.map(comment => {

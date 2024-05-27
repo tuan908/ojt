@@ -20,8 +20,11 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
         e: SyntheticEvent<HTMLTableRowElement>;
         studentCode?: string;
     }) => {
-        e?.preventDefault();
-        router.push(`/student/${studentCode}`, {scroll: true});
+        e?.stopPropagation();
+        const path = `/student/${studentCode}`;
+        startTransition(() => {
+            router.push(path);
+        });
     };
 
     /**
@@ -45,7 +48,7 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
     return (
         <>
             {/* Table */}
-            <div className="w-full px-12">
+            <div className="w-full px-12 overflow-auto">
                 <table className="w-full border border-table border-collapse align-middle">
                     <thead>
                         <tr className="bg-[#3f51b5] text-[#fffffc]">
@@ -59,71 +62,63 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                     </thead>
                     <tbody>
                         <Suspense fallback={<CircularProgress color="info" />}>
-                            {rows
-                                ? rows.map(item => {
-                                      return (
-                                          <TableRow
-                                              key={item.code}
-                                              onDoubleClick={e =>
-                                                  handleRowClick({
-                                                      e,
-                                                      studentCode: item.code,
-                                                  })
-                                              }
-                                          >
-                                              <TableCell alignTextCenter>
-                                                  {item.code}
-                                              </TableCell>
-                                              <TableCell alignTextCenter>
-                                                  {item.name}
-                                              </TableCell>
-                                              <TableCell alignTextCenter>
-                                                  {item.grade}
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                              >
-                                                  {item.events
-                                                      ?.map(x => x.name)
-                                                      .join(", ")}
-                                              </TableCell>
-                                              <TableCell
-                                                  fontSemibold
-                                                  textEllipsis
-                                              >
-                                                  {item.hashtags?.map(
-                                                      (hashtag, index) => (
-                                                          <OjtColorTextHashtag
-                                                              key={`${hashtag.id}#${index}`}
-                                                              color={
-                                                                  hashtag.color
-                                                              }
-                                                              paddingXInRem={
-                                                                  0.25
-                                                              }
-                                                          >
-                                                              {hashtag.name}
-                                                          </OjtColorTextHashtag>
-                                                      )
-                                                  )}
-                                              </TableCell>
-                                              <TableCell
-                                                  alignTextCenter
-                                                  onClick={e =>
-                                                      handleCellClick({
-                                                          e,
-                                                          studentCode:
-                                                              item.code,
-                                                      })
-                                                  }
-                                              >
-                                                  <Analytics className="text-icon-default" />
-                                              </TableCell>
-                                          </TableRow>
-                                      );
-                                  })
-                                : null}
+                            {rows.map(item => {
+                                const eventStrings = item.events
+                                    ?.map(x => x.name)
+                                    .join(", ");
+                                return (
+                                    <TableRow
+                                        key={item.code}
+                                        onMouseDown={e =>
+                                            handleRowClick({
+                                                e,
+                                                studentCode: item.code,
+                                            })
+                                        }
+                                    >
+                                        <TableCell alignTextCenter>
+                                            {item.code}
+                                        </TableCell>
+                                        <TableCell alignTextCenter>
+                                            {item.name}
+                                        </TableCell>
+                                        <TableCell alignTextCenter>
+                                            {item.grade}
+                                        </TableCell>
+                                        <TableCell
+                                            fontSemibold
+                                            textEllipsis
+                                            classes="px-2"
+                                        >
+                                            {eventStrings}
+                                        </TableCell>
+                                        <TableCell fontSemibold textEllipsis>
+                                            {item.hashtags?.map(
+                                                (hashtag, index) => (
+                                                    <OjtColorTextHashtag
+                                                        key={`${hashtag.id}#${index}`}
+                                                        color={hashtag.color}
+                                                        paddingXInRem={0.25}
+                                                    >
+                                                        {hashtag.name}
+                                                    </OjtColorTextHashtag>
+                                                )
+                                            )}
+                                        </TableCell>
+                                        <TableCell
+                                            alignTextCenter
+                                            onMouseDown={e =>
+                                                handleCellClick({
+                                                    e,
+                                                    studentCode: item.code,
+                                                })
+                                            }
+                                        >
+                                            <Analytics className="text-icon-default" />
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
                         </Suspense>
                     </tbody>
                 </table>

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.tuanna.ojt.api.constants.EventStatus;
+import com.tuanna.ojt.api.constants.OjtConstant;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
@@ -146,7 +147,11 @@ public class StudentServiceImpl implements StudentService {
       .toList();
     // @formatter:on
     // var list = this.studentRepository.findAll();
-    PageRequest pageRequest = PageRequest.of(dto.page(), 10, Sort.by(Direction.ASC, "code"));
+    PageRequest pageRequest = PageRequest.of(
+    		dto.page(),
+    		OjtConstant.PAGE_SIZE,
+    		Sort.by(Direction.ASC, OjtConstant.SORT_COLUMN)
+		);
     var result = new PageImpl<StudentEventResponseDto>(list, pageRequest, list.size());
     return result;
   }
@@ -368,21 +373,19 @@ public class StudentServiceImpl implements StudentService {
 
     if (StringUtils.hasText(status)) {
       qlString += " and ed.status in :status ";
-      var converted = Stream.of(status.split(",")).map(x -> {
-        return switch (Integer.valueOf(x)) {
-          case 1:
-            yield EventStatus.UNCONFIRMED;
+      var converted = Stream.of(status.split(",")).map(x -> (switch (Integer.valueOf(x)) {
+        case 1:
+          yield EventStatus.UNCONFIRMED;
 
-          case 2:
-            yield EventStatus.UNDER_REVIEW;
+        case 2:
+          yield EventStatus.UNDER_REVIEW;
 
-          case 3:
-            yield EventStatus.COMPLETED;
+        case 3:
+          yield EventStatus.COMPLETED;
 
-          default:
-            yield new Exception("Invalid event status");
-        };
-      }).collect(Collectors.toList());
+        default:
+          yield new Exception("Invalid event status");
+      })).collect(Collectors.toList());
       parameters.put("status", converted);
     }
 

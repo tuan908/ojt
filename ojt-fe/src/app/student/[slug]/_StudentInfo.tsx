@@ -10,7 +10,7 @@ export default async function StudentInfo(props: StudentInfoProps) {
     }
 
     return (
-        <div className="border-b px-8 py-4 flex gap-x-12">
+        <div className="border-b px-8 py-4 flex gap-y-2 flex-col md:flex-row lg:gap-x-12">
             <span>{props?.info?.name} さん</span>
             <span>{props?.info?.code}</span>
             <span>{props?.info?.grade}</span>

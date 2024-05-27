@@ -148,7 +148,7 @@ export default function SearchArea(props: SearchAreaProps) {
 
     return (
         <>
-            <div className="w-full pl-12 pt-8 flex gap-x-8">
+            <div className="w-full pl-12 pt-8 flex flex-col gap-y-2 md:gap-x-8 md:flex-row">
                 {/* 学生の名前 */}
                 <Input
                     placeholder="学生の名前"
