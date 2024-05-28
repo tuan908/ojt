@@ -7,15 +7,27 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {CircularProgress, InputAdornment, TextField} from "@mui/material";
 import Link from "next/link";
-import {useActionState, useRef, useState, type SyntheticEvent} from "react";
+import {
+    useActionState,
+    useEffect,
+    useRef,
+    useState,
+    type SyntheticEvent,
+} from "react";
 import {login} from "../actions/auth";
 
+const initialState = {
+    error: undefined,
+    username: "",
+    password: "",
+};
+
 export default function Page() {
-    const ref = useRef<HTMLFormElement>(null);
+    const formRef = useRef<HTMLFormElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
     // Use new hook useActionState - from React version 19.x
-    const [state, formAction, isPending] = useActionState(login, {
-        error: undefined,
-    });
+    const [state, formAction, isPending] = useActionState(login, initialState);
     const [inputState, setState] = useState<{
         type: "password" | "text";
         show: boolean;
@@ -30,6 +42,12 @@ export default function Page() {
         }));
     }
 
+    useEffect(() => {
+        if (state.error && inputRef.current) {
+            inputRef.current?.focus();
+        }
+    }, [state.error, inputRef.current]);
+
     return (
         <div
             className="w-full h-full max-w-dvw min-h-dvh flex items-center justify-center bg-cover"
@@ -37,17 +55,18 @@ export default function Page() {
                 backgroundImage: "url('/login-background.jpg')",
             }}
         >
-            <div className="flex flex-col w-4/5 lg:w-1/4 h-full bg-white rounded-lg shadow-lg">
+            <div className="flex flex-col w-4/5 lg:w-1/5 h-full bg-white rounded-lg shadow-lg">
                 <h1 className="text-3xl text-center pt-8 md:pt-20">ログイン</h1>
                 <form
                     action={formAction}
-                    className="w-10/12 md:w-3/5 m-auto bg-white flex flex-col gap-y-4 py-4 md:py-12"
+                    className="w-10/12 md:w-4/5 m-auto bg-white flex flex-col gap-y-4 py-4 md:py-12"
+                    ref={formRef}
                 >
                     <TextField
                         variant="standard"
                         name="username"
                         placeholder="ユーザーネーム"
-                        inputRef={ref}
+                        inputRef={inputRef}
                         className="w-full"
                         InputProps={{
                             startAdornment: (
@@ -58,6 +77,7 @@ export default function Page() {
                         }}
                         autoComplete="off"
                         disabled={isPending}
+                        defaultValue={state.username}
                     />
 
                     <TextField
@@ -88,6 +108,7 @@ export default function Page() {
                         }}
                         autoComplete="off"
                         disabled={isPending}
+                        defaultValue={state.password}
                     />
 
                     <div className="w-full h-full flex items-center justify-center py-2">
@@ -122,7 +143,7 @@ export default function Page() {
                         パスワードを忘れた？
                     </Link>
                     {state.error ? (
-                        <span className="text-red-500 m-auto text-[0.875rem] leading-none">
+                        <span className="text-red-500 m-auto text-[0.875rem] leading-none md:whitespace-nowrap">
                             {state.error}
                         </span>
                     ) : null}

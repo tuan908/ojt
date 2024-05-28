@@ -32,23 +32,25 @@ export type LoginState = {
  * @param _ ???
  * @param formData FormData
  */
-export async function login(
-    _: any,
-    formData: FormData
-): Promise<{error?: string}> {
+export async function login(_: any, formData: FormData) {
+    const data = Object.fromEntries(formData);
+    const {username, password} = data;
+
     const schema = z.object({
         username: z.string().min(1),
         password: z.string().min(1),
     });
 
     const parse = schema.safeParse({
-        username: formData.get("username"),
-        password: formData.get("password"),
+        username,
+        password,
     });
 
     if (!parse.success) {
         return {
             error: process.env["MISSING_REQUIRED_FIELDS"],
+            username,
+            password,
         };
     }
 
@@ -58,6 +60,8 @@ export async function login(
     if (!user) {
         return {
             error: process.env["WRONG_USER_NAME_OR_PASSWORD"],
+            username,
+            password,
         };
     }
     const token = await generateJWT(user);

@@ -42,6 +42,7 @@ export async function fetchNoCache<T>(
         const responseJson = (await response.json()) as T;
         return nullsToUndefined(responseJson);
     } catch (error: any) {
-        throw new Error(error?.message);
+        console.log(error?.message);
+        return undefined
     }
 }

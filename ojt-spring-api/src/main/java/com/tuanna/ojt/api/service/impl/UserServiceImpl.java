@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 	public LoginResponseDto login(LoginDto loginDto) {
 		var sb = new StringBuilder();
 		var user = this.userRepository.findByUsername(loginDto.username()).orElse(null);
-		if (user != null) {
+		if (user != null && passwordEncoder.matches(loginDto.password(), user.getPassword())) {
 			sb.setLength(0);
 
 			sb.append("""
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 			query.setParameter("id", user.getId());
 			var student = query.getResultStream().findFirst().orElse(null);
 
-			if (student != null && passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+			if (student != null) {
 				// @formatter:off
 		        var userDto = new LoginResponseDto(
 					  user.getId(),

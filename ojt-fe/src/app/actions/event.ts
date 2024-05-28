@@ -2,7 +2,6 @@
 
 import {verifyJwtToken} from "@/lib/auth";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {ErrorResponseDto, OjtStatusCode} from "@/types";
 import {type EventDto} from "@/types/event.types";
 import {type EventDetailDto} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
@@ -91,28 +90,17 @@ export async function getEventDetails() {
     return response;
 }
 
-export async function editComment(
-    id: number,
-    content: string
-): Promise<{data: unknown} | ErrorResponseDto> {
-    try {
-        const result = await fetchNoCache<{data: unknown} | ErrorResponseDto>(
-            "/student/event/comments/p",
-            "POST",
-            {
-                id,
-                content,
-            }
-        );
-        revalidatePath("/event");
-        return result;
-    } catch (error) {
-        return {
-            message: "Internal Server Error",
-            type: "InternalServerError",
-            code: OjtStatusCode.InternalServerError,
-        };
-    }
+export async function editComment(id: number, content: string) {
+    const result = await fetchNoCache<{data?: unknown}>(
+        "/student/event/comments/p",
+        "POST",
+        {
+            id,
+            content,
+        }
+    );
+    revalidatePath("/event");
+    return result;
 }
 
 export async function getVerifiedToken() {

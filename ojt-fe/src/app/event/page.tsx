@@ -16,14 +16,14 @@ import {
     OjtUserRole,
 } from "@/constants";
 
-import {getEventDetailById} from "@/app/actions/event";
+import { getEventDetailById } from "@/app/actions/event";
 import OjtComment from "@/components/OjtComment";
 import Textarea from "@/components/Textarea";
-import {useAuth} from "@/lib/hooks/useAuth";
-import {useAppDispatch} from "@/lib/redux/hooks";
-import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
-import {type EventDto} from "@/types/event.types";
-import {type HashtagDto} from "@/types/student.types";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { hideLoading, showLoading } from "@/lib/redux/slice/loading.slice";
+import { type EventDto } from "@/types/event.types";
+import { type HashtagDto } from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -35,9 +35,9 @@ import Autocomplete, {
 } from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
-import Select, {type SelectProps} from "@mui/material/Select";
+import Select, { type SelectProps } from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import {useRouter, useSearchParams} from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
     Fragment,
     Suspense,
@@ -46,7 +46,7 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import {getHashtags} from "../actions/common";
+import { getHashtags } from "../actions/common";
 
 const initComment = {
     id: -1,
@@ -232,17 +232,12 @@ export default function Page() {
         event?.preventDefault();
         if (editState.isEditing) {
             const response = await editComment(comment.id!, comment.content!);
-            if ("data" in response) {
-                const updatedComments = [...comments];
-                setComments(
+            if (response) {
+                setComments( prev =>
                     [
-                        ...updatedComments.filter(x => x.id !== comment.id!),
+                        ...prev.filter(x => x.id !== comment.id!),
                         response.data as CommentDto,
-                    ].sort(
-                        (a, b) =>
-                            new Date(a.createdAt).getTime() -
-                            new Date(b.createdAt).getTime()
-                    )
+                    ]
                 );
             }
             setComment(initComment);

@@ -155,18 +155,10 @@ public class StudentController {
   @PostMapping("/event/comments/p")
   public ResponseEntity<?> editComment(@RequestBody CommentDto commentDto) {
 	  var result = this.commentService.update(commentDto);
-	  if(result == null) {
-		  var responseBody = new ErrorResponseDto();
-		  responseBody.setType(OjtResponseType.ERROR.getValue());
-		  responseBody.setCode(OjtResponseCode.ERROR.getValue());
-		  responseBody.setMessage("Failed to update");
-		  return ResponseEntity.ok(responseBody);		  
-	  } else 
-	  {
-		  var map = new HashMap<String, Object>();
-		  map.put("data", result);
-		  return ResponseEntity.ok(map);
-	  }
+	  var map = new HashMap<String, Object>();
+	  map.put("data", result);
+	  return ResponseEntity.ok(map);
+	  
   }
 
 }

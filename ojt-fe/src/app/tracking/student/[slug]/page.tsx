@@ -4,9 +4,8 @@ import OjtCard from "@/components/Card";
 import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";
 import dynamic from "next/dynamic";
-const DoughnutChart = dynamic(() => import("@/components/Chart/Doughnut"))
-const StackedBarChart = dynamic(() => import("@/components/Chart/Stacked"))
-
+const DoughnutChart = dynamic(() => import("@/components/Chart/Doughnut"));
+const StackedBarChart = dynamic(() => import("@/components/Chart/Stacked"));
 
 export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
