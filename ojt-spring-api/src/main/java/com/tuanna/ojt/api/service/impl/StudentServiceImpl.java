@@ -7,18 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.tuanna.ojt.api.constants.EventStatus;
-import com.tuanna.ojt.api.constants.OjtConstant;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
@@ -63,7 +57,7 @@ public class StudentServiceImpl implements StudentService {
   };
 
   @Override
-  public Page<StudentEventResponseDto> getEventList(StudentEventRequestDto dto) {
+  public List<StudentEventResponseDto> getEventList(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
     var sb = new StringBuilder();
     sb.append("""
@@ -147,13 +141,7 @@ public class StudentServiceImpl implements StudentService {
       .toList();
     // @formatter:on
     // var list = this.studentRepository.findAll();
-    PageRequest pageRequest = PageRequest.of(
-    		dto.page(),
-    		OjtConstant.PAGE_SIZE,
-    		Sort.by(Direction.ASC, OjtConstant.SORT_COLUMN)
-		);
-    var result = new PageImpl<StudentEventResponseDto>(list, pageRequest, list.size());
-    return result;
+    return list;
   }
 
   @Override

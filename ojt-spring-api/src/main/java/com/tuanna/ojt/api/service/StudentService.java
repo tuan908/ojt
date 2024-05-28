@@ -1,7 +1,6 @@
 package com.tuanna.ojt.api.service;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 
 import com.tuanna.ojt.api.dto.EventDetailDto;
@@ -13,7 +12,7 @@ import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 
 public interface StudentService {
 
-  Page<StudentEventResponseDto> getEventList(StudentEventRequestDto dto);
+  List<StudentEventResponseDto> getEventList(StudentEventRequestDto dto);
 
   StudentEventResponseDto getEventsByStudentCode(String code);
 

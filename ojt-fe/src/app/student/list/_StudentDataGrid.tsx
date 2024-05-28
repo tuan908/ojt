@@ -62,7 +62,7 @@ export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
                     </thead>
                     <tbody>
                         <Suspense fallback={<CircularProgress color="info" />}>
-                            {rows.map(item => {
+                            {rows!?.map(item => {
                                 const eventStrings = item.events
                                     ?.map(x => x.name)
                                     .join(", ");

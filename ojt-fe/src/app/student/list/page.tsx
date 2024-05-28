@@ -14,7 +14,7 @@ export default async function Page() {
     return (
         <PageWrapper gapY>
             <SearchArea
-                rows={students.content}
+                rows={students!?.content}
                 grades={grades}
                 events={events}
                 hashtags={hashtags}
