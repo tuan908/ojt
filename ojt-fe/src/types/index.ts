@@ -1,7 +1,7 @@
 /**
- * ServerActionResponseDto
+ * ServerActionResponse
  */
-export type ServerActionResponseDto = {
+export type ServerActionResponse = {
     data: unknown;
     errors?: Array<{path: unknown; message: string}>;
 };
@@ -14,9 +14,9 @@ export type Nullable<T> = {
 };
 
 /**
- * ErrorResponseDto
+ * ErrorResponse
  */
-export type ErrorResponseDto = {
+export type ErrorResponse = {
     message: string;
     type: string;
     code: number;

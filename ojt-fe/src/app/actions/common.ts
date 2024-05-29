@@ -1,55 +1,42 @@
 "use server";
 
-import {OjtEntity} from "@/constants";
-import {sql} from "@/lib/db";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import type {EventDetailDto, HashtagDto} from "@/types/student.types";
 
-export type GradeDto = {id: number; name: string};
+type Grade = {
+    id: number;
+    name: string;
+};
+
+type StudentEvent = {
+    id: number;
+    name: string;
+};
+
+type Hashtag = {
+    id: number;
+    name: string;
+    color: string;
+};
+
+const get = async <T>(path: string) => await fetchNoCache<T[]>(path);
 
 /**
  * Get Grade List
  * @returns Grade List
  */
-export async function getGrades() {
-    try {
-        const list = await sql<GradeDto[]>`
-            select
-              ${sql("id", "name")}
-            from
-               ${sql(OjtEntity.Grade)}
-        `;
-        return Array.from(list);
-    } catch (error) {
-        console.error(error);
-        return undefined;
-    }
-}
+const getGrades = async () => await get<Grade>("/common/grades");
 
 /**
  * Get current event
  * @returns Event List
  */
-export async function getEvents() {
-    const data = await fetchNoCache<EventDetailDto[]>("/event-detail");
-    return data;
-}
+const getEvents = async () => await get<StudentEvent>("/common/events");
 
 /**
  * Get hashtag list
  * @returns Hashtag list
  */
-export async function getHashtags() {
-    try {
-        const list = await sql<HashtagDto[]>`
-            select
-                ${sql("id", "name", "color")}
-            from
-                ${sql(OjtEntity.Hashtag)}
-        `;
-        return Array.from(list.values());
-    } catch (error) {
-        console.error(error);
-        return undefined;
-    }
-}
+const getHashtags = async () => await get<Hashtag>("/common/hashtags");
+
+export {getEvents, getGrades, getHashtags};
+export type {StudentEvent, Grade, Hashtag};

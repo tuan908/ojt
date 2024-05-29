@@ -3,10 +3,9 @@
 import {OjtEventStatus} from "@/constants";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import type {
-    EventDetailDto,
-    Page,
-    StudentListRequestDto,
-    StudentResponseDto,
+    EventDetail,
+    StudentsRequest,
+    StudentResponse,
 } from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 
@@ -15,12 +14,12 @@ import {revalidatePath} from "next/cache";
  * @param dto Request Dto
  * @returns Student List
  */
-export async function getStudents(dto?: StudentListRequestDto) {
+export async function getStudents(dto?: StudentsRequest) {
     // Use raw dto instead of JSON.stringify(dto) - dto already parse
     // to JSON string in fetchNoCache
     const body = !!dto ? dto : {};
 
-    const data = await fetchNoCache<Page<StudentResponseDto>>(
+    const data = await fetchNoCache<StudentResponse[]>(
         "/student",
         "POST",
         body
@@ -34,7 +33,7 @@ export async function getStudents(dto?: StudentListRequestDto) {
  * @returns Student Response
  */
 export async function getStudentByCode(studentCode: string) {
-    const data = await fetchNoCache<StudentResponseDto>(
+    const data = await fetchNoCache<StudentResponse>(
         `/student/${studentCode}`
     );
     return data;
@@ -82,23 +81,25 @@ export const getEventsByStudentCodeWithQuery = async (
         status?: OjtEventStatus[];
     }
 ) => {
-    let q = [];
+    let queryParams = [];
     let url = `/student/${code}/q?`;
 
     if (arg.grade && arg.grade !== "School Year") {
-        q.push(`grade=${arg.grade}`);
+        queryParams.push(`grade=${arg.grade}`);
     }
 
     if (arg.eventName && arg.eventName !== "Event") {
-        q.push(`event_name=${arg.eventName}`);
+        queryParams.push(`event_name=${arg.eventName}`);
     }
 
     if (arg.status) {
-        q.push(`status=${arg.status.map(x => x.toString()).join(",")}`);
+        queryParams.push(
+            `status=${arg.status.map(x => x.toString()).join(",")}`
+        );
     }
 
-    url += q.join("&");
+    url += queryParams.join("&");
 
-    const data = await fetchNoCache<EventDetailDto[]>(url, "GET");
+    const data = await fetchNoCache<EventDetail[]>(url, "GET");
     return data;
 };

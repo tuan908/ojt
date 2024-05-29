@@ -8,9 +8,9 @@ import {redirect} from "next/navigation";
 import {z} from "zod";
 
 /**
- * Account Data
+ * UserInfo
  */
-export type AccountDto = {
+export type UserInfo = {
     id: number;
     name: string;
     username: string;
@@ -24,7 +24,7 @@ export type AccountDto = {
  */
 export type LoginState = {
     message: string;
-    user: AccountDto | null;
+    user: UserInfo | null;
 };
 
 /**
@@ -56,7 +56,7 @@ export async function login(_: any, formData: FormData) {
 
     const request = parse.data;
 
-    const user = await fetchNoCache<AccountDto>("/auth/login", "POST", request);
+    const user = await fetchNoCache<UserInfo>("/auth/login", "POST", request);
     if (!user) {
         return {
             error: process.env["WRONG_USER_NAME_OR_PASSWORD"],

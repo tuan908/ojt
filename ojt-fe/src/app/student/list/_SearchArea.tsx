@@ -1,16 +1,15 @@
 "use client";
 
-import {type GradeDto} from "@/app/actions/common";
+import type {Grade, StudentEvent} from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
 import OjtColorHashtag from "@/components/ColorHashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
 import {useAppDispatch} from "@/lib/redux/hooks";
 import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
 import type {
-    EventDetailDto,
-    HashtagDto,
-    StudentListRequestDto,
-    StudentResponseDto,
+    Hashtag,
+    StudentsRequest,
+    StudentResponse,
 } from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
@@ -27,10 +26,10 @@ import {SyntheticEvent, useEffect, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type SearchAreaProps = {
-    rows: StudentResponseDto[];
-    grades?: GradeDto[];
-    hashtags?: HashtagDto[];
-    events?: EventDetailDto[];
+    rows: StudentResponse[];
+    grades?: Grade[];
+    hashtags?: Hashtag[];
+    events?: StudentEvent[];
 };
 
 export default function SearchArea(props: SearchAreaProps) {
@@ -39,9 +38,9 @@ export default function SearchArea(props: SearchAreaProps) {
     const [skills, setSkills] = useState<Array<{label: string; color: string}>>(
         []
     );
-    const [inputValue, setInputValue] = useState("");
-    const [rows, setRows] = useState<StudentResponseDto[]>(props.rows);
-    const [searchCondition, setCondition] = useState<StudentListRequestDto>({});
+    const [inputValue, setInputValue] = useState(STRING_EMPTY);
+    const [rows, setRows] = useState<StudentResponse[]>(props.rows);
+    const [searchCondition, setCondition] = useState<StudentsRequest>({});
 
     function handleInputChange(
         event: SyntheticEvent,
@@ -118,7 +117,7 @@ export default function SearchArea(props: SearchAreaProps) {
         event?.preventDefault();
         await dispatch(showLoading());
         try {
-            let request: StudentListRequestDto = {};
+            let request: StudentsRequest = {};
             if (searchCondition.grade !== "クラス名") {
                 request.grade = searchCondition.grade;
             }
@@ -127,14 +126,14 @@ export default function SearchArea(props: SearchAreaProps) {
                 request.events = searchCondition.events;
             }
 
-            const searchDto = {
+            const searchParams = {
                 ...request,
                 hashtags: searchCondition.hashtags,
                 name: searchCondition.name,
             };
 
-            const students = await getStudents(searchDto);
-            setRows(students?.content!);
+            const students = await getStudents(searchParams);
+            setRows(students!);
         } catch (error: any) {
             throw new Error(error?.message);
         }

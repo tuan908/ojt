@@ -2,8 +2,7 @@
 
 import {verifyJwtToken} from "@/lib/auth";
 import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {type EventDto} from "@/types/event.types";
-import {type EventDetailDto} from "@/types/student.types";
+import {type EventDetail} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
@@ -25,13 +24,13 @@ const registerEventSchema = z.object({
 /**
  * RegisterEventDto
  */
-export type RegisterEventDto = z.infer<typeof registerEventSchema>;
+export type RegisterEvent = z.infer<typeof registerEventSchema>;
 
 /**
  * Register Event
  * @param dto Register Event Dto
  */
-export async function registerEvent(dto: RegisterEventDto) {
+export async function registerEvent(dto: RegisterEvent) {
     const result = await registerEventSchema.safeParseAsync(dto);
 
     if (!result.success) {
@@ -50,9 +49,9 @@ const commentSchema = z.object({
     content: z.string().optional(),
 });
 
-export type AddCommentDto = z.infer<typeof commentSchema>;
+export type AddCommentPayload = z.infer<typeof commentSchema>;
 
-export type CommentDto = AddCommentDto & {
+export type Comment = AddCommentPayload & {
     id: number;
     name: string;
     roleName: string;
@@ -60,8 +59,8 @@ export type CommentDto = AddCommentDto & {
     isDeleted: boolean;
 };
 
-export async function addComment(dto: AddCommentDto) {
-    const data = await fetchNoCache<CommentDto[]>(
+export async function addComment(dto: AddCommentPayload) {
+    const data = await fetchNoCache<Comment[]>(
         `/student/event/comments`,
         "POST",
         dto
@@ -70,24 +69,19 @@ export async function addComment(dto: AddCommentDto) {
 }
 
 export async function getEventDetailById(id: number) {
-    const response = await fetchNoCache<EventDetailDto>(`/student/event/${id}`);
+    const response = await fetchNoCache<EventDetail>(`/student/event/${id}`);
     return response;
 }
 
 export async function deleteEventDetailById(
     code: string,
     id: number
-): Promise<EventDetailDto[] | undefined> {
-    const res = await fetchNoCache<EventDetailDto[]>(
+): Promise<EventDetail[] | undefined> {
+    const res = await fetchNoCache<EventDetail[]>(
         `/student/${code}/event/${id}`,
         "DELETE"
     );
     return res;
-}
-
-export async function getEventDetails() {
-    const response = await fetchNoCache<EventDto[]>(`/event-detail`);
-    return response;
 }
 
 export async function editComment(id: number, content: string) {

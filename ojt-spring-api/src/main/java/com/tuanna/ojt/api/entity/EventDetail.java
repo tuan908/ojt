@@ -62,14 +62,14 @@ public class EventDetail extends BaseEntity {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private EventData data;
+  private Data data;
 
   @Getter
   @Setter
   @AllArgsConstructor
   @NoArgsConstructor
   @Builder
-  public static class EventData implements Serializable {
+  public static class Data implements Serializable {
 	private static final long serialVersionUID = 6365386061637591425L;
 	private String eventName;
     private String eventsInSchoolLife;

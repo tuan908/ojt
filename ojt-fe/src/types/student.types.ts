@@ -1,11 +1,12 @@
-import type {CommentDto} from "@/app/actions/event";
+import type {Hashtag} from "@/app/actions/common";
+import type {Comment} from "@/app/actions/event";
 
-type EventDetailDto = Array<{
+type EventDetail = {
     id: number;
     name: string;
     grade: string;
     status: number;
-    comments: CommentDto[];
+    comments: Comment[];
     data: Partial<{
         eventsInSchoolLife: string;
         myAction: string;
@@ -13,65 +14,27 @@ type EventDetailDto = Array<{
         shownPower: string;
         strengthGrown: string;
     }>;
-}>[number];
+};
 
-type HashtagDto = Array<{
-    id: number;
-    name: string;
-    color: string;
-}>[number];
-
-type StudentResponseDto = Partial<{
+type StudentsResponse = Partial<{
     id: number;
     code: string;
     name: string;
     grade: string;
-    events: EventDetailDto[];
-    hashtags: HashtagDto[];
+    events: EventDetail[];
+    hashtags: Hashtag[];
 }>;
 
-type StudentListRequestDto = Partial<{
+type StudentsRequest = Partial<{
     name: string;
     grade: string;
     events: string;
     hashtags: string[];
 }>;
 
-interface Pageable {
-    pageNumber: number;
-    pageSize: number;
-    sort: {
-        empty: boolean;
-        sorted: boolean;
-        unsorted: boolean;
-    };
-    offset: number;
-    paged: boolean;
-    unpaged: boolean;
-}
-
-interface Page<T> {
-    content: T[];
-    pageable: Pageable;
-    last: boolean;
-    totalElements: number;
-    totalPages: number;
-    size: number;
-    number: number;
-    sort: {
-        empty: boolean;
-        sorted: boolean;
-        unsorted: boolean;
-    };
-    first: boolean;
-    numberOfElements: number;
-    empty: boolean;
-}
-
 export type {
-    EventDetailDto,
-    HashtagDto,
-    Page,
-    StudentListRequestDto,
-    StudentResponseDto,
+    EventDetail,
+    Hashtag,
+    StudentsRequest,
+    StudentsResponse as StudentResponse,
 };

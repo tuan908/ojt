@@ -1,8 +1,8 @@
 import {type PayloadAction} from "@reduxjs/toolkit";
 import {createAppSlice} from "../base.slice";
-import {type AccountDto} from "@/app/actions/auth";
+import {type UserInfo} from "@/app/actions/auth";
 
-const initialState: {user?: Omit<AccountDto, "password">} = {};
+const initialState: {user?: Omit<UserInfo, "password">} = {};
 
 export const authSlice = createAppSlice({
     name: "AUTH",
@@ -11,7 +11,7 @@ export const authSlice = createAppSlice({
         setUser: create.reducer(
             (
                 state,
-                action: PayloadAction<Omit<AccountDto, "password"> | undefined>
+                action: PayloadAction<Omit<UserInfo, "password"> | undefined>
             ) => {
                 state.user = action.payload;
             }

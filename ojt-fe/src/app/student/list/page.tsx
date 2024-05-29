@@ -4,7 +4,7 @@ import PageWrapper from "@/components/PageWrapper";
 import SearchArea from "./_SearchArea";
 
 export default async function Page() {
-    const [grades, events, hashtags, students] = await Promise.all([
+    const [grades, events, hashtags, rows] = await Promise.all([
         getGrades(),
         getEvents(),
         getHashtags(),
@@ -14,10 +14,10 @@ export default async function Page() {
     return (
         <PageWrapper gapY>
             <SearchArea
-                rows={students!?.content}
-                grades={grades}
-                events={events}
-                hashtags={hashtags}
+                rows={rows!}
+                grades={grades!}
+                events={events!}
+                hashtags={hashtags!}
             />
         </PageWrapper>
     );

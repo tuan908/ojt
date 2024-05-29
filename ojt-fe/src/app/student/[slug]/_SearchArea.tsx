@@ -1,24 +1,23 @@
 "use client";
 
-import {GradeDto} from "@/app/actions/common";
+import type {StudentEvent, Grade} from "@/app/actions/common";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import {OjtCheckbox} from "@/components/Checkbox";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, OjtEventStatus} from "@/constants";
-import {type EventDto} from "@/types/event.types";
-import {StudentResponseDto} from "@/types/student.types";
+import type {StudentResponse} from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
 import {useState, type ChangeEventHandler, type ReactNode} from "react";
-import {EventGrid} from "./_EventGrid";
+import EventGrid from "./_EventGrid";
 import type {SxProps, Theme, MenuProps} from "@mui/material";
 
 type SearchAreaProps = {
     params: {slug: string};
-    grades?: GradeDto[];
-    events?: EventDto[];
-    data: StudentResponseDto;
+    grades?: Grade[];
+    events?: StudentEvent[];
+    data: StudentResponse;
 };
 
 type MuiSelectChangeHandler = (
@@ -56,7 +55,7 @@ const sx: SxProps<Theme> = {
 
 export default function SearchArea(props: SearchAreaProps) {
     const router = useRouter();
-    const [data, setData] = useState<StudentResponseDto | undefined>(
+    const [data, setData] = useState<StudentResponse | undefined>(
         props.data
     );
     const [check, setCheck] = useState<CheckboxState>({

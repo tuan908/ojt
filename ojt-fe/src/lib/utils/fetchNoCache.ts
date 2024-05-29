@@ -43,6 +43,6 @@ export async function fetchNoCache<T>(
         return nullsToUndefined(responseJson);
     } catch (error: any) {
         console.log(error?.message);
-        return undefined
+        return undefined;
     }
 }

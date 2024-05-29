@@ -4,13 +4,13 @@ import OjtColorTextHashtag from "@/components/ColorTextHashtag";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
-import type {StudentResponseDto} from "@/types/student.types";
+import type {StudentResponse} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
 import {Suspense, startTransition, type SyntheticEvent} from "react";
 
-export default function StudentDataGrid({rows}: {rows: StudentResponseDto[]}) {
+export default function StudentDataGrid({rows}: {rows: StudentResponse[]}) {
     const router = useRouter();
 
     const handleRowClick = ({

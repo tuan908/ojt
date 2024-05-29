@@ -3,11 +3,10 @@
 import {
     addComment,
     editComment,
-    getEventDetails,
     registerEvent,
-    type AddCommentDto,
-    type CommentDto,
-    type RegisterEventDto,
+    type AddCommentPayload,
+    type Comment,
+    type RegisterEvent,
 } from "@/app/actions/event";
 import {
     ITEM_HEIGHT,
@@ -16,14 +15,13 @@ import {
     OjtUserRole,
 } from "@/constants";
 
-import { getEventDetailById } from "@/app/actions/event";
+import {getEventDetailById} from "@/app/actions/event";
 import OjtComment from "@/components/OjtComment";
 import Textarea from "@/components/Textarea";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useAppDispatch } from "@/lib/redux/hooks";
-import { hideLoading, showLoading } from "@/lib/redux/slice/loading.slice";
-import { type EventDto } from "@/types/event.types";
-import { type HashtagDto } from "@/types/student.types";
+import {useAuth} from "@/lib/hooks/useAuth";
+import {useAppDispatch} from "@/lib/redux/hooks";
+import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
+import {type Hashtag} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -35,9 +33,9 @@ import Autocomplete, {
 } from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import MenuItem from "@mui/material/MenuItem";
-import Select, { type SelectProps } from "@mui/material/Select";
+import Select, {type SelectProps} from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
-import { useRouter, useSearchParams } from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {
     Fragment,
     Suspense,
@@ -46,7 +44,7 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import { getHashtags } from "../actions/common";
+import {type StudentEvent, getEvents, getHashtags} from "../actions/common";
 
 const initComment = {
     id: -1,
@@ -63,16 +61,16 @@ const initEditState = {
 export default function Page() {
     const appDispatch = useAppDispatch();
     const router = useRouter();
-    const [comments, setComments] = useState<CommentDto[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const {auth} = useAuth();
     const params = useSearchParams();
-    const [registerData, setData] = useState<RegisterEventDto["data"]>();
+    const [registerData, setData] = useState<RegisterEvent["data"]>();
     const [error, setError] = useState(false);
-    const [eventOptions, setEventOptions] = useState<EventDto[]>([]);
+    const [eventOptions, setEventOptions] = useState<StudentEvent[]>([]);
     const [isDisable, setDisable] = useState(false);
-    const [hashtags, setHashtags] = useState<HashtagDto[]>([]);
+    const [hashtags, setHashtags] = useState<Hashtag[]>([]);
     const [openPicker, setOpen] = useState(false);
-    const [comment, setComment] = useState<AddCommentDto>(initComment);
+    const [comment, setComment] = useState<AddCommentPayload>(initComment);
     const [openSuggest, setOpenSuggest] = useState(false);
     const [editState, setEditState] =
         useState<typeof initEditState>(initEditState);
@@ -83,7 +81,7 @@ export default function Page() {
         const [eventDetailsPromise, eventOptionsPromise, hashtagsPromise] =
             await Promise.allSettled([
                 getEventDetailById(id),
-                getEventDetails(),
+                getEvents(),
                 getHashtags(),
             ]);
 
@@ -233,20 +231,19 @@ export default function Page() {
         if (editState.isEditing) {
             const response = await editComment(comment.id!, comment.content!);
             if (response) {
-                setComments( prev =>
+                setComments(prev =>
                     [
                         ...prev.filter(x => x.id !== comment.id!),
-                        response.data as CommentDto,
-                    ]
+                        response.data as Comment,
+                    ].sort((a, b) => a.id - b.id)
                 );
             }
             setComment(initComment);
             setEditState(initEditState);
         } else {
-            setOpenSuggest(false);
             if (auth && auth.username) {
                 await appDispatch(showLoading());
-                let data: AddCommentDto = {
+                let data: AddCommentPayload = {
                     ...comment,
                     eventDetailId: Number(params.get("id")),
                     username: auth.username,
@@ -263,6 +260,7 @@ export default function Page() {
                     });
             }
         }
+        setOpenSuggest(false);
     }
 
     function handleSelect(emoji: any) {

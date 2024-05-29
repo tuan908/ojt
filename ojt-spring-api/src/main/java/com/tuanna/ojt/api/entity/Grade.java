@@ -1,5 +1,6 @@
 package com.tuanna.ojt.api.entity;
 
+import com.tuanna.ojt.api.dto.GradeDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,5 +39,9 @@ public class Grade extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")
     private java.util.Set<EventDetail> events;
+    
+    public GradeDto toDto() {
+      return new GradeDto(this.id, this.name);
+    }
     
 }

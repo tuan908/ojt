@@ -1,8 +1,9 @@
-import {getGrades} from "@/app/actions/common";
-import {getEventDetails, getVerifiedToken} from "@/app/actions/event";
+import {getEvents, getGrades} from "@/app/actions/common";
+import {getVerifiedToken} from "@/app/actions/event";
 import {getStudentByCode} from "@/app/actions/student";
 import PageWrapper from "@/components/PageWrapper";
 import {type DynamicPageProps} from "@/types";
+import {CircularProgress} from "@mui/material";
 import {Suspense} from "react";
 import Header from "./_Header";
 import SearchArea from "./_SearchArea";
@@ -12,7 +13,7 @@ export default async function Page(props: DynamicPageProps) {
     const [auth, grades, events, studentInfo] = await Promise.all([
         getVerifiedToken(),
         getGrades(),
-        getEventDetails(),
+        getEvents(),
         getStudentByCode(props.params.slug),
     ]);
 
@@ -29,12 +30,18 @@ export default async function Page(props: DynamicPageProps) {
                 </Suspense>
 
                 {/* ?? */}
-                <Suspense fallback={<>Loading search area...</>}>
+                <Suspense
+                    fallback={
+                        <div className="w-full h-full flex items-center justify-center">
+                            <CircularProgress color="success" />
+                        </div>
+                    }
+                >
                     <SearchArea
                         params={props.params}
                         grades={grades}
                         events={events}
-                        data={studentInfo}
+                        data={studentInfo!}
                     />
                 </Suspense>
             </PageWrapper>

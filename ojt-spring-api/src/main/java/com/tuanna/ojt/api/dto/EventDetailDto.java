@@ -14,6 +14,6 @@ import com.tuanna.ojt.api.entity.EventDetail;
  * @param comments Event's comments
  */
 public record EventDetailDto(Long id, String grade, String name, Integer status,
-    EventDetail.EventData data, List<CommentDto> comments) {
+    EventDetail.Data data, List<CommentDto> comments) {
 
 }

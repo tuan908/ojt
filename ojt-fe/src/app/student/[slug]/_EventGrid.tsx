@@ -14,7 +14,7 @@ import {useAuth} from "@/lib/hooks/useAuth";
 import {useAppDispatch} from "@/lib/redux/hooks";
 import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
 import {cn} from "@/lib/utils";
-import {type StudentResponseDto} from "@/types/student.types";
+import {type StudentResponse} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -82,18 +82,18 @@ const reducer = createReducer(initialState, builder => {
         });
 });
 
-export function EventGrid({
+export default function EventGrid({
     data,
     studentId,
     code,
 }: {
-    data: StudentResponseDto["events"];
+    data: StudentResponse["events"];
     studentId?: number;
     code: string;
 }) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [rows, setRows] = useState<StudentResponseDto["events"]>(data);
+    const [rows, setRows] = useState<StudentResponse["events"]>(data);
     const appDispatch = useAppDispatch();
 
     useEffect(() => setRows(data), [data]);

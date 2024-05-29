@@ -23,12 +23,12 @@ import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.entity.EventDetail;
-import com.tuanna.ojt.api.entity.EventDetail.EventData;
+import com.tuanna.ojt.api.entity.EventDetail.Data;
+import com.tuanna.ojt.api.entity.Hashtag;
 import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.repository.EventDetailRepository;
-import com.tuanna.ojt.api.repository.EventRepository;
-import com.tuanna.ojt.api.repository.GradeRepository;
 import com.tuanna.ojt.api.repository.StudentRepository;
+import com.tuanna.ojt.api.service.CommonService;
 import com.tuanna.ojt.api.service.StudentService;
 import jakarta.persistence.EntityManager;
 
@@ -38,20 +38,17 @@ public class StudentServiceImpl implements StudentService {
 
   private final EntityManager entityManager;
 
-  private final GradeRepository gradeRepository;
-
-  private final EventRepository eventRepository;
-
   private final StudentRepository studentRepository;
 
   private final EventDetailRepository eventDetailRepository;
 
-  public StudentServiceImpl(JpaContext jpaContext, GradeRepository gradeRepository,
-      EventRepository eventRepository, StudentRepository studentRepository,
-      EventDetailRepository eventDetailRepository) {
+  private final CommonService commonService;
+
+  public StudentServiceImpl(final JpaContext jpaContext, final CommonService commonService,
+      final StudentRepository studentRepository,
+      final EventDetailRepository eventDetailRepository) {
     this.entityManager = jpaContext.getEntityManagerByManagedType(Student.class);
-    this.gradeRepository = gradeRepository;
-    this.eventRepository = eventRepository;
+    this.commonService = commonService;
     this.studentRepository = studentRepository;
     this.eventDetailRepository = eventDetailRepository;
   };
@@ -82,7 +79,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     if (StringUtils.hasText(dto.event())) {
-    	sb.append(" and element(s.events) in :eventName ");
+      sb.append(" and element(s.events) in :eventName ");
       parameters.put("eventName", dto.event());
     }
 
@@ -99,49 +96,7 @@ public class StudentServiceImpl implements StudentService {
       query.setParameter(key, parameters.get(key));
     }
 
-    var students = query.getResultList();
-    // @formatter:off
-    var list = students.stream()
-      .map(student -> {
-          var events = student.getEvents().stream()
-            .map(event -> {
-                var eventDto = new EventDetailDto(
-                  event.getId(),
-                  event.getGrade().getName(),
-                  !StringUtils.hasText(event.getDetail().getName())
-                        ? ""
-                        : event.getDetail().getName(),
-                  event.getStatus().getValue(),
-                  event.getData(),
-                  event.getComments()
-                  	.stream()
-                  	.sorted(Comparator.comparing(Comment::getCreatedAt))
-                  	.map(Comment::toDto)
-                  	.toList()
-                );
-                return eventDto;
-              })
-            .sorted(Comparator.comparing(EventDetailDto::name))
-            .toList();
-
-          var hashtags = student.getHashtags().stream()
-            .map(hashtag -> new HashtagDto(hashtag.getId(), hashtag.getName(), hashtag.getColor()))
-            .sorted(Comparator.comparing(HashtagDto::name))
-            .toList();
-
-          var responseDto = new StudentEventResponseDto(
-                student.getCode(),
-                student.getName(),
-                student.getGrade().getName(),
-                events,
-                hashtags
-              );
-          return responseDto;
-        })
-      .toList();
-    // @formatter:on
-    // var list = this.studentRepository.findAll();
-    return list;
+    return query.getResultStream().map(Student::toDto).toList();
   }
 
   @Override
@@ -173,14 +128,7 @@ public class StudentServiceImpl implements StudentService {
         .toList();
 
       var hashtags = student.getHashtags().stream()
-        .map(hashtag -> {
-            var hashtagDto = new HashtagDto(
-              hashtag.getId(),
-              hashtag.getName(),
-              hashtag.getColor()
-            );
-            return hashtagDto;
-          })
+        .map(Hashtag::toDto)
         .sorted(Comparator.comparing(HashtagDto::name))
         .toList();
 
@@ -224,11 +172,11 @@ public class StudentServiceImpl implements StudentService {
   @Override
   @Transactional
   public RegisterEventResponseDto registerOrUpdateEvent(RegisterEventDto dto) {
-    var student = this.studentRepository.findByUsername(dto.username()).orElse(null);
+    var student = this.studentRepository.findByUsername(dto.getUsername()).orElse(null);
 
-    var detail = this.eventRepository.findByName(dto.data().eventName()).orElse(null);
+    var detail = this.commonService.findEventByName(dto.getData().eventName());
 
-    var grade = this.gradeRepository.findByName(dto.gradeName()).orElse(null);
+    var grade = this.commonService.findGradeByName(dto.getGradeName());
 
 
     if (student == null || detail == null || grade == null) {
@@ -254,13 +202,13 @@ public class StudentServiceImpl implements StudentService {
     EventDetail event = null;
     if (result.isEmpty()) {
 
-      var data = new EventDetail.EventData();
-      data.setEventName(dto.data().eventName());
-      data.setEventsInSchoolLife(dto.data().eventsInSchoolLife());
-      data.setMyAction(dto.data().myAction());
-      data.setMyThought(dto.data().myThought());
-      data.setShownPower(dto.data().shownPower());
-      data.setStrengthGrown(dto.data().strengthGrown());
+      var data = new EventDetail.Data();
+      data.setEventName(dto.getData().eventName());
+      data.setEventsInSchoolLife(dto.getData().eventsInSchoolLife());
+      data.setMyAction(dto.getData().myAction());
+      data.setMyThought(dto.getData().myThought());
+      data.setShownPower(dto.getData().shownPower());
+      data.setStrengthGrown(dto.getData().strengthGrown());
 
     // @formatter:off
       event = EventDetail.builder()
@@ -268,8 +216,8 @@ public class StudentServiceImpl implements StudentService {
           .detail(detail)
           .grade(grade)
           .data(data)
-          .createdBy(dto.username())
-          .updatedBy(dto.username())
+          .createdBy(dto.getUsername())
+          .updatedBy(dto.getUsername())
           .student(student)
           .build();
       // @formatter:on
@@ -277,13 +225,13 @@ public class StudentServiceImpl implements StudentService {
       event = result.get();
       var eventData = event.getData();
       // @formatter:off
-      eventData = EventData.builder()
-          .eventName(dto.data().eventName())
-          .eventsInSchoolLife(dto.data().eventsInSchoolLife())
-          .myAction(dto.data().myAction())
-          .myThought(dto.data().myThought())
-          .shownPower(dto.data().shownPower())
-          .strengthGrown(dto.data().strengthGrown())
+      eventData = Data.builder()
+          .eventName(dto.getData().eventName())
+          .eventsInSchoolLife(dto.getData().eventsInSchoolLife())
+          .myAction(dto.getData().myAction())
+          .myThought(dto.getData().myThought())
+          .shownPower(dto.getData().shownPower())
+          .strengthGrown(dto.getData().strengthGrown())
           .build();
       // @formatter:on
       event.setData(eventData);

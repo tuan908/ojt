@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.ojt.api.constants.OjtResponseCode;
-import com.tuanna.ojt.api.constants.OjtResponseType;
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
-import com.tuanna.ojt.api.dto.ErrorResponseDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
 import com.tuanna.ojt.api.dto.SuccessResponseDto;
@@ -40,28 +38,17 @@ public class StudentController {
 
   @PostMapping
   @ResponseBody
-  public ResponseEntity<?> getStudentEventList(@RequestBody StudentEventRequestDto dto)
-      throws ResultNotFoundException {
-    var body = this.studentService.getEventList(dto);
-
-    if (body.isEmpty()) {
-      throw new ResultNotFoundException();
-    }
-    return new ResponseEntity<>(body, HttpStatus.OK);
-
+  public ResponseEntity<?> getStudentEventList(@RequestBody StudentEventRequestDto dto) {
+    var data = this.studentService.getEventList(dto);
+    return ResponseEntity.ok(data);
   }
 
   @GetMapping("/{code}")
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetail(@PathVariable("code") String code)
       throws ResultNotFoundException {
-    var body = this.studentService.getEventsByStudentCode(code);
-
-    if (body == null) {
-      throw new ResultNotFoundException();
-    }
-    return new ResponseEntity<>(body, HttpStatus.OK);
-
+    var data = this.studentService.getEventsByStudentCode(code);
+    return ResponseEntity.ok(data);
   }
 
 

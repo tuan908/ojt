@@ -1,4 +1,4 @@
-import {type AccountDto} from "@/app/actions/auth";
+import {type UserInfo} from "@/app/actions/auth";
 import {SignJWT} from "jose";
 import {getJwtSecretKey} from "../auth";
 
@@ -9,7 +9,7 @@ import {getJwtSecretKey} from "../auth";
  * @returns JWT Token
  * @author tuanna
  */
-export async function generateJWT(dto: AccountDto) {
+export async function generateJWT(dto: UserInfo) {
     const token = await new SignJWT(dto)
         .setProtectedHeader({alg: "HS256"})
         .setIssuedAt()

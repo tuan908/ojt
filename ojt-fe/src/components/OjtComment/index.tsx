@@ -1,4 +1,4 @@
-import {type CommentDto} from "@/app/actions/event";
+import {type Comment} from "@/app/actions/event";
 import {deleteComment} from "@/app/actions/student";
 import OjtButtonBase from "@/components/ButtonBase";
 import {cn} from "@/lib/utils";
@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import {startTransition, useState} from "react";
 
 interface BubbleMessageProps {
-    comment: CommentDto;
+    comment: Comment;
     isCommentOfActiveUser: boolean;
     editState: {
         id: number;
@@ -16,10 +16,10 @@ interface BubbleMessageProps {
     };
     setEditState: (value: {id: number; isEditing: boolean}) => void;
     setComment: (
-        data: Pick<CommentDto, "id" | "content" | "eventDetailId" | "username">
+        data: Pick<Comment, "id" | "content" | "eventDetailId" | "username">
     ) => void;
-    comments: CommentDto[];
-    setComments: (comments: CommentDto[]) => void;
+    comments: Comment[];
+    setComments: (comments: Comment[]) => void;
 }
 
 export default function OjtBubbleMessage(props: BubbleMessageProps) {

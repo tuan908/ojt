@@ -3,6 +3,9 @@ package com.tuanna.ojt.api.entity;
 import java.util.Set;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
+
+import com.tuanna.ojt.api.dto.HashtagDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,5 +42,9 @@ public class Hashtag extends BaseEntity {
 
   @ManyToMany(mappedBy = "hashtags")
   private Set<Student> students;
+  
+  public HashtagDto toDto() {
+	  return new HashtagDto(this.getId(), this.getName(), this.getColor());
+  }
 
 }
