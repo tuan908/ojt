@@ -59,12 +59,8 @@ public class StudentController {
       @RequestParam(value = "event_name", required = false) String eventName,
       @RequestParam(value = "status", required = false) String status)
       throws ResultNotFoundException {
-    var body = this.studentService.getEventsByStudentCode(code, grade, eventName, status);
-
-    if (body == null) {
-      throw new ResultNotFoundException();
-    }
-    return new ResponseEntity<>(body, HttpStatus.OK);
+    var data = this.studentService.getEventsByStudentCode(code, grade, eventName, status);
+    return ResponseEntity.ok(data);
 
   }
 

@@ -56,8 +56,8 @@ public class StudentServiceImpl implements StudentService {
   @Override
   public List<StudentEventResponseDto> getEventList(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
-    var sb = new StringBuilder();
-    sb.append("""
+    var sql = new StringBuilder();
+    sql.append("""
     		select
     			s
     		from
@@ -69,28 +69,28 @@ public class StudentServiceImpl implements StudentService {
       """);
 
     if (StringUtils.hasText(dto.name())) {
-      sb.append(" and s.name = :studentName");
+      sql.append(" and s.name = :studentName");
       parameters.put("studentName", dto.name());
     }
 
     if (StringUtils.hasText(dto.grade())) {
-      sb.append(" and s.grade.name = :grade");
+      sql.append(" and s.grade.name = :grade");
       parameters.put("grade", dto.grade());
     }
 
     if (StringUtils.hasText(dto.event())) {
-      sb.append(" and element(s.events) in :eventName ");
+      sql.append(" and element(s.events) in :eventName ");
       parameters.put("eventName", dto.event());
     }
 
     if (dto.hashtags() != null && dto.hashtags().size() > 0) {
-     sb.append(" and element(s.hashtags).name in :hashtags ");
+     sql.append(" and element(s.hashtags).name in :hashtags ");
       parameters.put("hashtags", dto.hashtags());
     }
 
-    sb.append(" order by s.code  ");
+    sql.append(" order by s.code  ");
 
-    var query = this.entityManager.createQuery(sb.toString(), Student.class);
+    var query = this.entityManager.createQuery(sql.toString(), Student.class);
 
     for (String key : parameters.keySet()) {
       query.setParameter(key, parameters.get(key));
@@ -286,6 +286,7 @@ public class StudentServiceImpl implements StudentService {
   public List<EventDetailDto> getEventsByStudentCode(String code, String grade, String eventName,
       String status) {
     Map<String, Object> parameters = new HashMap<String, Object>();
+    var stringBuffer = new StringBuffer();
     var qlString = """
         select
             ed
@@ -296,19 +297,20 @@ public class StudentServiceImpl implements StudentService {
             ed.student.code = :code
             and ed.isDeleted = false
         """;
+    stringBuffer.append(qlString);
 
     if (StringUtils.hasText(grade)) {
-      qlString += " and ed.grade.name = :grade";
+      stringBuffer.append(" and ed.grade.name = :grade");
       parameters.put("grade", grade);
     }
 
     if (StringUtils.hasText(eventName)) {
-      qlString += " and ed.detail.name = :eventName";
+      stringBuffer.append(" and ed.detail.name = :eventName");
       parameters.put("eventName", eventName);
     }
 
     if (StringUtils.hasText(status)) {
-      qlString += " and ed.status in :status ";
+      stringBuffer.append(" and ed.status in :status ");
       var converted = Stream.of(status.split(",")).map(x -> (switch (Integer.valueOf(x)) {
         case 1:
           yield EventStatus.UNCONFIRMED;
@@ -325,9 +327,9 @@ public class StudentServiceImpl implements StudentService {
       parameters.put("status", converted);
     }
 
-    qlString += " order by ed.createdAt ";
+    stringBuffer.append(" order by ed.createdAt ");
 
-    var query = this.entityManager.createQuery(qlString, EventDetail.class);
+    var query = this.entityManager.createQuery(stringBuffer.toString(), EventDetail.class);
 
     for (String key : parameters.keySet()) {
       query.setParameter(key, parameters.get(key));

@@ -138,6 +138,10 @@ export default function EventGrid({
         );
     };
 
+    const handleOpenUpdateStatusDialog = (id: number) => {
+        dispatch(openDialogUpdateStatus({id}))
+    }
+
     return (
         <>
             <table className="w-full border border-table border-collapse align-middle">
@@ -216,7 +220,7 @@ export default function EventGrid({
                                                     OjtUserRole.Counselor ? (
                                                         <OjtButtonBase
                                                             onClick={() =>
-                                                                handleOpenDeleteDialog(
+                                                                handleOpenUpdateStatusDialog(
                                                                     item.id
                                                                 )
                                                             }

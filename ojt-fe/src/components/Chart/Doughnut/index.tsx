@@ -15,7 +15,7 @@ use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
 
 type EChartsOption = ComposeOption<TooltipComponentOption | PieSeriesOption>;
 
-export const colorPallete = [
+export const colorPalette = [
     "#4ad295",
     "#f2b2bf",
     "#fb5252",
@@ -80,7 +80,7 @@ const getOption = (text: string) => {
                     {value: 2, name: "#Disciplined"},
                     {value: 4, name: "#Stress-resistant"},
                 ],
-                color: colorPallete,
+                color: colorPalette,
             },
         ],
     };

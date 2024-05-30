@@ -49,7 +49,7 @@ public class CommonServiceImpl implements CommonService {
   @Override
   public Event findEventByName(String name) {
     TypedQuery<Event> query = this.entityManager.createQuery(
-        "select e from com.tuanna.ojt.entity.Event e where e.name = :name", Event.class);
+        "select e from com.tuanna.ojt.api.entity.Event e where e.name = :name", Event.class);
     query.setParameter("name", name);
     return query.getResultStream().findFirst().orElse(null);
   }
@@ -57,7 +57,7 @@ public class CommonServiceImpl implements CommonService {
   @Override
   public Grade findGradeByName(String name) {
     TypedQuery<Grade> query = this.entityManager.createQuery(
-        "select e from com.tuanna.ojt.entity.Grade e where e.name = :name", Grade.class);
+        "select e from com.tuanna.ojt.api.entity.Grade e where e.name = :name", Grade.class);
     query.setParameter("name", name);
     return query.getResultStream().findFirst().orElse(null);
   }

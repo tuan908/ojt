@@ -4,6 +4,7 @@ import OjtCard from "@/components/Card";
 import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";
 import dynamic from "next/dynamic";
+import {Suspense} from "react";
 const DoughnutChart = dynamic(() => import("@/components/Chart/Doughnut"));
 const StackedBarChart = dynamic(() => import("@/components/Chart/Stacked"));
 
@@ -18,18 +19,12 @@ export default async function Page(props: DynamicPageProps) {
         <>
             <div className="pt-20 w-full flex gap-x-10 justify-between items-center">
                 {/* Student Info */}
-                <OjtCard
-                    width={30}
-                    height={20}
-                    paddingX="px-0"
-                    paddingY="py-0"
-                    flex
-                >
+                <div className="w-1/3 h-full bg-white rounded-2xl">
                     <div className="bg-[#92cdfa] h-[30%] rounded-t-2xl"></div>
-                    <div className="w-full h-full flex flex-col px-4 items-center justify-center">
-                        <div className="w-full">
+                    <div className="w-full h-[70%] flex flex-col px-4">
+                        <div className="w-full h-full flex items-center justify-center">
                             <div className="w-full grid grid-cols-[2fr_1fr] place-items-center">
-                                <div className="grid grid-cols-[1fr_auto_1fr] gap-x-2 gap-y-4 text-start font-bold text-lg text-[#060b0f]">
+                                <div className="grid grid-cols-[0.25fr_auto_2fr] gap-x-2 gap-y-2 text-start font-semibold text-lg text-[#060b0f] whitespace-nowrap">
                                     <span>Student Code</span>
                                     <span>:</span>
                                     <span>{studentInfo?.code}</span>
@@ -49,8 +44,10 @@ export default async function Page(props: DynamicPageProps) {
                             </div>
                         </div>
                     </div>
-                </OjtCard>
-                <DoughnutChart text="90" />
+                </div>
+                <Suspense>
+                    <DoughnutChart text="90" />
+                </Suspense>
                 <OjtCard width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
                         {labels
@@ -71,7 +68,11 @@ export default async function Page(props: DynamicPageProps) {
                 </OjtCard>
             </div>
 
-            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} />
+            <Suspense>
+                <StackedBarChart
+                    labels={grades ? grades.map(x => x.name) : []}
+                />
+            </Suspense>
         </>
     );
 }

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description: "社会人基礎力",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
