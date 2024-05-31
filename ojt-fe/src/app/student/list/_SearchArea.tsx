@@ -1,16 +1,12 @@
 "use client";
 
-import type {Grade, StudentEvent} from "@/app/actions/common";
+import type {Grade, HashtagPayload, StudentEvent} from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
 import Hashtag from "@/components/Hashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
-import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import type {
-    Hashtag,
-    StudentsRequest,
-    StudentsResponse,
-} from "@/types/student.types";
+import {useAppDispatch} from "@/redux/hooks";
+import type {StudentsRequest, StudentsResponse} from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
@@ -28,7 +24,7 @@ import StudentDataGrid from "./_StudentDataGrid";
 type SearchAreaProps = {
     rows: StudentsResponse[];
     grades?: Grade[];
-    hashtags?: Hashtag[];
+    hashtags?: HashtagPayload[];
     events?: StudentEvent[];
 };
 

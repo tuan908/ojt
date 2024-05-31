@@ -12,7 +12,7 @@ type StudentEvent = {
     name: string;
 };
 
-type Hashtag = {
+type HashtagPayload = {
     id: number;
     name: string;
     color: string;
@@ -37,7 +37,7 @@ const getEvents = async () =>
  * @returns Hashtag list
  */
 const getHashtags = async () =>
-    await Utils.RestTemplate.get<Hashtag[]>("/common/hashtags");
+    await Utils.RestTemplate.get<HashtagPayload[]>("/common/hashtags");
 
 export {getEvents, getGrades, getHashtags};
-export type {StudentEvent, Grade, Hashtag};
+export type {Grade, HashtagPayload, StudentEvent};
