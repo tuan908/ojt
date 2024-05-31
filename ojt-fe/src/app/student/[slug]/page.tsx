@@ -1,5 +1,5 @@
 import {getEvents, getGrades} from "@/app/actions/common";
-import {getVerifiedToken} from "@/app/actions/event";
+import {getValidToken} from "@/app/actions/event";
 import {getStudentByCode} from "@/app/actions/student";
 import PageWrapper from "@/components/PageWrapper";
 import {type DynamicPageProps} from "@/types";
@@ -32,7 +32,7 @@ export async function generateMetadata(
 
 export default async function Page(props: DynamicPageProps) {
     const [auth, grades, events, studentInfo] = await Promise.all([
-        getVerifiedToken(),
+        getValidToken(),
         getGrades(),
         getEvents(),
         getStudentByCode(props.params.slug),

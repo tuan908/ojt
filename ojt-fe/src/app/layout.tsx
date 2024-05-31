@@ -1,9 +1,9 @@
-import theme from "@/lib/styles/theme";
+import theme from "@/styles/theme";
 import {CssBaseline} from "@mui/material";
 import {AppRouterCacheProvider} from "@mui/material-nextjs/v14-appRouter";
 import {ThemeProvider} from "@mui/material/styles";
 import type {Metadata} from "next";
-import ReduxProvider from "./ReduxProvider";
+import ReduxProvider from "../providers/ReduxProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {

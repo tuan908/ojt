@@ -58,3 +58,11 @@ export type DynamicPageProps = {
     params: {slug: string};
     searchParams?: {[key: string]: string | string[] | undefined};
 };
+
+export type TableDto = {
+    code: string;
+    name: string;
+    year: string;
+    event: string;
+    hashtag: string;
+};

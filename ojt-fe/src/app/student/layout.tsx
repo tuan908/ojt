@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar";
 import type {LayoutProps} from "@/types";
-import { Metadata } from "next";
+import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: {

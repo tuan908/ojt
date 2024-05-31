@@ -1,12 +1,12 @@
-import {cn} from "@/lib/utils";
+import Utils from "@/utils";
 
-export function Edit({disabled}: {disabled?: boolean}) {
+export default async function Edit({disabled}: {disabled?: boolean}) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className={cn(
+            className={Utils.cn(
                 "w-6 h-6 text-icon-default",
                 !!disabled && "text-[#7d7e7e]"
             )}

@@ -1,3 +1,3 @@
-export {Delete} from "./Delete";
-export {Done} from "./Done";
-export {Edit} from "./Edit";
+export {default as Delete} from "./Delete";
+export {default as Done} from "./Done";
+export {default as Edit} from "./Edit";

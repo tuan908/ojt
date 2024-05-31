@@ -1,16 +1,16 @@
 "use client";
 
-import OjtColorTextHashtag from "@/components/ColorTextHashtag";
+import TextHashtag from "@/components/TextHashtag";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
-import type {StudentResponse} from "@/types/student.types";
+import type {StudentsResponse} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import CircularProgress from "@mui/material/CircularProgress";
 import {useRouter} from "next/navigation";
 import {Suspense, startTransition, type SyntheticEvent} from "react";
 
-export default function StudentDataGrid({rows}: {rows: StudentResponse[]}) {
+export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
     const router = useRouter();
 
     const handleRowClick = ({
@@ -95,13 +95,13 @@ export default function StudentDataGrid({rows}: {rows: StudentResponse[]}) {
                                         <TableCell fontSemibold textEllipsis>
                                             {item.hashtags?.map(
                                                 (hashtag, index) => (
-                                                    <OjtColorTextHashtag
+                                                    <TextHashtag
                                                         key={`${hashtag.id}#${index}`}
                                                         color={hashtag.color}
                                                         paddingXInRem={0.25}
                                                     >
                                                         {hashtag.name}
-                                                    </OjtColorTextHashtag>
+                                                    </TextHashtag>
                                                 )
                                             )}
                                         </TableCell>

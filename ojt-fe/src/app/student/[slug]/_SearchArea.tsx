@@ -2,9 +2,9 @@
 
 import type {StudentEvent, Grade} from "@/app/actions/common";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
-import {OjtCheckbox} from "@/components/Checkbox";
+import {Checkbox} from "@/components/Checkbox";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, OjtEventStatus} from "@/constants";
-import type {StudentResponse} from "@/types/student.types";
+import type {StudentsResponse} from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectChangeEvent} from "@mui/material/Select";
@@ -17,7 +17,7 @@ type SearchAreaProps = {
     params: {slug: string};
     grades?: Grade[];
     events?: StudentEvent[];
-    data: StudentResponse;
+    data: StudentsResponse;
 };
 
 type MuiSelectChangeHandler = (
@@ -55,9 +55,7 @@ const sx: SxProps<Theme> = {
 
 export default function SearchArea(props: SearchAreaProps) {
     const router = useRouter();
-    const [data, setData] = useState<StudentResponse | undefined>(
-        props.data
-    );
+    const [data, setData] = useState<StudentsResponse | undefined>(props.data);
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
         under_reviewing: false,
@@ -193,7 +191,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     <span>ステータス：</span>
 
                     {/* 未確認 */}
-                    <OjtCheckbox
+                    <Checkbox
                         label="未確認"
                         name="unconfirmed"
                         checked={check.unconfirmed}
@@ -201,7 +199,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     />
 
                     {/* 確認中 */}
-                    <OjtCheckbox
+                    <Checkbox
                         label="確認中"
                         name="under_reviewing"
                         checked={check.under_reviewing}
@@ -209,7 +207,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     />
 
                     {/* 修了*/}
-                    <OjtCheckbox
+                    <Checkbox
                         label="修了"
                         name="confirmed"
                         checked={check.confirmed}

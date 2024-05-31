@@ -1,14 +1,20 @@
-import {getVerifiedToken} from "@/app/actions/event";
+import {getValidToken} from "@/app/actions/event";
 import {OjtRoute, OjtUserRole} from "@/constants";
 import Avatar from "@mui/material/Avatar";
 import Link from "next/link";
 import BackButton from "./BackButton";
 import LogoutButton from "./LogOut";
-import UserInfo from "./UserInfo";
 import Sidebar from "./Sidebar";
+import UserInfo from "./UserInfo";
+
+const avatarSx = {
+    width: 44,
+    height: 44,
+    bgcolor: "#31bafd",
+};
 
 export default async function Navbar() {
-    const auth = await getVerifiedToken();
+    const auth = await getValidToken();
     const href =
         auth?.role !== OjtUserRole.Student
             ? OjtRoute.StudentList
@@ -28,7 +34,7 @@ export default async function Navbar() {
                 <LogoutButton />
 
                 <div className="pr-2">
-                    <Avatar sx={{width: 44, height: 44, bgcolor: "#31bafd"}} />
+                    <Avatar sx={avatarSx} />
                 </div>
 
                 {/* Username */}

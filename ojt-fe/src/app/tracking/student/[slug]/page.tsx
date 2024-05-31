@@ -1,6 +1,6 @@
 import {getGrades, getHashtags} from "@/app/actions/common";
 import {getStudentByCode} from "@/app/actions/student";
-import OjtCard from "@/components/Card";
+import Box from "@/components/Box";
 import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";
 import dynamic from "next/dynamic";
@@ -48,7 +48,7 @@ export default async function Page(props: DynamicPageProps) {
                 <Suspense>
                     <DoughnutChart text="90" />
                 </Suspense>
-                <OjtCard width={48} height={20} backgroundColor="#ffffff">
+                <Box width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
                         {labels
                             ? labels.map(label => (
@@ -65,7 +65,7 @@ export default async function Page(props: DynamicPageProps) {
                               ))
                             : null}
                     </ul>
-                </OjtCard>
+                </Box>
             </div>
 
             <Suspense>

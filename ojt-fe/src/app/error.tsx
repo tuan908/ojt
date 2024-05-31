@@ -1,7 +1,7 @@
 "use client";
 
 import {OjtRoute, OjtUserRole} from "@/constants";
-import {useAuth} from "@/lib/hooks/useAuth";
+import {useAuth} from "@/hooks/useAuth";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Link from "next/link";
 import {useMemo} from "react";

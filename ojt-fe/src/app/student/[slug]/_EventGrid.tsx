@@ -2,19 +2,19 @@
 
 import {deleteEventDetailById} from "@/app/actions/event";
 import {updateEventStatus} from "@/app/actions/student";
-import OjtButtonBase from "@/components/ButtonBase";
-import OjtDialog from "@/components/OjtDialog";
+import Button from "@/components/Button";
+import Dialog from "@/components/Dialog";
 import {StatusLabel} from "@/components/StatusLabel";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
 import {OjtEventStatus, OjtScreenMode, OjtUserRole} from "@/constants";
-import {useAuth} from "@/lib/hooks/useAuth";
-import {useAppDispatch} from "@/lib/redux/hooks";
-import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
-import {cn} from "@/lib/utils";
-import {type StudentResponse} from "@/types/student.types";
+import {useAuth} from "@/hooks/useAuth";
+import {useAppDispatch} from "@/redux/hooks";
+import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
+import Utils from "@/utils";
+import {type StudentsResponse} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -87,13 +87,13 @@ export default function EventGrid({
     studentId,
     code,
 }: {
-    data: StudentResponse["events"];
+    data: StudentsResponse["events"];
     studentId?: number;
     code: string;
 }) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [rows, setRows] = useState<StudentResponse["events"]>(data);
+    const [rows, setRows] = useState<StudentsResponse["events"]>(data);
     const appDispatch = useAppDispatch();
 
     useEffect(() => setRows(data), [data]);
@@ -139,8 +139,8 @@ export default function EventGrid({
     };
 
     const handleOpenUpdateStatusDialog = (id: number) => {
-        dispatch(openDialogUpdateStatus({id}))
-    }
+        dispatch(openDialogUpdateStatus({id}));
+    };
 
     return (
         <>
@@ -183,7 +183,7 @@ export default function EventGrid({
                                             textEllipsis
                                             alignTextCenter
                                         >
-                                            <OjtButtonBase
+                                            <Button
                                                 onClick={e =>
                                                     handleNotificationIconClick(
                                                         e,
@@ -205,7 +205,7 @@ export default function EventGrid({
                                                         }}
                                                     />
                                                 </Badge>
-                                            </OjtButtonBase>
+                                            </Button>
                                         </TableCell>
                                         {[
                                             OjtUserRole.Student.toString(),
@@ -218,7 +218,7 @@ export default function EventGrid({
                                                 <div className="w-full flex justify-center items-center gap-x-6">
                                                     {auth?.role! ===
                                                     OjtUserRole.Counselor ? (
-                                                        <OjtButtonBase
+                                                        <Button
                                                             onClick={() =>
                                                                 handleOpenUpdateStatusDialog(
                                                                     item.id
@@ -235,12 +235,12 @@ export default function EventGrid({
                                                                     OjtEventStatus.CONFIRMED
                                                                 }
                                                             />
-                                                        </OjtButtonBase>
+                                                        </Button>
                                                     ) : (
                                                         <>
                                                             <Link
                                                                 href={`/event?id=${item.id}&mode=${OjtScreenMode.EDIT}`}
-                                                                className={cn(
+                                                                className={Utils.cn(
                                                                     item.status ===
                                                                         OjtEventStatus.CONFIRMED &&
                                                                         "pointer-events-none"
@@ -253,7 +253,7 @@ export default function EventGrid({
                                                                     }
                                                                 />
                                                             </Link>
-                                                            <OjtButtonBase
+                                                            <Button
                                                                 disabled={
                                                                     item.status ===
                                                                     OjtEventStatus.CONFIRMED
@@ -270,7 +270,7 @@ export default function EventGrid({
                                                                         OjtEventStatus.CONFIRMED
                                                                     }
                                                                 />
-                                                            </OjtButtonBase>
+                                                            </Button>
                                                         </>
                                                     )}
                                                 </div>
@@ -283,7 +283,7 @@ export default function EventGrid({
                     </Suspense>
                 </tbody>
             </table>
-            <OjtDialog
+            <Dialog
                 open={state.delete.open}
                 onClose={() => dispatch(hideDialogDelete())}
                 title="Delete Event"
@@ -294,7 +294,7 @@ export default function EventGrid({
                 actionButtonBackgroundColor="bg-red-400"
             />
 
-            <OjtDialog
+            <Dialog
                 open={state.updateStatus.open}
                 onClose={() => dispatch(hideDialogUpdateStatus())}
                 title="Update Status"

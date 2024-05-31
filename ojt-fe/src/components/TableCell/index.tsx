@@ -1,4 +1,4 @@
-import {cn} from "@/lib/utils";
+import Utils from "@/utils";
 import {type ComponentProps} from "react";
 
 type TableCellProps = ComponentProps<"td"> & {
@@ -19,7 +19,7 @@ export default function TableCell({
     return (
         <td
             {...otherProps}
-            className={cn(
+            className={Utils.cn(
                 "relative border border-table py-3 align-middle z-10 whitespace-nowrap",
                 fontSemibold && "font-semibold",
                 alignTextCenter && "text-center",

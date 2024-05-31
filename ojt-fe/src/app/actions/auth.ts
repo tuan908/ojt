@@ -1,8 +1,8 @@
 "use server";
 
 import {OjtUserRole} from "@/constants";
-import {fetchNoCache} from "@/lib/utils/fetchNoCache";
-import {generateJWT} from "@/lib/utils/jwt";
+import Utils from "@/utils";
+import AuthService from "@/services/auth.service";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
@@ -24,7 +24,7 @@ export type UserInfo = {
  */
 export type LoginState = {
     message: string;
-    user: UserInfo | null;
+    user?: UserInfo;
 };
 
 /**
@@ -56,7 +56,10 @@ export async function login(_: any, formData: FormData) {
 
     const request = parse.data;
 
-    const user = await fetchNoCache<UserInfo>("/auth/login", "POST", request);
+    const user = await Utils.RestTemplate.post<UserInfo>(
+        "/auth/login",
+        request
+    );
     if (!user) {
         return {
             error: process.env["WRONG_USER_NAME_OR_PASSWORD"],
@@ -64,7 +67,7 @@ export async function login(_: any, formData: FormData) {
             password,
         };
     }
-    const token = await generateJWT(user);
+    const token = await AuthService.generateToken(user);
     cookies().set({
         name: "token",
         value: token,

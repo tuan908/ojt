@@ -1,8 +1,6 @@
 package com.tuanna.ojt.api.controller;
 
 import java.util.HashMap;
-
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.tuanna.ojt.api.constants.OjtResponseCode;
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
@@ -24,7 +21,6 @@ import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 import com.tuanna.ojt.api.exception.ResultNotFoundException;
 import com.tuanna.ojt.api.service.CommentService;
 import com.tuanna.ojt.api.service.StudentService;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController

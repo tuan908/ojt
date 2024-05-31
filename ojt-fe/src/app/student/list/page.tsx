@@ -2,7 +2,7 @@ import {getEvents, getGrades, getHashtags} from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
 import PageWrapper from "@/components/PageWrapper";
 import SearchArea from "./_SearchArea";
-import { Metadata } from "next";
+import {Metadata} from "next";
 
 export const metadata: Metadata = {
     title: "リスト",

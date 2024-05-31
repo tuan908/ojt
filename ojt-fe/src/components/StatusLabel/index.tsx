@@ -1,27 +1,36 @@
 import {OjtEventStatus} from "@/constants";
+import {useMemo} from "react";
 
-export function StatusLabel({status}: {status: number}) {
-    let labelText = "";
-    let backgroundColor = "";
-    switch (status) {
-        case OjtEventStatus.UNCONFIRMED:
-            labelText = "未確認";
-            backgroundColor = "#33b5e5";
-            break;
+type StatusLabelProps = {
+    status: number
+}
 
-        case OjtEventStatus.UNDER_REVIEWING:
-            labelText = "確認中";
-            backgroundColor = "#ffbb33";
-            break;
+export function StatusLabel({status}: StatusLabelProps) {
+    const {labelText, backgroundColor} = useMemo(() => {
+        let labelText = "";
+        let backgroundColor = "";
+        switch (status) {
+            case OjtEventStatus.UNCONFIRMED:
+                labelText = "未確認";
+                backgroundColor = "#33b5e5";
+                break;
 
-        case OjtEventStatus.CONFIRMED:
-            labelText = "修了";
-            backgroundColor = "#00c851";
-            break;
+            case OjtEventStatus.UNDER_REVIEWING:
+                labelText = "確認中";
+                backgroundColor = "#ffbb33";
+                break;
 
-        default:
-            throw new Error("Invalid stautus");
-    }
+            case OjtEventStatus.CONFIRMED:
+                labelText = "修了";
+                backgroundColor = "#00c851";
+                break;
+
+            default:
+                throw new Error("Invalid status");
+        }
+
+        return {labelText, backgroundColor};
+    }, [status]);
 
     return (
         <span

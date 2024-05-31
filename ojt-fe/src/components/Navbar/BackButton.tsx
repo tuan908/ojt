@@ -1,7 +1,7 @@
 "use client";
 
 import {OjtUserRole} from "@/constants";
-import {useAuth} from "@/lib/hooks/useAuth";
+import {useAuth} from "@/hooks/useAuth";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import {usePathname, useRouter} from "next/navigation";
 import {type SyntheticEvent} from "react";

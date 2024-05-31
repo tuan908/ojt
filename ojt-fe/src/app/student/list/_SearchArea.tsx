@@ -2,14 +2,14 @@
 
 import type {Grade, StudentEvent} from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
-import OjtColorHashtag from "@/components/ColorHashtag";
+import Hashtag from "@/components/Hashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
-import {useAppDispatch} from "@/lib/redux/hooks";
-import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
+import {useAppDispatch} from "@/redux/hooks";
+import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import type {
     Hashtag,
     StudentsRequest,
-    StudentResponse,
+    StudentsResponse,
 } from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
@@ -26,7 +26,7 @@ import {SyntheticEvent, useEffect, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type SearchAreaProps = {
-    rows: StudentResponse[];
+    rows: StudentsResponse[];
     grades?: Grade[];
     hashtags?: Hashtag[];
     events?: StudentEvent[];
@@ -39,7 +39,7 @@ export default function SearchArea(props: SearchAreaProps) {
         []
     );
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
-    const [rows, setRows] = useState<StudentResponse[]>(props.rows);
+    const [rows, setRows] = useState<StudentsResponse[]>(props.rows);
     const [searchCondition, setCondition] = useState<StudentsRequest>({});
 
     function handleInputChange(
@@ -299,14 +299,14 @@ export default function SearchArea(props: SearchAreaProps) {
             </div>
             <div className="w-full px-12 flex gap-x-2 flex-wrap">
                 {skills.map((skill, index) => (
-                    <OjtColorHashtag
+                    <Hashtag
                         key={`skill#${index}`}
                         onRemove={() => handleRemoveHashtag(index)}
                         index={index}
                         color={skill.color}
                     >
                         {skill.label}
-                    </OjtColorHashtag>
+                    </Hashtag>
                 ))}
             </div>
             <hr className="border-table" />

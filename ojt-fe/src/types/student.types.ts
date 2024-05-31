@@ -32,9 +32,4 @@ type StudentsRequest = Partial<{
     hashtags: string[];
 }>;
 
-export type {
-    EventDetail,
-    Hashtag,
-    StudentsRequest,
-    StudentsResponse as StudentResponse,
-};
+export type {EventDetail, Hashtag, StudentsRequest, StudentsResponse};

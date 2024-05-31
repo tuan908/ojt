@@ -1,8 +1,8 @@
 import {OjtUserRole} from "@/constants";
-import {type OjtJwtPayload} from "@/lib/auth";
-import {type StudentResponse} from "@/types/student.types";
+import {type OjtJwtPayload} from "@/auth";
+import {type StudentsResponse} from "@/types/student.types";
 
-type StudentInfoProps = {info?: StudentResponse; auth?: OjtJwtPayload};
+type StudentInfoProps = {info?: StudentsResponse; auth?: OjtJwtPayload};
 
 export default async function StudentInfo(props: StudentInfoProps) {
     if (props.auth === undefined || props?.auth?.role === OjtUserRole.Student) {

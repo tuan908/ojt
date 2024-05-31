@@ -1,12 +1,12 @@
 "use server";
 
 import {OjtEventStatus} from "@/constants";
-import {fetchNoCache} from "@/lib/utils/fetchNoCache";
 import type {
     EventDetail,
     StudentsRequest,
-    StudentResponse,
+    StudentsResponse,
 } from "@/types/student.types";
+import Utils from "@/utils";
 import {revalidatePath} from "next/cache";
 
 /**
@@ -19,9 +19,8 @@ export async function getStudents(dto?: StudentsRequest) {
     // to JSON string in fetchNoCache
     const body = !!dto ? dto : {};
 
-    const data = await fetchNoCache<StudentResponse[]>(
+    const data = await Utils.RestTemplate.post<StudentsResponse[]>(
         "/student",
-        "POST",
         body
     );
     return data;
@@ -33,7 +32,7 @@ export async function getStudents(dto?: StudentsRequest) {
  * @returns Student Response
  */
 export async function getStudentByCode(studentCode: string) {
-    const data = await fetchNoCache<StudentResponse>(
+    const data = await Utils.RestTemplate.get<StudentsResponse>(
         `/student/${studentCode}`
     );
     return data;
@@ -49,7 +48,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await fetchNoCache("/student/event/detail", "POST", dto);
+    const data = await Utils.RestTemplate.post("/student/event/detail", dto);
     revalidatePath(`/student/[slug]`, "page");
     return data;
 }
@@ -63,7 +62,7 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await fetchNoCache("/student/event/comments/" + dto.id, "DELETE");
+    await Utils.RestTemplate.delete("/student/event/comments/" + dto.id);
     revalidatePath("/student/event/comments");
 }
 
@@ -100,6 +99,6 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await fetchNoCache<EventDetail[]>(url, "GET");
+    const data = await Utils.RestTemplate.get<EventDetail[]>(url);
     return data;
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import OjtCard from "@/components/Card";
+import Box from "@/components/Box";
 import ReactEcharts from "echarts-for-react";
 import {BarChart, type BarSeriesOption} from "echarts/charts";
 import {use, type ComposeOption} from "echarts/core";
@@ -71,13 +71,13 @@ const getBarChartOptions = ({
 
 export default function StackedBarChart({labels}: {labels: string[]}) {
     return (
-        <OjtCard fullWidth height={24}>
+        <Box fullWidth height={24}>
             <ReactEcharts
                 option={getBarChartOptions({
                     series: [],
                     xAxisData: labels,
                 })}
             />
-        </OjtCard>
+        </Box>
     );
 }

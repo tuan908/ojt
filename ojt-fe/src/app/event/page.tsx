@@ -16,11 +16,11 @@ import {
 } from "@/constants";
 
 import {getEventDetailById} from "@/app/actions/event";
-import OjtComment from "@/components/OjtComment";
+import OjtComment from "@/components/BubbleMessage";
 import Textarea from "@/components/Textarea";
-import {useAuth} from "@/lib/hooks/useAuth";
-import {useAppDispatch} from "@/lib/redux/hooks";
-import {hideLoading, showLoading} from "@/lib/redux/slice/loading.slice";
+import {useAuth} from "@/hooks/useAuth";
+import {useAppDispatch} from "@/redux/hooks";
+import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {type Hashtag} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";

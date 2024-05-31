@@ -1,7 +1,8 @@
 "use client";
 
-import {OjtJwtPayload} from "@/lib/auth";
-import {convertRole} from "@/lib/utils";
+import useInfo from "@/hooks/useInfo";
+import {type OjtJwtPayload} from "@/services/auth.service";
+import EventIcon from "@mui/icons-material/Event";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
     Avatar,
@@ -15,13 +16,14 @@ import {
     ListItemText,
 } from "@mui/material";
 import {useState} from "react";
-import EventIcon from "@mui/icons-material/Event";
 
 type SidebarProps = {
     auth?: OjtJwtPayload;
 };
 
 export default function Sidebar({auth}: SidebarProps) {
+    const {fullName, role} = useInfo(auth);
+
     const [open, setOpen] = useState(false);
 
     const toggleDrawer = (newOpen: boolean) => () => {
@@ -43,14 +45,12 @@ export default function Sidebar({auth}: SidebarProps) {
                         <Avatar />
                         <div>
                             <h1 className="text-base font-normal">
-                                こにちは{" "}
+                                こにちは
                                 <span className="font-semibold">
-                                    {auth ? auth.name : null}
+                                    {fullName}
                                 </span>
                             </h1>
-                            <h1 className="text-base font-semibold">
-                                {auth ? convertRole(auth.role) : null}
-                            </h1>
+                            <h1 className="text-base font-semibold">{role}</h1>
                         </div>
                     </div>
                     <Divider />

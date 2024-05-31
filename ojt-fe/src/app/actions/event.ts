@@ -1,7 +1,7 @@
 "use server";
 
-import {verifyJwtToken} from "@/lib/auth";
-import {fetchNoCache} from "@/lib/utils/fetchNoCache";
+import Utils from "@/utils";
+import AuthService from "@/services/auth.service";
 import {type EventDetail} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
@@ -36,7 +36,7 @@ export async function registerEvent(dto: RegisterEvent) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await fetchNoCache("/student/event/register", "POST", result.data);
+        await Utils.RestTemplate.post("/student/event/register", result.data);
         revalidatePath("/event");
         redirect("/event", RedirectType.push);
     }
@@ -60,16 +60,17 @@ export type Comment = AddCommentPayload & {
 };
 
 export async function addComment(dto: AddCommentPayload) {
-    const data = await fetchNoCache<Comment[]>(
+    const data = await Utils.RestTemplate.post<Comment[]>(
         `/student/event/comments`,
-        "POST",
         dto
     );
     return data;
 }
 
 export async function getEventDetailById(id: number) {
-    const response = await fetchNoCache<EventDetail>(`/student/event/${id}`);
+    const response = await Utils.RestTemplate.get<EventDetail>(
+        `/student/event/${id}`
+    );
     return response;
 }
 
@@ -77,30 +78,30 @@ export async function deleteEventDetailById(
     code: string,
     id: number
 ): Promise<EventDetail[] | undefined> {
-    const res = await fetchNoCache<EventDetail[]>(
-        `/student/${code}/event/${id}`,
-        "DELETE"
+    const res = await Utils.RestTemplate.delete<EventDetail[]>(
+        `/student/${code}/event/${id}`
     );
     return res;
 }
 
 export async function editComment(id: number, content: string) {
-    const result = await fetchNoCache<{data?: unknown}>(
+    const requestBody = {
+        id,
+        content,
+    };
+    const result = await Utils.RestTemplate.post<{data?: unknown}>(
         "/student/event/comments/p",
-        "POST",
-        {
-            id,
-            content,
-        }
+        requestBody
     );
     revalidatePath("/event");
     return result;
 }
 
-export async function getVerifiedToken() {
+export async function getValidToken() {
     const token = cookies().get("token")?.value;
-    if (token && (await verifyJwtToken(token))) {
-        return await verifyJwtToken(token);
+    if (!token || !(await AuthService.verify(token))) {
+        return undefined;
     }
-    return undefined;
+
+    return await AuthService.verify(token);
 }

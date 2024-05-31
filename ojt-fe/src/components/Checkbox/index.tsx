@@ -1,7 +1,7 @@
-import {Checkbox} from "@mui/material";
+import {Checkbox as MuiCheckbox} from "@mui/material";
 import {type ChangeEventHandler} from "react";
 
-export function OjtCheckbox({
+export function Checkbox({
     label,
     name,
     checked,
@@ -15,7 +15,7 @@ export function OjtCheckbox({
     return (
         <div className="flex items-center">
             <label htmlFor="unconfirmed">{label}</label>
-            <Checkbox
+            <MuiCheckbox
                 name={name}
                 checked={checked}
                 sx={{"& .MuiSvgIcon-root": {fontSize: 20}}}
