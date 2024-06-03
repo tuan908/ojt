@@ -1,4 +1,4 @@
-import type {Hashtag} from "@/app/actions/common";
+import type {HashtagPayload} from "@/app/actions/common";
 import type {Comment} from "@/app/actions/event";
 
 type EventDetail = {
@@ -22,7 +22,7 @@ type StudentsResponse = Partial<{
     name: string;
     grade: string;
     events: EventDetail[];
-    hashtags: Hashtag[];
+    hashtags: HashtagPayload[];
 }>;
 
 type StudentsRequest = Partial<{
@@ -32,4 +32,4 @@ type StudentsRequest = Partial<{
     hashtags: string[];
 }>;
 
-export type {EventDetail, Hashtag, StudentsRequest, StudentsResponse};
+export type {EventDetail, StudentsRequest, StudentsResponse};

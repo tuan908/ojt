@@ -3,6 +3,7 @@
 import {useAuth} from "@/hooks/useAuth";
 import Utils from "@/utils";
 import {useMemo} from "react";
+import json from "@/dictionaries/jp.json";
 
 // TODO: Remove flicker when set user info
 export default function UserInfo() {
@@ -24,7 +25,7 @@ export default function UserInfo() {
     return (
         <div className="flex flex-col">
             <h1 className="text-xl font-normal text-[#abb7bc]">
-                こにちは {fullName}
+                {json.common.hello} {fullName}
             </h1>
             <h1 className="text-[#c3cbcf]">{role}</h1>
         </div>

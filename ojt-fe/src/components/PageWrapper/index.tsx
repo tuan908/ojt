@@ -13,11 +13,5 @@ export default function PageWrapper({children, gapY}: PageWrapperProps) {
         return base;
     }, [gapY]);
 
-    return (
-        <div
-            className={className}
-        >
-            {children}
-        </div>
-    );
+    return <div className={className}>{children}</div>;
 }

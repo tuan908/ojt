@@ -20,7 +20,7 @@ export default function BackButton() {
     const isShow = () => {
         if (regex.test(pathname)) {
             if (
-                pathname === "/student/list" &&
+                pathname === "/students" &&
                 auth?.role! !== OjtUserRole.Student
             ) {
                 return false;

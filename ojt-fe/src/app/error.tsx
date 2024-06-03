@@ -15,7 +15,7 @@ export default function Error() {
                 return `/student/${auth.code}`;
             }
 
-            return OjtRoute.StudentList;
+            return OjtRoute.Students;
         }
 
         return OjtRoute.Login;

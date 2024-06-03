@@ -1,0 +1,43 @@
+{
+    "error": {
+        "missing_required_fields": "必要な項目が欠けています。",
+        "wrong_username_or_password": "ユーザー名またはパスワードが間違っています。"
+    },
+    "table": {
+        "header": {
+            "event": {
+                "code": "学生コード",
+                "name": "学生の名前",
+                "grade": "クラス名",
+                "events": "イベント",
+                "hashtags": "ハッシュタグ",
+                "tracking": "トラッキング"
+            }
+        }
+    },
+    "common": {
+        "event": "イベント",
+        "grade": "クラス名",
+        "student_name": "学生の名前",
+        "hashtag": "#ハッシュタグ",
+        "hello": "こにちは",
+        "application_name": "社会人基礎力"
+    },
+    "role": {
+        "student": "学生",
+        "parent": "家族",
+        "teacher": "先生",
+        "counselor": "カウンセラー"
+    },
+    "status": {
+        "unconfirmed": "未確認",
+        "under_reviewing": "確認中",
+        "confirmed": "修了"
+    },
+    "login": {
+        "username": "ユーザーネーム",
+        "password": "パスワード",
+        "title": "ログイン",
+        "login_pending": "ログインする．．．"
+    }
+}

@@ -6,6 +6,7 @@ import AuthService from "@/services/auth.service";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
+import json from "@/dictionaries/jp.json";
 
 /**
  * UserInfo
@@ -29,10 +30,10 @@ export type LoginState = {
 
 /**
  * Login
- * @param _ ???
+ * @param _ Previous state
  * @param formData FormData
  */
-export async function login(_: any, formData: FormData) {
+export async function login(_previousState: any, formData: FormData) {
     const data = Object.fromEntries(formData);
     const {username, password} = data;
 
@@ -48,7 +49,7 @@ export async function login(_: any, formData: FormData) {
 
     if (!parse.success) {
         return {
-            error: process.env["MISSING_REQUIRED_FIELDS"],
+            error: json.error.missing_required_fields,
             username,
             password,
         };
@@ -62,7 +63,7 @@ export async function login(_: any, formData: FormData) {
     );
     if (!user) {
         return {
-            error: process.env["WRONG_USER_NAME_OR_PASSWORD"],
+            error: json.error.wrong_username_or_password,
             username,
             password,
         };
@@ -77,7 +78,7 @@ export async function login(_: any, formData: FormData) {
     let redirectPath = "";
 
     if (user.role !== OjtUserRole.Student) {
-        redirectPath = "/student/list";
+        redirectPath = "/students";
     } else {
         redirectPath = `/student/${user.code}`;
     }

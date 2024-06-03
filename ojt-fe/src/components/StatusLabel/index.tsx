@@ -2,8 +2,8 @@ import {OjtEventStatus} from "@/constants";
 import {useMemo} from "react";
 
 type StatusLabelProps = {
-    status: number
-}
+    status: number;
+};
 
 export function StatusLabel({status}: StatusLabelProps) {
     const {labelText, backgroundColor} = useMemo(() => {

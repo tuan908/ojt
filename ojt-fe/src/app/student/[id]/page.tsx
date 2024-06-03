@@ -11,7 +11,7 @@ import SearchArea from "./_SearchArea";
 import StudentInfo from "./_StudentInfo";
 
 type Props = {
-    params: {slug: string};
+    params: {id: string};
     searchParams: {[key: string]: string | string[] | undefined};
 };
 
@@ -20,7 +20,7 @@ export async function generateMetadata(
     _parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const id = params.slug;
+    const id = params.id;
 
     // fetch data
     const student = await getStudentByCode(id);
@@ -35,7 +35,7 @@ export default async function Page(props: DynamicPageProps) {
         getValidToken(),
         getGrades(),
         getEvents(),
-        getStudentByCode(props.params.slug),
+        getStudentByCode(props.params.id),
     ]);
 
     return (

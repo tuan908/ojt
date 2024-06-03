@@ -43,7 +43,7 @@ export default function Box({
         }
 
         return base;
-    }, [paddingX, paddingY, flex]);
+    }, [paddingX, flex]);
 
     const style = useMemo(() => {
         if (fullWidth) {

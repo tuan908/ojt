@@ -4,22 +4,25 @@ import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import TextHashtag from "@/components/TextHashtag";
+import json from "@/dictionaries/jp.json";
 import type {StudentsResponse} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import {useRouter} from "next/navigation";
 import {startTransition, type SyntheticEvent} from "react";
 
-export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
+type Props = {
+    rows: StudentsResponse[];
+};
+
+export default function StudentDataGrid(props: Props) {
+    const {rows} = props;
     const router = useRouter();
 
-    const handleRowClick = ({
-        e,
-        studentCode,
-    }: {
-        e: SyntheticEvent<HTMLTableRowElement>;
-        studentCode?: string;
-    }) => {
-        e?.stopPropagation();
+    const handleRowClick = (
+        event: SyntheticEvent<HTMLTableRowElement>,
+        studentCode?: string
+    ) => {
+        event?.stopPropagation();
         const path = `/student/${studentCode}`;
         startTransition(() => {
             router.push(path);
@@ -30,15 +33,12 @@ export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
      * We ensure that only the cell click handler is triggered when both row and cell have click handlers
      * by using e.stopPropagation()
      */
-    const handleCellClick = ({
-        e,
-        studentCode,
-    }: {
-        e: SyntheticEvent<HTMLTableCellElement>;
-        studentCode?: string;
-    }): void => {
-        e?.stopPropagation();
-        const path = `/tracking/student/${studentCode}`;
+    const handleCellClick = (
+        event: SyntheticEvent<HTMLTableCellElement>,
+        studentCode?: string
+    ): void => {
+        event?.stopPropagation();
+        const path = `/tracking/${studentCode}`;
         startTransition(() => {
             router.push(path);
         });
@@ -49,20 +49,29 @@ export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
             {/* Table */}
             <div className="w-full px-12">
                 <table className="w-full border border-table border-collapse align-middle">
-                    <thead className="w-full table table-fixed">
+                    <thead>
                         <tr className="bg-[#3f51b5] text-[#fffffc]">
-                            <TableHead width={8}>学生コード</TableHead>
-                            <TableHead width={10}>学生の名前</TableHead>
-                            <TableHead width={8}>クラス名</TableHead>
-                            <TableHead width={30}>イベント</TableHead>
-                            <TableHead width={30}>ハッシュタグ</TableHead>
-                            <TableHead width={8}>トラッキング</TableHead>
+                            <TableHead width={8}>
+                                {json.table.header.event.code}
+                            </TableHead>
+                            <TableHead width={10}>
+                                {json.table.header.event.name}
+                            </TableHead>
+                            <TableHead width={8}>
+                                {json.table.header.event.grade}
+                            </TableHead>
+                            <TableHead width={30}>
+                                {json.table.header.event.events}
+                            </TableHead>
+                            <TableHead width={30}>
+                                {json.table.header.event.hashtags}
+                            </TableHead>
+                            <TableHead width={8}>
+                                {json.table.header.event.tracking}
+                            </TableHead>
                         </tr>
                     </thead>
-                    <tbody
-                        className="block overflow-y-auto table-fixed max-h-[33.875rem]"
-                        style={{scrollbarWidth: "none"}}
-                    >
+                    <tbody>
                         {rows!?.map(item => {
                             const eventStrings = item.events
                                 ?.map(x => x.name)
@@ -70,20 +79,17 @@ export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
                             return (
                                 <TableRow
                                     key={item.code}
-                                    onMouseDown={e =>
-                                        handleRowClick({
-                                            e,
-                                            studentCode: item.code,
-                                        })
+                                    onMouseDown={event =>
+                                        handleRowClick(event, item.code)
                                     }
                                 >
-                                    <TableCell width={8} alignTextCenter>
+                                    <TableCell width={8} textCenter>
                                         {item.code}
                                     </TableCell>
-                                    <TableCell width={10} alignTextCenter>
+                                    <TableCell width={10} textCenter>
                                         {item.name}
                                     </TableCell>
-                                    <TableCell width={8} alignTextCenter>
+                                    <TableCell width={8} textCenter>
                                         {item.grade}
                                     </TableCell>
                                     <TableCell
@@ -104,7 +110,7 @@ export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
                                                 <TextHashtag
                                                     key={`${hashtag.id}#${index}`}
                                                     color={hashtag.color}
-                                                    paddingXInRem={0.25}
+                                                    px={0.25}
                                                 >
                                                     {hashtag.name}
                                                 </TextHashtag>
@@ -113,12 +119,9 @@ export default function StudentDataGrid({rows}: {rows: StudentsResponse[]}) {
                                     </TableCell>
                                     <TableCell
                                         width={8}
-                                        alignTextCenter
-                                        onMouseDown={e =>
-                                            handleCellClick({
-                                                e,
-                                                studentCode: item.code,
-                                            })
+                                        textCenter
+                                        onMouseDown={event =>
+                                            handleCellClick(event, item.code)
                                         }
                                     >
                                         <Analytics className="text-icon-default" />

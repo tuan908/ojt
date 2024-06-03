@@ -1,5 +1,6 @@
 "use client";
 
+import json from "@/dictionaries/jp.json";
 import Utils from "@/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
@@ -16,8 +17,13 @@ import {
 } from "react";
 import {login} from "../actions/auth";
 
-const initialState = {
-    error: undefined,
+type LoginFormState = {
+    username: FormDataEntryValue;
+    password: FormDataEntryValue;
+    error?: string;
+};
+
+const initialState: LoginFormState = {
     username: "",
     password: "",
 };
@@ -46,7 +52,7 @@ export default function Page() {
         if (state.error && inputRef.current) {
             inputRef.current?.focus();
         }
-    }, [state.error, inputRef.current]);
+    }, [state.error]);
 
     return (
         <div
@@ -56,7 +62,9 @@ export default function Page() {
             }}
         >
             <div className="flex flex-col w-4/5 lg:w-1/5 h-full bg-white rounded-lg shadow-lg">
-                <h1 className="text-3xl text-center pt-8 md:pt-20">ログイン</h1>
+                <h1 className="text-3xl text-center pt-8 md:pt-20">
+                    {json.login.title}
+                </h1>
                 <form
                     action={formAction}
                     className="w-10/12 md:w-4/5 m-auto bg-white flex flex-col gap-y-4 py-4 md:py-12"
@@ -65,7 +73,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="username"
-                        placeholder="ユーザーネーム"
+                        placeholder={json.login.username}
                         inputRef={inputRef}
                         className="w-full"
                         InputProps={{
@@ -83,7 +91,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="password"
-                        placeholder="パスワード"
+                        placeholder={json.login.password}
                         type={inputState.type}
                         className="w-full"
                         InputProps={{
@@ -129,10 +137,10 @@ export default function Page() {
                                         }}
                                         size="1rem"
                                     />
-                                    ログインする．．．
+                                    {json.login.login_pending}
                                 </div>
                             ) : (
-                                <>ログイン</>
+                                <>{json.login.title}</>
                             )}
                         </button>
                     </div>

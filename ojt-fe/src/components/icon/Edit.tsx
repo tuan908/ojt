@@ -1,6 +1,6 @@
 import Utils from "@/utils";
 
-export default async function Edit({disabled}: {disabled?: boolean}) {
+export default function Edit({disabled}: {disabled?: boolean}) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

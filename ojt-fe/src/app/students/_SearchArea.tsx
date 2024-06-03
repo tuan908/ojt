@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import {SyntheticEvent, useEffect, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
+import json from "@/dictionaries/jp.json";
 
 type SearchAreaProps = {
     rows: StudentsResponse[];
@@ -146,7 +147,7 @@ export default function SearchArea(props: SearchAreaProps) {
             <div className="w-full pl-12 pt-8 flex flex-col gap-y-2 md:gap-x-8 md:flex-row">
                 {/* 学生の名前 */}
                 <Input
-                    placeholder="学生の名前"
+                    placeholder={json.common.student_name}
                     className="w-56"
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     name="name"
@@ -162,7 +163,7 @@ export default function SearchArea(props: SearchAreaProps) {
                 <Select
                     variant="standard"
                     className="w-56"
-                    defaultValue="クラス名"
+                    defaultValue={json.common.grade}
                     onChange={e =>
                         setCondition(x => ({
                             ...x,
@@ -187,7 +188,9 @@ export default function SearchArea(props: SearchAreaProps) {
                         },
                     }}
                 >
-                    <MenuItem value="クラス名">クラス名</MenuItem>
+                    <MenuItem value={json.common.grade}>
+                        {json.common.grade}
+                    </MenuItem>
                     {props.grades!?.map(x => (
                         <MenuItem
                             key={x.id}
@@ -205,7 +208,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     variant="standard"
                     className="w-56"
                     name="event"
-                    defaultValue="イベント"
+                    defaultValue={json.common.event}
                     onChange={e =>
                         setCondition(x => ({
                             ...x,

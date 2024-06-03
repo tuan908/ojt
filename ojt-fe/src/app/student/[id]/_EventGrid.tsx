@@ -167,13 +167,13 @@ export default function EventGrid({
                             <>
                                 {rows!?.map(item => (
                                     <TableRow key={item.id}>
-                                        <TableCell alignTextCenter>
+                                        <TableCell textCenter>
                                             {item?.grade}
                                         </TableCell>
-                                        <TableCell alignTextCenter>
+                                        <TableCell textCenter>
                                             {item?.name}
                                         </TableCell>
-                                        <TableCell alignTextCenter>
+                                        <TableCell textCenter>
                                             <StatusLabel
                                                 status={item?.status}
                                             />
@@ -181,7 +181,7 @@ export default function EventGrid({
                                         <TableCell
                                             fontSemibold
                                             textEllipsis
-                                            alignTextCenter
+                                            textCenter
                                         >
                                             <Button
                                                 onClick={e =>

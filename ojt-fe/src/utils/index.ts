@@ -3,6 +3,7 @@ import {type RecursivelyReplaceNullWithUndefined} from "@/types";
 import {clsx, type ClassValue} from "clsx";
 import {unstable_noStore} from "next/cache";
 import {twMerge} from "tailwind-merge";
+import json from "@/dictionaries/jp.json";
 
 export default class Utils {
     public static cn(...inputs: ClassValue[]) {
@@ -17,16 +18,16 @@ export default class Utils {
     public static convertRole(role?: string) {
         switch (role) {
             case OjtUserRole.Counselor:
-                return "カウンセラー";
+                return json.role.counselor;
 
             case OjtUserRole.Parent:
-                return "家族";
+                return json.role.parent;
 
             case OjtUserRole.Student:
-                return "学生";
+                return json.role.student;
 
             case OjtUserRole.Teacher:
-                return "先生";
+                return json.role.teacher;
 
             default:
                 throw new Error("Invalid Role");

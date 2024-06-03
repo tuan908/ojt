@@ -1,42 +1,48 @@
 "use server";
 
-import {OjtEventStatus} from "@/constants";
+import {KeyPart, OjtEventStatus} from "@/constants";
 import type {
     EventDetail,
     StudentsRequest,
     StudentsResponse,
 } from "@/types/student.types";
 import Utils from "@/utils";
-import {revalidatePath} from "next/cache";
+import {revalidatePath, unstable_cache} from "next/cache";
 
 /**
  * Get Student List By Conditions
  * @param dto Request Dto
  * @returns Student List
  */
-export async function getStudents(dto?: StudentsRequest) {
-    // Use raw dto instead of JSON.stringify(dto) - dto already parse
-    // to JSON string in fetchNoCache
-    const body = !!dto ? dto : {};
+export const getStudents = unstable_cache(
+    async (dto?: StudentsRequest) => {
+        // Use raw dto instead of JSON.stringify(dto) - dto already parse
+        // to JSON string in fetchNoCache
+        const body = !!dto ? dto : {};
 
-    const data = await Utils.RestTemplate.post<StudentsResponse[]>(
-        "/student",
-        body
-    );
-    return data;
-}
+        const data = await Utils.RestTemplate.post<StudentsResponse[]>(
+            "/student",
+            body
+        );
+        return data;
+    },
+    [KeyPart.Students]
+);
 
 /**
  * Get student by code
  * @param studentCode Student code
  * @returns Student Response
  */
-export async function getStudentByCode(studentCode: string) {
-    const data = await Utils.RestTemplate.get<StudentsResponse>(
-        `/student/${studentCode}`
-    );
-    return data;
-}
+export const getStudentByCode = unstable_cache(
+    async (studentCode: string) => {
+        const data = await Utils.RestTemplate.get<StudentsResponse>(
+            `/student/${studentCode}`
+        );
+        return data;
+    },
+    [KeyPart.Student.Default]
+);
 
 /**
  * Update Event Status
@@ -49,7 +55,7 @@ export async function updateEventStatus(dto: {
     studentId: number;
 }) {
     const data = await Utils.RestTemplate.post("/student/event/detail", dto);
-    revalidatePath(`/student/[slug]`, "page");
+    revalidatePath(`/student/[id]`, "page");
     return data;
 }
 

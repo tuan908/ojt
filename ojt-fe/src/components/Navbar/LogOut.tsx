@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {logOut} from "@/app/actions/auth";
 import PowerSettingsNew from "@mui/icons-material/PowerSettingsNew";

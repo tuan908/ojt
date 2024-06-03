@@ -3,10 +3,11 @@
 import Utils from "@/utils";
 import AuthService from "@/services/auth.service";
 import {type EventDetail} from "@/types/student.types";
-import {revalidatePath} from "next/cache";
+import {revalidatePath, unstable_cache} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
+import {KeyPart} from "@/constants";
 
 const registerEventSchema = z.object({
     username: z.string(),
@@ -64,15 +65,19 @@ export async function addComment(dto: AddCommentPayload) {
         `/student/event/comments`,
         dto
     );
+    revalidatePath("/event");
     return data;
 }
 
-export async function getEventDetailById(id: number) {
-    const response = await Utils.RestTemplate.get<EventDetail>(
-        `/student/event/${id}`
-    );
-    return response;
-}
+export const getEventDetailById = unstable_cache(
+    async (id: number) => {
+        const response = await Utils.RestTemplate.get<EventDetail>(
+            `/student/event/${id}`
+        );
+        return response;
+    },
+    [KeyPart.Student.EventDetail]
+);
 
 export async function deleteEventDetailById(
     code: string,

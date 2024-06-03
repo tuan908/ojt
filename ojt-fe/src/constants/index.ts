@@ -45,8 +45,8 @@ export const SORT_ORDER_ASCENDING = 1;
 export const SORT_ORDER_DESCENDING = 1;
 
 export enum OjtRoute {
-    /** /student/list */
-    StudentList = "/student/list",
+    /** /students */
+    Students = "/students",
     /** /event/register */
     RegisterEvent = "/event/register",
     /** /login */
@@ -71,3 +71,16 @@ export const GRADE_OPTION_DEFAULT = "クラス名";
 
 /** イベント */
 export const EVENT_OPTION_DEFAULT = "イベント";
+
+export const KeyPart = {
+    Common: {
+        Event: "common/event",
+        Hashtag: "common/hashtag",
+        Grade: "common/grade",
+    },
+    Students: "students",
+    Student: {
+        Default: "student/student",
+        EventDetail: "student/event-detail",
+    },
+} as const;

@@ -21,7 +21,6 @@ import Textarea from "@/components/Textarea";
 import {useAuth} from "@/hooks/useAuth";
 import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import {type Hashtag} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -44,7 +43,12 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import {type StudentEvent, getEvents, getHashtags} from "../actions/common";
+import {
+    type StudentEvent,
+    getEvents,
+    getHashtags,
+    HashtagPayload,
+} from "../actions/common";
 
 const initComment = {
     id: -1,
@@ -68,7 +72,7 @@ export default function Page() {
     const [error, setError] = useState(false);
     const [eventOptions, setEventOptions] = useState<StudentEvent[]>([]);
     const [isDisable, setDisable] = useState(false);
-    const [hashtags, setHashtags] = useState<Hashtag[]>([]);
+    const [hashtags, setHashtags] = useState<HashtagPayload[]>([]);
     const [openPicker, setOpen] = useState(false);
     const [comment, setComment] = useState<AddCommentPayload>(initComment);
     const [openSuggest, setOpenSuggest] = useState(false);

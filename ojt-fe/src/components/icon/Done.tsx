@@ -1,6 +1,6 @@
 import Check from "@mui/icons-material/Check";
 
-export default async function Done({isDone}: {isDone: boolean}) {
+export default function Done({isDone}: {isDone: boolean}) {
     return (
         <Check
             sx={{

@@ -6,10 +6,10 @@ export const config = {
     matcher: [
         "/",
         "/home",
-        "/student/list",
-        "/student/:slug*",
+        "/students",
+        "/student/:id*",
         "/event",
-        "/tracking/student/:slug*",
+        "/tracking/:id*",
     ],
 };
 
@@ -50,9 +50,7 @@ function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
     if (role === OjtUserRole.Student) {
         return NextResponse.redirect(new URL(`/student/${code}`, request.url));
     } else {
-        return NextResponse.redirect(
-            new URL(OjtRoute.StudentList, request.url)
-        );
+        return NextResponse.redirect(new URL(OjtRoute.Students, request.url));
     }
 }
 
@@ -73,7 +71,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
             return NextResponse.next();
         } else {
             return NextResponse.redirect(
-                new URL(OjtRoute.StudentList, request.url)
+                new URL(OjtRoute.Students, request.url)
             );
         }
     }
@@ -88,15 +86,10 @@ function isAllowedStudentPath(path: string, code: string) {
 }
 
 function isAllowedNonStudentPath(path: string) {
-    const allowedNonStudentPaths = [
-        "/",
-        "/home",
-        "/event",
-        OjtRoute.StudentList,
-    ];
+    const allowedNonStudentPaths = ["/", "/home", "/event", OjtRoute.Students];
     return (
         allowedNonStudentPaths.includes(path) ||
-        path.startsWith("/tracking/student") ||
+        path.startsWith("/tracking/") ||
         path.startsWith("/student/")
     );
 }

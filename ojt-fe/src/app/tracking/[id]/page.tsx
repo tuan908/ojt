@@ -12,7 +12,7 @@ export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
         getHashtags(),
         getGrades(),
-        getStudentByCode(props.params.slug),
+        getStudentByCode(props.params.id),
     ]);
 
     return (

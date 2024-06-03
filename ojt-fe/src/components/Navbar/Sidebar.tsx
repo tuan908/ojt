@@ -16,6 +16,7 @@ import {
     ListItemText,
 } from "@mui/material";
 import {useState} from "react";
+import json from "@/dictionaries/jp.json";
 
 type SidebarProps = {
     auth?: OjtJwtPayload;
@@ -45,7 +46,7 @@ export default function Sidebar({auth}: SidebarProps) {
                         <Avatar />
                         <div>
                             <h1 className="text-base font-normal">
-                                こにちは
+                                {json.common.hello}
                                 <span className="font-semibold">
                                     {fullName}
                                 </span>

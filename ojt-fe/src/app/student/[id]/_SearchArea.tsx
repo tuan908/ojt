@@ -14,7 +14,7 @@ import EventGrid from "./_EventGrid";
 import type {SxProps, Theme, MenuProps} from "@mui/material";
 
 type SearchAreaProps = {
-    params: {slug: string};
+    params: {id: string};
     grades?: Grade[];
     events?: StudentEvent[];
     data: StudentsResponse;
@@ -82,7 +82,7 @@ export default function SearchArea(props: SearchAreaProps) {
             status.push(OjtEventStatus.CONFIRMED);
         }
 
-        const promise = getEventsByStudentCodeWithQuery(props.params.slug, {
+        const promise = getEventsByStudentCodeWithQuery(props.params.id, {
             grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
             eventName:
                 eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
@@ -230,7 +230,7 @@ export default function SearchArea(props: SearchAreaProps) {
                 <EventGrid
                     data={data?.events!}
                     studentId={data?.id}
-                    code={props.params.slug}
+                    code={props.params.id}
                 />
             </div>
         </>
