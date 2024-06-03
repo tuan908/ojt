@@ -1,13 +1,13 @@
 "use server";
 
-import Utils from "@/utils";
 import AuthService from "@/services/auth.service";
-import {type EventDetail} from "@/types/student.types";
+import {StudentEventResponse, type EventDetail} from "@/types/student.types";
 import {revalidatePath, unstable_cache} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {z} from "zod";
 import {KeyPart} from "@/constants";
+import HttpClient from "@/configs/http-client.config";
 
 const registerEventSchema = z.object({
     username: z.string(),
@@ -37,7 +37,7 @@ export async function registerEvent(dto: RegisterEvent) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await Utils.RestTemplate.post("/student/event/register", result.data);
+        await HttpClient.post("/student/event/register", result.data);
         revalidatePath("/event");
         redirect("/event", RedirectType.push);
     }
@@ -61,7 +61,7 @@ export type Comment = AddCommentPayload & {
 };
 
 export async function addComment(dto: AddCommentPayload) {
-    const data = await Utils.RestTemplate.post<Comment[]>(
+    const data = await HttpClient.post<Comment[]>(
         `/student/event/comments`,
         dto
     );
@@ -71,7 +71,7 @@ export async function addComment(dto: AddCommentPayload) {
 
 export const getEventDetailById = unstable_cache(
     async (id: number) => {
-        const response = await Utils.RestTemplate.get<EventDetail>(
+        const response = await HttpClient.get<EventDetail>(
             `/student/event/${id}`
         );
         return response;
@@ -82,8 +82,8 @@ export const getEventDetailById = unstable_cache(
 export async function deleteEventDetailById(
     code: string,
     id: number
-): Promise<EventDetail[] | undefined> {
-    const res = await Utils.RestTemplate.delete<EventDetail[]>(
+): Promise<StudentEventResponse["events"] | undefined> {
+    const res = await HttpClient.delete<StudentEventResponse["events"]>(
         `/student/${code}/event/${id}`
     );
     return res;
@@ -94,7 +94,7 @@ export async function editComment(id: number, content: string) {
         id,
         content,
     };
-    const result = await Utils.RestTemplate.post<{data?: unknown}>(
+    const result = await HttpClient.post<{data?: unknown}>(
         "/student/event/comments/p",
         requestBody
     );

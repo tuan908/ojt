@@ -31,7 +31,7 @@ export async function generateMetadata(
 }
 
 export default async function Page(props: DynamicPageProps) {
-    const [auth, grades, events, studentInfo] = await Promise.all([
+    const [auth, grades, events, info] = await Promise.all([
         getValidToken(),
         getGrades(),
         getEvents(),
@@ -47,7 +47,10 @@ export default async function Page(props: DynamicPageProps) {
                 {/* Student Info */}
 
                 <Suspense fallback={<>Loading student info...</>}>
-                    <StudentInfo auth={auth} info={studentInfo} />
+                    <StudentInfo auth={auth} info={{code: info?.code,
+                        name: info?.name,
+                        grade: info?.grade
+                    }} />
                 </Suspense>
 
                 {/* ?? */}
@@ -62,7 +65,7 @@ export default async function Page(props: DynamicPageProps) {
                         params={props.params}
                         grades={grades}
                         events={events}
-                        data={studentInfo!}
+                        data={info!}
                     />
                 </Suspense>
             </PageWrapper>

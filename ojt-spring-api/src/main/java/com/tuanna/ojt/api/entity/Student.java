@@ -1,11 +1,7 @@
 package com.tuanna.ojt.api.entity;
 
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Set;
-import org.springframework.util.StringUtils;
-import com.tuanna.ojt.api.dto.EventDetailDto;
-import com.tuanna.ojt.api.dto.HashtagDto;
-import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -84,21 +80,18 @@ public class Student extends BaseEntity {
     return this.getClass().hashCode();
   }
   
-  public StudentEventResponseDto toDto() {
-    var events = this.getEvents().stream().map(event -> {
-      var eventDto = new EventDetailDto(event.getId(), event.getGrade().getName(),
-          !StringUtils.hasText(event.getDetail().getName()) ? "" : event.getDetail().getName(),
-          event.getStatus().getValue(), event.getData(), event.getComments().stream()
-              .sorted(Comparator.comparing(Comment::getCreatedAt)).map(Comment::toDto).toList());
-      return eventDto;
-    }).sorted(Comparator.comparing(EventDetailDto::name)).toList();
+  public HashMap<String, Object> toDto() {
+    var events = this.getEvents().stream().map(event -> event.getDetail().getName()).toList();
+    var hashtags = this.getHashtags().stream().map(Hashtag::toDto).toList();
 
-    var hashtags = this.getHashtags().stream()
-        .map(Hashtag::toDto)
-        .sorted(Comparator.comparing(HashtagDto::name)).toList();
+    var dto = new HashMap<String, Object>();
 
-    var responseDto = new StudentEventResponseDto(this.getCode(), this.getName(),
-        this.getGrade().getName(), events, hashtags);
-    return responseDto;
+    dto.put("code", this.code);
+    dto.put("name", this.name);
+    dto.put("grade", this.grade.getName());
+    dto.put("events", String.join(", ", events));
+    dto.put("hashtags", hashtags);
+
+    return dto;
   }
 }

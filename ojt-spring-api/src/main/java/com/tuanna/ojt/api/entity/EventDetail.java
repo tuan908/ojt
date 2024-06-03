@@ -9,7 +9,6 @@ import org.hibernate.annotations.Type;
 import com.tuanna.ojt.api.constants.EventStatus;
 import com.tuanna.ojt.api.constants.converter.EventStatusConverter;
 import com.tuanna.ojt.api.dto.EventDetailDto;
-
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

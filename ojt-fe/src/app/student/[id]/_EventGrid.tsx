@@ -14,7 +14,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import Utils from "@/utils";
-import {type StudentsResponse} from "@/types/student.types";
+import {EventDetail, StudentEventResponse, type StudentsResponse} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -87,13 +87,13 @@ export default function EventGrid({
     studentId,
     code,
 }: {
-    data: StudentsResponse["events"];
+    data: StudentEventResponse["events"];
     studentId?: number;
     code: string;
 }) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [rows, setRows] = useState<StudentsResponse["events"]>(data);
+    const [rows, setRows] = useState<StudentEventResponse["events"]>(data);
     const appDispatch = useAppDispatch();
 
     useEffect(() => setRows(data), [data]);
@@ -193,7 +193,7 @@ export default function EventGrid({
                                             >
                                                 <Badge
                                                     badgeContent={
-                                                        item?.comments?.length
+                                                        item.comments
                                                     }
                                                     color="error"
                                                 >

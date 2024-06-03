@@ -2,11 +2,8 @@ package com.tuanna.ojt.api.service.impl;
 
 import java.util.Comparator;
 import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.entity.Comment;
@@ -14,7 +11,6 @@ import com.tuanna.ojt.api.repository.CommentRepository;
 import com.tuanna.ojt.api.repository.EventDetailRepository;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.CommentService;
-
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -29,10 +25,10 @@ public class CommentServiceImpl implements CommentService {
 
   private final CommentRepository commentRepository;
 
-  public CommentServiceImpl(final JpaContext jpaContext,
+  public CommentServiceImpl(final EntityManager entityManager,
       final EventDetailRepository eventDetailRepository, final UserRepository userRepository,
       final CommentRepository commentRepository) {
-    this.entityManager = jpaContext.getEntityManagerByManagedType(Comment.class);
+    this.entityManager = entityManager;
     this.eventDetailRepository = eventDetailRepository;
     this.userRepository = userRepository;
     this.commentRepository = commentRepository;

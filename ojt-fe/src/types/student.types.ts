@@ -21,7 +21,7 @@ type StudentsResponse = Partial<{
     code: string;
     name: string;
     grade: string;
-    events: EventDetail[];
+    events: string;
     hashtags: HashtagPayload[];
 }>;
 
@@ -33,3 +33,27 @@ type StudentsRequest = Partial<{
 }>;
 
 export type {EventDetail, StudentsRequest, StudentsResponse};
+
+export type Page<T> = {
+    content: T[];
+    page: {
+        size: number;
+        number: number;
+        totalElements: number;
+        totalPage: number;
+    };
+};
+
+export type StudentEventResponse = {
+    id: number;
+    code: string;
+    name: string;
+    grade: string;
+    events: Array<{
+        id: number;
+        grade: string;
+        name: string;
+        status: number;
+        comments: number;
+    }>;
+};

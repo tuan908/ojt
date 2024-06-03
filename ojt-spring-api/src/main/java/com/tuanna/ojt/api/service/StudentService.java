@@ -1,20 +1,20 @@
 package com.tuanna.ojt.api.service;
 
+import java.util.HashMap;
 import java.util.List;
+import org.springframework.data.web.PagedModel;
 import org.springframework.lang.NonNull;
-
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.RegisterEventResponseDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
-import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 
 public interface StudentService {
 
-  List<StudentEventResponseDto> getEventList(StudentEventRequestDto dto);
+  PagedModel<HashMap<String, Object>> getEvents(StudentEventRequestDto dto);
 
-  StudentEventResponseDto getEventsByStudentCode(String code);
+  HashMap<String, Object> getEventsByStudentCode(String code);
 
   Boolean updateEventStatus(UpdateEventStatusDto dto);
 

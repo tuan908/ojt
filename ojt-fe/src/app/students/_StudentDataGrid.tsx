@@ -73,9 +73,6 @@ export default function StudentDataGrid(props: Props) {
                     </thead>
                     <tbody>
                         {rows!?.map(item => {
-                            const eventStrings = item.events
-                                ?.map(x => x.name)
-                                .join(", ");
                             return (
                                 <TableRow
                                     key={item.code}
@@ -98,7 +95,7 @@ export default function StudentDataGrid(props: Props) {
                                         textEllipsis
                                         classes="px-2"
                                     >
-                                        {eventStrings}
+                                        {item.events}
                                     </TableCell>
                                     <TableCell
                                         width={30}

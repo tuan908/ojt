@@ -1,23 +1,26 @@
 "use client";
 
-import type {StudentEvent, Grade} from "@/app/actions/common";
+import type {Grade, StudentEvent} from "@/app/actions/common";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student";
 import {Checkbox} from "@/components/Checkbox";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, OjtEventStatus} from "@/constants";
-import type {StudentsResponse} from "@/types/student.types";
+import {
+    StudentEventResponse,
+    type StudentsResponse,
+} from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
+import {Pagination, type MenuProps, type SxProps, type Theme} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
 import {useState, type ChangeEventHandler, type ReactNode} from "react";
 import EventGrid from "./_EventGrid";
-import type {SxProps, Theme, MenuProps} from "@mui/material";
 
 type SearchAreaProps = {
     params: {id: string};
     grades?: Grade[];
     events?: StudentEvent[];
-    data: StudentsResponse;
+    data: StudentEventResponse;
 };
 
 type MuiSelectChangeHandler = (
@@ -55,7 +58,7 @@ const sx: SxProps<Theme> = {
 
 export default function SearchArea(props: SearchAreaProps) {
     const router = useRouter();
-    const [data, setData] = useState<StudentsResponse | undefined>(props.data);
+    const [data, setData] = useState<StudentEventResponse["events"]>(props.data.events);
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
         under_reviewing: false,
@@ -90,11 +93,7 @@ export default function SearchArea(props: SearchAreaProps) {
         });
 
         promise
-            .then(responseData => {
-                setData(x => {
-                    return {...x, events: responseData};
-                });
-            })
+            .then(responseData => setData(responseData!?.events))
             .catch(error => {
                 throw new Error(error?.message);
             })
@@ -228,9 +227,16 @@ export default function SearchArea(props: SearchAreaProps) {
             {/* Table */}
             <div className="w-full px-10 pt-6">
                 <EventGrid
-                    data={data?.events!}
-                    studentId={data?.id}
+                    data={data!}
+                    studentId={props.data.id}
                     code={props.params.id}
+                />
+            </div>
+            <div className="w-full flex justify-end items-center pr-12">
+                <Pagination
+                    count={data.page.totalPage}
+                    variant="outlined"
+                    shape="rounded"
                 />
             </div>
         </>

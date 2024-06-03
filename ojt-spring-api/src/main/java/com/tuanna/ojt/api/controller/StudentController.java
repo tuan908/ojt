@@ -34,8 +34,8 @@ public class StudentController {
 
   @PostMapping
   @ResponseBody
-  public ResponseEntity<?> getStudentEventList(@RequestBody StudentEventRequestDto dto) {
-    var data = this.studentService.getEventList(dto);
+  public ResponseEntity<?> getStudentEvents(@RequestBody StudentEventRequestDto dto) {
+    var data = this.studentService.getEvents(dto);
     return ResponseEntity.ok(data);
   }
 

@@ -1,12 +1,12 @@
 "use server";
 
 import {OjtUserRole} from "@/constants";
-import Utils from "@/utils";
 import AuthService from "@/services/auth.service";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
 import json from "@/dictionaries/jp.json";
+import HttpClient from "@/configs/http-client.config";
 
 /**
  * UserInfo
@@ -57,10 +57,7 @@ export async function login(_previousState: any, formData: FormData) {
 
     const request = parse.data;
 
-    const user = await Utils.RestTemplate.post<UserInfo>(
-        "/auth/login",
-        request
-    );
+    const user = await HttpClient.post<UserInfo>("/auth/login", request);
     if (!user) {
         return {
             error: json.error.wrong_username_or_password,

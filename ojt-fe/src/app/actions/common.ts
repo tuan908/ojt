@@ -1,7 +1,7 @@
 "use server";
 
+import HttpClient from "@/configs/http-client.config";
 import {KeyPart} from "@/constants";
-import Utils from "@/utils";
 import {unstable_cache} from "next/cache";
 
 type Grade = {
@@ -25,7 +25,7 @@ type HashtagPayload = {
  * @returns Grade List
  */
 const getGrades = unstable_cache(
-    async () => await Utils.RestTemplate.get<Grade[]>("/common/grades"),
+    async () => await HttpClient.get<Grade[]>("/common/grades"),
     [KeyPart.Common.Grade]
 );
 
@@ -34,7 +34,7 @@ const getGrades = unstable_cache(
  * @returns Event List
  */
 const getEvents = unstable_cache(
-    async () => await Utils.RestTemplate.get<StudentEvent[]>("/common/events"),
+    async () => await HttpClient.get<StudentEvent[]>("/common/events"),
     [KeyPart.Common.Event]
 );
 
@@ -43,8 +43,7 @@ const getEvents = unstable_cache(
  * @returns Hashtag list
  */
 const getHashtags = unstable_cache(
-    async () =>
-        await Utils.RestTemplate.get<HashtagPayload[]>("/common/hashtags"),
+    async () => await HttpClient.get<HashtagPayload[]>("/common/hashtags"),
     [KeyPart.Common.Hashtag]
 );
 

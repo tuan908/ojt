@@ -1,10 +1,8 @@
 package com.tuanna.ojt.api.service.impl;
 
-import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.tuanna.ojt.api.dto.LoginDto;
 import com.tuanna.ojt.api.dto.LoginResponseDto;
 import com.tuanna.ojt.api.dto.UserDto;
@@ -12,7 +10,6 @@ import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.UserService;
-
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -25,8 +22,8 @@ public class UserServiceImpl implements UserService {
 
 	private final EntityManager entityManager;
 
-	public UserServiceImpl(JpaContext jpaContext, UserRepository userRepository, final PasswordEncoder pe) {
-		this.entityManager = jpaContext.getEntityManagerByManagedType(User.class);
+	public UserServiceImpl(final EntityManager entityManager, UserRepository userRepository, final PasswordEncoder pe) {
+		this.entityManager = entityManager;
 		this.userRepository = userRepository;
 		this.passwordEncoder = pe;
 	}
@@ -49,7 +46,7 @@ public class UserServiceImpl implements UserService {
 			sb.append("""
 					    select
 					      s
-					    from
+					    from 
 					      com.tuanna.ojt.api.entity.Student s
 					    where
 					      s.user.id = :id

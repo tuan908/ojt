@@ -24,7 +24,7 @@ export default async function Page() {
             <div className="w-full h-full flex-1 flex justify-center items-center bg-[#ededed]">
                 <PageWrapper gapY>
                     <SearchArea
-                        rows={rows!}
+                        data={rows!}
                         grades={grades!}
                         events={events!}
                         hashtags={hashtags!}

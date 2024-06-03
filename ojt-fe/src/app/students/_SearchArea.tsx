@@ -4,15 +4,21 @@ import type {Grade, HashtagPayload, StudentEvent} from "@/app/actions/common";
 import {getStudents} from "@/app/actions/student";
 import Hashtag from "@/components/Hashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
+import json from "@/dictionaries/jp.json";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import type {StudentsRequest, StudentsResponse} from "@/types/student.types";
+import type {
+    Page,
+    StudentsRequest,
+    StudentsResponse,
+} from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
     Autocomplete,
     Input,
     MenuItem,
+    Pagination,
     Select,
     TextField,
     type AutocompleteChangeReason,
@@ -20,23 +26,23 @@ import {
 } from "@mui/material";
 import {SyntheticEvent, useEffect, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
-import json from "@/dictionaries/jp.json";
 
 type SearchAreaProps = {
-    rows: StudentsResponse[];
+    data: Page<StudentsResponse>;
     grades?: Grade[];
     hashtags?: HashtagPayload[];
     events?: StudentEvent[];
 };
 
 export default function SearchArea(props: SearchAreaProps) {
+    const {data, grades, hashtags, events} = props;
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<Array<{label: string; color: string}>>(
         []
     );
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
-    const [rows, setRows] = useState<StudentsResponse[]>(props.rows);
+    const [rows, setRows] = useState<StudentsResponse[]>(data.content);
     const [searchCondition, setCondition] = useState<StudentsRequest>({});
 
     function handleInputChange(
@@ -79,7 +85,7 @@ export default function SearchArea(props: SearchAreaProps) {
             typeof _value === "string" &&
             !skills.find(x => x.label === _value.trim())
         ) {
-            const hashtag = props.hashtags!?.find(x => x.name === _value);
+            const hashtag = hashtags!?.find(x => x.name === _value);
             setSkills([
                 ...skills,
                 {label: hashtag?.name!, color: hashtag?.color!},
@@ -90,7 +96,7 @@ export default function SearchArea(props: SearchAreaProps) {
             typeof _value === "object" &&
             !skills.find(x => x.label === _value.label)
         ) {
-            const hashtag = props.hashtags!?.find(x => x.id === _value.id);
+            const hashtag = hashtags!?.find(x => x.id === _value.id);
             setSkills([
                 ...skills,
                 {label: hashtag?.name!, color: hashtag?.color!},
@@ -130,7 +136,7 @@ export default function SearchArea(props: SearchAreaProps) {
             };
 
             const students = await getStudents(searchParams);
-            setRows(students!);
+            setRows(students!?.content);
         } catch (error: any) {
             throw new Error(error?.message);
         }
@@ -191,7 +197,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     <MenuItem value={json.common.grade}>
                         {json.common.grade}
                     </MenuItem>
-                    {props.grades!?.map(x => (
+                    {grades!?.map(x => (
                         <MenuItem
                             key={x.id}
                             value={x.name}
@@ -235,7 +241,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     suppressContentEditableWarning
                 >
                     <MenuItem value="イベント">イベント</MenuItem>
-                    {props.events!?.map(x => (
+                    {events!?.map(x => (
                         <MenuItem
                             key={x.id}
                             value={x.name}
@@ -257,7 +263,7 @@ export default function SearchArea(props: SearchAreaProps) {
                             paddingX: 1,
                         },
                     }}
-                    options={props.hashtags!?.map(x => ({
+                    options={hashtags!?.map(x => ({
                         id: x.id,
                         label: x.name,
                     }))}
@@ -310,6 +316,13 @@ export default function SearchArea(props: SearchAreaProps) {
             </div>
             <hr className="border-table" />
             <StudentDataGrid rows={rows} />
+            <div className="w-full flex justify-end items-center pr-12">
+                <Pagination
+                    count={data.page.totalPage}
+                    variant="outlined"
+                    shape="rounded"
+                />
+            </div>
         </>
     );
 }

@@ -1,12 +1,14 @@
 "use server";
 
-import {KeyPart, OjtEventStatus} from "@/constants";
+import HttpClient from "@/configs/http-client.config";
+import {KeyPart, OjtEventStatus, PAGE_SIZE} from "@/constants";
 import type {
     EventDetail,
+    Page,
+    StudentEventResponse,
     StudentsRequest,
     StudentsResponse,
 } from "@/types/student.types";
-import Utils from "@/utils";
 import {revalidatePath, unstable_cache} from "next/cache";
 
 /**
@@ -20,10 +22,12 @@ export const getStudents = unstable_cache(
         // to JSON string in fetchNoCache
         const body = !!dto ? dto : {};
 
-        const data = await Utils.RestTemplate.post<StudentsResponse[]>(
-            "/student",
-            body
-        );
+        const data = await HttpClient.post<Page<StudentsResponse>>("/student", {
+            ...body,
+            pageNumber: 0,
+            pageSize: PAGE_SIZE,
+        });
+        console.log(data);
         return data;
     },
     [KeyPart.Students]
@@ -34,15 +38,17 @@ export const getStudents = unstable_cache(
  * @param studentCode Student code
  * @returns Student Response
  */
-export const getStudentByCode = unstable_cache(
+export const getStudentByCode = 
+// unstable_cache(
     async (studentCode: string) => {
-        const data = await Utils.RestTemplate.get<StudentsResponse>(
+        const data = await HttpClient.get<StudentEventResponse>(
             `/student/${studentCode}`
         );
         return data;
-    },
-    [KeyPart.Student.Default]
-);
+    }
+//     ,
+//     [KeyPart.Student.Default]
+// );
 
 /**
  * Update Event Status
@@ -54,7 +60,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await Utils.RestTemplate.post("/student/event/detail", dto);
+    const data = await HttpClient.post("/student/event/detail", dto);
     revalidatePath(`/student/[id]`, "page");
     return data;
 }
@@ -68,7 +74,7 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await Utils.RestTemplate.delete("/student/event/comments/" + dto.id);
+    await HttpClient.delete("/student/event/comments/" + dto.id);
     revalidatePath("/student/event/comments");
 }
 
@@ -105,6 +111,6 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await Utils.RestTemplate.get<EventDetail[]>(url);
+    const data = await HttpClient.get<StudentEventResponse>(url);
     return data;
 };

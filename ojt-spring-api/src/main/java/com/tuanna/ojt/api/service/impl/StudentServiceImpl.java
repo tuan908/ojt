@@ -7,21 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.web.PagedModel;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import com.tuanna.ojt.api.constants.EventStatus;
-import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
 import com.tuanna.ojt.api.dto.RegisterEventResponseDto;
 import com.tuanna.ojt.api.dto.StudentEventRequestDto;
-import com.tuanna.ojt.api.dto.StudentEventResponseDto;
 import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
-import com.tuanna.ojt.api.entity.Comment;
 import com.tuanna.ojt.api.entity.EventDetail;
 import com.tuanna.ojt.api.entity.EventDetail.Data;
 import com.tuanna.ojt.api.entity.Hashtag;
@@ -44,29 +42,29 @@ public class StudentServiceImpl implements StudentService {
 
   private final CommonService commonService;
 
-  public StudentServiceImpl(final JpaContext jpaContext, final CommonService commonService,
+  public StudentServiceImpl(final EntityManager entityManager, final CommonService commonService,
       final StudentRepository studentRepository,
       final EventDetailRepository eventDetailRepository) {
-    this.entityManager = jpaContext.getEntityManagerByManagedType(Student.class);
+    this.entityManager = entityManager;
     this.commonService = commonService;
     this.studentRepository = studentRepository;
     this.eventDetailRepository = eventDetailRepository;
   };
 
   @Override
-  public List<StudentEventResponseDto> getEventList(StudentEventRequestDto dto) {
+  public PagedModel<HashMap<String, Object>> getEvents(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
     var sql = new StringBuilder();
     sql.append("""
-    		select
-    			s
-    		from
-    			com.tuanna.ojt.api.entity.Student s
-            left join fetch s.events
-            left join fetch s.hashtags
-          where
-            1 = 1
-      """);
+        select
+        	s
+        from
+        	com.tuanna.ojt.api.entity.Student s
+              left join fetch s.events
+              left join fetch s.hashtags
+            where
+              1 = 1
+        """);
 
     if (StringUtils.hasText(dto.name())) {
       sql.append(" and s.name = :studentName");
@@ -84,7 +82,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     if (dto.hashtags() != null && dto.hashtags().size() > 0) {
-     sql.append(" and element(s.hashtags).name in :hashtags ");
+      sql.append(" and element(s.hashtags).name in :hashtags ");
       parameters.put("hashtags", dto.hashtags());
     }
 
@@ -96,52 +94,46 @@ public class StudentServiceImpl implements StudentService {
       query.setParameter(key, parameters.get(key));
     }
 
-    return query.getResultStream().map(Student::toDto).toList();
+    var page =
+        new PagedModel<>(new PageImpl<>(query.getResultStream().map(Student::toDto).toList()));
+
+    return page;
   }
 
   @Override
-  public StudentEventResponseDto getEventsByStudentCode(String code) {
+  public HashMap<String, Object> getEventsByStudentCode(String code) {
     var student = this.studentRepository.findByCode(code).orElse(null);
 
     if (student != null) {
-      // @formatter:off
-      var events = student.getEvents().stream()
-        .filter(event -> !event.getIsDeleted())
-        .sorted(Comparator.comparing(EventDetail::getCreatedAt))
-        .map(event -> {
-            var eventComments = event.getComments().stream()
-              .filter(comment -> !comment.getIsDeleted())
-              .map(Comment::toDto)
-              .sorted(Comparator.comparing(CommentDto::createdAt))
-              .toList();
+      var data = new HashMap<String, Object>();
+      data.put("id", student.getId());
+      data.put("code", student.getCode());
+      data.put("name", student.getName());
+      data.put("grade", student.getGrade().getName());
 
-            var eventDto = new EventDetailDto(
-                event.getId(),
-                event.getGrade().getName(),
-                event.getDetail().getName(),
-                event.getStatus().getValue(),
-                event.getData(),
-                eventComments
-            );
-            return eventDto;
-          })
-        .toList();
+      List<HashMap<String, Object>> events =
+          student.getEvents().stream().filter(event -> !event.getIsDeleted())
+              .sorted(Comparator.comparing(EventDetail::getCreatedAt)).map(event -> {
+                var hashMap = new HashMap<String, Object>();
+                var numberOfComments =
+                    event.getComments().stream().filter(comment -> !comment.getIsDeleted()).count();
 
-      var hashtags = student.getHashtags().stream()
-        .map(Hashtag::toDto)
-        .sorted(Comparator.comparing(HashtagDto::name))
-        .toList();
+                hashMap.put("id", event.getId());
+                hashMap.put("grade", event.getGrade().getName());
+                hashMap.put("name", event.getDetail().getName());
+                hashMap.put("status", event.getStatus().getValue());
+                hashMap.put("comments", numberOfComments);
+                return hashMap;
+              }).toList();
 
+      data.put("events", events);
 
-      var result = new StudentEventResponseDto(
-            student.getCode(), 
-            student.getName(),
-            student.getGrade().getName(), 
-            events, 
-            hashtags
-          );
-      // @formatter:on
-      return result;
+      var hashtags = student.getHashtags().stream().map(Hashtag::toDto)
+          .sorted(Comparator.comparing(HashtagDto::name)).toList();
+
+      data.put("hashtags", hashtags);
+
+      return data;
     }
     return null;
 
