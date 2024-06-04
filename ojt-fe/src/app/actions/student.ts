@@ -3,7 +3,6 @@
 import HttpClient from "@/configs/http-client.config";
 import {KeyPart, OjtEventStatus, PAGE_SIZE} from "@/constants";
 import type {
-    EventDetail,
     Page,
     StudentEventResponse,
     StudentsRequest,
@@ -27,7 +26,6 @@ export const getStudents = unstable_cache(
             pageNumber: 0,
             pageSize: PAGE_SIZE,
         });
-        console.log(data);
         return data;
     },
     [KeyPart.Students]
@@ -38,17 +36,15 @@ export const getStudents = unstable_cache(
  * @param studentCode Student code
  * @returns Student Response
  */
-export const getStudentByCode = 
-// unstable_cache(
+export const getStudentByCode = unstable_cache(
     async (studentCode: string) => {
         const data = await HttpClient.get<StudentEventResponse>(
             `/student/${studentCode}`
         );
         return data;
-    }
-//     ,
-//     [KeyPart.Student.Default]
-// );
+    },
+    [KeyPart.Student.Default]
+);
 
 /**
  * Update Event Status

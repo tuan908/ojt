@@ -47,10 +47,14 @@ export default async function Page(props: DynamicPageProps) {
                 {/* Student Info */}
 
                 <Suspense fallback={<>Loading student info...</>}>
-                    <StudentInfo auth={auth} info={{code: info?.code,
-                        name: info?.name,
-                        grade: info?.grade
-                    }} />
+                    <StudentInfo
+                        auth={auth}
+                        info={{
+                            code: info?.code,
+                            name: info?.name,
+                            grade: info?.grade,
+                        }}
+                    />
                 </Suspense>
 
                 {/* ?? */}

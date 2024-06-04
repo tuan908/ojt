@@ -7,6 +7,11 @@ import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
 import {startTransition, useState} from "react";
 
+type CommentPayload = Pick<
+    Comment,
+    "id" | "content" | "eventDetailId" | "username"
+>;
+
 interface BubbleMessageProps {
     comment: Comment;
     isCommentOfActiveUser: boolean;
@@ -15,15 +20,21 @@ interface BubbleMessageProps {
         isEditing: boolean;
     };
     setEditState: (value: {id: number; isEditing: boolean}) => void;
-    setComment: (
-        data: Pick<Comment, "id" | "content" | "eventDetailId" | "username">
-    ) => void;
+    setComment: (data: CommentPayload) => void;
     comments: Comment[];
     setComments: (comments: Comment[]) => void;
 }
 
 export default function BubbleMessage(props: BubbleMessageProps) {
-    const {comment, isCommentOfActiveUser} = props;
+    const {
+        comment,
+        isCommentOfActiveUser,
+        editState,
+        setEditState,
+        setComment,
+        comments,
+        setComments,
+    } = props;
     const [show, setShow] = useState(false);
 
     const handleOnMouseEnter = () => {

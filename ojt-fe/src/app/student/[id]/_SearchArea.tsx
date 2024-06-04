@@ -9,7 +9,12 @@ import {
     type StudentsResponse,
 } from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
-import {Pagination, type MenuProps, type SxProps, type Theme} from "@mui/material";
+import {
+    Pagination,
+    type MenuProps,
+    type SxProps,
+    type Theme,
+} from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
@@ -58,7 +63,9 @@ const sx: SxProps<Theme> = {
 
 export default function SearchArea(props: SearchAreaProps) {
     const router = useRouter();
-    const [data, setData] = useState<StudentEventResponse["events"]>(props.data.events);
+    const [data, setData] = useState<StudentEventResponse["events"]>(
+        props.data.events
+    );
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
         under_reviewing: false,

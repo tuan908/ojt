@@ -14,7 +14,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import Utils from "@/utils";
-import {EventDetail, StudentEventResponse, type StudentsResponse} from "@/types/student.types";
+import type {StudentEventResponse} from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -192,9 +192,7 @@ export default function EventGrid({
                                                 }
                                             >
                                                 <Badge
-                                                    badgeContent={
-                                                        item.comments
-                                                    }
+                                                    badgeContent={item.comments}
                                                     color="error"
                                                 >
                                                     <Notifications
