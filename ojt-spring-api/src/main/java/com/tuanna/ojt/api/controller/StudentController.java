@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.tuanna.ojt.api.constants.OjtResponseCode;
+import com.tuanna.ojt.api.constant.Constant;
+import com.tuanna.ojt.api.constant.ResponseCode;
 import com.tuanna.ojt.api.dto.AddCommentDto;
 import com.tuanna.ojt.api.dto.CommentDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
@@ -24,7 +25,7 @@ import com.tuanna.ojt.api.service.StudentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1/student")
+@RequestMapping(path = Constant.API_BASE_PATH)
 @RequiredArgsConstructor
 public class StudentController {
 
@@ -32,14 +33,14 @@ public class StudentController {
 
   private final CommentService commentService;
 
-  @PostMapping
+  @PostMapping(path = "/students")
   @ResponseBody
   public ResponseEntity<?> getStudentEvents(@RequestBody StudentEventRequestDto dto) {
     var data = this.studentService.getEvents(dto);
     return ResponseEntity.ok(data);
   }
 
-  @GetMapping("/{code}")
+  @GetMapping("/student/{code}")
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetail(@PathVariable("code") String code)
       throws ResultNotFoundException {
@@ -48,7 +49,7 @@ public class StudentController {
   }
 
 
-  @GetMapping("/{code}/q")
+  @GetMapping("/student/{code}/q")
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable("code") String code,
       @RequestParam(value = "grade", required = false) String grade,
@@ -61,14 +62,14 @@ public class StudentController {
   }
 
 
-  @PostMapping(path = "/event/register")
+  @PostMapping(path = "/student/event/register")
   @ResponseBody
   public ResponseEntity<?> register(@RequestBody RegisterEventDto dto) {
     var result = this.studentService.registerOrUpdateEvent(dto);
 
     // @formatter:off
     var data = new SuccessResponseDto(
-          OjtResponseCode.SUCCESS.getValue(),
+          ResponseCode.SUCCESS.getValue(),
           "Created",
           "Created event no" + result.id(),
           "/event/" + result.id()
@@ -78,13 +79,13 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
 
-  @PostMapping(path = "/event/detail")
+  @PostMapping(path = "/student/event/detail")
   public ResponseEntity<?> updateStatus(@RequestBody UpdateEventStatusDto dto) {
     this.studentService.updateEventStatus(dto);
 
     // @formatter:off
     var data = new SuccessResponseDto(
-        OjtResponseCode.SUCCESS.getValue(),
+        ResponseCode.SUCCESS.getValue(),
         "Updated", 
         "Updated status for event " + dto.id(), 
         "/student/" + dto.studentId()
@@ -94,7 +95,7 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
 
-  @DeleteMapping(path = "/{code}/event/{id}")
+  @DeleteMapping(path = "/student/{code}/event/{id}")
   public ResponseEntity<?> deleteEventDetailById(@PathVariable(value = "code") String code,
       @PathVariable(value = "id") Long id) {
     var updatedList = this.studentService.deleteEventById(code, id);
@@ -102,26 +103,26 @@ public class StudentController {
     return ResponseEntity.ok().body(updatedList);
   }
 
-  @GetMapping(path = "/event/{id}")
+  @GetMapping(path = "/student/event/{id}")
   public ResponseEntity<?> getStudentEventDetailById(@PathVariable(value = "id") Long id) {
     var result = this.studentService.getStudentEventById(id);
     return ResponseEntity.ok(result);
   }
 
-  @PostMapping("/event/comments")
+  @PostMapping("/student/event/comments")
   public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
     final var data = this.commentService.add(dto);
 
     return ResponseEntity.ok().body(data);
   }
 
-  @DeleteMapping("/event/comments/{id}")
+  @DeleteMapping("/student/event/comments/{id}")
   public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id) {
     this.commentService.delete(id);
 
     // @formatter:off
     var data = new SuccessResponseDto(
-        OjtResponseCode.SUCCESS.getValue(),
+        ResponseCode.SUCCESS.getValue(),
         "Deleted", 
         "Deleted comment " + id, 
         "/student/comments/" + id
@@ -131,7 +132,7 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
   
-  @PostMapping("/event/comments/p")
+  @PostMapping("/student/event/comments/p")
   public ResponseEntity<?> editComment(@RequestBody CommentDto commentDto) {
 	  var result = this.commentService.update(commentDto);
 	  var map = new HashMap<String, Object>();

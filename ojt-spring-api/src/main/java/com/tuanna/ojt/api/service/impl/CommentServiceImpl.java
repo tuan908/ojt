@@ -93,9 +93,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     comment.setContent(commentDto.content());
-	comment.setUpdatedAt(java.time.LocalDateTime.now());
-	this.commentRepository.saveAndFlush(comment);
-	return comment.toDto();
+    comment.setUpdatedAt(java.time.LocalDateTime.now());
+    this.commentRepository.saveAndFlush(comment);
+    return comment.toDto();
   }
 
   @Override

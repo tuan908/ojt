@@ -1,8 +1,8 @@
-package com.tuanna.ojt.api.constants.converter;
+package com.tuanna.ojt.api.constant.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import com.tuanna.ojt.api.constants.EventStatus;
+import com.tuanna.ojt.api.constant.EventStatus;
 
 @Converter
 public class EventStatusConverter implements AttributeConverter<EventStatus, Integer> {

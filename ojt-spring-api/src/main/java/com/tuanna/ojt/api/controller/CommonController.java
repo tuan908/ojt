@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.tuanna.ojt.api.constant.Constant;
 import com.tuanna.ojt.api.dto.EventDto;
 import com.tuanna.ojt.api.dto.GradeDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
@@ -13,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 
 @RestController
-@RequestMapping(path = "/api/v1/common")
+@RequestMapping(path = Constant.API_BASE_PATH + "/common")
 @RequiredArgsConstructor
 public class CommonController {
 

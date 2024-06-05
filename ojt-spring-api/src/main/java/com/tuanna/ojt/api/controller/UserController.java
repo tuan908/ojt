@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.tuanna.ojt.api.constant.Constant;
 import com.tuanna.ojt.api.dto.UserDto;
 import com.tuanna.ojt.api.exception.ResultNotFoundException;
 import com.tuanna.ojt.api.service.UserService;
@@ -13,7 +14,7 @@ import com.tuanna.ojt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "/api/v1/user")
+@RequestMapping(path = Constant.API_BASE_PATH +"/user")
 @RequiredArgsConstructor
 public class UserController {
 

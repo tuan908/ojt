@@ -1,4 +1,4 @@
-package com.tuanna.ojt.api.constants;
+package com.tuanna.ojt.api.constant;
 
 public enum UserRole {
 

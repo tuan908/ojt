@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.CsrfConfig
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import com.tuanna.ojt.api.constant.Constant;
 
 @Configuration
 @EnableWebSecurity
@@ -16,9 +17,10 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+        final String pattern = Constant.API_BASE_PATH + "/**";
         http.csrf(CsrfConfigurer::disable).cors(Customizer.withDefaults())
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/api/v1/**")
-                        .permitAll().anyRequest().authenticated());
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(pattern).permitAll()
+                        .anyRequest().authenticated());
 
         return http.build();
     }

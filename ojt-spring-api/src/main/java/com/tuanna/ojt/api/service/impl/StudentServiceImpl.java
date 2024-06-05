@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedModel;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import com.tuanna.ojt.api.constants.EventStatus;
+import com.tuanna.ojt.api.constant.EventStatus;
 import com.tuanna.ojt.api.dto.EventDetailDto;
 import com.tuanna.ojt.api.dto.HashtagDto;
 import com.tuanna.ojt.api.dto.RegisterEventDto;
@@ -28,31 +30,23 @@ import com.tuanna.ojt.api.repository.EventDetailRepository;
 import com.tuanna.ojt.api.repository.StudentRepository;
 import com.tuanna.ojt.api.service.CommonService;
 import com.tuanna.ojt.api.service.StudentService;
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StudentServiceImpl implements StudentService {
 
-  private final EntityManager entityManager;
+  private final @NonNull EntityManager entityManager;
 
-  private final StudentRepository studentRepository;
+  private final @NonNull StudentRepository studentRepository;
 
-  private final EventDetailRepository eventDetailRepository;
+  private final @NonNull EventDetailRepository eventDetailRepository;
 
-  private final CommonService commonService;
-
-  public StudentServiceImpl(final EntityManager entityManager, final CommonService commonService,
-      final StudentRepository studentRepository,
-      final EventDetailRepository eventDetailRepository) {
-    this.entityManager = entityManager;
-    this.commonService = commonService;
-    this.studentRepository = studentRepository;
-    this.eventDetailRepository = eventDetailRepository;
-  };
+  private final @NonNull CommonService commonService;
 
   @Override
-  public PagedModel<HashMap<String, Object>> getEvents(StudentEventRequestDto dto) {
+  public PagedModel<?> getEvents(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
     var sql = new StringBuilder();
     sql.append("""
@@ -60,11 +54,11 @@ public class StudentServiceImpl implements StudentService {
         	s
         from
         	com.tuanna.ojt.api.entity.Student s
-              left join fetch s.events
-              left join fetch s.hashtags
-            where
-              1 = 1
-        """);
+        left join fetch s.events
+        left join fetch s.hashtags
+        where
+          1 = 1
+    """);
 
     if (StringUtils.hasText(dto.name())) {
       sql.append(" and s.name = :studentName");
@@ -81,7 +75,7 @@ public class StudentServiceImpl implements StudentService {
       parameters.put("eventName", dto.event());
     }
 
-    if (dto.hashtags() != null && dto.hashtags().size() > 0) {
+    if (dto.hashtags() != null && !dto.hashtags().isEmpty()) {
       sql.append(" and element(s.hashtags).name in :hashtags ");
       parameters.put("hashtags", dto.hashtags());
     }
@@ -94,10 +88,13 @@ public class StudentServiceImpl implements StudentService {
       query.setParameter(key, parameters.get(key));
     }
 
-    var page =
-        new PagedModel<>(new PageImpl<>(query.getResultStream().map(Student::toDto).toList()));
+    var data = query.getResultStream().map(Student::toDto).toList();
 
-    return page;
+    var pageImpl = new PageImpl<>(data);
+
+    var pagedModel = new PagedModel<>(pageImpl);
+
+    return pagedModel;
   }
 
   @Override

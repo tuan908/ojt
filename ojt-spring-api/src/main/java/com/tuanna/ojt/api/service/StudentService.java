@@ -12,7 +12,7 @@ import com.tuanna.ojt.api.dto.UpdateEventStatusDto;
 
 public interface StudentService {
 
-  PagedModel<HashMap<String, Object>> getEvents(StudentEventRequestDto dto);
+  PagedModel<?> getEvents(StudentEventRequestDto dto);
 
   HashMap<String, Object> getEventsByStudentCode(String code);
 

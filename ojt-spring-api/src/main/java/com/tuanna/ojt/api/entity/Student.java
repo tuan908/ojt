@@ -1,6 +1,5 @@
 package com.tuanna.ojt.api.entity;
 
-import java.util.HashMap;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -16,6 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import com.tuanna.ojt.api.dto.StudentEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -61,7 +61,7 @@ public class Student extends BaseEntity {
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User user;
-  
+
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;
 
@@ -79,19 +79,13 @@ public class Student extends BaseEntity {
   public int hashCode() {
     return this.getClass().hashCode();
   }
-  
-  public HashMap<String, Object> toDto() {
+
+  /** Convert to dto from entity */
+  public StudentEvent toDto() {
     var events = this.getEvents().stream().map(event -> event.getDetail().getName()).toList();
     var hashtags = this.getHashtags().stream().map(Hashtag::toDto).toList();
 
-    var dto = new HashMap<String, Object>();
-
-    dto.put("code", this.code);
-    dto.put("name", this.name);
-    dto.put("grade", this.grade.getName());
-    dto.put("events", String.join(", ", events));
-    dto.put("hashtags", hashtags);
-
-    return dto;
+    return new StudentEvent(this.id, this.code, this.name, this.grade.getName(),
+        String.join(", ", events), hashtags);
   }
 }

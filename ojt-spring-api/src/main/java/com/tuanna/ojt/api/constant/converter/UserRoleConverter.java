@@ -1,9 +1,8 @@
-package com.tuanna.ojt.api.constants.converter;
-
-import com.tuanna.ojt.api.constants.UserRole;
+package com.tuanna.ojt.api.constant.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import com.tuanna.ojt.api.constant.UserRole;
 
 @Converter
 public class UserRoleConverter implements AttributeConverter<UserRole, String> {
