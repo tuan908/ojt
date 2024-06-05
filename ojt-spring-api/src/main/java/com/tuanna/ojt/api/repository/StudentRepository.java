@@ -18,15 +18,19 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 	Optional<Student> findByUsername(@Param(value = "username") String username);
 	
 	@Query(value = """
-        select 
-          s 
-        from 
-          com.tuanna.ojt.api.entity.Student s 
-        left join fetch
-	      s.events
-        where 
-          1 = 1 
-          and s.code = :code 
+      select 
+        s 
+      from 
+        com.tuanna.ojt.api.entity.Student s 
+        left join fetch s.events ev
+        join fetch ev.detail evd
+        left join fetch ev.comments evc
+        join fetch s.user u
+        left join fetch s.hashtags h
+        left join fetch s.grade g
+      where 
+        1 = 1 
+        and s.code = :code
 	""")
 	Optional<Student> findByCode(@Param(value = "code") String code);
 }

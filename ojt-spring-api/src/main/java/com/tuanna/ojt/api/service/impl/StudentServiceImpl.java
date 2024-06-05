@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jakarta.persistence.EntityManager;
+import org.hibernate.jpa.AvailableHints;
+import org.hibernate.jpa.QueryHints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedModel;
@@ -34,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class StudentServiceImpl implements StudentService {
 
   private final @NonNull EntityManager entityManager;
@@ -50,15 +52,18 @@ public class StudentServiceImpl implements StudentService {
     var parameters = new HashMap<String, Object>();
     var sql = new StringBuilder();
     sql.append("""
-        select
-        	s
-        from
-        	com.tuanna.ojt.api.entity.Student s
-        left join fetch s.events
-        left join fetch s.hashtags
-        where
-          1 = 1
-    """);
+          select 
+            s 
+          from 
+            com.tuanna.ojt.api.entity.Student s 
+            left join fetch s.events ev 
+            join fetch ev.detail 
+            left join fetch s.hashtags h 
+            join fetch s.user u 
+            join fetch s.grade g 
+          where 
+            1 = 1
+        """);
 
     if (StringUtils.hasText(dto.name())) {
       sql.append(" and s.name = :studentName");
@@ -87,6 +92,8 @@ public class StudentServiceImpl implements StudentService {
     for (String key : parameters.keySet()) {
       query.setParameter(key, parameters.get(key));
     }
+    
+    query.setHint(AvailableHints.HINT_CACHEABLE, true);
 
     var data = query.getResultStream().map(Student::toDto).toList();
 
