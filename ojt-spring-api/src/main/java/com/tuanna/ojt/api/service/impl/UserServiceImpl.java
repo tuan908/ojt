@@ -1,5 +1,6 @@
 package com.tuanna.ojt.api.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,10 +11,12 @@ import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.UserService;
+import lombok.RequiredArgsConstructor;
 import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -21,12 +24,6 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	private final EntityManager entityManager;
-
-	public UserServiceImpl(final EntityManager entityManager, UserRepository userRepository, final PasswordEncoder pe) {
-		this.entityManager = entityManager;
-		this.userRepository = userRepository;
-		this.passwordEncoder = pe;
-	}
 
 	@Override
 	public UserDto findByUsername(UserDto request) {

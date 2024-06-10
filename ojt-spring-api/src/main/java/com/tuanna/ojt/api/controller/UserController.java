@@ -14,7 +14,7 @@ import com.tuanna.ojt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = Constant.API_BASE_PATH +"/user")
+@RequestMapping(path = Constant.API_BASE_PATH + "/user")
 @RequiredArgsConstructor
 public class UserController {
 

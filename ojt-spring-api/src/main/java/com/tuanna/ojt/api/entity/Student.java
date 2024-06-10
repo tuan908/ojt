@@ -43,7 +43,7 @@ public class Student extends BaseEntity {
   @Column(columnDefinition = "text")
   private String name;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   // @formatter:off
   @JoinTable(
       name = "ojt_student_hashtag", 
@@ -87,5 +87,19 @@ public class Student extends BaseEntity {
 
     return new StudentEvent(this.id, this.code, this.name, this.grade.getName(),
         String.join(", ", events), hashtags);
+  }
+
+  public void addHashtag(Hashtag hashtag) {
+    this.hashtags.add(hashtag);
+    hashtag.getStudents().add(this);
+  }
+
+  public void removeHashtag(Long hashtagId) {
+    var hashtag =
+        this.hashtags.stream().filter(t -> t.getId() == hashtagId).findFirst().orElse(null);
+    if (hashtag != null) {
+      this.hashtags.remove(hashtag);
+      hashtag.getStudents().remove(this);
+    }
   }
 }

@@ -1,16 +1,18 @@
 package com.tuanna.ojt.api.entity;
 
 import java.util.Set;
-import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.NaturalIdCache;
-import com.tuanna.ojt.api.dto.HashtagDto;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.NaturalIdCache;
+import com.tuanna.ojt.api.dto.HashtagDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +40,7 @@ public class Hashtag extends BaseEntity {
 
   private String color;
 
-  @ManyToMany(mappedBy = "hashtags")
+  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "hashtags")
   private Set<Student> students;
   
   public HashtagDto toDto() {

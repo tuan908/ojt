@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import jakarta.persistence.EntityManager;
-import org.hibernate.jpa.AvailableHints;
-import org.hibernate.jpa.QueryHints;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.web.PagedModel;
@@ -93,7 +91,8 @@ public class StudentServiceImpl implements StudentService {
       query.setParameter(key, parameters.get(key));
     }
     
-    query.setHint(AvailableHints.HINT_CACHEABLE, true);
+    query.setFirstResult((dto.pageNumber() - 1) * dto.pageSize());
+    query.setMaxResults(dto.pageSize());
 
     var data = query.getResultStream().map(Student::toDto).toList();
 
@@ -108,39 +107,38 @@ public class StudentServiceImpl implements StudentService {
   public HashMap<String, Object> getEventsByStudentCode(String code) {
     var student = this.studentRepository.findByCode(code).orElse(null);
 
-    if (student != null) {
-      var data = new HashMap<String, Object>();
-      data.put("id", student.getId());
-      data.put("code", student.getCode());
-      data.put("name", student.getName());
-      data.put("grade", student.getGrade().getName());
-
-      List<HashMap<String, Object>> events =
-          student.getEvents().stream().filter(event -> !event.getIsDeleted())
-              .sorted(Comparator.comparing(EventDetail::getCreatedAt)).map(event -> {
-                var hashMap = new HashMap<String, Object>();
-                var numberOfComments =
-                    event.getComments().stream().filter(comment -> !comment.getIsDeleted()).count();
-
-                hashMap.put("id", event.getId());
-                hashMap.put("grade", event.getGrade().getName());
-                hashMap.put("name", event.getDetail().getName());
-                hashMap.put("status", event.getStatus().getValue());
-                hashMap.put("comments", numberOfComments);
-                return hashMap;
-              }).toList();
-
-      data.put("events", events);
-
-      var hashtags = student.getHashtags().stream().map(Hashtag::toDto)
-          .sorted(Comparator.comparing(HashtagDto::name)).toList();
-
-      data.put("hashtags", hashtags);
-
-      return data;
+    if (student == null) {
+      return null;
     }
-    return null;
+    var data = new HashMap<String, Object>();
+    data.put("id", student.getId());
+    data.put("code", student.getCode());
+    data.put("name", student.getName());
+    data.put("grade", student.getGrade().getName());
 
+    List<HashMap<String, Object>> events =
+        student.getEvents().stream().filter(event -> !event.getIsDeleted())
+            .sorted(Comparator.comparing(EventDetail::getCreatedAt)).map(event -> {
+              var hashMap = new HashMap<String, Object>();
+              var numberOfComments =
+                  event.getComments().stream().filter(comment -> !comment.getIsDeleted()).count();
+
+              hashMap.put("id", event.getId());
+              hashMap.put("grade", event.getGrade().getName());
+              hashMap.put("name", event.getDetail().getName());
+              hashMap.put("status", event.getStatus().getValue());
+              hashMap.put("comments", numberOfComments);
+              return hashMap;
+            }).toList();
+
+    data.put("events", events);
+
+    var hashtags = student.getHashtags().stream().map(Hashtag::toDto)
+        .sorted(Comparator.comparing(HashtagDto::name)).toList();
+
+    data.put("hashtags", hashtags);
+
+    return data;
   }
 
   @Override
