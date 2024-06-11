@@ -1,6 +1,6 @@
-import {getEvents, getGrades} from "@/app/actions/common";
-import {getValidToken} from "@/app/actions/event";
-import {getStudentByCode} from "@/app/actions/student";
+import {getEvents, getGrades} from "@/app/actions/common.action";
+import {getValidToken} from "@/app/actions/event.action";
+import {getStudentByCode} from "@/app/actions/student.action";
 import PageWrapper from "@/components/PageWrapper";
 import {type DynamicPageProps} from "@/types";
 import {CircularProgress} from "@mui/material";

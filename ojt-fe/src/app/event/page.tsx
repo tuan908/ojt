@@ -7,7 +7,7 @@ import {
     type AddCommentPayload,
     type Comment,
     type RegisterEvent,
-} from "@/app/actions/event";
+} from "@/app/actions/event.action";
 import {
     ITEM_HEIGHT,
     ITEM_PADDING_TOP,
@@ -15,7 +15,7 @@ import {
     OjtUserRole,
 } from "@/constants";
 
-import {getEventDetailById} from "@/app/actions/event";
+import {getEventDetailById} from "@/app/actions/event.action";
 import OjtComment from "@/components/BubbleMessage";
 import Textarea from "@/components/Textarea";
 import {useAuth} from "@/hooks/useAuth";
@@ -48,7 +48,7 @@ import {
     getEvents,
     getHashtags,
     HashtagPayload,
-} from "../actions/common";
+} from "../actions/common.action";
 
 const initComment = {
     id: -1,

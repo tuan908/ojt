@@ -1,6 +1,6 @@
 "use client";
 
-import {logOut} from "@/app/actions/auth";
+import {logOut} from "@/app/actions/auth.action";
 import PowerSettingsNew from "@mui/icons-material/PowerSettingsNew";
 
 export default function LogoutButton() {

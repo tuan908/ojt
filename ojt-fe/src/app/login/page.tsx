@@ -15,7 +15,7 @@ import {
     useState,
     type SyntheticEvent,
 } from "react";
-import {login} from "../actions/auth";
+import {login} from "../actions/auth.action";
 
 type LoginFormState = {
     username: FormDataEntryValue;

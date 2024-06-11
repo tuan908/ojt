@@ -1,5 +1,5 @@
-import {getEvents, getGrades, getHashtags} from "@/app/actions/common";
-import {getStudents} from "@/app/actions/student";
+import {getEvents, getGrades, getHashtags} from "@/app/actions/common.action";
+import {getStudents} from "@/app/actions/student.action";
 import PageWrapper from "@/components/PageWrapper";
 import {Metadata} from "next";
 import SearchArea from "./_SearchArea";

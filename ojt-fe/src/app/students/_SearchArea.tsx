@@ -1,7 +1,11 @@
 "use client";
 
-import type {Grade, HashtagPayload, StudentEvent} from "@/app/actions/common";
-import {getStudents} from "@/app/actions/student";
+import type {
+    Grade,
+    HashtagPayload,
+    StudentEvent,
+} from "@/app/actions/common.action";
+import {getStudents} from "@/app/actions/student.action";
 import Hashtag from "@/components/Hashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
 import json from "@/dictionaries/jp.json";

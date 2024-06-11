@@ -1,7 +1,7 @@
 "use client";
 
-import {deleteEventDetailById} from "@/app/actions/event";
-import {updateEventStatus} from "@/app/actions/student";
+import {deleteEventDetailById} from "@/app/actions/event.action";
+import {updateEventStatus} from "@/app/actions/student.action";
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";
 import {StatusLabel} from "@/components/StatusLabel";

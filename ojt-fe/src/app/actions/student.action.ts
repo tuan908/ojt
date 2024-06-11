@@ -15,36 +15,37 @@ import {revalidatePath, unstable_cache} from "next/cache";
  * @param dto Request Dto
  * @returns Student List
  */
-export const getStudents = unstable_cache(
-    async (dto?: StudentsRequest) => {
-        // Use raw dto instead of JSON.stringify(dto) - dto already parse
-        // to JSON string in fetchNoCache
-        const body = !!dto ? dto : {};
+export const getStudents = async (dto?: StudentsRequest) => {
+    // Use raw dto instead of JSON.stringify(dto) - dto already parse
+    // to JSON string in fetchNoCache
+    let body: Record<string, unknown> | undefined;
 
-        const data = await HttpClient.post<Page<StudentsResponse>>("/student", {
-            ...body,
-            pageNumber: 0,
-            pageSize: PAGE_SIZE,
-        });
-        return data;
-    },
-    [KeyPart.Students]
-);
+    if (!dto) {
+        body = {};
+    } else {
+        body = dto;
+    }
+
+    const data = await HttpClient.post<Page<StudentsResponse>>("/students", {
+        ...body,
+        pageNumber: 3,
+        pageSize: PAGE_SIZE,
+    });
+    console.log(data)
+    return data;
+};
 
 /**
  * Get student by code
  * @param studentCode Student code
  * @returns Student Response
  */
-export const getStudentByCode = unstable_cache(
-    async (studentCode: string) => {
-        const data = await HttpClient.get<StudentEventResponse>(
-            `/student/${studentCode}`
-        );
-        return data;
-    },
-    [KeyPart.Student.Default]
-);
+export const getStudentByCode = async (studentCode: string) => {
+    const data = await HttpClient.get<StudentEventResponse>(
+        `/student/${studentCode}`
+    );
+    return data;
+};
 
 /**
  * Update Event Status

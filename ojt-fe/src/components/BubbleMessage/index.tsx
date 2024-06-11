@@ -1,5 +1,5 @@
-import {type Comment} from "@/app/actions/event";
-import {deleteComment} from "@/app/actions/student";
+import {type Comment} from "@/app/actions/event.action";
+import {deleteComment} from "@/app/actions/student.action";
 import Button from "@/components/Button";
 import Utils from "@/utils";
 import Delete from "@mui/icons-material/Delete";

@@ -1,4 +1,4 @@
-import {type UserInfo} from "@/app/actions/auth";
+import {type UserInfo} from "@/app/actions/auth.action";
 import {type PayloadAction} from "@reduxjs/toolkit";
 import {createAppSlice} from "../../configs/base-slice.config";
 

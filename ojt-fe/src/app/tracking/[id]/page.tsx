@@ -1,5 +1,5 @@
-import {getGrades, getHashtags} from "@/app/actions/common";
-import {getStudentByCode} from "@/app/actions/student";
+import {getGrades, getHashtags} from "@/app/actions/common.action";
+import {getStudentByCode} from "@/app/actions/student.action";
 import Box from "@/components/Box";
 import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";

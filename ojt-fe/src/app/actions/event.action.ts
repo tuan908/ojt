@@ -69,15 +69,10 @@ export async function addComment(dto: AddCommentPayload) {
     return data;
 }
 
-export const getEventDetailById = unstable_cache(
-    async (id: number) => {
-        const response = await HttpClient.get<EventDetail>(
-            `/student/event/${id}`
-        );
-        return response;
-    },
-    [KeyPart.Student.EventDetail]
-);
+export const getEventDetailById = async (id: number) => {
+    const response = await HttpClient.get<EventDetail>(`/student/event/${id}`);
+    return response;
+};
 
 export async function deleteEventDetailById(
     code: string,

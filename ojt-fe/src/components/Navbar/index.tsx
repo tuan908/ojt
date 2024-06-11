@@ -1,4 +1,4 @@
-import {getValidToken} from "@/app/actions/event";
+import {getValidToken} from "@/app/actions/event.action";
 import {OjtRoute, OjtUserRole} from "@/constants";
 import Avatar from "@mui/material/Avatar";
 import Link from "next/link";

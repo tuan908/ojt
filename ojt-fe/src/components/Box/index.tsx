@@ -67,7 +67,7 @@ export default function Box({
             height: `${height}rem`,
             backgroundColor,
         };
-    }, [fullWidth, width]);
+    }, [backgroundColor, fullWidth, height, width]);
 
     return (
         <div className={className} style={style}>
