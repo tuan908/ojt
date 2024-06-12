@@ -4,7 +4,10 @@ const nextConfig = {
     experimental: {
         scrollRestoration: true,
         ppr: true,
-        reactCompiler: true
+        reactCompiler: true,
+    },
+    compiler: {
+        emotion: true
     }
 };
 

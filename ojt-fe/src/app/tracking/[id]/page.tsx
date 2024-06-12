@@ -1,12 +1,11 @@
 import {getGrades, getHashtags} from "@/app/actions/common.action";
 import {getStudentByCode} from "@/app/actions/student.action";
 import Box from "@/components/Box";
+import DoughnutChart from "@/components/Chart/Doughnut";
+import StackedBarChart from "@/components/Chart/Stacked";
 import {type DynamicPageProps} from "@/types";
 import Avatar from "@mui/material/Avatar";
-import dynamic from "next/dynamic";
 import {Suspense} from "react";
-const DoughnutChart = dynamic(() => import("@/components/Chart/Doughnut"));
-const StackedBarChart = dynamic(() => import("@/components/Chart/Stacked"));
 
 export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
@@ -45,9 +44,7 @@ export default async function Page(props: DynamicPageProps) {
                         </div>
                     </div>
                 </div>
-                <Suspense>
-                    <DoughnutChart text="90" />
-                </Suspense>
+                <DoughnutChart text="90" />
                 <Box width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 gap-y-4 place-content-center place-items-center">
                         {labels
@@ -59,8 +56,9 @@ export default async function Page(props: DynamicPageProps) {
                                       <span
                                           className="w-3 h-3 rounded-full"
                                           style={{backgroundColor: label.color}}
-                                      ></span>
-                                      {label.name}
+                                      >
+                                          {label.name}
+                                      </span>
                                   </li>
                               ))
                             : null}

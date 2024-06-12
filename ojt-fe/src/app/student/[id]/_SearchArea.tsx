@@ -240,11 +240,7 @@ export default function SearchArea(props: SearchAreaProps) {
                 />
             </div>
             <div className="w-full flex justify-end items-center pr-12">
-                <Pagination
-                    count={data.page.totalPage}
-                    variant="outlined"
-                    shape="rounded"
-                />
+                <Pagination count={10} variant="outlined" shape="rounded" />
             </div>
         </>
     );

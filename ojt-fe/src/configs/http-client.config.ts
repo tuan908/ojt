@@ -11,6 +11,20 @@ interface RequestOptions {
 }
 
 export default class HttpClient {
+    private static getRequestOptions = (
+        method: HttpMethod,
+        body?: string
+    ): RequestOptions => {
+        return {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cache: "no-store",
+            body: method === "POST" ? body : undefined,
+        };
+    };
+
     public static nullsToUndefined<T>(
         obj: T
     ): RecursivelyReplaceNullWithUndefined<T> {
@@ -29,18 +43,11 @@ export default class HttpClient {
 
     public static async get<T>(endpoint: string) {
         const url = `${process.env["SPRING_API"]}${endpoint}`;
-        const requestOptions: RequestOptions = {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cache: "no-store",
-        };
 
         noStore();
 
         try {
-            const response = await fetch(url, requestOptions);
+            const response = await fetch(url, this.getRequestOptions("GET"));
             const responseJson = (await response.json()) as T;
             return this.nullsToUndefined(responseJson);
         } catch (error: any) {
@@ -51,18 +58,14 @@ export default class HttpClient {
 
     public static async post<T>(endpoint: string, body?: unknown) {
         const url = `${process.env["SPRING_API"]}${endpoint}`;
-        const requestOptions: RequestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cache: "no-store",
-        };
 
-        requestOptions.body = JSON.stringify(body);
+        noStore();
 
         try {
-            const response = await fetch(url, requestOptions);
+            const response = await fetch(
+                url,
+                this.getRequestOptions("POST", JSON.stringify(body))
+            );
             const responseJson = (await response.json()) as T;
             return this.nullsToUndefined(responseJson);
         } catch (error: any) {
@@ -73,18 +76,9 @@ export default class HttpClient {
 
     public static async delete<T>(endpoint: string, body?: unknown) {
         const url = `${process.env["SPRING_API"]}${endpoint}`;
-        const requestOptions: RequestOptions = {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cache: "no-store",
-        };
-
-        requestOptions.body = JSON.stringify(body);
 
         try {
-            const response = await fetch(url, requestOptions);
+            const response = await fetch(url, this.getRequestOptions("DELETE"));
             const responseJson = (await response.json()) as T;
             return this.nullsToUndefined(responseJson);
         } catch (error: any) {

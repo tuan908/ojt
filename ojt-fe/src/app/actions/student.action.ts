@@ -31,7 +31,7 @@ export const getStudents = async (dto?: StudentsRequest) => {
         pageNumber: 3,
         pageSize: PAGE_SIZE,
     });
-    console.log(data)
+
     return data;
 };
 
