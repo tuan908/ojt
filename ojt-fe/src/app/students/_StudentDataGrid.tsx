@@ -4,7 +4,7 @@ import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import TextHashtag from "@/components/TextHashtag";
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 import type {StudentsResponse} from "@/types/student.types";
 import Analytics from "@mui/icons-material/Analytics";
 import {useRouter} from "next/navigation";
@@ -75,7 +75,7 @@ export default function StudentDataGrid(props: Props) {
                         {rows!?.map(item => {
                             return (
                                 <TableRow
-                                    key={item.code}
+                                    key={item.id}
                                     onMouseDown={event =>
                                         handleRowClick(event, item.code)
                                     }

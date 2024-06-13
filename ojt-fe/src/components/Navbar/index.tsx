@@ -6,7 +6,7 @@ import BackButton from "./BackButton";
 import LogoutButton from "./LogOut";
 import Sidebar from "./Sidebar";
 import UserInfo from "./UserInfo";
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 
 const avatarSx = {
     width: 44,

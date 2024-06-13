@@ -28,7 +28,7 @@ export const getStudents = async (dto?: StudentsRequest) => {
 
     const data = await HttpClient.post<Page<StudentsResponse>>("/students", {
         ...body,
-        pageNumber: 3,
+        pageNumber: 1,
         pageSize: PAGE_SIZE,
     });
 

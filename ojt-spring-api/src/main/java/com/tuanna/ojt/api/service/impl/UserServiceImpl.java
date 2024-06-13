@@ -16,7 +16,7 @@ import jakarta.persistence.EntityManager;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -28,60 +28,41 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto findByUsername(UserDto request) {
 		var queryResult = this.userRepository.findByUsername(request.username());
-
 		return queryResult.map(User::toDto).orElse(null);
-
 	}
 
 	@Override
 	public LoginResponseDto login(LoginDto loginDto) {
 		var sb = new StringBuilder();
 		var user = this.userRepository.findByUsername(loginDto.username()).orElse(null);
-		if (user != null && passwordEncoder.matches(loginDto.password(), user.getPassword())) {
-			sb.setLength(0);
 
-			sb.append("""
-					    select
-					      s
-					    from 
-					      com.tuanna.ojt.api.entity.Student s
-					    where
-					      s.user.id = :id
-					""");
-
-			var query = this.entityManager.createQuery(sb.toString(), Student.class);
-			query.setParameter("id", user.getId());
-			var student = query.getResultStream().findFirst().orElse(null);
-
-			if (student != null) {
-				// @formatter:off
-		        var userDto = new LoginResponseDto(
-					  user.getId(),
-					  user.getName(),
-					  user.getUsername(),
-					  user.getRole().getValue(),
-					  student.getGrade().getName(),
-					  student.getCode()
-	        		);
-		        // @formatter:on
-
-				return userDto;
-			} else {
-				// @formatter:off
-		        var userDto = new LoginResponseDto(
-					  user.getId(),
-					  user.getName(),
-					  user.getUsername(),
-					  user.getRole().getValue(),
-					  null,
-					  null
-	        		);
-		        // @formatter:on
-		        
-				return userDto;
-			}
+		if (user == null || !passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+			return null;
 		}
 
-		return null;
+		sb.setLength(0);
+
+		sb.append("""
+				    select
+				      s
+				    from
+				      com.tuanna.ojt.api.entity.Student s
+				    where
+				      s.user.id = :id
+				""");
+
+		var query = this.entityManager.createQuery(sb.toString(), Student.class);
+		query.setParameter("id", user.getId());
+		var student = query.getResultStream().findFirst().orElse(null);
+
+		if (student != null) {
+			var userDto = new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
+					user.getRole().getValue(), student.getGrade().getName(), student.getCode());
+			return userDto;
+		} else {
+			var userDto = new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
+					user.getRole().getValue(), null, null);
+			return userDto;
+		}
 	}
 }

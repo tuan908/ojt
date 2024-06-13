@@ -239,8 +239,8 @@ export default function SearchArea(props: SearchAreaProps) {
                     code={props.params.id}
                 />
             </div>
-            <div className="w-full flex justify-end items-center pr-12">
-                <Pagination count={10} variant="outlined" shape="rounded" />
+            <div className="w-full flex justify-end items-center px-8 pt-8">
+                <Pagination count={10} variant="text" shape="circular" />
             </div>
         </>
     );

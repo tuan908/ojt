@@ -8,7 +8,7 @@ import type {
 import {getStudents} from "@/app/actions/student.action";
 import Hashtag from "@/components/Hashtag";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
 import type {

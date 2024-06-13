@@ -53,15 +53,18 @@ public class Comment extends BaseEntity {
   }
 
   public CommentDto toDto() {
-    
-    var roleName = switch(this.user.getRole()) {
+
+    var roleName = switch (this.user.getRole()) {
       case COUNSELOR -> "Counselor";
       case PARENT -> "Parent";
       case STUDENT -> "Student";
       case TEACHER -> "Teacher";
       default -> throw new IllegalArgumentException("Invalid input");
     };
-    
+
+    var createdAt =
+        this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
+
     // @formatter:off
     return new CommentDto(
           this.id,
@@ -69,7 +72,7 @@ public class Comment extends BaseEntity {
           this.user.getUsername(),
           roleName,
           this.content,
-          this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS")),
+          createdAt,
           this.isDeleted
         );
     // @formatter:on

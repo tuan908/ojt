@@ -16,7 +16,7 @@ import {
     ListItemText,
 } from "@mui/material";
 import {useState} from "react";
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 
 type SidebarProps = {
     auth?: OjtJwtPayload;

@@ -4,7 +4,7 @@ import {OjtUserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import {usePathname, useRouter} from "next/navigation";
-import {type SyntheticEvent} from "react";
+import {useMemo, type SyntheticEvent} from "react";
 
 export default function BackButton() {
     const {auth} = useAuth();
@@ -12,38 +12,39 @@ export default function BackButton() {
     const router = useRouter();
 
     function handleClick(e: SyntheticEvent) {
+        e.preventDefault();
         router.back();
     }
 
-    const regex = /\/student\/.*/gm;
+    const isShow = useMemo(() => {
+        const regex = /\/student\/.*/gm;
 
-    const isShow = () => {
-        if (regex.test(pathname)) {
-            if (
-                pathname === "/students" &&
-                auth?.role! !== OjtUserRole.Student
-            ) {
-                return false;
-            } else if (auth?.role! === OjtUserRole.Student) {
-                return false;
-            }
+        if (pathname === "/students") {
+            return false;
         }
+
+        if (regex.test(pathname) && auth?.role! === OjtUserRole.Student) {
+            return false;
+        }
+
         return true;
-    };
+    }, [pathname, auth?.role]);
+
+    if (!isShow) {
+        return null;
+    }
 
     return (
         <div className="pr-2 h-full">
-            {isShow() ? (
-                <button
-                    onClick={e => handleClick(e)}
-                    className="border-none outline-none"
-                >
-                    <ArrowBack
-                        className="text-icon-default"
-                        sx={{width: 36, height: 36}}
-                    />
-                </button>
-            ) : null}
+            <button
+                onClick={e => handleClick(e)}
+                className="border-none outline-none"
+            >
+                <ArrowBack
+                    className="text-icon-default"
+                    sx={{width: 36, height: 36}}
+                />
+            </button>
         </div>
     );
 }

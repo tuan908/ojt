@@ -1,6 +1,6 @@
 "use client";
 
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 import Utils from "@/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";

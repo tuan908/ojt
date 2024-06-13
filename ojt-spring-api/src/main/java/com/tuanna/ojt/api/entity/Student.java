@@ -40,9 +40,6 @@ public class Student extends BaseEntity {
   @Column(columnDefinition = "text")
   private String code;
 
-  @Column(columnDefinition = "text")
-  private String name;
-
   @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   // @formatter:off
   @JoinTable(
@@ -85,7 +82,7 @@ public class Student extends BaseEntity {
     var events = this.getEvents().stream().map(event -> event.getDetail().getName()).toList();
     var hashtags = this.getHashtags().stream().map(Hashtag::toDto).toList();
 
-    return new StudentEvent(this.id, this.code, this.name, this.grade.getName(),
+    return new StudentEvent(this.id, this.code, this.user.getName(), this.grade.getName(),
         String.join(", ", events), hashtags);
   }
 
