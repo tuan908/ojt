@@ -1,6 +1,6 @@
 "use client";
 
-import {OjtUserRole} from "@/constants";
+import {UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import {usePathname, useRouter} from "next/navigation";
@@ -23,7 +23,7 @@ export default function BackButton() {
             return false;
         }
 
-        if (regex.test(pathname) && auth?.role! === OjtUserRole.Student) {
+        if (regex.test(pathname) && auth?.role! === UserRole.Student) {
             return false;
         }
 

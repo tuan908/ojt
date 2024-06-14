@@ -3,7 +3,7 @@
 import type {Grade, StudentEvent} from "@/app/actions/common.action";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, OjtEventStatus} from "@/constants";
+import {ITEM_HEIGHT, ITEM_PADDING_TOP, EventStatus} from "@/constants";
 import {
     StudentEventResponse,
     type StudentsResponse,
@@ -79,17 +79,17 @@ export default function SearchArea(props: SearchAreaProps) {
     };
 
     function handleSearch() {
-        let status: OjtEventStatus[] = [];
+        let status: EventStatus[] = [];
         if (check.unconfirmed) {
-            status.push(OjtEventStatus.UNCONFIRMED);
+            status.push(EventStatus.UNCONFIRMED);
         }
 
         if (check.under_reviewing) {
-            status.push(OjtEventStatus.UNDER_REVIEWING);
+            status.push(EventStatus.UNDER_REVIEWING);
         }
 
         if (check.confirmed) {
-            status.push(OjtEventStatus.CONFIRMED);
+            status.push(EventStatus.CONFIRMED);
         }
 
         const promise = getEventsByStudentCodeWithQuery(props.params.id, {

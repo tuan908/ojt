@@ -1,21 +1,22 @@
 "use server";
 
 import HttpClient from "@/configs/http-client.config";
-import {KeyPart, OjtEventStatus, PAGE_SIZE} from "@/constants";
+import {EventStatus, PAGE_SIZE} from "@/constants";
 import type {
     Page,
     StudentEventResponse,
     StudentsRequest,
     StudentsResponse,
 } from "@/types/student.types";
-import {revalidatePath, unstable_cache} from "next/cache";
+import {revalidatePath} from "next/cache";
+import {cache} from "react";
 
 /**
  * Get Student List By Conditions
  * @param dto Request Dto
  * @returns Student List
  */
-export const getStudents = async (dto?: StudentsRequest) => {
+export const getStudents = cache(async (dto?: StudentsRequest) => {
     // Use raw dto instead of JSON.stringify(dto) - dto already parse
     // to JSON string in fetchNoCache
     let body: Record<string, unknown> | undefined;
@@ -33,19 +34,17 @@ export const getStudents = async (dto?: StudentsRequest) => {
     });
 
     return data;
-};
+});
 
 /**
  * Get student by code
- * @param studentCode Student code
+ * @param code Student code
  * @returns Student Response
  */
-export const getStudentByCode = async (studentCode: string) => {
-    const data = await HttpClient.get<StudentEventResponse>(
-        `/student/${studentCode}`
-    );
+export const getStudentByCode = cache(async (code: string) => {
+    const data = await HttpClient.get<StudentEventResponse>(`/student/${code}`);
     return data;
-};
+});
 
 /**
  * Update Event Status
@@ -86,7 +85,7 @@ export const getEventsByStudentCodeWithQuery = async (
     arg: {
         grade?: string;
         eventName?: string;
-        status?: OjtEventStatus[];
+        status?: EventStatus[];
     }
 ) => {
     let queryParams = [];

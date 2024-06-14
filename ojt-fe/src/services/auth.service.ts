@@ -1,7 +1,7 @@
 import {type UserInfo} from "@/app/actions/auth.action";
 import {SignJWT, jwtVerify, type JWTPayload} from "jose";
 
-export type OjtJwtPayload = JWTPayload & {
+export type JwtPayload = JWTPayload & {
     code: string;
     name: string;
     username: string;
@@ -19,12 +19,10 @@ export default class AuthService {
         return new TextEncoder().encode(jwtSecretKey);
     }
 
-    public static async verify(
-        token: string
-    ): Promise<OjtJwtPayload | undefined> {
+    public static async verify(token: string): Promise<JwtPayload | undefined> {
         try {
             const {payload} = await jwtVerify(token, this.getJwtSecretKey());
-            return payload as OjtJwtPayload;
+            return payload as JwtPayload;
         } catch {
             return undefined;
         }

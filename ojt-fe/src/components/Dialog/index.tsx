@@ -38,12 +38,12 @@ export default function Dialog(props: DialogProps) {
         <MuiDialog
             open={open}
             onClose={onClose}
-            aria-labelledby="ojt-dialog-title"
-            aria-describedby="ojt-dialog-description"
+            aria-labelledby="-dialog-title"
+            aria-describedby="-dialog-description"
         >
-            <DialogTitle id="ojt-dialog-title">{title}</DialogTitle>
+            <DialogTitle id="-dialog-title">{title}</DialogTitle>
             <DialogContent>
-                <DialogContentText id="ojt-dialog-description">
+                <DialogContentText id="-dialog-description">
                     {contentText}
                 </DialogContentText>
             </DialogContent>

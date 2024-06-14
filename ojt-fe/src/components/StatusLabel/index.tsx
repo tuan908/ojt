@@ -1,4 +1,4 @@
-import {OjtEventStatus} from "@/constants";
+import {EventStatus} from "@/constants";
 import {useMemo} from "react";
 
 type StatusLabelProps = {
@@ -10,17 +10,17 @@ export function StatusLabel({status}: StatusLabelProps) {
         let labelText = "";
         let backgroundColor = "";
         switch (status) {
-            case OjtEventStatus.UNCONFIRMED:
+            case EventStatus.UNCONFIRMED:
                 labelText = "未確認";
                 backgroundColor = "#33b5e5";
                 break;
 
-            case OjtEventStatus.UNDER_REVIEWING:
+            case EventStatus.UNDER_REVIEWING:
                 labelText = "確認中";
                 backgroundColor = "#ffbb33";
                 break;
 
-            case OjtEventStatus.CONFIRMED:
+            case EventStatus.CONFIRMED:
                 labelText = "修了";
                 backgroundColor = "#00c851";
                 break;

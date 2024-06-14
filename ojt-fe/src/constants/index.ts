@@ -1,15 +1,15 @@
-export enum OjtEntity {
-    User = "ojt_user",
-    Event = "ojt_event",
-    StudentEvent = "ojt_student_event",
-    StudentEventDetail = "ojt_student_event_detail",
-    Grade = "ojt_grade",
-    Hashtag = "ojt_hashtag",
-    StudentHashTag = "ojt_student_hashtag",
-    Comment = "ojt_comment",
+export enum Entity {
+    User = "_user",
+    Event = "_event",
+    StudentEvent = "_student_event",
+    StudentEventDetail = "_student_event_detail",
+    Grade = "_grade",
+    Hashtag = "_hashtag",
+    StudentHashTag = "_student_hashtag",
+    Comment = "_comment",
 }
 
-export enum OjtUserRole {
+export enum UserRole {
     /** 学生 */
     Student = "001",
     /** 家族 */
@@ -20,7 +20,7 @@ export enum OjtUserRole {
     Counselor = "004",
 }
 
-export enum OjtEventStatus {
+export enum EventStatus {
     /** 未確認 */
     UNCONFIRMED = 1,
     /** 確認中 */
@@ -44,7 +44,7 @@ export const SORT_ORDER_ASCENDING = 1;
 /** Sort decrement */
 export const SORT_ORDER_DESCENDING = 1;
 
-export enum OjtRoute {
+export enum Route {
     /** /students */
     Students = "/students",
     /** /event/register */
@@ -60,7 +60,7 @@ export enum OjtRoute {
 /** Empty string - "" */
 export const STRING_EMPTY = "";
 
-export enum OjtScreenMode {
+export enum ScreenMode {
     NEW = 0,
     EDIT = 1,
     CHAT = 2,

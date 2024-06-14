@@ -1,5 +1,5 @@
-import {OjtUserRole} from "@/constants";
-import json from "@/dictionaries/jp.json";
+import {UserRole} from "@/constants";
+import json from "@/i18n/jp.json";
 import {clsx, type ClassValue} from "clsx";
 import {twMerge} from "tailwind-merge";
 
@@ -15,16 +15,16 @@ export default class Utils {
      */
     public static convertRole(role?: string) {
         switch (role) {
-            case OjtUserRole.Counselor:
+            case UserRole.Counselor:
                 return json.role.counselor;
 
-            case OjtUserRole.Parent:
+            case UserRole.Parent:
                 return json.role.parent;
 
-            case OjtUserRole.Student:
+            case UserRole.Student:
                 return json.role.student;
 
-            case OjtUserRole.Teacher:
+            case UserRole.Teacher:
                 return json.role.teacher;
 
             default:

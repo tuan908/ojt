@@ -1,15 +1,15 @@
-import {OjtScreenMode, OjtUserRole} from "@/constants";
-import {type OjtJwtPayload} from "@/services/auth.service";
+import {ScreenMode, UserRole} from "@/constants";
+import {type JwtPayload} from "@/services/auth.service";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Link from "next/link";
 import {type FC} from "react";
 
-type HeaderProps = {auth?: OjtJwtPayload};
+type HeaderProps = {auth?: JwtPayload};
 
-const url = `/event?mode=${OjtScreenMode.NEW}`;
+const url = `/event?mode=${ScreenMode.NEW}`;
 
 const Header: FC<HeaderProps> = async ({auth}) => {
-    if (auth === undefined || auth.role !== OjtUserRole.Student) {
+    if (auth === undefined || auth.role !== UserRole.Student) {
         return null;
     }
 

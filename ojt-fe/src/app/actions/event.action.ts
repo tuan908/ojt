@@ -1,13 +1,13 @@
 "use server";
 
+import HttpClient from "@/configs/http-client.config";
 import AuthService from "@/services/auth.service";
 import {StudentEventResponse, type EventDetail} from "@/types/student.types";
-import {revalidatePath, unstable_cache} from "next/cache";
+import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
+import {cache} from "react";
 import {z} from "zod";
-import {KeyPart} from "@/constants";
-import HttpClient from "@/configs/http-client.config";
 
 const registerEventSchema = z.object({
     username: z.string(),
@@ -69,10 +69,10 @@ export async function addComment(dto: AddCommentPayload) {
     return data;
 }
 
-export const getEventDetailById = async (id: number) => {
+export const getEventDetailById = cache(async (id: number) => {
     const response = await HttpClient.get<EventDetail>(`/student/event/${id}`);
     return response;
-};
+});
 
 export async function deleteEventDetailById(
     code: string,

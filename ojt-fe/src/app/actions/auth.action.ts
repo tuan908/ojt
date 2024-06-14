@@ -1,11 +1,11 @@
 "use server";
 
-import {OjtUserRole} from "@/constants";
+import {UserRole} from "@/constants";
 import AuthService from "@/services/auth.service";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {z} from "zod";
-import json from "@/dictionaries/jp.json";
+import json from "@/i18n/jp.json";
 import HttpClient from "@/configs/http-client.config";
 
 /**
@@ -74,7 +74,7 @@ export async function login(_previousState: any, formData: FormData) {
 
     let redirectPath = "";
 
-    if (user.role !== OjtUserRole.Student) {
+    if (user.role !== UserRole.Student) {
         redirectPath = "/students";
     } else {
         redirectPath = `/student/${user.code}`;

@@ -1,5 +1,5 @@
 import {NextResponse, type NextFetchEvent, type NextRequest} from "next/server";
-import {OjtRoute, OjtUserRole} from "./constants";
+import {Route, UserRole} from "./constants";
 import AuthService from "./services/auth.service";
 
 export const config = {
@@ -17,11 +17,11 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
     const token = request.cookies.get("token");
     const currentPath = request.nextUrl.pathname;
 
-    const loginUrl = new URL(OjtRoute.Login, request.url);
+    const loginUrl = new URL(Route.Login, request.url);
     loginUrl.searchParams.set("from", currentPath);
 
     // Allow access to the login page without authentication
-    if (currentPath === OjtRoute.Login) {
+    if (currentPath === Route.Login) {
         if (token) {
             const maybeValidToken = await AuthService.verify(token.value);
             if (maybeValidToken) {
@@ -47,10 +47,10 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
 function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
     const {role, code} = tokenPayload;
 
-    if (role === OjtUserRole.Student) {
+    if (role === UserRole.Student) {
         return NextResponse.redirect(new URL(`/student/${code}`, request.url));
     } else {
-        return NextResponse.redirect(new URL(OjtRoute.Students, request.url));
+        return NextResponse.redirect(new URL(Route.Students, request.url));
     }
 }
 
@@ -58,7 +58,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
     const {role, code} = tokenPayload;
     const currentPath = request.nextUrl.pathname;
 
-    if (role === OjtUserRole.Student) {
+    if (role === UserRole.Student) {
         if (isAllowedStudentPath(currentPath, code)) {
             return NextResponse.next();
         } else {
@@ -70,9 +70,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
         if (isAllowedNonStudentPath(currentPath)) {
             return NextResponse.next();
         } else {
-            return NextResponse.redirect(
-                new URL(OjtRoute.Students, request.url)
-            );
+            return NextResponse.redirect(new URL(Route.Students, request.url));
         }
     }
 }
@@ -86,7 +84,7 @@ function isAllowedStudentPath(path: string, code: string) {
 }
 
 function isAllowedNonStudentPath(path: string) {
-    const allowedNonStudentPaths = ["/", "/home", "/event", OjtRoute.Students];
+    const allowedNonStudentPaths = ["/", "/home", "/event", Route.Students];
     return (
         allowedNonStudentPaths.includes(path) ||
         path.startsWith("/tracking/") ||

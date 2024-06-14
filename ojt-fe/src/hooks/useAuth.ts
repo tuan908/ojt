@@ -1,11 +1,11 @@
 "use client";
 
-import AuthService, {type OjtJwtPayload} from "@/services/auth.service";
+import AuthService, {type JwtPayload} from "@/services/auth.service";
 import {useEffect, useState} from "react";
 import Cookies from "universal-cookie";
 
 export function useAuth() {
-    const [auth, setAuth] = useState<OjtJwtPayload | undefined>();
+    const [auth, setAuth] = useState<JwtPayload | undefined>();
 
     async function getVerifiedToken() {
         const cookies = new Cookies();

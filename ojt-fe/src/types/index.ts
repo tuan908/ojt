@@ -23,13 +23,13 @@ export type ErrorResponse = {
 };
 
 /**
- * Ojt status code
+ * Status code
  *  - Error
  *  - ResultNotFound
  *  - UpdateError
  *  - UpdateSuccess
  */
-export enum OjtStatusCode {
+export enum StatusCode {
     InternalServerError = 500,
     ResultNotFound = 404,
     Error = 0,

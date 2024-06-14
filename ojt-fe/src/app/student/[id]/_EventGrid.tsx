@@ -9,7 +9,7 @@ import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
-import {OjtEventStatus, OjtScreenMode, OjtUserRole} from "@/constants";
+import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
 import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
@@ -116,7 +116,7 @@ export default function EventGrid({
         id: number
     ) {
         event?.preventDefault();
-        let url = `/event?id=${id}&mode=${OjtScreenMode.CHAT}`;
+        let url = `/event?id=${id}&mode=${ScreenMode.CHAT}`;
         router.push(url);
     }
 
@@ -152,8 +152,8 @@ export default function EventGrid({
                         <TableHead>ステータス</TableHead>
                         <TableHead>通知</TableHead>
                         {[
-                            OjtUserRole.Student.toString(),
-                            OjtUserRole.Counselor.toString(),
+                            UserRole.Student.toString(),
+                            UserRole.Counselor.toString(),
                         ].indexOf(auth?.role!) > -1 ? (
                             <TableHead>アクション</TableHead>
                         ) : null}
@@ -206,8 +206,8 @@ export default function EventGrid({
                                             </Button>
                                         </TableCell>
                                         {[
-                                            OjtUserRole.Student.toString(),
-                                            OjtUserRole.Counselor.toString(),
+                                            UserRole.Student.toString(),
+                                            UserRole.Counselor.toString(),
                                         ].indexOf(auth?.role!) > -1 ? (
                                             <TableCell
                                                 fontSemibold
@@ -215,7 +215,7 @@ export default function EventGrid({
                                             >
                                                 <div className="w-full flex justify-center items-center gap-x-6">
                                                     {auth?.role! ===
-                                                    OjtUserRole.Counselor ? (
+                                                    UserRole.Counselor ? (
                                                         <Button
                                                             onClick={() =>
                                                                 handleOpenUpdateStatusDialog(
@@ -224,37 +224,37 @@ export default function EventGrid({
                                                             }
                                                             disabled={
                                                                 item?.status ===
-                                                                OjtEventStatus.CONFIRMED
+                                                                EventStatus.CONFIRMED
                                                             }
                                                         >
                                                             <Done
                                                                 isDone={
                                                                     item?.status ===
-                                                                    OjtEventStatus.CONFIRMED
+                                                                    EventStatus.CONFIRMED
                                                                 }
                                                             />
                                                         </Button>
                                                     ) : (
                                                         <>
                                                             <Link
-                                                                href={`/event?id=${item.id}&mode=${OjtScreenMode.EDIT}`}
+                                                                href={`/event?id=${item.id}&mode=${ScreenMode.EDIT}`}
                                                                 className={Utils.cn(
                                                                     item.status ===
-                                                                        OjtEventStatus.CONFIRMED &&
+                                                                        EventStatus.CONFIRMED &&
                                                                         "pointer-events-none"
                                                                 )}
                                                             >
                                                                 <Edit
                                                                     disabled={
                                                                         item.status ===
-                                                                        OjtEventStatus.CONFIRMED
+                                                                        EventStatus.CONFIRMED
                                                                     }
                                                                 />
                                                             </Link>
                                                             <Button
                                                                 disabled={
                                                                     item.status ===
-                                                                    OjtEventStatus.CONFIRMED
+                                                                    EventStatus.CONFIRMED
                                                                 }
                                                                 onClick={() =>
                                                                     handleOpenDeleteDialog(
@@ -265,7 +265,7 @@ export default function EventGrid({
                                                                 <Delete
                                                                     disabled={
                                                                         item.status ===
-                                                                        OjtEventStatus.CONFIRMED
+                                                                        EventStatus.CONFIRMED
                                                                     }
                                                                 />
                                                             </Button>

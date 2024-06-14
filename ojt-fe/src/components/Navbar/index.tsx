@@ -1,5 +1,5 @@
 import {getValidToken} from "@/app/actions/event.action";
-import {OjtRoute, OjtUserRole} from "@/constants";
+import {Route, UserRole} from "@/constants";
 import Avatar from "@mui/material/Avatar";
 import Link from "next/link";
 import BackButton from "./BackButton";
@@ -17,8 +17,8 @@ const avatarSx = {
 export default async function Navbar() {
     const auth = await getValidToken();
     const href =
-        auth?.role !== OjtUserRole.Student
-            ? OjtRoute.Students
+        auth?.role !== UserRole.Student
+            ? Route.Students
             : `/student/${auth?.code}`;
     return (
         <nav className="w-full py-2 px-4 flex justify-between items-center z-50 fixed top-0 left-0 shadow-md bg-white">

@@ -1,10 +1,10 @@
 "use client";
 
-import {OjtJwtPayload} from "@/services/auth.service";
+import type {JwtPayload} from "@/services/auth.service";
 import Utils from "@/utils";
 import {useMemo} from "react";
 
-export default function useInfo(auth?: OjtJwtPayload) {
+export default function useInfo(auth?: JwtPayload) {
     const info = useMemo(() => {
         if (auth) {
             return {

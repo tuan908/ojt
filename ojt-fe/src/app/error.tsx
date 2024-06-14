@@ -1,6 +1,6 @@
 "use client";
 
-import {OjtRoute, OjtUserRole} from "@/constants";
+import {Route, UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Link from "next/link";
@@ -11,14 +11,14 @@ export default function Error() {
 
     const href = useMemo(() => {
         if (auth) {
-            if (auth.role === OjtUserRole.Student) {
+            if (auth.role === UserRole.Student) {
                 return `/student/${auth.code}`;
             }
 
-            return OjtRoute.Students;
+            return Route.Students;
         }
 
-        return OjtRoute.Login;
+        return Route.Login;
     }, [auth]);
 
     return (

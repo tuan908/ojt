@@ -1,7 +1,7 @@
 "use client";
 
 import useInfo from "@/hooks/useInfo";
-import {type OjtJwtPayload} from "@/services/auth.service";
+import {type JwtPayload} from "@/services/auth.service";
 import EventIcon from "@mui/icons-material/Event";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -19,7 +19,7 @@ import {useState} from "react";
 import json from "@/i18n/jp.json";
 
 type SidebarProps = {
-    auth?: OjtJwtPayload;
+    auth?: JwtPayload;
 };
 
 export default function Sidebar({auth}: SidebarProps) {
