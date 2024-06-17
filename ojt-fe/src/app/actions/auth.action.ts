@@ -77,7 +77,7 @@ export async function login(_previousState: any, formData: FormData) {
     if (user.role !== UserRole.Student) {
         redirectPath = "/students";
     } else {
-        redirectPath = `/student/${user.code}`;
+        redirectPath = `/students/${user.code}`;
     }
     redirect(redirectPath);
 }

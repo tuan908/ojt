@@ -24,7 +24,7 @@ type HashtagPayload = {
  * @returns Grade List
  */
 const getGrades = cache(
-    async () => await HttpClient.get<Grade[]>("/common/grades")
+    async () => await HttpClient.get<Grade[]>("/common/grades", "node")
 );
 
 /**
@@ -32,7 +32,7 @@ const getGrades = cache(
  * @returns Event List
  */
 const getEvents = cache(
-    async () => await HttpClient.get<StudentEvent[]>("/common/events")
+    async () => await HttpClient.get<StudentEvent[]>("/common/events", "node")
 );
 
 /**
@@ -40,7 +40,8 @@ const getEvents = cache(
  * @returns Hashtag list
  */
 const getHashtags = cache(
-    async () => await HttpClient.get<HashtagPayload[]>("/common/hashtags")
+    async () =>
+        await HttpClient.get<HashtagPayload[]>("/common/hashtags", "node")
 );
 
 export {getEvents, getGrades, getHashtags};

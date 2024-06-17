@@ -1,5 +1,5 @@
-import {type RecursivelyReplaceNullWithUndefined} from "@/types";
-import {unstable_noStore as noStore} from "next/cache";
+import { type RecursivelyReplaceNullWithUndefined } from "@/types";
+import { unstable_noStore as noStore } from "next/cache";
 
 export type HttpMethod = "GET" | "POST" | "DELETE";
 
@@ -41,8 +41,19 @@ export default class HttpClient {
         return obj as any;
     }
 
-    public static async get<T>(endpoint: string) {
-        const url = `${process.env["SPRING_API"]}${endpoint}`;
+    /**
+     * GET
+     * @param endpoint endpoint
+     * @param base base url
+     * @returns Typed response;
+     */
+    public static async get<T>(endpoint: string, base?: "node" | "spring") {
+        let url;
+        if (!base || base == "spring") {
+            url = process.env["SPRING_API"] + endpoint;
+        } else {
+            url = process.env["HONO_API"] + endpoint;
+        }
 
         noStore();
 
@@ -57,7 +68,7 @@ export default class HttpClient {
     }
 
     public static async post<T>(endpoint: string, body?: unknown) {
-        const url = `${process.env["SPRING_API"]}${endpoint}`;
+        const url = process.env["SPRING_API"] + endpoint;
 
         noStore();
 
@@ -75,7 +86,7 @@ export default class HttpClient {
     }
 
     public static async delete<T>(endpoint: string, body?: unknown) {
-        const url = `${process.env["SPRING_API"]}${endpoint}`;
+        const url = process.env["SPRING_API"] + endpoint;
 
         try {
             const response = await fetch(url, this.getRequestOptions("DELETE"));

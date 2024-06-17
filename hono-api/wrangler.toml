@@ -106,3 +106,6 @@ compatibility_date = "2024-06-10"
 # binding = "MY_INDEX"
 # index_name = "my-index"
 node_compat=true
+
+[vars]
+DATABASE_URL="postgresql://tuan908:ch4PFt5iGABb@ep-wandering-fog-71031792-pooler.ap-southeast-1.aws.neon.tech/uit-project-v1?sslmode=require"

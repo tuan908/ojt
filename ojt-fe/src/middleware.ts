@@ -7,9 +7,9 @@ export const config = {
         "/",
         "/home",
         "/students",
-        "/student/:id*",
+        "/students/:id*",
         "/event",
-        "/tracking/:id*",
+        "/trackings/:id*",
     ],
 };
 
@@ -48,7 +48,7 @@ function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
     const {role, code} = tokenPayload;
 
     if (role === UserRole.Student) {
-        return NextResponse.redirect(new URL(`/student/${code}`, request.url));
+        return NextResponse.redirect(new URL(`/students/${code}`, request.url));
     } else {
         return NextResponse.redirect(new URL(Route.Students, request.url));
     }
@@ -63,7 +63,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
             return NextResponse.next();
         } else {
             return NextResponse.redirect(
-                new URL(`/student/${code}`, request.url)
+                new URL(`/students/${code}`, request.url)
             );
         }
     } else {
@@ -76,19 +76,16 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
 }
 
 function isAllowedStudentPath(path: string, code: string) {
-    const allowedStudentPaths = ["/", "/home", "/event", `/student/${code}`];
-    return (
-        allowedStudentPaths.includes(path) ||
-        path.startsWith("/tracking/student")
-    );
+    const allowedStudentPaths = ["/", "/home", "/event", `/students/${code}`];
+    return allowedStudentPaths.includes(path) || path.startsWith("/trackings/");
 }
 
 function isAllowedNonStudentPath(path: string) {
     const allowedNonStudentPaths = ["/", "/home", "/event", Route.Students];
     return (
         allowedNonStudentPaths.includes(path) ||
-        path.startsWith("/tracking/") ||
-        path.startsWith("/student/")
+        path.startsWith("/trackings/") ||
+        path.startsWith("/students/")
     );
 }
 

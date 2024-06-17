@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { Binding } from "..";
 import db from "../db";
@@ -104,6 +104,27 @@ app.get("/:code", async (c) => {
             name: true,
           },
         },
+      },
+    });
+    return c.json(result);
+  } catch (error) {
+    return c.json({ message: "Server error" }, 500);
+  }
+});
+
+app.get("/:code/events/:id", async (c) => {
+  const {code, id} = c.req.param()
+
+  if (!code || !id) {
+    return c.json({ message: "Invalid param" }, 403);
+  }
+
+  try {
+    const result = await db(c.env.DATABASE_URL).query.eventDetail.findFirst({
+      where: sql`${model.eventDetail.id} = ${id} and ${model.eventDetail.isDeleted} = false`,
+      columns: {
+        id: true,
+        data: true,
       },
     });
     return c.json(result);

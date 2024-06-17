@@ -57,7 +57,7 @@ export async function updateEventStatus(dto: {
     studentId: number;
 }) {
     const data = await HttpClient.post("/student/event/detail", dto);
-    revalidatePath(`/student/[id]`, "page");
+    revalidatePath(`/students/[id]`, "page");
     return data;
 }
 
@@ -89,7 +89,7 @@ export const getEventsByStudentCodeWithQuery = async (
     }
 ) => {
     let queryParams = [];
-    let url = `/student/${code}/q?`;
+    let url = `/students/${code}/q?`;
 
     if (arg.grade && arg.grade !== "School Year") {
         queryParams.push(`grade=${arg.grade}`);

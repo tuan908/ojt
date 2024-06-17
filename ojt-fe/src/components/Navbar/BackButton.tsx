@@ -17,7 +17,7 @@ export default function BackButton() {
     }
 
     const isShow = useMemo(() => {
-        const regex = /\/student\/.*/gm;
+        const regex = /\/students\/.*/gm;
 
         if (pathname === "/students") {
             return false;

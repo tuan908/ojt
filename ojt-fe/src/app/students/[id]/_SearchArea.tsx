@@ -3,11 +3,8 @@
 import type {Grade, StudentEvent} from "@/app/actions/common.action";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, EventStatus} from "@/constants";
-import {
-    StudentEventResponse,
-    type StudentsResponse,
-} from "@/types/student.types";
+import {EventStatus, ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import {StudentEventResponse} from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
 import {
     Pagination,
@@ -61,10 +58,15 @@ const sx: SxProps<Theme> = {
     },
 };
 
-export default function SearchArea(props: SearchAreaProps) {
+export default function SearchArea({
+    data: _data,
+    params,
+    events,
+    grades,
+}: SearchAreaProps) {
     const router = useRouter();
     const [data, setData] = useState<StudentEventResponse["events"]>(
-        props.data.events
+        _data.events
     );
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
@@ -92,7 +94,7 @@ export default function SearchArea(props: SearchAreaProps) {
             status.push(EventStatus.CONFIRMED);
         }
 
-        const promise = getEventsByStudentCodeWithQuery(props.params.id, {
+        const promise = getEventsByStudentCodeWithQuery(params.id, {
             grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
             eventName:
                 eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
@@ -156,7 +158,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     <MenuItem value={CLASS_OPTION_DEFAULT}>
                         {CLASS_OPTION_DEFAULT}
                     </MenuItem>
-                    {props.grades!?.map(x => (
+                    {grades!?.map(x => (
                         <MenuItem
                             key={x.id}
                             value={x.name}
@@ -181,7 +183,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     <MenuItem value={EVENT_OPTION_DEFAULT}>
                         {EVENT_OPTION_DEFAULT}
                     </MenuItem>
-                    {props.events!?.map(x => (
+                    {events!?.map(x => (
                         <MenuItem
                             key={x.id}
                             value={x.name}
@@ -233,11 +235,7 @@ export default function SearchArea(props: SearchAreaProps) {
 
             {/* Table */}
             <div className="w-full px-10 pt-6">
-                <EventGrid
-                    data={data!}
-                    studentId={props.data.id}
-                    code={props.params.id}
-                />
+                <EventGrid data={data!} studentId={_data.id} code={params.id} />
             </div>
             <div className="w-full flex justify-end items-center px-8 pt-8">
                 <Pagination count={10} variant="text" shape="circular" />

@@ -23,7 +23,7 @@ export default function StudentDataGrid(props: Props) {
         studentCode?: string
     ) => {
         event?.stopPropagation();
-        const path = `/student/${studentCode}`;
+        const path = `/students/${studentCode}`;
         startTransition(() => {
             router.push(path);
         });
@@ -38,7 +38,7 @@ export default function StudentDataGrid(props: Props) {
         studentCode?: string
     ): void => {
         event?.stopPropagation();
-        const path = `/tracking/${studentCode}`;
+        const path = `/trackings/${studentCode}`;
         startTransition(() => {
             router.push(path);
         });

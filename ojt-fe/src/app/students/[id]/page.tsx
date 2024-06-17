@@ -30,12 +30,12 @@ export async function generateMetadata(
     };
 }
 
-export default async function Page(props: DynamicPageProps) {
+export default async function Page({params}: DynamicPageProps) {
     const [auth, grades, events, info] = await Promise.all([
         getValidToken(),
         getGrades(),
         getEvents(),
-        getStudentByCode(props.params.id),
+        getStudentByCode(params.id),
     ]);
 
     return (
@@ -66,9 +66,9 @@ export default async function Page(props: DynamicPageProps) {
                     }
                 >
                     <SearchArea
-                        params={props.params}
-                        grades={grades}
-                        events={events}
+                        params={params}
+                        grades={grades!}
+                        events={events!}
                         data={info!}
                     />
                 </Suspense>
