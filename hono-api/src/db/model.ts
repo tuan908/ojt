@@ -10,7 +10,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-export const comment = pgTable("ojt_comment", {
+const comment = pgTable("ojt_comment", {
   id: serial("id").primaryKey(),
   content: text("content"),
   createdAt: timestamp("created_at", {
@@ -32,7 +32,7 @@ export const comment = pgTable("ojt_comment", {
     .notNull(),
 });
 
-export const commentRelations = relations(comment, ({ one }) => ({
+const commentRelations = relations(comment, ({ one }) => ({
   user: one(user, {
     fields: [comment.userId],
     references: [user.id],
@@ -43,7 +43,7 @@ export const commentRelations = relations(comment, ({ one }) => ({
   }),
 }));
 
-export const event = pgTable("ojt_event", {
+const event = pgTable("ojt_event", {
   id: serial("id").primaryKey(),
   description: text("description"),
   name: text("name"),
@@ -61,7 +61,7 @@ export const event = pgTable("ojt_event", {
   isDeleted: boolean("is_deleted"),
 });
 
-export const eventDetail = pgTable("ojt_event_detail", {
+const eventDetail = pgTable("ojt_event_detail", {
   id: serial("id").primaryKey(),
   data: jsonb("data"),
   status: integer("status"),
@@ -87,7 +87,7 @@ export const eventDetail = pgTable("ojt_event_detail", {
     .notNull(),
 });
 
-export const eventDetailRelations = relations(eventDetail, ({ one }) => ({
+const eventDetailRelations = relations(eventDetail, ({ one }) => ({
   student: one(student, {
     fields: [eventDetail.studentId],
     references: [student.id],
@@ -102,7 +102,7 @@ export const eventDetailRelations = relations(eventDetail, ({ one }) => ({
   }),
 }));
 
-export const grade = pgTable("ojt_grade", {
+const grade = pgTable("ojt_grade", {
   id: serial("id").primaryKey(),
   name: text("name"),
   createdAt: timestamp("created_at", {
@@ -118,7 +118,7 @@ export const grade = pgTable("ojt_grade", {
   isDeleted: boolean("is_deleted"),
 });
 
-export const hashtag = pgTable("ojt_hashtag", {
+const hashtag = pgTable("ojt_hashtag", {
   id: serial("id").primaryKey(),
   name: text("name"),
   color: text("color"),
@@ -135,11 +135,11 @@ export const hashtag = pgTable("ojt_hashtag", {
   isDeleted: boolean("is_deleted"),
 });
 
-export const hashtagRelations = relations(hashtag, ({ many }) => ({
+const hashtagRelations = relations(hashtag, ({ many }) => ({
   studentHashtags: many(studentHashtag),
 }));
 
-export const student = pgTable("ojt_student", {
+const student = pgTable("ojt_student", {
   id: serial("id").primaryKey(),
   code: text("code"),
   createdAt: timestamp("created_at", {
@@ -161,7 +161,7 @@ export const student = pgTable("ojt_student", {
     .notNull(),
 });
 
-export const studentRelations = relations(student, ({ many, one }) => ({
+const studentRelations = relations(student, ({ many, one }) => ({
   eventDetail: many(eventDetail),
   user: one(user, {
     fields: [student.userId],
@@ -170,11 +170,11 @@ export const studentRelations = relations(student, ({ many, one }) => ({
   studentHashtag: many(studentHashtag),
   grade: one(grade, {
     fields: [student.gradeId],
-    references: [grade.id]
-  })
+    references: [grade.id],
+  }),
 }));
 
-export const user = pgTable("ojt_user", {
+const user = pgTable("ojt_user", {
   id: serial("id").primaryKey(),
   password: text("password"),
   role: text("role", { enum: ["001", "002", "003", "004"] }),
@@ -193,11 +193,11 @@ export const user = pgTable("ojt_user", {
   isDeleted: boolean("is_deleted"),
 });
 
-export const userRelations = relations(user, ({ many }) => ({
+const userRelations = relations(user, ({ many }) => ({
   comments: many(comment),
 }));
 
-export const studentHashtag = pgTable(
+const studentHashtag = pgTable(
   "ojt_student_hashtag",
   {
     studentId: integer("student_id")
@@ -212,7 +212,7 @@ export const studentHashtag = pgTable(
   })
 );
 
-export const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({
+const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({
   student: one(student, {
     fields: [studentHashtag.studentId],
     references: [student.id],
@@ -222,3 +222,22 @@ export const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({
     references: [hashtag.id],
   }),
 }));
+
+const model = {
+  student,
+  comment,
+  commentRelations,
+  event,
+  eventDetail,
+  eventDetailRelations,
+  grade,
+  hashtag,
+  hashtagRelations,
+  studentRelations,
+  studentHashtag,
+  studentHashtagRelations,
+  user,
+  userRelations,
+};
+
+export default model;
