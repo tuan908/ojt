@@ -6,7 +6,7 @@ import {type FC} from "react";
 
 type HeaderProps = {auth?: JwtPayload};
 
-const url = `/event?mode=${ScreenMode.NEW}`;
+const url = `/events?mode=${ScreenMode.NEW}`;
 
 const Header: FC<HeaderProps> = async ({auth}) => {
     if (auth === undefined || auth.role !== UserRole.Student) {

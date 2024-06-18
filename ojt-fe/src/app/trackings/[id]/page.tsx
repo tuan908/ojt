@@ -4,8 +4,14 @@ import Box from "@/components/Box";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";
 import {type DynamicPageProps} from "@/types";
+import type {SxProps, Theme} from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import {Suspense} from "react";
+
+const sx: SxProps<Theme> = {
+    width: 112,
+    height: 112,
+    bgcolor: "#d87579",
+};
 
 export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
@@ -32,19 +38,13 @@ export default async function Page(props: DynamicPageProps) {
                                     <span>{studentInfo?.name}</span>
                                 </div>
                                 <div className="flex justify-center items-center">
-                                    <Avatar
-                                        sx={{
-                                            width: 112,
-                                            height: 112,
-                                            bgcolor: "#d87579",
-                                        }}
-                                    />
+                                    <Avatar sx={sx} />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <DoughnutChart text="90" />
+                <DoughnutChart text="79" />
                 <Box width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 px-8 xl:px-10 gap-y-4 place-content-center place-items-center">
                         {labels
@@ -65,11 +65,7 @@ export default async function Page(props: DynamicPageProps) {
                 </Box>
             </div>
 
-            <Suspense>
-                <StackedBarChart
-                    labels={grades ? grades.map(x => x.name) : []}
-                />
-            </Suspense>
+            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} />
         </>
     );
 }

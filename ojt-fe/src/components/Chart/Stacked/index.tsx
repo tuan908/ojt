@@ -42,26 +42,32 @@ const getBarChartOptions = ({
             {
                 name: "#Flexible",
                 type: "bar",
-                stack: "Search Engine",
+                stack: "Hashtags",
                 data: [620, 732, 701, 734, 1090, 1130, 1120],
             },
             {
                 name: "#Creative",
                 type: "bar",
-                stack: "Search Engine",
+                stack: "Hashtags",
                 data: [120, 132, 101, 134, 290, 230, 220],
             },
             {
                 name: "#Strategic",
                 type: "bar",
-                stack: "Search Engine",
-                data: [60, 72, 71, 74, 190, 130, 110],
+                stack: "Hashtags",
+                data: [
+                    60, 72, 71, 74, 190, 130, 110, 60, 72, 71, 74, 190, 130,
+                    110,
+                ],
             },
             {
                 name: "Others",
                 type: "bar",
-                stack: "Search Engine",
-                data: [62, 82, 91, 84, 109, 110, 120],
+                stack: "Hashtags",
+                data: [
+                    62, 82, 91, 84, 109, 110, 120, 62, 82, 91, 84, 109, 110,
+                    120,
+                ],
             },
         ],
     };
@@ -71,8 +77,9 @@ const getBarChartOptions = ({
 
 export default function StackedBarChart({labels}: {labels: string[]}) {
     return (
-        <Box fullWidth height={24}>
+        <Box fullWidth height={24} paddingY="10">
             <ReactEcharts
+                className="!h-full"
                 option={getBarChartOptions({
                     series: [],
                     xAxisData: labels,

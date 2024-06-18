@@ -2,7 +2,7 @@
 
 import HttpClient from "@/configs/http-client.config";
 import AuthService from "@/services/auth.service";
-import {StudentEventResponse, type EventDetail} from "@/types/student.types";
+import type {StudentEventResponse, EventDetail} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
@@ -38,8 +38,8 @@ export async function registerEvent(dto: RegisterEvent) {
         throw new Error("Internal Server Error");
     } else {
         await HttpClient.post("/student/event/register", result.data);
-        revalidatePath("/event");
-        redirect("/event", RedirectType.push);
+        revalidatePath("/events");
+        redirect("/events", RedirectType.push);
     }
 }
 

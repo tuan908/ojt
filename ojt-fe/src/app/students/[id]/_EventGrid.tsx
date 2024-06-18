@@ -11,23 +11,15 @@ import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
 import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
-import {useAppDispatch} from "@/redux/hooks";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import Utils from "@/utils";
+import {useAppDispatch} from "@/redux/hooks";
 import type {StudentEventResponse} from "@/types/student.types";
+import Utils from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
-import CircularProgress from "@mui/material/CircularProgress";
 import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
-import {
-    Suspense,
-    useEffect,
-    useReducer,
-    useState,
-    type SyntheticEvent,
-} from "react";
+import {useCallback, useEffect, useReducer, useState} from "react";
 
 interface DialogState {
     open: boolean;
@@ -40,10 +32,14 @@ interface LocalState {
     isUpdating: boolean;
 }
 
-const openDialogDelete = createAction<{id: number}>("MODAL_DELETE/OPEN");
-const openDialogUpdateStatus = createAction<{id: number}>(
-    "MODAL_UPDATE_STATUS/OPEN"
-);
+type EventGridProps = {
+    data: StudentEventResponse["events"];
+    studentId?: number;
+    code: string;
+};
+
+const openDialogDelete = createAction<number>("MODAL_DELETE/OPEN");
+const openDialogUpdateStatus = createAction<number>("MODAL_UPDATE_STATUS/OPEN");
 
 const hideDialogDelete = createAction("MODAL_DELETE/HIDE");
 const hideDialogUpdateStatus = createAction("MODAL_UPDATE_STATUS/HIDE");
@@ -66,7 +62,7 @@ const reducer = createReducer(initialState, builder => {
     builder
         .addCase(openDialogDelete, (state, action) => {
             state.delete.open = true;
-            state.delete.id = action.payload.id;
+            state.delete.id = action.payload;
         })
         .addCase(hideDialogDelete, state => {
             state.delete.open = false;
@@ -74,7 +70,7 @@ const reducer = createReducer(initialState, builder => {
         })
         .addCase(openDialogUpdateStatus, (state, action) => {
             state.updateStatus.open = true;
-            state.updateStatus.id = action.payload.id;
+            state.updateStatus.id = action.payload;
         })
         .addCase(hideDialogUpdateStatus, state => {
             state.updateStatus.open = false;
@@ -82,23 +78,14 @@ const reducer = createReducer(initialState, builder => {
         });
 });
 
-export default function EventGrid({
-    data,
-    studentId,
-    code,
-}: {
-    data: StudentEventResponse["events"];
-    studentId?: number;
-    code: string;
-}) {
+export default function EventGrid(props: EventGridProps) {
+    const {data, studentId, code} = props;
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
     const [rows, setRows] = useState<StudentEventResponse["events"]>(data);
     const appDispatch = useAppDispatch();
 
     useEffect(() => setRows(data), [data]);
-
-    const router = useRouter();
 
     async function handleDone() {
         dispatch(hideDialogUpdateStatus());
@@ -109,15 +96,6 @@ export default function EventGrid({
             updatedBy: auth?.username!,
         });
         await appDispatch(hideLoading());
-    }
-
-    function handleNotificationIconClick(
-        event: SyntheticEvent<HTMLButtonElement, MouseEvent>,
-        id: number
-    ) {
-        event?.preventDefault();
-        let url = `/event?id=${id}&mode=${ScreenMode.CHAT}`;
-        router.push(url);
     }
 
     function handleDeleteEventDetailById(): void {
@@ -131,16 +109,16 @@ export default function EventGrid({
     }
 
     const handleOpenDeleteDialog = (id: number) => {
-        dispatch(
-            openDialogDelete({
-                id,
-            })
-        );
+        dispatch(openDialogDelete(id));
     };
 
     const handleOpenUpdateStatusDialog = (id: number) => {
-        dispatch(openDialogUpdateStatus({id}));
+        dispatch(openDialogUpdateStatus(id));
     };
+
+    const getHref = useCallback((id: number) => {
+        return `/events?id=${id}&mode=${ScreenMode.CHAT}`;
+    }, []);
 
     return (
         <>
@@ -160,125 +138,93 @@ export default function EventGrid({
                     </tr>
                 </thead>
                 <tbody>
-                    <Suspense fallback={<CircularProgress color="info" />}>
-                        {state.isUpdating ? (
-                            <CircularProgress color="info" />
-                        ) : (
-                            <>
-                                {rows!?.map(item => (
-                                    <TableRow key={item.id}>
-                                        <TableCell textCenter>
-                                            {item?.grade}
-                                        </TableCell>
-                                        <TableCell textCenter>
-                                            {item?.name}
-                                        </TableCell>
-                                        <TableCell textCenter>
-                                            <StatusLabel
-                                                status={item?.status}
-                                            />
-                                        </TableCell>
-                                        <TableCell
-                                            fontSemibold
-                                            textEllipsis
-                                            textCenter
+                    <>
+                        {rows!?.map(item => (
+                            <TableRow key={item.id}>
+                                <TableCell textCenter>{item?.grade}</TableCell>
+                                <TableCell textCenter>{item?.name}</TableCell>
+                                <TableCell textCenter>
+                                    <StatusLabel status={item?.status} />
+                                </TableCell>
+                                <TableCell fontSemibold textEllipsis textCenter>
+                                    <Link href={getHref(item.id)}>
+                                        <Badge
+                                            badgeContent={item.comments}
+                                            color="error"
                                         >
+                                            <Notifications
+                                                className="text-icon-default"
+                                                sx={{
+                                                    width: 24,
+                                                    height: 24,
+                                                }}
+                                            />
+                                        </Badge>
+                                    </Link>
+                                </TableCell>
+                                <TableCell fontSemibold textEllipsis>
+                                    <div className="w-full flex justify-center items-center gap-x-6">
+                                        {auth?.role! === UserRole.Counselor ? (
                                             <Button
-                                                onClick={e =>
-                                                    handleNotificationIconClick(
-                                                        e,
+                                                onClick={() =>
+                                                    handleOpenUpdateStatusDialog(
                                                         item.id
                                                     )
                                                 }
+                                                disabled={
+                                                    item?.status ===
+                                                    EventStatus.CONFIRMED
+                                                }
                                             >
-                                                <Badge
-                                                    badgeContent={item.comments}
-                                                    color="error"
-                                                >
-                                                    <Notifications
-                                                        className="text-icon-default"
-                                                        sx={{
-                                                            width: 24,
-                                                            height: 24,
-                                                        }}
-                                                    />
-                                                </Badge>
+                                                <Done
+                                                    isDone={
+                                                        item?.status ===
+                                                        EventStatus.CONFIRMED
+                                                    }
+                                                />
                                             </Button>
-                                        </TableCell>
-                                        {[
-                                            UserRole.Student.toString(),
-                                            UserRole.Counselor.toString(),
-                                        ].indexOf(auth?.role!) > -1 ? (
-                                            <TableCell
-                                                fontSemibold
-                                                textEllipsis
-                                            >
-                                                <div className="w-full flex justify-center items-center gap-x-6">
-                                                    {auth?.role! ===
-                                                    UserRole.Counselor ? (
-                                                        <Button
-                                                            onClick={() =>
-                                                                handleOpenUpdateStatusDialog(
-                                                                    item.id
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                item?.status ===
-                                                                EventStatus.CONFIRMED
-                                                            }
-                                                        >
-                                                            <Done
-                                                                isDone={
-                                                                    item?.status ===
-                                                                    EventStatus.CONFIRMED
-                                                                }
-                                                            />
-                                                        </Button>
-                                                    ) : (
-                                                        <>
-                                                            <Link
-                                                                href={`/event?id=${item.id}&mode=${ScreenMode.EDIT}`}
-                                                                className={Utils.cn(
-                                                                    item.status ===
-                                                                        EventStatus.CONFIRMED &&
-                                                                        "pointer-events-none"
-                                                                )}
-                                                            >
-                                                                <Edit
-                                                                    disabled={
-                                                                        item.status ===
-                                                                        EventStatus.CONFIRMED
-                                                                    }
-                                                                />
-                                                            </Link>
-                                                            <Button
-                                                                disabled={
-                                                                    item.status ===
-                                                                    EventStatus.CONFIRMED
-                                                                }
-                                                                onClick={() =>
-                                                                    handleOpenDeleteDialog(
-                                                                        item.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <Delete
-                                                                    disabled={
-                                                                        item.status ===
-                                                                        EventStatus.CONFIRMED
-                                                                    }
-                                                                />
-                                                            </Button>
-                                                        </>
+                                        ) : (
+                                            <>
+                                                <Link
+                                                    href={`/events?id=${item.id}&mode=${ScreenMode.EDIT}`}
+                                                    className={Utils.cn(
+                                                        item.status ===
+                                                            EventStatus.CONFIRMED &&
+                                                            "pointer-events-none"
                                                     )}
-                                                </div>
-                                            </TableCell>
-                                        ) : null}
-                                    </TableRow>
-                                ))}
-                            </>
-                        )}
-                    </Suspense>
+                                                >
+                                                    <Edit
+                                                        disabled={
+                                                            item.status ===
+                                                            EventStatus.CONFIRMED
+                                                        }
+                                                    />
+                                                </Link>
+                                                <Button
+                                                    disabled={
+                                                        item.status ===
+                                                        EventStatus.CONFIRMED
+                                                    }
+                                                    onClick={() =>
+                                                        handleOpenDeleteDialog(
+                                                            item.id
+                                                        )
+                                                    }
+                                                >
+                                                    <Delete
+                                                        disabled={
+                                                            item.status ===
+                                                            EventStatus.CONFIRMED
+                                                        }
+                                                    />
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </>
                 </tbody>
             </table>
             <Dialog

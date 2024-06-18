@@ -31,19 +31,19 @@ export default function Box({
     const className = useMemo(() => {
         let base = "shadow-2xl rounded-2xl";
         if (paddingX) {
-            base = Utils.cn(base, "px-4");
+            base += " px-4";
         }
 
-        if (paddingX) {
-            base = Utils.cn(base, "py-6");
+        if (paddingY) {
+            base += " py-6";
         }
 
         if (flex) {
-            base = Utils.cn(base, "flex flex-col");
+            base += "flex flex-col";
         }
 
         return base;
-    }, [paddingX, flex]);
+    }, [paddingX, paddingY, flex]);
 
     const style = useMemo(() => {
         if (fullWidth) {

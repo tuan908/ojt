@@ -1,5 +1,5 @@
-import { type RecursivelyReplaceNullWithUndefined } from "@/types";
-import { unstable_noStore as noStore } from "next/cache";
+import {type RecursivelyReplaceNullWithUndefined} from "@/types";
+import {unstable_noStore as noStore} from "next/cache";
 
 export type HttpMethod = "GET" | "POST" | "DELETE";
 

@@ -7,7 +7,13 @@ import type {
 } from "@/app/actions/common.action";
 import {getStudents} from "@/app/actions/student.action";
 import Hashtag from "@/components/Hashtag";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, STRING_EMPTY} from "@/constants";
+import {
+    EVENT_OPTION_DEFAULT,
+    GRADE_OPTION_DEFAULT,
+    ITEM_HEIGHT,
+    ITEM_PADDING_TOP,
+    STRING_EMPTY,
+} from "@/constants";
 import json from "@/i18n/jp.json";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
@@ -28,7 +34,7 @@ import {
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material";
-import {SyntheticEvent, useEffect, useState} from "react";
+import {type SyntheticEvent, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type SearchAreaProps = {
@@ -38,16 +44,19 @@ type SearchAreaProps = {
     events?: StudentEvent[];
 };
 
+type Skill = {
+    label: string;
+    color: string;
+};
+
 export default function SearchArea(props: SearchAreaProps) {
     const {data, grades, hashtags, events} = props;
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
-    const [skills, setSkills] = useState<Array<{label: string; color: string}>>(
-        []
-    );
+    const [skills, setSkills] = useState<Skill[]>([]);
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
     const [rows, setRows] = useState<StudentsResponse[]>(data.content);
-    const [searchCondition, setCondition] = useState<StudentsRequest>({});
+    const [searchCondition, setSearchCondition] = useState<StudentsRequest>({});
 
     function handleInputChange(
         event: SyntheticEvent,
@@ -113,29 +122,22 @@ export default function SearchArea(props: SearchAreaProps) {
         }
     }
 
-    useEffect(() => {
-        setCondition({
-            ...searchCondition,
-            hashtags: skills.map(skill => skill.label),
-        });
-    }, [skills]);
-
     async function handleSearch(event: SyntheticEvent) {
         event?.preventDefault();
         await dispatch(showLoading());
         try {
             let request: StudentsRequest = {};
-            if (searchCondition.grade !== "クラス名") {
+            if (searchCondition.grade !== GRADE_OPTION_DEFAULT) {
                 request.grade = searchCondition.grade;
             }
 
-            if (searchCondition.events !== "イベント") {
+            if (searchCondition.events !== EVENT_OPTION_DEFAULT) {
                 request.events = searchCondition.events;
             }
 
             const searchParams = {
                 ...request,
-                hashtags: searchCondition.hashtags,
+                hashtags: skills.map(skill => skill.label),
                 name: searchCondition.name,
             };
 
@@ -162,7 +164,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     sx={{bgcolor: "#ffffff", paddingX: 1}}
                     name="name"
                     onChange={e =>
-                        setCondition(x => ({
+                        setSearchCondition(x => ({
                             ...x,
                             [e.target.name]: e.target.value,
                         }))
@@ -175,7 +177,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     className="w-56"
                     defaultValue={json.common.grade}
                     onChange={e =>
-                        setCondition(x => ({
+                        setSearchCondition(x => ({
                             ...x,
                             grade: e.target.value as string,
                         }))
@@ -220,7 +222,7 @@ export default function SearchArea(props: SearchAreaProps) {
                     name="event"
                     defaultValue={json.common.event}
                     onChange={e =>
-                        setCondition(x => ({
+                        setSearchCondition(x => ({
                             ...x,
                             events: e.target.value as string,
                         }))

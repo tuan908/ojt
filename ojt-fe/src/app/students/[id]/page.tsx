@@ -45,7 +45,6 @@ export default async function Page({params}: DynamicPageProps) {
             </Suspense>
             <PageWrapper>
                 {/* Student Info */}
-
                 <Suspense fallback={<>Loading student info...</>}>
                     <StudentInfo
                         auth={auth}

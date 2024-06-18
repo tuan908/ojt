@@ -1,12 +1,25 @@
+import {UserRole} from "@/constants";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Link from "next/link";
+import {getValidToken} from "./actions/event.action";
 
 export default async function NotFound() {
+    const auth = await getValidToken();
+
+    let href = "";
+    if (!auth) {
+        href = "/login";
+    } else if (auth?.role === UserRole.Student) {
+        href = "/students/" + auth?.code;
+    } else {
+        href = "/students";
+    }
+
     return (
         <div className="w-full h-screen flex flex-col">
             <div className="px-12 py-8 flex items-center">
                 <ArrowBackIos sx={{fontSize: "1.5rem"}} />
-                <Link href="/home" className="text-base font-semibold">
+                <Link href={href} className="text-base font-semibold">
                     ホームページに戻ります
                 </Link>
             </div>

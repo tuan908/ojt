@@ -8,7 +8,7 @@ export const config = {
         "/home",
         "/students",
         "/students/:id*",
-        "/event",
+        "/events",
         "/trackings/:id*",
     ],
 };
@@ -76,12 +76,12 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
 }
 
 function isAllowedStudentPath(path: string, code: string) {
-    const allowedStudentPaths = ["/", "/home", "/event", `/students/${code}`];
+    const allowedStudentPaths = ["/", "/home", "/events", `/students/${code}`];
     return allowedStudentPaths.includes(path) || path.startsWith("/trackings/");
 }
 
 function isAllowedNonStudentPath(path: string) {
-    const allowedNonStudentPaths = ["/", "/home", "/event", Route.Students];
+    const allowedNonStudentPaths = ["/", "/home", "/events", Route.Students];
     return (
         allowedNonStudentPaths.includes(path) ||
         path.startsWith("/trackings/") ||
