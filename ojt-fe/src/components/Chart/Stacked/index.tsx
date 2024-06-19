@@ -1,5 +1,6 @@
 "use client";
 
+import type {TrackingData} from "@/app/actions/student.action";
 import Box from "@/components/Box";
 import ReactEcharts from "echarts-for-react";
 import {BarChart, type BarSeriesOption} from "echarts/charts";
@@ -38,50 +39,25 @@ const getBarChartOptions = ({
                 },
             },
         ],
-        series: [
-            {
-                name: "#Flexible",
-                type: "bar",
-                stack: "Hashtags",
-                data: [620, 732, 701, 734, 1090, 1130, 1120],
-            },
-            {
-                name: "#Creative",
-                type: "bar",
-                stack: "Hashtags",
-                data: [120, 132, 101, 134, 290, 230, 220],
-            },
-            {
-                name: "#Strategic",
-                type: "bar",
-                stack: "Hashtags",
-                data: [
-                    60, 72, 71, 74, 190, 130, 110, 60, 72, 71, 74, 190, 130,
-                    110,
-                ],
-            },
-            {
-                name: "Others",
-                type: "bar",
-                stack: "Hashtags",
-                data: [
-                    62, 82, 91, 84, 109, 110, 120, 62, 82, 91, 84, 109, 110,
-                    120,
-                ],
-            },
-        ],
+        series,
     };
 
     return options;
 };
 
-export default function StackedBarChart({labels}: {labels: string[]}) {
+export default function StackedBarChart({
+    labels,
+    data: series,
+}: {
+    labels: string[];
+    data: TrackingData["hashtags"]["stacked"];
+}) {
     return (
         <Box fullWidth height={24} paddingY="10">
             <ReactEcharts
                 className="!h-full"
                 option={getBarChartOptions({
-                    series: [],
+                    series: series,
                     xAxisData: labels,
                 })}
             />

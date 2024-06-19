@@ -110,3 +110,30 @@ export const getEventsByStudentCodeWithQuery = async (
     const data = await HttpClient.get<StudentEventResponse>(url);
     return data;
 };
+
+export const getTracking = async (code: string) => {
+    const data = await HttpClient.get<TrackingData>(
+        "/students/" + code + "/trackings",
+        "node"
+    );
+    return data;
+};
+
+export type TrackingData = {
+    id: string;
+    name: string;
+    code: string;
+    count: number;
+    hashtags: {
+        doughnut: {
+            _data:  Array<{name: string; value: number}>,
+            text: number
+        };
+        stacked: Array<{
+            name: string;
+            data: number[];
+            type: "bar";
+            stack: string;
+        }>;
+    };
+};

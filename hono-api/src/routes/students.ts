@@ -178,17 +178,36 @@ app.get("/:code/trackings", async c => {
                 id: result.id,
                 code: result.code,
                 name: result.user.name,
-                count:
-                    _hashtags.length > 0
-                        ? _hashtags
-                              .map(h => h.value)
-                              .filter((x): x is number => Boolean(x))
-                              .reduce((a, b) => a + b)
-                        : 0,
-                hashtags: _hashtags.map(h => ({
-                    name: h.hashtag.name,
-                    value: h.value,
-                })),
+                hashtags: {
+                    doughnut: {
+                        _data: _hashtags.map(h => {
+                            return {
+                                value: (h.value as HashtagDetail[]).reduce(
+                                    (sum: number, a) => sum + a.value,
+                                    0
+                                ),
+                                name: h.hashtag.name,
+                            };
+                        }),
+                        text: _hashtags.map(h =>
+                            (h.value as HashtagDetail[]).reduce(
+                                (sum: number, a) => sum + a.value,
+                                0
+                            )
+                        ).reduce((sum, a) => sum + a, 0),
+                    },
+                    stacked: _hashtags.map(hashtag => {
+                        const data = (hashtag.value as HashtagDetail[]).map(
+                            h => h.value
+                        );
+                        return {
+                            name: hashtag.hashtag.name,
+                            data,
+                            type: "bar",
+                            stack: "Hashtags",
+                        };
+                    }),
+                },
             };
         }
 
@@ -200,3 +219,8 @@ app.get("/:code/trackings", async c => {
 });
 
 export default app;
+
+type HashtagDetail = {
+    id: number;
+    value: number;
+};

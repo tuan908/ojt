@@ -10,6 +10,7 @@ import {use} from "echarts/core";
 import {LabelLayout} from "echarts/features";
 import {CanvasRenderer} from "echarts/renderers";
 import ReactEcharts from "echarts-for-react";
+import type { TrackingData } from "@/app/actions/student.action";
 
 use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
 
@@ -30,13 +31,13 @@ export const colorPalette = [
     "#bdd333",
 ];
 
-const getOption = (text: string) => {
+const getOption = (data: TrackingData["hashtags"]["doughnut"]) => {
     const options: EChartsOption = {
         tooltip: {
             trigger: "item",
         },
         title: {
-            text,
+            text: data.text,
             left: "center",
             top: "center",
             textStyle: {
@@ -66,20 +67,7 @@ const getOption = (text: string) => {
                 labelLine: {
                     show: false,
                 },
-                data: [
-                    {value: 1, name: "#Proactive"},
-                    {value: 16, name: "#Influential"},
-                    {value: 9, name: "#Actionable"},
-                    {value: 4, name: "#Problem-solving"},
-                    {value: 12, name: "#Strategic"},
-                    {value: 5, name: "#Creative"},
-                    {value: 4, name: "#Expressive"},
-                    {value: 3, name: "#Receptive"},
-                    {value: 4, name: "#Flexible"},
-                    {value: 15, name: "#Aware"},
-                    {value: 2, name: "#Disciplined"},
-                    {value: 4, name: "#Stress-resistant"},
-                ],
+                data: data._data,
                 color: colorPalette,
             },
         ],
@@ -88,11 +76,11 @@ const getOption = (text: string) => {
     return options;
 };
 
-export default function DoughnutChart({text}: {text: string}) {
+export default function DoughnutChart({data}:{data: TrackingData["hashtags"]["doughnut"]}) {
     return (
         <div className="w-[32rem] h-[20rem] relative bg-white shadow-2xl rounded-2xl">
             <ReactEcharts
-                option={getOption(text)}
+                option={getOption(data)}
                 className="!h-[22rem] !w-full m-auto absolute -top-3"
             />
         </div>

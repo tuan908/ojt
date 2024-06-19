@@ -1,5 +1,5 @@
 import {getGrades, getHashtags} from "@/app/actions/common.action";
-import {getStudentByCode} from "@/app/actions/student.action";
+import {getTracking} from "@/app/actions/student.action";
 import Box from "@/components/Box";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";
@@ -17,7 +17,7 @@ export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
         getHashtags(),
         getGrades(),
-        getStudentByCode(props.params.id),
+        getTracking(props.params.id)
     ]);
 
     return (
@@ -44,7 +44,7 @@ export default async function Page(props: DynamicPageProps) {
                         </div>
                     </div>
                 </div>
-                <DoughnutChart text="79" />
+                <DoughnutChart data={studentInfo?.hashtags.doughnut!} />
                 <Box width={48} height={20} backgroundColor="#ffffff">
                     <ul className="w-full h-full grid grid-cols-2 px-8 xl:px-10 gap-y-4 place-content-center place-items-center">
                         {labels
@@ -65,7 +65,7 @@ export default async function Page(props: DynamicPageProps) {
                 </Box>
             </div>
 
-            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} />
+            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} data={studentInfo?.hashtags.stacked!} />
         </>
     );
 }

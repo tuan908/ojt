@@ -48,7 +48,7 @@ export default function StudentDataGrid(props: Props) {
         <>
             {/* Table */}
             <div className="w-full px-12">
-                <table className="w-full border border-table border-collapse align-middle">
+                <table className="w-full border border-table border-collapse align-middle table-fixed">
                     <thead>
                         <tr className="bg-[#3f51b5] text-[#fffffc]">
                             <TableHead width={8}>
