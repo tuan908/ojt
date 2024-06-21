@@ -1,5 +1,5 @@
 import {ScreenMode, UserRole} from "@/constants";
-import {type JwtPayload} from "@/services/auth.service";
+import {type JwtPayload} from "@/lib/auth";
 import AddCircle from "@mui/icons-material/AddCircle";
 import Link from "next/link";
 import {type FC} from "react";

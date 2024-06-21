@@ -1,7 +1,7 @@
 import {type Comment} from "@/app/actions/event.action";
 import {deleteComment} from "@/app/actions/student.action";
 import Button from "@/components/Button";
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
@@ -78,7 +78,7 @@ export default function BubbleMessage(props: BubbleMessageProps) {
     return (
         <>
             <div
-                className={Utils.cn(
+                className={cn(
                     "w-full h-full flex items-center gap-x-6",
                     isCommentOfActiveUser && "flex-row-reverse"
                 )}
@@ -104,7 +104,7 @@ export default function BubbleMessage(props: BubbleMessageProps) {
                         </span>
                         {isCommentOfActiveUser && show ? (
                             <div
-                                className={Utils.cn(
+                                className={cn(
                                     "absolute top-1",
                                     !isCommentOfActiveUser
                                         ? "left-2"

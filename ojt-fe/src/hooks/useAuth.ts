@@ -1,6 +1,6 @@
 "use client";
 
-import AuthService, {type JwtPayload} from "@/services/auth.service";
+import {decrypt, type JwtPayload} from "@/lib/auth";
 import {useEffect, useState} from "react";
 import Cookies from "universal-cookie";
 
@@ -11,7 +11,7 @@ export function useAuth() {
         const cookies = new Cookies();
         const token = cookies.get("token") ?? undefined;
         if (token) {
-            const verifiedToken = await AuthService.verify(token);
+            const verifiedToken = await decrypt(token);
             setAuth(verifiedToken);
         }
     }

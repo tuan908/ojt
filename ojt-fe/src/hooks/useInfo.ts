@@ -1,7 +1,7 @@
 "use client";
 
-import type {JwtPayload} from "@/services/auth.service";
-import Utils from "@/utils";
+import type {JwtPayload} from "@/lib/auth";
+import {convertRole} from "@/utils";
 import {useMemo} from "react";
 
 export default function useInfo(auth?: JwtPayload) {
@@ -9,7 +9,7 @@ export default function useInfo(auth?: JwtPayload) {
         if (auth) {
             return {
                 fullName: auth.name,
-                role: Utils.convertRole(auth.role),
+                role: convertRole(auth.role),
             };
         }
         return {

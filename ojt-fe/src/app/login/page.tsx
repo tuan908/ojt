@@ -1,7 +1,7 @@
 "use client";
 
 import json from "@/i18n/jp.json";
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import Visibility from "@mui/icons-material/Visibility";
@@ -122,7 +122,7 @@ export default function Page() {
                     <div className="w-full h-full flex items-center justify-center py-2">
                         <button
                             type="submit"
-                            className={Utils.cn(
+                            className={cn(
                                 "bg-[#407ed9] text-white font-bold px-4 py-2 m-auto rounded-xl text-sm outline-none",
                                 isPending && "bg-[rgba(64,126,217,0.5)]"
                             )}

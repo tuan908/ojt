@@ -14,7 +14,7 @@ import {useAuth} from "@/hooks/useAuth";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
 import type {StudentEventResponse} from "@/types/student.types";
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import {createAction, createReducer} from "@reduxjs/toolkit";
@@ -187,7 +187,7 @@ export default function EventGrid(props: EventGridProps) {
                                             <>
                                                 <Link
                                                     href={`/events?id=${item.id}&mode=${ScreenMode.EDIT}`}
-                                                    className={Utils.cn(
+                                                    className={cn(
                                                         item.status ===
                                                             EventStatus.CONFIRMED &&
                                                             "pointer-events-none"

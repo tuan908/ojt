@@ -1,49 +1,49 @@
 import {Hono} from "hono";
-import {Binding} from "..";
-import db from "../db";
+import db from "../lib/db";
+import type {Binding} from "../types";
 
 const app = new Hono<Binding>();
 
-app.get("/events", async c => {
+app.get("/events", async ctx => {
     try {
-        const result = await db(c.env.DATABASE_URL).query.event.findMany({
+        const result = await db(ctx).query.event.findMany({
             columns: {
                 id: true,
                 name: true,
             },
         });
-        return c.json(result);
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 
-app.get("/grades", async c => {
+app.get("/grades", async ctx => {
     try {
-        const result = await db(c.env.DATABASE_URL).query.grade.findMany({
+        const result = await db(ctx).query.grade.findMany({
             columns: {
                 id: true,
                 name: true,
             },
         });
-        return c.json(result);
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 
-app.get("/hashtags", async c => {
+app.get("/hashtags", async ctx => {
     try {
-        const result = await db(c.env.DATABASE_URL).query.hashtag.findMany({
+        const result = await db(ctx).query.hashtag.findMany({
             columns: {
                 id: true,
                 name: true,
                 color: true,
             },
         });
-        return c.json(result);
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 

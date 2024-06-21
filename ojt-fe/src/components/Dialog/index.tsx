@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import {
     DialogActions,
     DialogContent,
@@ -52,7 +52,7 @@ export default function Dialog(props: DialogProps) {
                     Cancel
                 </Button>
                 <Button
-                    classes={Utils.cn(
+                    classes={cn(
                         "px-4 py-1 border rounded-md text-white",
                         actionButtonBackgroundColor
                     )}

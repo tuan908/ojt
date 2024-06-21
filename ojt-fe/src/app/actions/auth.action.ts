@@ -1,12 +1,12 @@
 "use server";
 
 import {UserRole} from "@/constants";
-import AuthService from "@/services/auth.service";
+import json from "@/i18n/jp.json";
+import HttpClient from "@/lib/HttpClient";
+import {signInSchema} from "@/lib/zod";
+import {encrypt} from "@/lib/auth";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
-import {z} from "zod";
-import json from "@/i18n/jp.json";
-import HttpClient from "@/configs/http-client.config";
 
 /**
  * UserInfo
@@ -37,12 +37,7 @@ export async function login(_previousState: any, formData: FormData) {
     const data = Object.fromEntries(formData);
     const {username, password} = data;
 
-    const schema = z.object({
-        username: z.string().min(1),
-        password: z.string().min(1),
-    });
-
-    const parse = schema.safeParse({
+    const parse = signInSchema.safeParse({
         username,
         password,
     });
@@ -65,7 +60,7 @@ export async function login(_previousState: any, formData: FormData) {
             password,
         };
     }
-    const token = await AuthService.generateToken(user);
+    const token = await encrypt(user);
     cookies().set({
         name: "token",
         value: token,

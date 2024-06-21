@@ -1,6 +1,6 @@
 "use server";
 
-import HttpClient from "@/configs/http-client.config";
+import HttpClient from "@/lib/HttpClient";
 import {cache} from "react";
 
 type Grade = {

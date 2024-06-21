@@ -1,4 +1,4 @@
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import {useMemo} from "react";
 
 type BoxProps = {

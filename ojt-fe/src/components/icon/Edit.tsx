@@ -1,4 +1,4 @@
-import Utils from "@/utils";
+import {cn} from "@/utils";
 
 export default function Edit({disabled}: {disabled?: boolean}) {
     return (
@@ -6,7 +6,7 @@ export default function Edit({disabled}: {disabled?: boolean}) {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="currentColor"
-            className={Utils.cn(
+            className={cn(
                 "w-6 h-6 text-icon-default",
                 !!disabled && "text-[#7d7e7e]"
             )}

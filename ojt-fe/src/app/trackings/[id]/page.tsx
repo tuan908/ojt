@@ -17,7 +17,7 @@ export default async function Page(props: DynamicPageProps) {
     const [labels, grades, studentInfo] = await Promise.all([
         getHashtags(),
         getGrades(),
-        getTracking(props.params.id)
+        getTracking(props.params.id),
     ]);
 
     return (
@@ -65,7 +65,10 @@ export default async function Page(props: DynamicPageProps) {
                 </Box>
             </div>
 
-            <StackedBarChart labels={grades ? grades.map(x => x.name) : []} data={studentInfo?.hashtags.stacked!} />
+            <StackedBarChart
+                labels={grades ? grades.map(x => x.name) : []}
+                data={studentInfo?.hashtags.stacked!}
+            />
         </>
     );
 }

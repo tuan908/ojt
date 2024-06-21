@@ -1,6 +1,6 @@
 import {NextResponse, type NextFetchEvent, type NextRequest} from "next/server";
 import {Route, UserRole} from "./constants";
-import AuthService from "./services/auth.service";
+import {decrypt} from "@/lib/auth";
 
 export const config = {
     matcher: [
@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
     // Allow access to the login page without authentication
     if (currentPath === Route.Login) {
         if (token) {
-            const maybeValidToken = await AuthService.verify(token.value);
+            const maybeValidToken = await decrypt(token.value);
             if (maybeValidToken) {
                 return handleAuthenticatedRedirect(maybeValidToken, request);
             }
@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest, event: NextFetchEvent) {
         return NextResponse.redirect(loginUrl);
     }
 
-    const maybeValidToken = await AuthService.verify(token.value);
+    const maybeValidToken = await decrypt(token.value);
 
     if (!maybeValidToken) {
         return NextResponse.redirect(loginUrl);

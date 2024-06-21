@@ -1,6 +1,6 @@
 "use server";
 
-import HttpClient from "@/configs/http-client.config";
+import HttpClient from "@/lib/HttpClient";
 import {EventStatus, PAGE_SIZE} from "@/constants";
 import type {
     Page,
@@ -126,8 +126,8 @@ export type TrackingData = {
     count: number;
     hashtags: {
         doughnut: {
-            _data:  Array<{name: string; value: number}>,
-            text: number
+            _data: Array<{name: string; value: number}>;
+            text: number;
         };
         stacked: Array<{
             name: string;

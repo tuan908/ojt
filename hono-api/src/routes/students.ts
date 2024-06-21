@@ -1,14 +1,14 @@
 import {eq, sql} from "drizzle-orm";
 import {Hono} from "hono";
-import {Binding} from "..";
-import db from "../db";
-import model from "../db/model";
+import {Binding} from "../types";
+import db from "../lib/db";
+import schema from "../schema";
 
 const app = new Hono<Binding>();
 
-app.get("/", async c => {
+app.get("/", async ctx => {
     try {
-        const result = await db(c.env.DATABASE_URL).query.student.findMany({
+        const result = await db(ctx).query.student.findMany({
             columns: {
                 id: true,
                 code: true,
@@ -18,7 +18,7 @@ app.get("/", async c => {
             },
             with: {
                 eventDetail: {
-                    where: eq(model.eventDetail.isDeleted, false),
+                    where: eq(schema.eventDetail.isDeleted, false),
                     columns: {
                         createdAt: false,
                         updatedAt: false,
@@ -56,17 +56,17 @@ app.get("/", async c => {
                 },
             },
         });
-        return c.json(result);
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 
-app.get("/:code", async c => {
-    const code = c.req.param("code");
+app.get("/:code", async ctx => {
+    const code = ctx.req.param("code");
     try {
-        const result = await db(c.env.DATABASE_URL).query.student.findFirst({
-            where: eq(model.student.code, code),
+        const result = await db(ctx).query.student.findFirst({
+            where: eq(schema.student.code, code),
             columns: {
                 userId: false,
                 gradeId: false,
@@ -76,7 +76,7 @@ app.get("/:code", async c => {
             },
             with: {
                 eventDetail: {
-                    where: eq(model.eventDetail.isDeleted, false),
+                    where: eq(schema.eventDetail.isDeleted, false),
                     with: {
                         grade: {
                             columns: {
@@ -106,39 +106,37 @@ app.get("/:code", async c => {
                 },
             },
         });
-        return c.json(result);
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 
-app.get("/:code/events/:id", async c => {
-    const {code, id} = c.req.param();
+app.get("/:code/events/:id", async ctx => {
+    const {code, id} = ctx.req.param();
 
     if (!code || !id) {
-        return c.json({message: "Invalid param"}, 403);
+        return ctx.json({message: "Invalid param"}, 403);
     }
 
     try {
-        const result = await db(c.env.DATABASE_URL).query.eventDetail.findFirst(
-            {
-                where: sql`${model.eventDetail.id} = ${id} and ${model.eventDetail.isDeleted} = false`,
-                columns: {
-                    id: true,
-                    data: true,
-                },
-            }
-        );
-        return c.json(result);
+        const result = await db(ctx).query.eventDetail.findFirst({
+            where: sql`${schema.eventDetail.id} = ${id} and ${schema.eventDetail.isDeleted} = false`,
+            columns: {
+                id: true,
+                data: true,
+            },
+        });
+        return ctx.json(result);
     } catch (error) {
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 
-app.get("/:code/trackings", async c => {
-    const {code} = c.req.param();
+app.get("/:code/trackings", async ctx => {
+    const {code} = ctx.req.param();
     try {
-        let result = await db(c.env.DATABASE_URL).query.student.findFirst({
+        let result = await db(ctx).query.student.findFirst({
             where: (fields, {eq}) => eq(fields.code, code),
             columns: {
                 id: true,
@@ -189,12 +187,14 @@ app.get("/:code/trackings", async c => {
                                 name: h.hashtag.name,
                             };
                         }),
-                        text: _hashtags.map(h =>
-                            (h.value as HashtagDetail[]).reduce(
-                                (sum: number, a) => sum + a.value,
-                                0
+                        text: _hashtags
+                            .map(h =>
+                                (h.value as HashtagDetail[]).reduce(
+                                    (sum: number, a) => sum + a.value,
+                                    0
+                                )
                             )
-                        ).reduce((sum, a) => sum + a, 0),
+                            .reduce((sum, a) => sum + a, 0),
                     },
                     stacked: _hashtags.map(hashtag => {
                         const data = (hashtag.value as HashtagDetail[]).map(
@@ -211,10 +211,10 @@ app.get("/:code/trackings", async c => {
             };
         }
 
-        return c.json(data);
+        return ctx.json(data);
     } catch (error) {
         console.log(error);
-        return c.json({message: "Server error"}, 500);
+        return ctx.json({message: "Server error"}, 500);
     }
 });
 

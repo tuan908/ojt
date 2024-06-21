@@ -224,7 +224,7 @@ const studentHashtagRelations = relations(studentHashtag, ({one}) => ({
     }),
 }));
 
-const model = {
+const schema = {
     student,
     comment,
     commentRelations,
@@ -241,4 +241,4 @@ const model = {
     userRelations,
 };
 
-export default model;
+export default schema;

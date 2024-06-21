@@ -1,4 +1,4 @@
-import Utils from "@/utils";
+import {cn} from "@/utils";
 import {type ComponentProps} from "react";
 
 type ButtonProps = ComponentProps<"button"> & {
@@ -33,7 +33,7 @@ export default function Button({
         <button
             {...otherProps}
             style={{backgroundColor}}
-            className={Utils.cn("border-none outline-none", classes && classes)}
+            className={cn("border-none outline-none", classes && classes)}
         >
             {children}
         </button>

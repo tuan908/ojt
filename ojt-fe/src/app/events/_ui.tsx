@@ -13,7 +13,7 @@ import Textarea from "@/components/Textarea";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import {JwtPayload} from "@/services/auth.service";
+import {JwtPayload} from "@/lib/auth";
 import {EventDetail} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
@@ -407,7 +407,7 @@ export default function EventUi({
                                             paddingX: 1,
                                         },
                                     }}
-                                    options={hashtags.map(x => ({
+                                    options={hashtags?.map(x => ({
                                         label: x.name,
                                         id: x.id,
                                     }))}

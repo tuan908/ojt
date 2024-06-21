@@ -1,7 +1,7 @@
 "use server";
 
-import HttpClient from "@/configs/http-client.config";
-import AuthService from "@/services/auth.service";
+import HttpClient from "@/lib/HttpClient";
+import {decrypt} from "@/lib/auth";
 import type {StudentEventResponse, EventDetail} from "@/types/student.types";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
@@ -99,9 +99,9 @@ export async function editComment(id: number, content: string) {
 
 export async function getValidToken() {
     const token = cookies().get("token")?.value;
-    if (!token || !(await AuthService.verify(token))) {
+    if (!token || !(await decrypt(token))) {
         return undefined;
     }
 
-    return await AuthService.verify(token);
+    return await decrypt(token);
 }

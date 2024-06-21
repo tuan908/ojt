@@ -10,7 +10,7 @@ import {use} from "echarts/core";
 import {LabelLayout} from "echarts/features";
 import {CanvasRenderer} from "echarts/renderers";
 import ReactEcharts from "echarts-for-react";
-import type { TrackingData } from "@/app/actions/student.action";
+import type {TrackingData} from "@/app/actions/student.action";
 
 use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
 
@@ -76,7 +76,11 @@ const getOption = (data: TrackingData["hashtags"]["doughnut"]) => {
     return options;
 };
 
-export default function DoughnutChart({data}:{data: TrackingData["hashtags"]["doughnut"]}) {
+export default function DoughnutChart({
+    data,
+}: {
+    data: TrackingData["hashtags"]["doughnut"];
+}) {
     return (
         <div className="w-[32rem] h-[20rem] relative bg-white shadow-2xl rounded-2xl">
             <ReactEcharts

@@ -1,7 +1,7 @@
 "use client";
 
 import useInfo from "@/hooks/useInfo";
-import {type JwtPayload} from "@/services/auth.service";
+import {type JwtPayload} from "@/lib/auth";
 import EventIcon from "@mui/icons-material/Event";
 import MenuIcon from "@mui/icons-material/Menu";
 import {

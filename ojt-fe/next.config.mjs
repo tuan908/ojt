@@ -5,6 +5,8 @@ const nextConfig = {
         scrollRestoration: true,
         ppr: true,
         reactCompiler: true,
+        optimizeServerReact: true,
+        optimizePackageImports: ["react-redux", "@reduxjs/toolkit", "@mui/material", "@mui/icons-material", "echarts"]
     },
     compiler: {
         emotion: true
