@@ -54,6 +54,6 @@ export type StudentEventResponse = {
         grade: string;
         name: string;
         status: number;
-        comments: number;
+        comments: Comment[];
     }>;
 };

@@ -1,10 +1,10 @@
 import {UserRole} from "@/constants";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Link from "next/link";
-import {getValidToken} from "./actions/event.action";
+import {getSession} from "./actions/event.action";
 
 export default async function NotFound() {
-    const auth = await getValidToken();
+    const auth = await getSession();
 
     let href = "";
     if (!auth) {

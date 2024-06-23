@@ -87,7 +87,7 @@ const eventDetail = pgTable("ojt_event_detail", {
         .notNull(),
 });
 
-const eventDetailRelations = relations(eventDetail, ({one}) => ({
+const eventDetailRelations = relations(eventDetail, ({one, many}) => ({
     student: one(student, {
         fields: [eventDetail.studentId],
         references: [student.id],
@@ -100,6 +100,7 @@ const eventDetailRelations = relations(eventDetail, ({one}) => ({
         fields: [eventDetail.gradeId],
         references: [grade.id],
     }),
+    comments: many(comment),
 }));
 
 const grade = pgTable("ojt_grade", {

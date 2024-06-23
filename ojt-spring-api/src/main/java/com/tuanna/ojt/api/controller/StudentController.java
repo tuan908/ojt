@@ -25,7 +25,7 @@ import com.tuanna.ojt.api.service.StudentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = Constant.API_BASE_PATH)
+@RequestMapping(path = Constant.API_BASE_PATH + "/students")
 @RequiredArgsConstructor
 public class StudentController {
 
@@ -40,7 +40,7 @@ public class StudentController {
     return ResponseEntity.ok(data);
   }
 
-  @GetMapping("/student/{code}")
+  @GetMapping("/{code}")
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetail(@PathVariable("code") String code)
       throws ResultNotFoundException {
@@ -49,7 +49,7 @@ public class StudentController {
   }
 
 
-  @GetMapping("/student/{code}/q")
+  @GetMapping("/{code}/q")
   @ResponseBody
   public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable("code") String code,
       @RequestParam(value = "grade", required = false) String grade,
@@ -62,7 +62,7 @@ public class StudentController {
   }
 
 
-  @PostMapping(path = "/student/event/register")
+  @PostMapping(path = "/event/register")
   @ResponseBody
   public ResponseEntity<?> register(@RequestBody RegisterEventDto dto) {
     var result = this.studentService.registerOrUpdateEvent(dto);
@@ -79,7 +79,7 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
 
-  @PostMapping(path = "/student/event/detail")
+  @PostMapping(path = "/event/detail")
   public ResponseEntity<?> updateStatus(@RequestBody UpdateEventStatusDto dto) {
     this.studentService.updateEventStatus(dto);
 
@@ -95,7 +95,7 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
 
-  @DeleteMapping(path = "/student/{code}/event/{id}")
+  @DeleteMapping(path = "/{code}/event/{id}")
   public ResponseEntity<?> deleteEventDetailById(@PathVariable(value = "code") String code,
       @PathVariable(value = "id") Long id) {
     var updatedList = this.studentService.deleteEventById(code, id);
@@ -103,20 +103,20 @@ public class StudentController {
     return ResponseEntity.ok().body(updatedList);
   }
 
-  @GetMapping(path = "/student/event/{id}")
+  @GetMapping(path = "/event/{id}")
   public ResponseEntity<?> getStudentEventDetailById(@PathVariable(value = "id") Long id) {
     var result = this.studentService.getStudentEventById(id);
     return ResponseEntity.ok(result);
   }
 
-  @PostMapping("/student/event/comments")
+  @PostMapping("/event/comments")
   public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
     final var data = this.commentService.add(dto);
 
     return ResponseEntity.ok().body(data);
   }
 
-  @DeleteMapping("/student/event/comments/{id}")
+  @DeleteMapping("/event/comments/{id}")
   public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id) {
     this.commentService.delete(id);
 
@@ -132,7 +132,7 @@ public class StudentController {
     return ResponseEntity.ok().body(data);
   }
   
-  @PostMapping("/student/event/comments/p")
+  @PostMapping("/event/comments/p")
   public ResponseEntity<?> editComment(@RequestBody CommentDto commentDto) {
 	  var result = this.commentService.update(commentDto);
 	  var map = new HashMap<String, Object>();

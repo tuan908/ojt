@@ -11,3 +11,23 @@ export const signInSchema = z.object({
         .min(8, json.error.password_min_length)
         .max(32, json.error.password_max_length),
 });
+
+export const registerEventSchema = z.object({
+    username: z.string(),
+    gradeName: z.string(),
+    data: z.object({
+        eventName: z.string().optional(),
+        eventsInSchoolLife: z.string().optional(),
+        myAction: z.string().optional(),
+        shownPower: z.string().optional(),
+        strengthGrown: z.string().optional(),
+        myThought: z.string().optional(),
+    }),
+});
+
+export const commentSchema = z.object({
+    id: z.number().optional(),
+    eventDetailId: z.number(),
+    username: z.string(),
+    content: z.string().optional(),
+});

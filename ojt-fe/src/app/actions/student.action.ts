@@ -1,7 +1,7 @@
 "use server";
 
-import HttpClient from "@/lib/HttpClient";
 import {EventStatus, PAGE_SIZE} from "@/constants";
+import HttpClient from "@/lib/HttpClient";
 import type {
     Page,
     StudentEventResponse,
@@ -42,7 +42,10 @@ export const getStudents = cache(async (dto?: StudentsRequest) => {
  * @returns Student Response
  */
 export const getStudentByCode = cache(async (code: string) => {
-    const data = await HttpClient.get<StudentEventResponse>(`/student/${code}`);
+    const data = await HttpClient.get<StudentEventResponse>(
+        `/students/${code}`,
+        "node"
+    );
     return data;
 });
 
@@ -56,7 +59,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await HttpClient.post("/student/event/detail", dto);
+    const data = await HttpClient.post("/students/event/detail", dto);
     revalidatePath(`/students/[id]`, "page");
     return data;
 }
@@ -70,8 +73,8 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await HttpClient.delete("/student/event/comments/" + dto.id);
-    revalidatePath("/student/event/comments");
+    await HttpClient.delete("/students/event/comments/" + dto.id);
+    revalidatePath("/students/event/comments");
 }
 
 /**
@@ -107,7 +110,7 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await HttpClient.get<StudentEventResponse>(url);
+    const data = await HttpClient.get<StudentEventResponse["events"]>(url);
     return data;
 };
 

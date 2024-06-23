@@ -8,7 +8,8 @@
         "password_max_length": "パスワードは 32 文字未満である必要があります。",
         "user_not_found": "ユーザーが見つかりません。",
         "password_mismatch": "パスワードが間違っているか、ユーザーが存在しません。",
-        "server": "内部サーバーエラー"
+        "server": "内部サーバーエラー",
+        "try_again": "あとでもう一度試してみてください"
     },
     "table": {
         "header": {

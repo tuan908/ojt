@@ -1,10 +1,10 @@
-import {getValidToken} from "@/app/actions/event.action";
+import {getSession} from "@/app/actions/event.action";
 import json from "@/i18n/jp.json";
 import {convertRole} from "@/utils";
 
 // TODO: Remove flicker when set user info
 export default async function UserInfo() {
-    const auth = await getValidToken();
+    const auth = await getSession();
 
     return (
         <div className="flex flex-col">

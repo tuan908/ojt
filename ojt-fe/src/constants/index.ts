@@ -71,16 +71,3 @@ export const GRADE_OPTION_DEFAULT = "クラス名";
 
 /** イベント */
 export const EVENT_OPTION_DEFAULT = "イベント";
-
-export const KeyPart = {
-    Common: {
-        Event: "common/event",
-        Hashtag: "common/hashtag",
-        Grade: "common/grade",
-    },
-    Students: "students",
-    Student: {
-        Default: "student/student",
-        EventDetail: "student/event-detail",
-    },
-} as const;

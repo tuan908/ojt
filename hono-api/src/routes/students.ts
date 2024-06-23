@@ -1,8 +1,8 @@
 import {eq, sql} from "drizzle-orm";
 import {Hono} from "hono";
-import {Binding} from "../types";
 import db from "../lib/db";
 import schema from "../schema";
+import {Binding} from "../types";
 
 const app = new Hono<Binding>();
 
@@ -88,11 +88,18 @@ app.get("/:code", async ctx => {
                                 name: true,
                             },
                         },
+                        comments: {
+                            columns: {
+                                id: true,
+                                isDeleted: true,
+                            },
+                        },
                     },
                     columns: {
                         status: true,
                         id: true,
                     },
+                    orderBy: ({createdAt}, {asc}) => asc(createdAt),
                 },
                 user: {
                     columns: {
@@ -106,7 +113,21 @@ app.get("/:code", async ctx => {
                 },
             },
         });
-        return ctx.json(result);
+        return ctx.json({
+            id: result?.id,
+            code: result?.code,
+            name: result?.user?.name,
+            grade: result?.grade?.name,
+            events: result?.eventDetail.map(event => ({
+                id: event?.id!,
+                grade: event?.grade!?.name,
+                name: event?.event!?.name,
+                status: event?.status!,
+                comments: event?.comments!?.filter(
+                    comment => !comment.isDeleted
+                ),
+            })),
+        });
     } catch (error) {
         return ctx.json({message: "Server error"}, 500);
     }

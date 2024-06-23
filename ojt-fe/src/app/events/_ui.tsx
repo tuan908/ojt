@@ -11,10 +11,10 @@ import {
 import BubbleMessage from "@/components/BubbleMessage";
 import Textarea from "@/components/Textarea";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
+import type {JwtPayload} from "@/lib/auth";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import {JwtPayload} from "@/lib/auth";
-import {EventDetail} from "@/types/student.types";
+import type {EventDetail} from "@/types/student.types";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";

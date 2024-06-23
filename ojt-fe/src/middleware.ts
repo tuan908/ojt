@@ -1,6 +1,6 @@
+import {decrypt} from "@/lib/auth";
 import {NextResponse, type NextFetchEvent, type NextRequest} from "next/server";
 import {Route, UserRole} from "./constants";
-import {decrypt} from "@/lib/auth";
 
 export const config = {
     matcher: [

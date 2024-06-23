@@ -19,7 +19,7 @@ import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
-import {useCallback, useEffect, useReducer, useState} from "react";
+import {useCallback, useEffect, useMemo, useReducer, useState} from "react";
 
 interface DialogState {
     open: boolean;
@@ -78,8 +78,7 @@ const reducer = createReducer(initialState, builder => {
         });
 });
 
-export default function EventGrid(props: EventGridProps) {
-    const {data, studentId, code} = props;
+export default function EventGrid({data, studentId, code}: EventGridProps) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
     const [rows, setRows] = useState<StudentEventResponse["events"]>(data);
@@ -120,6 +119,17 @@ export default function EventGrid(props: EventGridProps) {
         return `/events?id=${id}&mode=${ScreenMode.CHAT}`;
     }, []);
 
+    const isActionColumnActive = useMemo(() => {
+        if (
+            UserRole.Student.toString() === auth?.role! ||
+            UserRole.Counselor.toString() === auth?.role!
+        ) {
+            return true;
+        }
+
+        return false;
+    }, [auth?.role!]);
+
     return (
         <>
             <table className="w-full border border-table border-collapse align-middle">
@@ -129,12 +139,9 @@ export default function EventGrid(props: EventGridProps) {
                         <TableHead>イベント</TableHead>
                         <TableHead>ステータス</TableHead>
                         <TableHead>通知</TableHead>
-                        {[
-                            UserRole.Student.toString(),
-                            UserRole.Counselor.toString(),
-                        ].indexOf(auth?.role!) > -1 ? (
+                        {!isActionColumnActive ? null : (
                             <TableHead>アクション</TableHead>
-                        ) : null}
+                        )}
                     </tr>
                 </thead>
                 <tbody>
@@ -149,7 +156,9 @@ export default function EventGrid(props: EventGridProps) {
                                 <TableCell fontSemibold textEllipsis textCenter>
                                     <Link href={getHref(item.id)}>
                                         <Badge
-                                            badgeContent={item.comments}
+                                            badgeContent={
+                                                item.comments!?.length
+                                            }
                                             color="error"
                                         >
                                             <Notifications
@@ -162,66 +171,69 @@ export default function EventGrid(props: EventGridProps) {
                                         </Badge>
                                     </Link>
                                 </TableCell>
-                                <TableCell fontSemibold textEllipsis>
-                                    <div className="w-full flex justify-center items-center gap-x-6">
-                                        {auth?.role! === UserRole.Counselor ? (
-                                            <Button
-                                                onClick={() =>
-                                                    handleOpenUpdateStatusDialog(
-                                                        item.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    item?.status ===
-                                                    EventStatus.CONFIRMED
-                                                }
-                                            >
-                                                <Done
-                                                    isDone={
-                                                        item?.status ===
-                                                        EventStatus.CONFIRMED
-                                                    }
-                                                />
-                                            </Button>
-                                        ) : (
-                                            <>
-                                                <Link
-                                                    href={`/events?id=${item.id}&mode=${ScreenMode.EDIT}`}
-                                                    className={cn(
-                                                        item.status ===
-                                                            EventStatus.CONFIRMED &&
-                                                            "pointer-events-none"
-                                                    )}
-                                                >
-                                                    <Edit
-                                                        disabled={
-                                                            item.status ===
-                                                            EventStatus.CONFIRMED
-                                                        }
-                                                    />
-                                                </Link>
+                                {!isActionColumnActive ? null : (
+                                    <TableCell fontSemibold textEllipsis>
+                                        <div className="w-full flex justify-center items-center gap-x-6">
+                                            {auth?.role! ===
+                                            UserRole.Counselor ? (
                                                 <Button
-                                                    disabled={
-                                                        item.status ===
-                                                        EventStatus.CONFIRMED
-                                                    }
                                                     onClick={() =>
-                                                        handleOpenDeleteDialog(
+                                                        handleOpenUpdateStatusDialog(
                                                             item.id
                                                         )
                                                     }
+                                                    disabled={
+                                                        item?.status ===
+                                                        EventStatus.CONFIRMED
+                                                    }
                                                 >
-                                                    <Delete
-                                                        disabled={
-                                                            item.status ===
+                                                    <Done
+                                                        isDone={
+                                                            item?.status ===
                                                             EventStatus.CONFIRMED
                                                         }
                                                     />
                                                 </Button>
-                                            </>
-                                        )}
-                                    </div>
-                                </TableCell>
+                                            ) : (
+                                                <>
+                                                    <Link
+                                                        href={`/events?id=${item.id}&mode=${ScreenMode.EDIT}`}
+                                                        className={cn(
+                                                            item.status ===
+                                                                EventStatus.CONFIRMED &&
+                                                                "pointer-events-none"
+                                                        )}
+                                                    >
+                                                        <Edit
+                                                            disabled={
+                                                                item.status ===
+                                                                EventStatus.CONFIRMED
+                                                            }
+                                                        />
+                                                    </Link>
+                                                    <Button
+                                                        disabled={
+                                                            item.status ===
+                                                            EventStatus.CONFIRMED
+                                                        }
+                                                        onClick={() =>
+                                                            handleOpenDeleteDialog(
+                                                                item.id
+                                                            )
+                                                        }
+                                                    >
+                                                        <Delete
+                                                            disabled={
+                                                                item.status ===
+                                                                EventStatus.CONFIRMED
+                                                            }
+                                                        />
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </>

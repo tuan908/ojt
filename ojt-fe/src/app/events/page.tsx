@@ -1,4 +1,4 @@
-import {getValidToken} from "@/app/actions/event.action";
+import {getSession} from "@/app/actions/event.action";
 
 import {getEventDetailById} from "@/app/actions/event.action";
 import {DynamicPageProps} from "@/types";
@@ -16,7 +16,7 @@ export default async function Page({searchParams}: DynamicPageProps) {
         getEventDetailById(id),
         getEvents(),
         getHashtags(),
-        getValidToken(),
+        getSession(),
     ]);
 
     return (

@@ -15,7 +15,12 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import Select, {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
-import {useState, type ChangeEventHandler, type ReactNode} from "react";
+import {
+    startTransition,
+    useState,
+    type ChangeEventHandler,
+    type ReactNode,
+} from "react";
 import EventGrid from "./_EventGrid";
 
 type SearchAreaProps = {
@@ -66,7 +71,7 @@ export default function SearchArea({
 }: SearchAreaProps) {
     const router = useRouter();
     const [data, setData] = useState<StudentEventResponse["events"]>(
-        _data.events
+        _data?.events
     );
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
@@ -80,7 +85,7 @@ export default function SearchArea({
         setCheck({...check, [event.target.name]: !check[event.target.name]});
     };
 
-    function handleSearch() {
+    async function handleSearch() {
         let status: EventStatus[] = [];
         if (check.unconfirmed) {
             status.push(EventStatus.UNCONFIRMED);
@@ -94,43 +99,39 @@ export default function SearchArea({
             status.push(EventStatus.CONFIRMED);
         }
 
-        const promise = getEventsByStudentCodeWithQuery(params.id, {
-            grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
-            eventName:
-                eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
-            status,
-        });
+        try {
+            const result = await getEventsByStudentCodeWithQuery(params.id, {
+                grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
+                eventName:
+                    eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
+                status,
+            });
+            setData(result!);
+            let url = new URL(window.location.href);
+            url.searchParams.forEach((value, key) => {
+                url.searchParams.delete(key, value);
+            });
 
-        promise
-            .then(responseData => setData(responseData!?.events))
-            .catch(error => {
-                throw new Error(error?.message);
-            })
-            .finally(() => {
-                let url = new URL(window.location.href);
-                url.searchParams.forEach((value, key) => {
-                    url.searchParams.delete(key, value);
-                });
+            if (grade.length > 0 && grade !== CLASS_OPTION_DEFAULT) {
+                url.searchParams.set("grade", grade);
+            }
 
-                if (grade.length > 0 && grade !== CLASS_OPTION_DEFAULT) {
-                    url.searchParams.set("grade", grade);
-                }
+            if (eventName.length > 0 && eventName !== EVENT_OPTION_DEFAULT) {
+                url.searchParams.set("event", eventName);
+            }
 
-                if (
-                    eventName.length > 0 &&
-                    eventName !== EVENT_OPTION_DEFAULT
-                ) {
-                    url.searchParams.set("event", eventName);
-                }
-
-                if (status.length > 0) {
-                    url.searchParams.set(
-                        "status",
-                        status.map(x => x.toString()).join(",")
-                    );
-                }
+            if (status.length > 0) {
+                url.searchParams.set(
+                    "status",
+                    status.map(x => x.toString()).join(",")
+                );
+            }
+            startTransition(() => {
                 router.push(url.toString());
             });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     const handleSelectGrade: MuiSelectChangeHandler = (event, _reactNode) => {
@@ -235,7 +236,11 @@ export default function SearchArea({
 
             {/* Table */}
             <div className="w-full px-10 pt-6">
-                <EventGrid data={data!} studentId={_data.id} code={params.id} />
+                <EventGrid
+                    data={data!}
+                    studentId={_data?.id}
+                    code={params?.id}
+                />
             </div>
             <div className="w-full flex justify-end items-center px-8 pt-8">
                 <Pagination count={10} variant="text" shape="circular" />
