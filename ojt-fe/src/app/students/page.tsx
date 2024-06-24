@@ -2,7 +2,7 @@ import {getEvents, getGrades, getHashtags} from "@/app/actions/common.action";
 import {getStudents} from "@/app/actions/student.action";
 import Navbar from "@/components/Navbar";
 import PageWrapper from "@/components/PageWrapper";
-import {Metadata} from "next";
+import type {Metadata} from "next";
 import SearchArea from "./_SearchArea";
 
 export const metadata: Metadata = {
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const [grades, events, hashtags, rows] = await Promise.all([
+    const [grades, events, hashtags, students] = await Promise.all([
         getGrades(),
         getEvents(),
         getHashtags(),
@@ -24,7 +24,7 @@ export default async function Page() {
             <div className="w-full h-full flex-1 flex justify-center items-center bg-[#ededed]">
                 <PageWrapper gapY>
                     <SearchArea
-                        data={rows!}
+                        students={students!}
                         grades={grades!}
                         events={events!}
                         hashtags={hashtags!}

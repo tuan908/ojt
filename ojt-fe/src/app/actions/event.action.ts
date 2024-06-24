@@ -25,7 +25,7 @@ export async function registerEvent(dto: RegisterEvent) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await HttpClient.post("/students/event/register", result.data);
+        await HttpClient.post("/students/event", result.data);
         revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }

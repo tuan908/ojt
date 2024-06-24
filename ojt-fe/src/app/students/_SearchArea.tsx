@@ -38,7 +38,7 @@ import {type SyntheticEvent, useState} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type SearchAreaProps = {
-    data: Page<StudentsResponse>;
+    students?: Page<StudentsResponse>;
     grades?: Grade[];
     hashtags?: HashtagPayload[];
     events?: StudentEvent[];
@@ -49,13 +49,12 @@ type Skill = {
     color: string;
 };
 
-export default function SearchArea(props: SearchAreaProps) {
-    const {data, grades, hashtags, events} = props;
+export default function SearchArea({students, grades, hashtags, events}: SearchAreaProps) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<Skill[]>([]);
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
-    const [rows, setRows] = useState<StudentsResponse[]>(data.content);
+    const [rows, setRows] = useState<StudentsResponse[]>(students?.content!);
     const [searchCondition, setSearchCondition] = useState<StudentsRequest>({});
 
     function handleInputChange(
@@ -324,7 +323,7 @@ export default function SearchArea(props: SearchAreaProps) {
             <StudentDataGrid rows={rows} />
             <div className="w-full flex justify-end items-center pr-12">
                 <Pagination
-                    count={data.page.totalPage}
+                    count={students?.page?.totalPage}
                     variant="outlined"
                     shape="rounded"
                 />

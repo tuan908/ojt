@@ -1,8 +1,5 @@
-import {getSession} from "@/app/actions/event.action";
-
-import {getEventDetailById} from "@/app/actions/event.action";
+import {getEventDetailById, getSession} from "@/app/actions/event.action";
 import {DynamicPageProps} from "@/types";
-import {Suspense} from "react";
 import {getEvents, getHashtags} from "../actions/common.action";
 import EventUi from "./_ui";
 
@@ -12,7 +9,7 @@ export default async function Page({searchParams}: DynamicPageProps) {
         : parseInt(searchParams?.id![0]!);
     const mode = !Array.isArray(searchParams?.mode!) ? searchParams?.mode : "";
 
-    const [detail, events, hashtags, auth] = await Promise.all([
+    const [eventDetail, events, hashtags, session] = await Promise.all([
         getEventDetailById(id),
         getEvents(),
         getHashtags(),
@@ -20,15 +17,13 @@ export default async function Page({searchParams}: DynamicPageProps) {
     ]);
 
     return (
-        <Suspense>
-            <EventUi
-                id={id}
-                mode={mode}
-                auth={auth}
-                detail={detail}
-                events={events}
-                hashtags={hashtags}
-            />
-        </Suspense>
+        <EventUi
+            id={id}
+            mode={mode}
+            auth={session}
+            detail={eventDetail}
+            events={events}
+            hashtags={hashtags}
+        />
     );
 }

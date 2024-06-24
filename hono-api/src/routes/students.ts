@@ -64,8 +64,12 @@ app.get("/", async ctx => {
 
 app.get("/:code", async ctx => {
     const code = ctx.req.param("code");
+    /** Limit */
+    const pageNumber = Number.parseInt(ctx.req.query("page")!) || 1;
+    /** Offset */
+    const pageSize = Number.parseInt(ctx.req.query("page_size")!) || 10;
     try {
-        const result = await db(ctx).query.student.findFirst({
+        const student = await db(ctx).query.student.findFirst({
             where: eq(schema.student.code, code),
             columns: {
                 userId: false,
@@ -75,32 +79,6 @@ app.get("/:code", async ctx => {
                 updatedAt: false,
             },
             with: {
-                eventDetail: {
-                    where: eq(schema.eventDetail.isDeleted, false),
-                    with: {
-                        grade: {
-                            columns: {
-                                name: true,
-                            },
-                        },
-                        event: {
-                            columns: {
-                                name: true,
-                            },
-                        },
-                        comments: {
-                            columns: {
-                                id: true,
-                                isDeleted: true,
-                            },
-                        },
-                    },
-                    columns: {
-                        status: true,
-                        id: true,
-                    },
-                    orderBy: ({createdAt}, {asc}) => asc(createdAt),
-                },
                 user: {
                     columns: {
                         name: true,
@@ -113,19 +91,40 @@ app.get("/:code", async ctx => {
                 },
             },
         });
+
+        const eventDetails = await db(ctx).query.eventDetail.findMany({
+            where: ({studentId, isDeleted}, {eq, and}) =>
+                and(eq(studentId, student?.id!), eq(isDeleted, false)),
+            limit: pageSize,
+            offset: (pageNumber - 1) * pageSize,
+            with: {
+                grade: {
+                    columns: {
+                        name: true,
+                    },
+                },
+                event: {
+                    columns: {
+                        name: true,
+                    },
+                },
+                comments: {
+                    where: ({isDeleted}, {eq}) => eq(isDeleted, false),
+                },
+            },
+        });
+
         return ctx.json({
-            id: result?.id,
-            code: result?.code,
-            name: result?.user?.name,
-            grade: result?.grade?.name,
-            events: result?.eventDetail.map(event => ({
+            id: student?.id,
+            code: student?.code,
+            name: student?.user?.name,
+            grade: student?.grade?.name,
+            events: eventDetails.map(event => ({
                 id: event?.id!,
                 grade: event?.grade!?.name,
                 name: event?.event!?.name,
                 status: event?.status!,
-                comments: event?.comments!?.filter(
-                    comment => !comment.isDeleted
-                ),
+                comments: event?.comments,
             })),
         });
     } catch (error) {

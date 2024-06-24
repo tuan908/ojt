@@ -172,7 +172,7 @@ public class StudentServiceImpl implements StudentService {
 
 		var grade = this.commonService.findGradeByName(dto.getGradeName());
 
-		if (student == null || detail == null || grade == null) {
+		if (student == null || detail == null) {
 			return null;
 		}
 		var qlString = """
@@ -187,7 +187,7 @@ public class StudentServiceImpl implements StudentService {
 				""";
 		var query = this.entityManager.createQuery(qlString, EventDetail.class);
 		query.setParameter("code", student.getCode());
-		query.setParameter("gradeName", grade.getName());
+		query.setParameter("gradeName", student.getGrade().getName());
 		query.setParameter("eventName", detail.getName());
 
 		var result = query.getResultStream().findFirst();

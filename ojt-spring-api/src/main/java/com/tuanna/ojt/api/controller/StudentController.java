@@ -33,7 +33,7 @@ public class StudentController {
 
   private final CommentService commentService;
 
-  @PostMapping(path = "/students")
+  @PostMapping
   @ResponseBody
   public ResponseEntity<?> getStudentEvents(@RequestBody StudentEventRequestDto dto) {
     var data = this.studentService.getEvents(dto);
@@ -62,7 +62,7 @@ public class StudentController {
   }
 
 
-  @PostMapping(path = "/event/register")
+  @PostMapping(path = "/event")
   @ResponseBody
   public ResponseEntity<?> register(@RequestBody RegisterEventDto dto) {
     var result = this.studentService.registerOrUpdateEvent(dto);
