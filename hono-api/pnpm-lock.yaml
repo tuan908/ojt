@@ -15,8 +15,8 @@ importers:
         specifier: ^0.31.2
         version: 0.31.2(@cloudflare/workers-types@4.20240620.0)(@neondatabase/serverless@0.9.3)(@types/pg@8.11.6)(postgres@3.4.4)
       hono:
-        specifier: ^4.4.7
-        version: 4.4.7
+        specifier: ^4.4.8
+        version: 4.4.8
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20240620.0
@@ -431,8 +431,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.4.7:
-    resolution: {integrity: sha512-WoQWFQyVFEVRtIzP5sHPv7nvIw+RYL/HRnvnOCDxj6A+BtrwuC9S0vryZbV4IyFcNgOJ87r/phDiC1x2eEo4Gg==}
+  hono@4.4.8:
+    resolution: {integrity: sha512-eewnSgTzdWgFVn97kPV24h+9UVNUQ+9mj6IRxr7dBseTaTBSHtFo/T/vRNcqJkQFysVoXyecflr3Xe/fdvzEpQ==}
     engines: {node: '>=16.0.0'}
 
   is-binary-path@2.1.0:
@@ -904,7 +904,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.4.7: {}
+  hono@4.4.8: {}
 
   is-binary-path@2.1.0:
     dependencies:
