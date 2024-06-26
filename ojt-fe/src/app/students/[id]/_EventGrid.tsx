@@ -1,9 +1,13 @@
 "use client";
 
 import {deleteEventDetailById} from "@/app/actions/event.action";
-import {updateEventStatus} from "@/app/actions/student.action";
+import {
+    getStudentByCode,
+    updateEventStatus,
+} from "@/app/actions/student.action";
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import {StatusLabel} from "@/components/StatusLabel";
 import TableCell from "@/components/TableCell";
 import TableHead from "@/components/TableHead";
@@ -11,26 +15,33 @@ import TableRow from "@/components/TableRow";
 import {Delete, Done, Edit} from "@/components/icon";
 import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
-import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import {useAppDispatch} from "@/redux/hooks";
-import type {StudentEventResponse} from "@/types/student.types";
+import json from "@/i18n/jp.json";
+import type {StudentEventResponse} from "@/types/student";
 import {cn} from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
+import {CircularProgress} from "@mui/material";
 import Badge from "@mui/material/Badge";
 import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
-import {useCallback, useEffect, useMemo, useReducer, useState} from "react";
+import {
+    useCallback,
+    useEffect,
+    useMemo,
+    useReducer,
+    useState,
+    useTransition,
+} from "react";
 
-interface DialogState {
+type DialogState = {
     open: boolean;
     id: number;
-}
+};
 
-interface LocalState {
+type LocalState = {
     delete: DialogState;
     updateStatus: DialogState;
     isUpdating: boolean;
-}
+};
 
 type EventGridProps = {
     data: StudentEventResponse["events"];
@@ -82,29 +93,33 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
     const [rows, setRows] = useState<StudentEventResponse["events"]>(data);
-    const appDispatch = useAppDispatch();
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => setRows(data), [data]);
 
-    async function handleDone() {
+    function handleDone() {
+        try {
+            startTransition(async () => {
+                await updateEventStatus({
+                    id: state.updateStatus.id,
+                    studentId: studentId!,
+                    updatedBy: auth?.username!,
+                });
+                const data = await getStudentByCode(code);
+                setRows(data!?.events);
+            });
+        } catch (error) {
+            console.error("Error while updating status");
+        }
         dispatch(hideDialogUpdateStatus());
-        await appDispatch(showLoading());
-        await updateEventStatus({
-            id: state.updateStatus.id,
-            studentId: studentId!,
-            updatedBy: auth?.username!,
-        });
-        await appDispatch(hideLoading());
     }
 
     function handleDeleteEventDetailById(): void {
-        dispatch(setIsUpdating(true));
-        deleteEventDetailById(code, state.delete.id)
-            .then(res => setRows(res ?? []))
-            .finally(() => {
-                dispatch(setIsUpdating(false));
-                dispatch(hideDialogDelete());
-            });
+        startTransition(async () => {
+            const data = await deleteEventDetailById(code, state.delete.id);
+            setRows(data!);
+        });
+        dispatch(hideDialogDelete());
     }
 
     const handleOpenDeleteDialog = (id: number) => {
@@ -144,8 +159,13 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
                         )}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="relative">
                     <>
+                        {isPending && (
+                            <div className="absolute top-0 left-0 right-0 bottom-0 bg-[#454545] opacity-30 flex items-center justify-center">
+                                <ProgressIndicator />
+                            </div>
+                        )}
                         {rows!?.map(item => (
                             <TableRow key={item.id}>
                                 <TableCell textCenter>{item?.grade}</TableCell>
@@ -239,26 +259,25 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
                     </>
                 </tbody>
             </table>
+
             <Dialog
                 open={state.delete.open}
                 onClose={() => dispatch(hideDialogDelete())}
-                title="Delete Event"
-                contentText="Do you want to delete this event?"
-                actionButtonText="Delete"
+                title={json.dialog.delete.title}
+                content={json.dialog.delete.content}
                 onCancelClick={() => dispatch(hideDialogDelete())}
                 onActionClick={handleDeleteEventDetailById}
-                actionButtonBackgroundColor="bg-red-400"
+                buttonColor="danger"
             />
 
             <Dialog
                 open={state.updateStatus.open}
                 onClose={() => dispatch(hideDialogUpdateStatus())}
-                title="Update Status"
-                contentText="Do you want to change status of this event?"
-                actionButtonText="Update"
+                title={json.dialog.update.title}
+                content={json.dialog.update.content}
                 onCancelClick={() => dispatch(hideDialogUpdateStatus())}
                 onActionClick={handleDone}
-                actionButtonBackgroundColor="bg-blue-400"
+                buttonColor="info"
             />
         </>
     );

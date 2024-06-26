@@ -24,7 +24,10 @@ export default async function Navbar() {
         <nav className="w-full py-2 px-4 flex justify-between items-center z-50 fixed top-0 left-0 shadow-md bg-white">
             <div className="flex flex-row gap-x-4 items-center">
                 <Sidebar auth={auth} />
-                <Link className="text-[#1f5da3] font-bold text-2xl" href={href}>
+                <Link
+                    className="text-[#1f5da3] font-extrabold text-3xl"
+                    href={href}
+                >
                     {json.common.application_name}
                 </Link>
             </div>

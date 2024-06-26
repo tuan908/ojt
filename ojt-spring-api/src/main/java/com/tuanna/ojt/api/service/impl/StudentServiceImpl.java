@@ -170,8 +170,6 @@ public class StudentServiceImpl implements StudentService {
 
 		var detail = this.commonService.findEventByName(dto.getData().eventName());
 
-		var grade = this.commonService.findGradeByName(dto.getGradeName());
-
 		if (student == null || detail == null) {
 			return null;
 		}

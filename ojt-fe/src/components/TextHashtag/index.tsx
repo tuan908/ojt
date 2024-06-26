@@ -2,27 +2,28 @@ import {useMemo, type ComponentProps} from "react";
 
 type TextHashtagProps = ComponentProps<"span"> & {
     color: string;
+    /** Padding X */
     px?: number;
 };
 
 export default function TextHashtag({
     color,
     children,
-    px: paddingXInRem,
+    px,
     ...otherProps
 }: TextHashtagProps) {
     const style = useMemo(() => {
-        if (paddingXInRem) {
+        if (!px) {
             return {
                 color,
-                padding: `0 ${paddingXInRem}rem 0 ${paddingXInRem}rem`,
+                padding: 0,
             };
         }
         return {
             color,
-            padding: 0,
+            padding: `0 ${px}rem 0 ${px}rem`,
         };
-    }, [paddingXInRem]);
+    }, [px]);
 
     return (
         <span {...otherProps} style={style}>

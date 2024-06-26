@@ -5,7 +5,7 @@ import TableHead from "@/components/TableHead";
 import TableRow from "@/components/TableRow";
 import TextHashtag from "@/components/TextHashtag";
 import json from "@/i18n/jp.json";
-import type {StudentsResponse} from "@/types/student.types";
+import type {StudentsResponse} from "@/types/student";
 import Analytics from "@mui/icons-material/Analytics";
 import {useRouter} from "next/navigation";
 import {startTransition, type SyntheticEvent} from "react";

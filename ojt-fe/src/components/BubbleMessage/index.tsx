@@ -5,7 +5,7 @@ import {cn} from "@/utils";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
-import {startTransition, useState} from "react";
+import {type RefObject, useState} from "react";
 
 type CommentPayload = Pick<
     Comment,
@@ -23,25 +23,26 @@ interface BubbleMessageProps {
     setComment: (data: CommentPayload) => void;
     comments: Comment[];
     setComments: (comments: Comment[]) => void;
+    inputRef: RefObject<HTMLInputElement>;
 }
 
-export default function BubbleMessage(props: BubbleMessageProps) {
-    const {
-        comment,
-        isCommentOfActiveUser,
-        editState,
-        setEditState,
-        setComment,
-        comments,
-        setComments,
-    } = props;
+export default function BubbleMessage({
+    comment,
+    isCommentOfActiveUser,
+    editState,
+    setEditState,
+    setComment,
+    comments,
+    setComments,
+    inputRef,
+}: BubbleMessageProps) {
     const [show, setShow] = useState(false);
 
     const handleOnMouseEnter = () => {
         if (
-            props.editState.id !== -1 &&
-            props.editState.id === comment.id &&
-            props.editState.isEditing
+            editState.id !== -1 &&
+            editState.id === comment.id &&
+            editState.isEditing
         ) {
             setShow(false);
         } else {
@@ -57,22 +58,22 @@ export default function BubbleMessage(props: BubbleMessageProps) {
             eventDetailId: comment.eventDetailId,
             username: comment.username,
         });
-        startTransition(() => {
-            props.setComments(props.comments.filter(x => x.id !== comment.id));
-        });
+
+        setComments(comments.filter(x => x.id !== comment.id));
     };
 
     const enableEdit = () => {
-        props.setEditState({
+        setEditState({
             id: comment.id,
             isEditing: true,
         });
-        props.setComment({
+        setComment({
             id: comment.id,
             content: comment.content,
             eventDetailId: comment.eventDetailId,
             username: comment.username,
         });
+        inputRef?.current?.focus();
     };
 
     return (
@@ -85,8 +86,8 @@ export default function BubbleMessage(props: BubbleMessageProps) {
             >
                 <div className="flex flex-col gap-y-2 items-center w-24">
                     <Avatar sx={{width: 56, height: 56, bgcolor: "#d87579"}} />
-                    <span className="bg-[#00c853] text-white font-medium rounded-xl text-center leading-none px-2 py-[0.125rem]">
-                        {comment?.roleName}
+                    <span className="bg-[#00c853] text-white font-medium rounded-xl text-center leading-none px-2 py-1 flex items-center">
+                        <p>{comment?.roleName}</p>
                     </span>
                 </div>
                 <div className="w-1/2 h-full relative">

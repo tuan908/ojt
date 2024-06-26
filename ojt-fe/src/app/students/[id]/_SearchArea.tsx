@@ -4,7 +4,7 @@ import type {Grade, StudentEvent} from "@/app/actions/common.action";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
 import {EventStatus, ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
-import {StudentEventResponse} from "@/types/student.types";
+import {StudentEventResponse} from "@/types/student";
 import Search from "@mui/icons-material/Search";
 import {
     Pagination,

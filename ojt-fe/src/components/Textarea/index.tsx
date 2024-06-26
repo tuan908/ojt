@@ -12,7 +12,7 @@ const Textarea = ({
         <textarea
             {...otherProps}
             className={cn(
-                "resize-none border rounded-md px-4 py-2 outline-blue-500 disabled:cursor-not-allowed",
+                "resize-none border rounded-md px-4 py-1 outline-blue-500 disabled:cursor-not-allowed",
                 fullWidth && "w-full"
             )}
             name={name}

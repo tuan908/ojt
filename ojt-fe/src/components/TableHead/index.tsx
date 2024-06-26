@@ -13,7 +13,7 @@ export default function TableHead({
     width,
     children,
 }: TableHeadProps) {
-    const className = useMemo(() => {
+    const {className, style} = useMemo(() => {
         let base =
             "border border-table text-center px-4 py-2 whitespace-nowrap";
 
@@ -21,16 +21,14 @@ export default function TableHead({
             base += ` ${classes}`;
         }
 
-        return base;
-    }, [classes]);
-
-    const style = useMemo(
-        () => ({
-            backgroundColor: bgColor,
-            width: width ? `${width}rem` : 0,
-        }),
-        [bgColor, width]
-    );
+        return {
+            className: base,
+            style: {
+                backgroundColor: bgColor,
+                width: width ? `${width}rem` : 0,
+            },
+        };
+    }, [classes, bgColor, width]);
 
     return (
         <th className={className} style={style}>

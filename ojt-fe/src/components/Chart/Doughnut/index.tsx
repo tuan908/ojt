@@ -1,5 +1,7 @@
 "use client";
 
+import type {DoughnutData} from "@/types/tracking";
+import ReactEcharts from "echarts-for-react";
 import {PieChart, type PieSeriesOption} from "echarts/charts";
 import {
     TooltipComponent,
@@ -9,8 +11,6 @@ import type {ComposeOption} from "echarts/core";
 import {use} from "echarts/core";
 import {LabelLayout} from "echarts/features";
 import {CanvasRenderer} from "echarts/renderers";
-import ReactEcharts from "echarts-for-react";
-import type {TrackingData} from "@/app/actions/student.action";
 
 use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
 
@@ -31,7 +31,7 @@ export const colorPalette = [
     "#bdd333",
 ];
 
-const getOption = (data: TrackingData["hashtags"]["doughnut"]) => {
+const getOption = (data: DoughnutData) => {
     const options: EChartsOption = {
         tooltip: {
             trigger: "item",
@@ -76,11 +76,11 @@ const getOption = (data: TrackingData["hashtags"]["doughnut"]) => {
     return options;
 };
 
-export default function DoughnutChart({
-    data,
-}: {
-    data: TrackingData["hashtags"]["doughnut"];
-}) {
+type Props = {
+    data: DoughnutData
+}
+
+export default function DoughnutChart({data}: Props) {
     return (
         <div className="w-[32rem] h-[20rem] relative bg-white shadow-2xl rounded-2xl">
             <ReactEcharts

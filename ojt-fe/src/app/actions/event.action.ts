@@ -3,7 +3,7 @@
 import HttpClient from "@/lib/HttpClient";
 import {decrypt} from "@/lib/auth";
 import {commentSchema, registerEventSchema} from "@/lib/zod";
-import type {EventDetail, StudentEventResponse} from "@/types/student.types";
+import type {EventDetail, StudentEventResponse} from "@/types/student";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";

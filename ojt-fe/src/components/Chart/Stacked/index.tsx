@@ -1,6 +1,6 @@
 "use client";
 
-import type {TrackingData} from "@/app/actions/student.action";
+import type {StackedData} from "@/types/tracking";
 import Box from "@/components/Box";
 import ReactEcharts from "echarts-for-react";
 import {BarChart, type BarSeriesOption} from "echarts/charts";
@@ -50,7 +50,7 @@ export default function StackedBarChart({
     data: series,
 }: {
     labels: string[];
-    data: TrackingData["hashtags"]["stacked"];
+    data: StackedData;
 }) {
     return (
         <Box fullWidth height={24} paddingY="10">

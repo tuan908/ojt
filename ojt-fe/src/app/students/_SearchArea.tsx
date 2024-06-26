@@ -17,11 +17,7 @@ import {
 import json from "@/i18n/jp.json";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import type {
-    Page,
-    StudentsRequest,
-    StudentsResponse,
-} from "@/types/student.types";
+import type {Page, StudentsRequest, StudentsResponse} from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
@@ -49,7 +45,12 @@ type Skill = {
     color: string;
 };
 
-export default function SearchArea({students, grades, hashtags, events}: SearchAreaProps) {
+export default function SearchArea({
+    students,
+    grades,
+    hashtags,
+    events,
+}: SearchAreaProps) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<Skill[]>([]);

@@ -7,7 +7,8 @@ import type {
     StudentEventResponse,
     StudentsRequest,
     StudentsResponse,
-} from "@/types/student.types";
+} from "@/types/student";
+import type {TrackingData} from "@/types/tracking";
 import {revalidatePath} from "next/cache";
 import {cache} from "react";
 
@@ -120,23 +121,4 @@ export const getTracking = async (code: string) => {
         "node"
     );
     return data;
-};
-
-export type TrackingData = {
-    id: string;
-    name: string;
-    code: string;
-    count: number;
-    hashtags: {
-        doughnut: {
-            _data: Array<{name: string; value: number}>;
-            text: number;
-        };
-        stacked: Array<{
-            name: string;
-            data: number[];
-            type: "bar";
-            stack: string;
-        }>;
-    };
 };

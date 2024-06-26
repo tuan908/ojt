@@ -47,5 +47,31 @@
         "password": "パスワード",
         "title": "ログイン",
         "login_pending": "ログインする。。。"
+    },
+    "dialog": {
+        "update": {
+            "title": "スターテス",
+            "content": "このイベントのステータスを変更しますか?"
+        },
+        "delete": {
+            "title": "更新",
+            "content": "このイベントを削除しますか?"
+        },
+        "confirm": "確かめる",
+        "cancel": "キャンセル"
+    },
+    "event": {
+        "select_event": "イベントを選択",
+        "placeholder_0": "バレーボール",
+        "question_1": "学校生活での出来事",
+        "placeholder_1": "回答11",
+        "question_2": "自分の行動",
+        "placeholder_2": "回答22",
+        "question_3": "発揮した力",
+        "placeholder_3": "回答33",
+        "question_4": "伸びた能力",
+        "placeholder_4": "回答44",
+        "question_5": "考えたこと",
+        "placeholder_5": "回答55"
     }
 }

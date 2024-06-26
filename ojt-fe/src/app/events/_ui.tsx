@@ -9,12 +9,14 @@ import {
     type RegisterEvent,
 } from "@/app/actions/event.action";
 import BubbleMessage from "@/components/BubbleMessage";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import Textarea from "@/components/Textarea";
 import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
+import json from "@/i18n/jp.json";
 import type {JwtPayload} from "@/lib/auth";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import type {EventDetail} from "@/types/student.types";
+import type {EventDetail} from "@/types/student";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -34,7 +36,9 @@ import {useRouter} from "next/navigation";
 import {
     Fragment,
     useEffect,
+    useRef,
     useState,
+    useTransition,
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
@@ -93,6 +97,7 @@ export default function EventUi({
     const [comment, setComment] = useState<AddCommentPayload>(initComment);
     const [openSuggest, setOpenSuggest] = useState(false);
     const [editState, setEditState] = useState<EditCommentState>(initEditState);
+    const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
         setData({
@@ -199,7 +204,10 @@ export default function EventUi({
 
     async function handleAddOrUpdate(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
-        if (registerData!?.eventName === "Event" || !registerData!?.eventName) {
+        if (
+            registerData!?.eventName === "バレーボール" ||
+            !registerData!?.eventName
+        ) {
             setError(true);
         } else {
             await registerEvent({
@@ -211,43 +219,48 @@ export default function EventUi({
         }
     }
 
-    async function handleAddComment(
+    function handleAddComment(
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ) {
         event?.preventDefault();
-        if (editState.isEditing) {
-            const response = await editComment(comment.id!, comment.content!);
-            if (response) {
-                setComments(prev =>
-                    [
-                        ...prev.filter(x => x.id !== comment.id!),
-                        response.data as Comment,
-                    ].sort((a, b) => a.id - b.id)
+        startTransition(async () => {
+            if (editState.isEditing) {
+                const response = await editComment(
+                    comment.id!,
+                    comment.content!
                 );
+                if (response) {
+                    setComments(prev =>
+                        [
+                            ...prev.filter(x => x.id !== comment.id!),
+                            response.data as Comment,
+                        ].sort((a, b) => a.id - b.id)
+                    );
+                }
+                setComment(initComment);
+                setEditState(initEditState);
+            } else {
+                if (auth && auth.username) {
+                    await dispatch(showLoading());
+                    let data: AddCommentPayload = {
+                        ...comment,
+                        eventDetailId: id!,
+                        username: auth.username,
+                    };
+                    await addComment(data)
+                        .then(async res => {
+                            if (res) {
+                                setComments(res);
+                                setComment({...comment, content: ""});
+                            }
+                        })
+                        .finally(async () => {
+                            await dispatch(hideLoading());
+                        });
+                }
             }
-            setComment(initComment);
-            setEditState(initEditState);
-        } else {
-            if (auth && auth.username) {
-                await dispatch(showLoading());
-                let data: AddCommentPayload = {
-                    ...comment,
-                    eventDetailId: id!,
-                    username: auth.username,
-                };
-                await addComment(data)
-                    .then(async res => {
-                        if (res) {
-                            setComments(res);
-                            setComment({...comment, content: ""});
-                        }
-                    })
-                    .finally(async () => {
-                        await dispatch(hideLoading());
-                    });
-            }
-        }
-        setOpenSuggest(false);
+            setOpenSuggest(false);
+        });
     }
 
     function handleSelect(emoji: any) {
@@ -263,14 +276,23 @@ export default function EventUi({
         setEditState(initEditState);
     };
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
     return (
         <Fragment>
-            <div className="pt-12 w-full flex flex-col gap-y-8">
+            <div className="pt-6 w-full flex flex-col gap-y-8 relative">
+                {isPending && (
+                    <div className="fixed top-0 left-0 right-0 bottom-0 bg-[#454545] opacity-30 flex items-center justify-center z-1301">
+                        <ProgressIndicator />
+                    </div>
+                )}
                 <div className="w-1/2 m-auto bg-white rounded-xl shadow-2xl">
-                    <div className="w-[90%] m-auto flex flex-col gap-y-6 py-6">
+                    <div className="w-[90%] m-auto flex flex-col gap-y-4 py-6">
                         {/* Select */}
                         <div className="flex flex-col gap-y-2">
-                            <label htmlFor="selectEvent">Select Event:</label>
+                            <label htmlFor="selectEvent">
+                                {json.event.select_event}
+                            </label>
                             <Select
                                 variant="outlined"
                                 className="w-full border-default disabled:cursor-not-allowed"
@@ -294,7 +316,9 @@ export default function EventUi({
                                     mode! === ScreenMode.EDIT.toString()
                                 }
                             >
-                                <MenuItem value="Event">Event</MenuItem>
+                                <MenuItem value={json.event.placeholder_0}>
+                                    {json.event.placeholder_0}
+                                </MenuItem>
                                 {eventOptions!?.map(x => (
                                     <MenuItem
                                         key={x.id}
@@ -312,46 +336,77 @@ export default function EventUi({
                                 Must select an event!
                             </span>
                         ) : null}
+
                         {/* Events in school life */}
-                        <Textarea
-                            name="eventsInSchoolLife"
-                            placeholder="Events in school life"
-                            onChange={handleChange}
-                            value={registerData!?.eventsInSchoolLife}
-                            disabled={isDisable}
-                        />
+                        <div className="flex flex-col gap-y-3">
+                            <label htmlFor="eventsInSchoolLife">
+                                {json.event.question_1}
+                            </label>
+                            <Textarea
+                                name="eventsInSchoolLife"
+                                placeholder={json.event.placeholder_1}
+                                onChange={handleChange}
+                                value={registerData!?.eventsInSchoolLife}
+                                disabled={isDisable}
+                            />
+                        </div>
+
                         {/* My Actions */}
-                        <Textarea
-                            name="myAction"
-                            placeholder="My Actions"
-                            onChange={handleChange}
-                            value={registerData!?.myAction}
-                            disabled={isDisable}
-                        />
+                        <div className="flex flex-col gap-y-3">
+                            <label htmlFor="eventsInSchoolLife">
+                                {json.event.question_2}
+                            </label>
+                            <Textarea
+                                name="myAction"
+                                placeholder={json.event.placeholder_2}
+                                onChange={handleChange}
+                                value={registerData!?.myAction}
+                                disabled={isDisable}
+                            />
+                        </div>
+
                         {/* Shown power */}
-                        <Textarea
-                            name="shownPower"
-                            placeholder="Shown power"
-                            onChange={handleChange}
-                            value={registerData!?.shownPower}
-                            disabled={isDisable}
-                        />
+                        <div className="flex flex-col gap-y-3">
+                            <label htmlFor="eventsInSchoolLife">
+                                {json.event.question_3}
+                            </label>
+                            <Textarea
+                                name="shownPower"
+                                placeholder={json.event.placeholder_3}
+                                onChange={handleChange}
+                                value={registerData!?.shownPower}
+                                disabled={isDisable}
+                            />
+                        </div>
+
                         {/* Strength that has grown */}
-                        <Textarea
-                            name="strengthGrown"
-                            placeholder="Strength that has grown"
-                            onChange={handleChange}
-                            value={registerData!?.strengthGrown}
-                            disabled={isDisable}
-                        />
+                        <div className="flex flex-col gap-y-3">
+                            <label htmlFor="eventsInSchoolLife">
+                                {json.event.question_4}
+                            </label>
+                            <Textarea
+                                name="strengthGrown"
+                                placeholder={json.event.placeholder_4}
+                                onChange={handleChange}
+                                value={registerData!?.strengthGrown}
+                                disabled={isDisable}
+                            />
+                        </div>
+
                         {/* What I thought */}
-                        <Textarea
-                            name="myThought"
-                            placeholder="What I thought"
-                            onChange={handleChange}
-                            value={registerData!?.myThought}
-                            disabled={isDisable}
-                        />
+                        <div className="flex flex-col gap-y-3">
+                            <label htmlFor="eventsInSchoolLife">
+                                {json.event.question_5}
+                            </label>
+                            <Textarea
+                                name="myThought"
+                                placeholder={json.event.placeholder_5}
+                                onChange={handleChange}
+                                value={registerData!?.myThought}
+                                disabled={isDisable}
+                            />
+                        </div>
+
                         {auth?.role === UserRole.Student &&
                         [
                             ScreenMode.NEW.toString(),
@@ -389,6 +444,7 @@ export default function EventUi({
                                                     auth?.username! ===
                                                     comment?.username!
                                                 }
+                                                inputRef={inputRef}
                                             />
                                         )}
                                     </Fragment>
@@ -418,6 +474,7 @@ export default function EventUi({
                                             multiline
                                             variant="outlined"
                                             rows={2}
+                                            inputRef={inputRef}
                                         />
                                     )}
                                     onInputChange={handleInputCommentChange}

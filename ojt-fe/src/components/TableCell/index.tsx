@@ -13,18 +13,16 @@ type TableCellProps = ComponentProps<"td"> & {
     width?: number;
 };
 
-export default function TableCell(props: TableCellProps) {
-    const {
-        children,
-        textCenter: alignTextCenter,
-        fontSemibold,
-        textEllipsis,
-        classes,
-        width,
-        ...otherProps
-    } = props;
-
-    const className = useMemo(() => {
+export default function TableCell({
+    children,
+    textCenter: alignTextCenter,
+    fontSemibold,
+    textEllipsis,
+    classes,
+    width,
+    ...otherProps
+}: TableCellProps) {
+    const {className, style} = useMemo(() => {
         let base =
             "border border-table py-3 align-middle whitespace-nowrap z-0";
         if (fontSemibold) {
@@ -43,10 +41,11 @@ export default function TableCell(props: TableCellProps) {
             base += ` ${classes}`;
         }
 
-        return base;
-    }, [fontSemibold, alignTextCenter, textEllipsis, classes]);
-
-    const style = useMemo(() => ({width: width ? `${width}rem` : 0}), [width]);
+        return {
+            className: base,
+            style: {width: width ? `${width}rem` : 0},
+        };
+    }, [fontSemibold, alignTextCenter, textEllipsis, classes, width]);
 
     return (
         <td {...otherProps} style={style} className={className}>
