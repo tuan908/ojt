@@ -205,7 +205,7 @@ public class StudentServiceImpl implements StudentService {
       event = EventDetail.builder()
           .status(EventStatus.UNCONFIRMED)
           .detail(detail)
-          .grade(grade)
+          .grade(student.getGrade())
           .data(data)
           .createdBy(dto.getUsername())
           .updatedBy(dto.getUsername())

@@ -91,7 +91,7 @@ export default function EventUi({
     const [registerData, setData] = useState<RegisterEvent["data"]>();
     const [error, setError] = useState(false);
     const [eventOptions, setEventOptions] = useState<StudentEvent[]>([]);
-    const [isDisable, setDisable] = useState(false);
+    const [disable, setDisable] = useState(false);
     const [hashtags, setHashtags] = useState<HashtagPayload[]>([]);
     const [openPicker, setOpen] = useState(false);
     const [comment, setComment] = useState<AddCommentPayload>(initComment);
@@ -205,7 +205,7 @@ export default function EventUi({
     async function handleAddOrUpdate(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
         if (
-            registerData!?.eventName === "バレーボール" ||
+            registerData!?.eventName === json.event.select_event ||
             !registerData!?.eventName
         ) {
             setError(true);
@@ -280,13 +280,13 @@ export default function EventUi({
 
     return (
         <Fragment>
-            <div className="pt-6 w-full flex flex-col gap-y-8 relative">
+            <div className="pt-6 w-full flex flex-col gap-y-4 relative">
                 {isPending && (
                     <div className="fixed top-0 left-0 right-0 bottom-0 bg-[#454545] opacity-30 flex items-center justify-center z-1301">
                         <ProgressIndicator />
                     </div>
                 )}
-                <div className="w-1/2 m-auto bg-white rounded-xl shadow-2xl">
+                <div className="w-1/2 m-auto bg-white rounded-xl shadow-sm">
                     <div className="w-[90%] m-auto flex flex-col gap-y-4 py-6">
                         {/* Select */}
                         <div className="flex flex-col gap-y-2">
@@ -312,8 +312,11 @@ export default function EventUi({
                                 }}
                                 onChange={handleSelectChange}
                                 disabled={
-                                    isDisable ||
-                                    mode! === ScreenMode.EDIT.toString()
+                                    disable ||
+                                    mode! === ScreenMode.EDIT.toString() ||
+                                    (auth?.role! ===
+                                        UserRole.Student.toString() &&
+                                        mode !== ScreenMode.NEW.toString())
                                 }
                             >
                                 <MenuItem value={json.event.placeholder_0}>
@@ -347,7 +350,7 @@ export default function EventUi({
                                 placeholder={json.event.placeholder_1}
                                 onChange={handleChange}
                                 value={registerData!?.eventsInSchoolLife}
-                                disabled={isDisable}
+                                disabled={disable}
                             />
                         </div>
 
@@ -361,7 +364,7 @@ export default function EventUi({
                                 placeholder={json.event.placeholder_2}
                                 onChange={handleChange}
                                 value={registerData!?.myAction}
-                                disabled={isDisable}
+                                disabled={disable}
                             />
                         </div>
 
@@ -375,7 +378,7 @@ export default function EventUi({
                                 placeholder={json.event.placeholder_3}
                                 onChange={handleChange}
                                 value={registerData!?.shownPower}
-                                disabled={isDisable}
+                                disabled={disable}
                             />
                         </div>
 
@@ -389,7 +392,7 @@ export default function EventUi({
                                 placeholder={json.event.placeholder_4}
                                 onChange={handleChange}
                                 value={registerData!?.strengthGrown}
-                                disabled={isDisable}
+                                disabled={disable}
                             />
                         </div>
 
@@ -403,7 +406,7 @@ export default function EventUi({
                                 placeholder={json.event.placeholder_5}
                                 onChange={handleChange}
                                 value={registerData!?.myThought}
-                                disabled={isDisable}
+                                disabled={disable}
                             />
                         </div>
 
@@ -416,7 +419,7 @@ export default function EventUi({
                                 className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
                                 style={{backgroundColor: "#4285f4"}}
                                 onClick={async e => handleAddOrUpdate(e)}
-                                disabled={isDisable || error}
+                                disabled={disable || error}
                             >
                                 {mode !== ScreenMode.NEW.toString()
                                     ? "Update"
