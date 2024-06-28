@@ -22,6 +22,7 @@ import {
     type ReactNode,
 } from "react";
 import EventGrid from "./_EventGrid";
+import json from "@/i18n/jp.json"
 
 type SearchAreaProps = {
     params: {id: string};
@@ -201,7 +202,7 @@ export default function SearchArea({
 
                     {/* 未確認 */}
                     <Checkbox
-                        label="未確認"
+                        label={json.status.unconfirmed}
                         name="unconfirmed"
                         checked={check.unconfirmed}
                         handleChange={e => handleChange(e)}
@@ -209,7 +210,7 @@ export default function SearchArea({
 
                     {/* 確認中 */}
                     <Checkbox
-                        label="確認中"
+                        label={json.status.under_reviewing}
                         name="under_reviewing"
                         checked={check.under_reviewing}
                         handleChange={handleChange}
@@ -217,7 +218,7 @@ export default function SearchArea({
 
                     {/* 修了*/}
                     <Checkbox
-                        label="修了"
+                        label={json.status.confirmed}
                         name="confirmed"
                         checked={check.confirmed}
                         handleChange={handleChange}

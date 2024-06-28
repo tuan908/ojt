@@ -1,5 +1,6 @@
 import {EventStatus} from "@/constants";
 import {useMemo} from "react";
+import json from "@/i18n/jp.json"
 
 type StatusLabelProps = {
     status: number;
@@ -11,17 +12,17 @@ export function StatusLabel({status}: StatusLabelProps) {
         let backgroundColor = "";
         switch (status) {
             case EventStatus.UNCONFIRMED:
-                labelText = "未確認";
+                labelText = json.status.unconfirmed;
                 backgroundColor = "#33b5e5";
                 break;
 
             case EventStatus.UNDER_REVIEWING:
-                labelText = "確認中";
+                labelText = json.status.under_reviewing;
                 backgroundColor = "#ffbb33";
                 break;
 
             case EventStatus.CONFIRMED:
-                labelText = "修了";
+                labelText = json.status.confirmed;
                 backgroundColor = "#00c851";
                 break;
 

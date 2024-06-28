@@ -1,5 +1,5 @@
 import {decrypt} from "@/lib/auth";
-import {NextResponse, type NextFetchEvent, type NextRequest} from "next/server";
+import {NextResponse, type NextRequest} from "next/server";
 import {Route, UserRole} from "./constants";
 
 export const config = {
@@ -13,7 +13,7 @@ export const config = {
     ],
 };
 
-export async function middleware(request: NextRequest, event: NextFetchEvent) {
+export async function middleware(request: NextRequest) {
     const token = request.cookies.get("token");
     const currentPath = request.nextUrl.pathname;
 

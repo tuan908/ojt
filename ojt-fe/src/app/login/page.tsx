@@ -28,16 +28,23 @@ const initialState: LoginFormState = {
     password: "",
 };
 
+const initPasswordInputState: PasswordInputState = {
+    type: "password",
+    show: false
+}
+
+type PasswordInputState = {
+    type: "text" | "password";
+    show: boolean;
+}
+
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Use new hook useActionState - from React version 19.x
     const [state, formAction, isPending] = useActionState(login, initialState);
-    const [inputState, setState] = useState<{
-        type: "password" | "text";
-        show: boolean;
-    }>({type: "password", show: false});
+    const [inputState, setState] = useState<PasswordInputState>(initPasswordInputState);
 
     function showOrHidePassword(e: SyntheticEvent<HTMLDivElement>) {
         e.preventDefault();
