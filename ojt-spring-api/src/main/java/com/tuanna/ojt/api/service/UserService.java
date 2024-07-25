@@ -1,5 +1,7 @@
 package com.tuanna.ojt.api.service;
 
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
 import com.tuanna.ojt.api.dto.LoginDto;
 import com.tuanna.ojt.api.dto.LoginResponseDto;
 import com.tuanna.ojt.api.dto.UserDto;
@@ -14,5 +16,7 @@ public interface UserService {
    * @return UserDto - User Info
    */
   LoginResponseDto login(LoginDto loginDto);
+
+  CompletionStage<UserDto> findByUsernameAsync(String user);
 
 }

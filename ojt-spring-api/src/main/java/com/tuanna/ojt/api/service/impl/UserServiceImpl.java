@@ -1,6 +1,7 @@
 package com.tuanna.ojt.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,9 @@ import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Future;
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -64,5 +68,12 @@ public class UserServiceImpl implements UserService {
 					user.getRole().getValue(), null, null);
 			return userDto;
 		}
+	}
+
+	@Override
+	@Async
+	public CompletionStage<UserDto> findByUsernameAsync(String username) {
+		var queryResult = this.userRepository.findByUsername(username);
+		return CompletableFuture.completedFuture(queryResult.map(User::toDto).orElse(null));
 	}
 }

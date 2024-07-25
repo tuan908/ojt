@@ -22,7 +22,7 @@ import {
     type ReactNode,
 } from "react";
 import EventGrid from "./_EventGrid";
-import json from "@/i18n/jp.json"
+import json from "@/i18n/jp.json";
 
 type SearchAreaProps = {
     params: {id: string};

@@ -46,7 +46,8 @@
         "username": "ユーザーネーム",
         "password": "パスワード",
         "title": "ログイン",
-        "login_pending": "ログインする。。。"
+        "login_pending": "ログインする。。。",
+        "forgot_password": "パスワードを忘れた？"
     },
     "dialog": {
         "update": {

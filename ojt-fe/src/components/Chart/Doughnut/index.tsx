@@ -77,8 +77,8 @@ const getOption = (data: DoughnutData) => {
 };
 
 type Props = {
-    data: DoughnutData
-}
+    data: DoughnutData;
+};
 
 export default function DoughnutChart({data}: Props) {
     return (

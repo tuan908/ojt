@@ -14,19 +14,30 @@ import com.tuanna.ojt.api.exception.ResultNotFoundException;
 public class ControllerExceptionHandler {
 
   @ExceptionHandler(value = {ResultNotFoundException.class})
-  public ResponseEntity<?> handle(ResultNotFoundException ex) {
-    var responseBody = ErrorResponseDto.builder().code(ResponseCode.INTERNAL_SERVER_ERROR.getValue())
-        .type(ResponseType.ERROR.getValue()).message(ex.getMessage()).build();
-
-    return new ResponseEntity<>(responseBody, HttpStatus.NOT_FOUND);
+  public ResponseEntity<ErrorResponseDto> handleResultNotFoundException(
+      ResultNotFoundException ex) {
+    return handleException(ex, ResponseCode.NOT_FOUND, ResponseType.ERROR);
   }
-  
+
   @ExceptionHandler(value = {Exception.class})
-  public ResponseEntity<?> handle(Exception ex) {
-    var responseBody = ErrorResponseDto.builder().code(ResponseCode.INTERNAL_SERVER_ERROR.getValue())
-        .type(ResponseType.INTERNAL_SERVER_ERROR.getValue()).message(ex.getMessage()).build();
-
-    return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+  public ResponseEntity<ErrorResponseDto> handleException(Exception ex) {
+    return handleException(ex, ResponseCode.INTERNAL_SERVER_ERROR,
+        ResponseType.INTERNAL_SERVER_ERROR);
   }
 
+  private ResponseEntity<ErrorResponseDto> handleException(Exception ex, ResponseCode code,
+      ResponseType type) {
+    var responseBody = ErrorResponseDto.builder().code(code.getValue()).type(type.getValue())
+        .message(ex.getMessage()).build();
+
+    return new ResponseEntity<>(responseBody, getHttpStatus(code));
+  }
+
+  private HttpStatus getHttpStatus(ResponseCode code) {
+    return switch (code) {
+      case NOT_FOUND -> HttpStatus.NOT_FOUND;
+      case INTERNAL_SERVER_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+      default -> HttpStatus.INTERNAL_SERVER_ERROR;
+    };
+  }
 }

@@ -1,4 +1,4 @@
-import styled from "@emotion/styled"
+import styled from "@emotion/styled";
 
 const ProgressIndicator = styled.span`
     width: 3rem;
@@ -16,7 +16,7 @@ const ProgressIndicator = styled.span`
         border: 5px solid #86efac;
         animation: prixClipFix 2s linear infinite;
     }
-        @keyframes rotate {
+    @keyframes rotate {
         100% {
             transform: rotate(360deg);
         }
@@ -46,6 +46,6 @@ const ProgressIndicator = styled.span`
             clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0);
         }
     }
-`
+`;
 
-export default ProgressIndicator
+export default ProgressIndicator;

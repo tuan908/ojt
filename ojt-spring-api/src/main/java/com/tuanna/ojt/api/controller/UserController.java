@@ -2,6 +2,8 @@ package com.tuanna.ojt.api.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +12,6 @@ import com.tuanna.ojt.api.constant.Constant;
 import com.tuanna.ojt.api.dto.UserDto;
 import com.tuanna.ojt.api.exception.ResultNotFoundException;
 import com.tuanna.ojt.api.service.UserService;
-
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,5 +32,11 @@ public class UserController {
         } else {
             return new ResponseEntity<UserDto>(body, HttpStatus.OK);
         }
+    }
+
+    @GetMapping("/{username}/async")
+    public ResponseEntity<?> getOneByAsync(@PathVariable String username) {
+        var body = this.accountService.findByUsernameAsync(username);
+        return null;
     }
 }

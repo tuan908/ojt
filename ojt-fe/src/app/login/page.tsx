@@ -18,25 +18,26 @@ import {
 import {login} from "../actions/auth.action";
 
 type LoginFormState = {
-    username: FormDataEntryValue;
-    password: FormDataEntryValue;
-    error?: string;
+    username: string;
+    password: string;
+    error: string;
 };
 
 const initialState: LoginFormState = {
     username: "",
     password: "",
+    error: "",
 };
 
 const initPasswordInputState: PasswordInputState = {
     type: "password",
-    show: false
-}
+    show: false,
+};
 
 type PasswordInputState = {
     type: "text" | "password";
     show: boolean;
-}
+};
 
 export default function Page() {
     const formRef = useRef<HTMLFormElement>(null);
@@ -44,7 +45,9 @@ export default function Page() {
 
     // Use new hook useActionState - from React version 19.x
     const [state, formAction, isPending] = useActionState(login, initialState);
-    const [inputState, setState] = useState<PasswordInputState>(initPasswordInputState);
+    const [inputState, setState] = useState<PasswordInputState>(
+        initPasswordInputState
+    );
 
     function showOrHidePassword(e: SyntheticEvent<HTMLDivElement>) {
         e.preventDefault();
@@ -155,7 +158,7 @@ export default function Page() {
                         href="/forgot-password"
                         className="m-auto pb-2 font-medium"
                     >
-                        パスワードを忘れた？
+                        {json.login.forgot_password}
                     </Link>
                     {state.error ? (
                         <span className="text-red-500 m-auto text-[0.875rem] leading-none md:whitespace-nowrap">

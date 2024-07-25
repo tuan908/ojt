@@ -1,6 +1,6 @@
 import {EventStatus} from "@/constants";
 import {useMemo} from "react";
-import json from "@/i18n/jp.json"
+import json from "@/i18n/jp.json";
 
 type StatusLabelProps = {
     status: number;

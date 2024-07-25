@@ -10,7 +10,7 @@ export type JwtPayload = JWTPayload & {
 };
 
 function getJwtSecretKey(): Uint8Array {
-    const jwtSecretKey = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;
+    const jwtSecretKey = process.env["NEXT_PUBLIC_JWT_SECRET_KEY"];
 
     if (!jwtSecretKey) {
         throw new Error("JWT Secret key is not defined");

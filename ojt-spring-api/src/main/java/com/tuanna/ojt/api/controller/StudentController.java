@@ -42,7 +42,7 @@ public class StudentController {
 
   @GetMapping("/{code}")
   @ResponseBody
-  public ResponseEntity<?> getStudentEventDetail(@PathVariable("code") String code)
+  public ResponseEntity<?> getStudentEventDetail(@PathVariable String code)
       throws ResultNotFoundException {
     var data = this.studentService.getEventsByStudentCode(code);
     return ResponseEntity.ok(data);
@@ -51,10 +51,10 @@ public class StudentController {
 
   @GetMapping("/{code}/q")
   @ResponseBody
-  public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable("code") String code,
-      @RequestParam(value = "grade", required = false) String grade,
+  public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable String code,
+      @RequestParam(required = false) String grade,
       @RequestParam(value = "event_name", required = false) String eventName,
-      @RequestParam(value = "status", required = false) String status)
+      @RequestParam(required = false) String status)
       throws ResultNotFoundException {
     var data = this.studentService.getEventsByStudentCode(code, grade, eventName, status);
     return ResponseEntity.ok(data);
@@ -96,15 +96,15 @@ public class StudentController {
   }
 
   @DeleteMapping(path = "/{code}/event/{id}")
-  public ResponseEntity<?> deleteEventDetailById(@PathVariable(value = "code") String code,
-      @PathVariable(value = "id") Long id) {
+  public ResponseEntity<?> deleteEventDetailById(@PathVariable String code,
+      @PathVariable Long id) {
     var updatedList = this.studentService.deleteEventById(code, id);
 
     return ResponseEntity.ok().body(updatedList);
   }
 
   @GetMapping(path = "/event/{id}")
-  public ResponseEntity<?> getStudentEventDetailById(@PathVariable(value = "id") Long id) {
+  public ResponseEntity<?> getStudentEventDetailById(@PathVariable Long id) {
     var result = this.studentService.getStudentEventById(id);
     return ResponseEntity.ok(result);
   }
@@ -117,7 +117,7 @@ public class StudentController {
   }
 
   @DeleteMapping("/event/comments/{id}")
-  public ResponseEntity<?> deleteCommentById(@PathVariable("id") Long id) {
+  public ResponseEntity<?> deleteCommentById(@PathVariable Long id) {
     this.commentService.delete(id);
 
     // @formatter:off

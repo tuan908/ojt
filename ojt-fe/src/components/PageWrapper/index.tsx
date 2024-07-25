@@ -1,7 +1,7 @@
 import {cn} from "@/utils";
-import {useMemo} from "react";
+import {useMemo, type ReactNode} from "react";
 
-type PageWrapperProps = Readonly<{children: React.ReactNode; gapY?: boolean}>;
+type PageWrapperProps = Readonly<{children: ReactNode; gapY?: boolean}>;
 
 export default function PageWrapper({children, gapY}: PageWrapperProps) {
     const className = useMemo(() => {

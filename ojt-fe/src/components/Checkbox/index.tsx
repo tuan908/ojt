@@ -1,17 +1,14 @@
 import {Checkbox as MuiCheckbox} from "@mui/material";
 import {type ChangeEventHandler} from "react";
 
-export function Checkbox({
-    label,
-    name,
-    checked,
-    handleChange,
-}: {
+export type CheckboxProps = {
     label: string;
     name: string;
     checked: boolean;
     handleChange: ChangeEventHandler<HTMLInputElement>;
-}) {
+};
+
+export function Checkbox({label, name, checked, handleChange}: CheckboxProps) {
     return (
         <div className="flex items-center">
             <label htmlFor="unconfirmed">{label}</label>

@@ -6,7 +6,7 @@ const nextConfig = {
         ppr: true,
         reactCompiler: true,
         optimizeServerReact: true,
-        optimizePackageImports: ["react-redux", "@reduxjs/toolkit", "@mui/material", "@mui/icons-material", "echarts"]
+        optimizePackageImports: ["react-redux", "@reduxjs/toolkit", "echarts"]
     },
     compiler: {
         emotion: true
