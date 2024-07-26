@@ -1,5 +1,5 @@
 import {getEventDetailById, getSession} from "@/app/actions/event.action";
-import {DynamicPageProps} from "@/types";
+import {type DynamicPageProps} from "@/types";
 import {getEvents, getHashtags} from "../actions/common.action";
 import EventUi from "./_ui";
 

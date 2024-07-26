@@ -1,19 +1,19 @@
 "use client";
 
-import type {Grade, StudentEvent} from "@/app/actions/common.action";
+import type {Grade} from "@/app/actions/common.action";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
-import {EventStatus, ITEM_HEIGHT, ITEM_PADDING_TOP} from "@/constants";
+import Select, {type SelectOption} from "@/components/Select";
+import {
+    EVENT_OPTION_DEFAULT,
+    EventStatus,
+    GRADE_OPTION_DEFAULT,
+} from "@/constants";
+import json from "@/i18n/jp.json";
 import {StudentEventResponse} from "@/types/student";
 import Search from "@mui/icons-material/Search";
-import {
-    Pagination,
-    type MenuProps,
-    type SxProps,
-    type Theme,
-} from "@mui/material";
-import MenuItem from "@mui/material/MenuItem";
-import Select, {type SelectChangeEvent} from "@mui/material/Select";
+import {Pagination} from "@mui/material";
+import {type SelectChangeEvent} from "@mui/material/Select";
 import {useRouter} from "next/navigation";
 import {
     startTransition,
@@ -22,12 +22,11 @@ import {
     type ReactNode,
 } from "react";
 import EventGrid from "./_EventGrid";
-import json from "@/i18n/jp.json";
 
 type SearchAreaProps = {
     params: {id: string};
     grades?: Grade[];
-    events?: StudentEvent[];
+    events?: SelectOption[];
     data: StudentEventResponse;
 };
 
@@ -41,27 +40,6 @@ type CheckboxState = {
     under_reviewing: boolean;
     confirmed: boolean;
     [x: string]: boolean;
-};
-
-const CLASS_OPTION_DEFAULT = "クラス名";
-const EVENT_OPTION_DEFAULT = "イベント";
-
-const menuProps: Partial<MenuProps> = {
-    slotProps: {
-        paper: {
-            style: {
-                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            },
-        },
-    },
-};
-
-const sx: SxProps<Theme> = {
-    bgcolor: "#ffffff",
-    paddingX: 1,
-    "& .MuiSelect-select:focus": {
-        bgcolor: "transparent",
-    },
 };
 
 export default function SearchArea({
@@ -79,7 +57,7 @@ export default function SearchArea({
         under_reviewing: false,
         confirmed: false,
     });
-    const [grade, setGrade] = useState(CLASS_OPTION_DEFAULT);
+    const [grade, setGrade] = useState(GRADE_OPTION_DEFAULT);
     const [eventName, setEventName] = useState(EVENT_OPTION_DEFAULT);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
@@ -102,7 +80,7 @@ export default function SearchArea({
 
         try {
             const result = await getEventsByStudentCodeWithQuery(params.id, {
-                grade: grade === CLASS_OPTION_DEFAULT ? undefined : grade,
+                grade: grade === GRADE_OPTION_DEFAULT ? undefined : grade,
                 eventName:
                     eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
                 status,
@@ -113,7 +91,7 @@ export default function SearchArea({
                 url.searchParams.delete(key, value);
             });
 
-            if (grade.length > 0 && grade !== CLASS_OPTION_DEFAULT) {
+            if (grade.length > 0 && grade !== GRADE_OPTION_DEFAULT) {
                 url.searchParams.set("grade", grade);
             }
 
@@ -150,52 +128,19 @@ export default function SearchArea({
             <div className="border-b md:px-8 px-4 flex flex-col gap-y-4 md:flex-row md:items-center py-4 md:gap-x-8">
                 {/* クラス名 */}
                 <Select
-                    variant="standard"
-                    className="w-48"
+                    defaultOption={GRADE_OPTION_DEFAULT}
+                    options={grades!}
                     value={grade}
                     onChange={handleSelectGrade}
-                    sx={sx}
-                    MenuProps={menuProps}
-                >
-                    <MenuItem value={CLASS_OPTION_DEFAULT}>
-                        {CLASS_OPTION_DEFAULT}
-                    </MenuItem>
-                    {grades!?.map(x => (
-                        <MenuItem
-                            key={x.id}
-                            value={x.name}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            {x.name}
-                        </MenuItem>
-                    ))}
-                </Select>
+                />
 
                 {/* イベント */}
                 <Select
-                    variant="standard"
-                    className="w-48"
+                    defaultOption={EVENT_OPTION_DEFAULT}
+                    options={events!}
                     value={eventName}
                     onChange={handleSelectEvent}
-                    sx={sx}
-                    MenuProps={menuProps}
-                    suppressContentEditableWarning
-                >
-                    <MenuItem value={EVENT_OPTION_DEFAULT}>
-                        {EVENT_OPTION_DEFAULT}
-                    </MenuItem>
-                    {events!?.map(x => (
-                        <MenuItem
-                            key={x.id}
-                            value={x.name}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            {x.name}
-                        </MenuItem>
-                    ))}
-                </Select>
+                />
 
                 <div className="flex flex-col items-center md:flex-row md:gap-x-8">
                     <span>ステータス：</span>

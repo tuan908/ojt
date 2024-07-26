@@ -40,17 +40,39 @@ em-emoji-picker {
     --color-border-over: rgba(0, 0, 0, 0.1);
     --color-border: rgba(0, 0, 0, 0.05);
     /* --font-family: "Comic Sans MS", "Chalkboard SE", cursive; */
-    --font-size: 20px;
+    --font-size: 13px;
     /* --rgb-accent: 255, 105, 180; */
     /* --rgb-background: 262, 240, 283; */
     /* --rgb-color: 102, 51, 153; */
     /* --rgb-input: 255, 235, 235; */
     /* --shadow: 5px 5px 15px -8px rebeccapurple; */
 
-    height: 25dvh;
+    height: 10%;
     min-height: 400px;
     max-height: 800px;
     position: absolute;
     top: -45dvh;
     right: 0;
+}
+
+@media (min-width: 640px) {
+}
+
+@media (min-width: 768px) {
+    
+}
+
+@media (min-width: 1024px) {
+    em-emoji-picker {
+        height: 25dvh;
+        --font-size: 20px;
+    }
+}
+
+@media (min-width: 1280px) {
+    
+}
+
+@media (min-width: 1536px) {
+    
 }

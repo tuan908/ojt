@@ -1,14 +1,10 @@
 "use server";
 
+import {type SelectOption} from "@/components/Select";
 import HttpClient from "@/lib/HttpClient";
 import {cache} from "react";
 
 type Grade = {
-    id: number;
-    name: string;
-};
-
-type StudentEvent = {
     id: number;
     name: string;
 };
@@ -32,7 +28,7 @@ const getGrades = cache(
  * @returns Event List
  */
 const getEvents = cache(
-    async () => await HttpClient.get<StudentEvent[]>("/common/events", "node")
+    async () => await HttpClient.get<SelectOption[]>("/common/events", "node")
 );
 
 /**
@@ -45,4 +41,4 @@ const getHashtags = cache(
 );
 
 export {getEvents, getGrades, getHashtags};
-export type {Grade, HashtagPayload, StudentEvent};
+export type {Grade, HashtagPayload};

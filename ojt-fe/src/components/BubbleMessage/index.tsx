@@ -84,13 +84,13 @@ export default function BubbleMessage({
                     isCommentOfActiveUser && "flex-row-reverse"
                 )}
             >
-                <div className="flex flex-col gap-y-2 items-center w-24">
+                <div className="hidden md:flex flex-col gap-y-2 items-center w-24">
                     <Avatar sx={{width: 56, height: 56, bgcolor: "#d87579"}} />
                     <span className="bg-[#00c853] text-white font-medium rounded-xl text-center leading-none px-2 py-1 flex items-center">
                         <p>{comment?.roleName}</p>
                     </span>
                 </div>
-                <div className="w-1/2 h-full relative">
+                <div className="w-full md:w-1/2 h-full relative">
                     <div
                         className=" bg-[#fcf8ed] flex flex-col px-4 py-2 rounded-lg hover:cursor-pointer border"
                         onMouseEnter={handleOnMouseEnter}

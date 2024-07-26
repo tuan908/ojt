@@ -1,17 +1,12 @@
 "use client";
 
-import type {
-    Grade,
-    HashtagPayload,
-    StudentEvent,
-} from "@/app/actions/common.action";
+import type {Grade, HashtagPayload} from "@/app/actions/common.action";
 import {getStudents} from "@/app/actions/student.action";
 import Hashtag from "@/components/Hashtag";
+import Select, {type SelectOption} from "@/components/Select";
 import {
     EVENT_OPTION_DEFAULT,
     GRADE_OPTION_DEFAULT,
-    ITEM_HEIGHT,
-    ITEM_PADDING_TOP,
     STRING_EMPTY,
 } from "@/constants";
 import json from "@/i18n/jp.json";
@@ -23,22 +18,20 @@ import Search from "@mui/icons-material/Search";
 import {
     Autocomplete,
     Input,
-    MenuItem,
     Pagination,
-    Select,
     TextField,
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material";
-import {type SyntheticEvent, useState} from "react";
+import {useState, type SyntheticEvent} from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
-type SearchAreaProps = {
-    students?: Page<StudentsResponse>;
-    grades?: Grade[];
-    hashtags?: HashtagPayload[];
-    events?: StudentEvent[];
-};
+type SearchAreaProps = Partial<{
+    students: Page<StudentsResponse>;
+    grades: Grade[];
+    hashtags: HashtagPayload[];
+    events: SelectOption[];
+}>;
 
 type Skill = {
     label: string;
@@ -56,7 +49,10 @@ export default function SearchArea({
     const [skills, setSkills] = useState<Skill[]>([]);
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
     const [rows, setRows] = useState<StudentsResponse[]>(students?.content!);
-    const [searchCondition, setSearchCondition] = useState<StudentsRequest>({});
+    const [searchCondition, setSearchCondition] = useState<StudentsRequest>({
+        events: EVENT_OPTION_DEFAULT,
+        grade: GRADE_OPTION_DEFAULT,
+    });
 
     function handleInputChange(
         event: SyntheticEvent,
@@ -172,92 +168,33 @@ export default function SearchArea({
                 />
 
                 {/* クラス名 */}
+
                 <Select
-                    variant="standard"
-                    className="w-56"
-                    defaultValue={json.common.grade}
+                    name="grade"
+                    defaultOption={json.common.grade}
+                    value={searchCondition.grade}
+                    options={grades!}
                     onChange={e =>
                         setSearchCondition(x => ({
                             ...x,
                             grade: e.target.value as string,
                         }))
                     }
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {
-                            bgcolor: "transparent",
-                        },
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
-                >
-                    <MenuItem value={json.common.grade}>
-                        {json.common.grade}
-                    </MenuItem>
-                    {grades!?.map(x => (
-                        <MenuItem
-                            key={x.id}
-                            value={x.name}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            {x.name}
-                        </MenuItem>
-                    ))}
-                </Select>
+                />
 
                 {/* イベント */}
                 <Select
-                    variant="standard"
-                    className="w-56"
                     name="event"
-                    defaultValue={json.common.event}
+                    defaultOption={json.common.event}
+                    value={searchCondition.events}
+                    options={events!}
                     onChange={e =>
                         setSearchCondition(x => ({
                             ...x,
                             events: e.target.value as string,
                         }))
                     }
-                    sx={{
-                        bgcolor: "#ffffff",
-                        paddingX: 1,
-                        "& .MuiSelect-select:focus": {
-                            bgcolor: "transparent",
-                        },
-                    }}
-                    MenuProps={{
-                        slotProps: {
-                            paper: {
-                                style: {
-                                    maxHeight:
-                                        ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-                                },
-                            },
-                        },
-                    }}
-                    suppressContentEditableWarning
-                >
-                    <MenuItem value="イベント">イベント</MenuItem>
-                    {events!?.map(x => (
-                        <MenuItem
-                            key={x.id}
-                            value={x.name}
-                            disableRipple
-                            disableTouchRipple
-                        >
-                            {x.name}
-                        </MenuItem>
-                    ))}
-                </Select>
+                />
 
                 {/* ハッシュタグ */}
                 <Autocomplete

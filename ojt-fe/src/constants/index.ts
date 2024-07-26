@@ -1,3 +1,5 @@
+import type {MenuProps, SxProps, Theme} from "@mui/material";
+
 export enum Entity {
     User = "_user",
     Event = "_event",
@@ -71,3 +73,21 @@ export const GRADE_OPTION_DEFAULT = "クラス名";
 
 /** イベント */
 export const EVENT_OPTION_DEFAULT = "イベント";
+
+export const menuProps: Partial<MenuProps> = {
+    slotProps: {
+        paper: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            },
+        },
+    },
+};
+
+export const sx: SxProps<Theme> = {
+    bgcolor: "#ffffff",
+    paddingX: 1,
+    "& .MuiSelect-select:focus": {
+        bgcolor: "transparent",
+    },
+};

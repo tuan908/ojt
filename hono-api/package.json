@@ -7,14 +7,14 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.9.4",
-    "drizzle-orm": "^0.31.2",
-    "hono": "^4.4.8"
+    "drizzle-orm": "^0.32.1",
+    "hono": "^4.5.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240620.0",
+    "@cloudflare/workers-types": "^4.20240725.0",
     "dotenv": "^16.4.5",
     "postgres": "^3.4.4",
-    "prettier": "^3.3.2",
-    "wrangler": "^3.62.0"
+    "prettier": "^3.3.3",
+    "wrangler": "^3.67.0"
   }
 }

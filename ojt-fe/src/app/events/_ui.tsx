@@ -10,15 +10,16 @@ import {
 } from "@/app/actions/event.action";
 import BubbleMessage from "@/components/BubbleMessage";
 import ProgressIndicator from "@/components/ProgressIndicator";
+import {type SelectOption} from "@/components/Select";
 import Textarea from "@/components/Textarea";
-import {ITEM_HEIGHT, ITEM_PADDING_TOP, ScreenMode, UserRole} from "@/constants";
+import {menuProps, ScreenMode, UserRole} from "@/constants";
 import json from "@/i18n/jp.json";
 import type {JwtPayload} from "@/lib/auth";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
 import type {EventDetail} from "@/types/student";
 import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+import EmojiPicker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
 import Send from "@mui/icons-material/Send";
 import SentimentSatisfiedAlt from "@mui/icons-material/SentimentSatisfiedAlt";
@@ -28,6 +29,7 @@ import {
     MenuItem,
     Select,
     TextField,
+    useMediaQuery,
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
     type SelectProps,
@@ -42,13 +44,13 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import type {HashtagPayload, StudentEvent} from "../actions/common.action";
+import type {HashtagPayload} from "../actions/common.action";
 
 type Props = Partial<{
     id: number;
     mode: string;
     detail: EventDetail;
-    events: StudentEvent[];
+    events: SelectOption[];
     hashtags: HashtagPayload[];
     auth: JwtPayload;
 }>;
@@ -77,6 +79,10 @@ const initEditState: EditCommentState = {
     isEditing: false,
 };
 
+const inputProps = {
+    className: "!p-1",
+};
+
 export default function EventUi({
     detail,
     events: _events,
@@ -88,9 +94,10 @@ export default function EventUi({
     const router = useRouter();
     const dispatch = useAppDispatch();
     const [comments, setComments] = useState<Comment[]>([]);
+    const [eventName, setEventName] = useState(json.event.placeholder_0);
     const [registerData, setData] = useState<RegisterEvent["data"]>();
     const [error, setError] = useState(false);
-    const [eventOptions, setEventOptions] = useState<StudentEvent[]>([]);
+    const [eventOptions, setEventOptions] = useState<SelectOption[]>([]);
     const [disable, setDisable] = useState(false);
     const [hashtags, setHashtags] = useState<HashtagPayload[]>([]);
     const [openPicker, setOpen] = useState(false);
@@ -98,8 +105,10 @@ export default function EventUi({
     const [openSuggest, setOpenSuggest] = useState(false);
     const [editState, setEditState] = useState<EditCommentState>(initEditState);
     const [isPending, startTransition] = useTransition();
+    const matches = useMediaQuery("(min-width:1024px)");
 
     useEffect(() => {
+        setEventName(detail!?.name ?? json.event.placeholder_0);
         setData({
             eventName: detail!?.name,
             eventsInSchoolLife: detail!?.data?.eventsInSchoolLife,
@@ -109,6 +118,7 @@ export default function EventUi({
             strengthGrown: detail?.data?.strengthGrown,
         });
         setComments(detail!?.comments);
+
         setEventOptions(_events!);
         setHashtags(_hashtags!);
 
@@ -190,8 +200,9 @@ export default function EventUi({
     const handleSelectChange: SelectProps<string>["onChange"] = e => {
         if (error) {
             setError(false);
+            return;
         }
-        setData({...registerData, eventName: e.target.value});
+        setEventName(e.target.value);
     };
 
     const handleChange: ComponentProps<"textarea">["onChange"] = e => {
@@ -204,16 +215,14 @@ export default function EventUi({
 
     async function handleAddOrUpdate(e: SyntheticEvent<HTMLButtonElement>) {
         e?.preventDefault();
-        if (
-            registerData!?.eventName === json.event.select_event ||
-            !registerData!?.eventName
-        ) {
+        if (eventName === json.event.placeholder_0) {
             setError(true);
+            return;
         } else {
             await registerEvent({
                 username: auth?.username!,
                 gradeName: auth?.grade!,
-                data: registerData!,
+                data: {...registerData!, eventName},
             });
             router.back();
         }
@@ -247,16 +256,12 @@ export default function EventUi({
                         eventDetailId: id!,
                         username: auth.username,
                     };
-                    await addComment(data)
-                        .then(async res => {
-                            if (res) {
-                                setComments(res);
-                                setComment({...comment, content: ""});
-                            }
-                        })
-                        .finally(async () => {
-                            await dispatch(hideLoading());
-                        });
+                    const res = await addComment(data);
+                    if (res) {
+                        setComments(res);
+                        setComment({...comment, content: ""});
+                    }
+                    await dispatch(hideLoading());
                 }
             }
             setOpenSuggest(false);
@@ -286,7 +291,7 @@ export default function EventUi({
                         <ProgressIndicator />
                     </div>
                 )}
-                <div className="w-1/2 m-auto bg-white rounded-xl shadow-sm">
+                <div className="w-4/5 md:w-1/2 m-auto bg-white rounded-xl shadow-sm">
                     <div className="w-[90%] m-auto flex flex-col gap-y-4 py-6">
                         {/* Select */}
                         <div className="flex flex-col gap-y-2">
@@ -297,19 +302,9 @@ export default function EventUi({
                                 variant="outlined"
                                 className="w-full border-default disabled:cursor-not-allowed"
                                 placeholder="Select Event"
-                                value={registerData!?.eventName ?? "Event"}
+                                value={eventName}
                                 sx={{bgcolor: "#ffffff", paddingX: 1}}
-                                MenuProps={{
-                                    slotProps: {
-                                        paper: {
-                                            style: {
-                                                maxHeight:
-                                                    ITEM_HEIGHT * 4.5 +
-                                                    ITEM_PADDING_TOP,
-                                            },
-                                        },
-                                    },
-                                }}
+                                MenuProps={menuProps}
                                 onChange={handleSelectChange}
                                 disabled={
                                     disable ||
@@ -318,6 +313,7 @@ export default function EventUi({
                                         UserRole.Student.toString() &&
                                         mode !== ScreenMode.NEW.toString())
                                 }
+                                inputProps={!matches ? inputProps : undefined}
                             >
                                 <MenuItem value={json.event.placeholder_0}>
                                     {json.event.placeholder_0}
@@ -431,7 +427,7 @@ export default function EventUi({
 
                 {mode! && mode! === ScreenMode.CHAT.toString() ? (
                     <>
-                        <div className="w-1/2 h-full m-auto flex flex-col gap-y-4 relative">
+                        <div className="w-4/5 md:w-1/2 h-full m-auto flex flex-col gap-y-4 relative">
                             {comments!?.map(comment => {
                                 return (
                                     <Fragment key={comment.id}>
@@ -454,8 +450,8 @@ export default function EventUi({
                                 );
                             })}
                         </div>
-                        <div className="w-11/12 md:w-3/5 m-auto flex items-center gap-x-8">
-                            <Avatar className="md:!w-16 md:!h-16" />
+                        <div className="w-11/12 md:w-3/5 m-auto flex items-center gap-x-2 md:gap-x-8">
+                            <Avatar className="!hidden md:!block md:!w-16 md:!h-16" />
                             <div className="w-full flex items-center relative">
                                 <Autocomplete
                                     className="w-full"
@@ -476,8 +472,12 @@ export default function EventUi({
                                             placeholder="Input comment here..."
                                             multiline
                                             variant="outlined"
-                                            rows={2}
+                                            rows={!matches ? 1 : 2}
                                             inputRef={inputRef}
+                                            sx={{
+                                                padding: 0,
+                                                fontSize: 1
+                                            }}
                                         />
                                     )}
                                     onInputChange={handleInputCommentChange}
@@ -502,8 +502,8 @@ export default function EventUi({
                                     )}
                                 </button>
                                 {openPicker ? (
-                                    <div className="absolute right-0 -top-24">
-                                        <Picker
+                                    <div className="absolute -right-12 -top-0 lg:top-6">
+                                        <EmojiPicker
                                             data={data}
                                             onEmojiSelect={handleSelect}
                                             open={openPicker}

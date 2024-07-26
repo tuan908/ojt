@@ -1,4 +1,5 @@
 import {cn} from "@/utils";
+import { useMediaQuery } from "@mui/material";
 import {type ComponentProps} from "react";
 
 const Textarea = ({
@@ -8,6 +9,8 @@ const Textarea = ({
     fullWidth,
     ...otherProps
 }: ComponentProps<"textarea"> & {fullWidth?: boolean}) => {
+    const matches = useMediaQuery("(min-width:1024px)")
+
     return (
         <textarea
             {...otherProps}
@@ -18,7 +21,7 @@ const Textarea = ({
             name={name}
             placeholder={placeholder}
             cols={30}
-            rows={2}
+            rows={matches ? 2 : 1}
             onChange={onChange}
         />
     );

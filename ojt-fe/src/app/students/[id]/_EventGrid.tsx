@@ -19,7 +19,6 @@ import json from "@/i18n/jp.json";
 import type {StudentEventResponse} from "@/types/student";
 import {cn} from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
-import {CircularProgress} from "@mui/material";
 import Badge from "@mui/material/Badge";
 import {createAction, createReducer} from "@reduxjs/toolkit";
 import Link from "next/link";
@@ -54,8 +53,6 @@ const openDialogUpdateStatus = createAction<number>("MODAL_UPDATE_STATUS/OPEN");
 
 const hideDialogDelete = createAction("MODAL_DELETE/HIDE");
 const hideDialogUpdateStatus = createAction("MODAL_UPDATE_STATUS/HIDE");
-
-const setIsUpdating = createAction<boolean>("STATE_UPDATING");
 
 const initialState: LocalState = {
     delete: {
@@ -92,7 +89,7 @@ const reducer = createReducer(initialState, builder => {
 export default function EventGrid({data, studentId, code}: EventGridProps) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [rows, setRows] = useState<StudentEventResponse["events"]>(data);
+    const [rows, setRows] = useState<StudentEventResponse["events"]>([]);
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => setRows(data), [data]);

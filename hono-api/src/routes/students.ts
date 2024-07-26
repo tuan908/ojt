@@ -1,14 +1,14 @@
 import {eq, sql} from "drizzle-orm";
 import {Hono} from "hono";
-import db from "../lib/db";
+import _db from "../lib/db";
 import schema from "../schema";
-import {Binding} from "../types";
+import {Binding, IUpdateComment} from "../types";
 
 const app = new Hono<Binding>();
 
 app.get("/", async ctx => {
     try {
-        const result = await db(ctx).query.student.findMany({
+        const result = await _db(ctx).query.student.findMany({
             columns: {
                 id: true,
                 code: true,
@@ -69,7 +69,7 @@ app.get("/:code", async ctx => {
     /** Offset */
     const pageSize = Number.parseInt(ctx.req.query("page_size")!) || 10;
     try {
-        const student = await db(ctx).query.student.findFirst({
+        const student = await _db(ctx).query.student.findFirst({
             where: eq(schema.student.code, code),
             columns: {
                 userId: false,
@@ -92,7 +92,7 @@ app.get("/:code", async ctx => {
             },
         });
 
-        const eventDetails = await db(ctx).query.eventDetail.findMany({
+        const eventDetails = await _db(ctx).query.eventDetail.findMany({
             where: ({studentId, isDeleted}, {eq, and}) =>
                 and(eq(studentId, student?.id!), eq(isDeleted, false)),
             limit: pageSize,
@@ -140,7 +140,7 @@ app.get("/:code/events/:id", async ctx => {
     }
 
     try {
-        const result = await db(ctx).query.eventDetail.findFirst({
+        const result = await _db(ctx).query.eventDetail.findFirst({
             where: sql`${schema.eventDetail.id} = ${id} and ${schema.eventDetail.isDeleted} = false`,
             columns: {
                 id: true,
@@ -156,7 +156,7 @@ app.get("/:code/events/:id", async ctx => {
 app.get("/:code/trackings", async ctx => {
     const {code} = ctx.req.param();
     try {
-        let result = await db(ctx).query.student.findFirst({
+        let result = await _db(ctx).query.student.findFirst({
             where: (fields, {eq}) => eq(fields.code, code),
             columns: {
                 id: true,
@@ -235,6 +235,56 @@ app.get("/:code/trackings", async ctx => {
     } catch (error) {
         console.log(error);
         return ctx.json({message: "Server error"}, 500);
+    }
+});
+
+app.post("/:code/events/:eventId/comments", async ctx => {
+    const {code, eventId} = ctx.req.param();
+    const data = (await ctx.req.json()) as IUpdateComment;
+    try {
+        const db = _db(ctx);
+        console.log(data)
+
+        const student = await db.query.student.findFirst({
+            where: (fields, {eq}) => eq(fields.code, code),
+            with: {
+                eventDetail: {
+                    where: (fields, {eq}) => eq(fields.id, Number(eventId)),
+                    with: {
+                        comments: {
+                            where: (fields, {eq}) => eq(fields.id, data.id),
+                        },
+                    },
+                },
+            },
+        });
+
+        console.log(student)
+
+        if (!student) {
+            return ctx.json(
+                {
+                    message: "Not found any user!",
+                },
+                404
+            );
+        }
+
+        await db
+            .update(schema.comment)
+            .set({content: data.content})
+            .where(eq(schema.comment.id, data.id));
+        return ctx.json({
+            message: "Success"
+        })
+    } catch (error) {
+        console.log(error);
+        return ctx.json(
+            {
+                message: "Server error",
+            },
+            500
+        );
     }
 });
 
