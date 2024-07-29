@@ -1,6 +1,7 @@
 import {cn} from "@/utils";
-import { useMediaQuery } from "@mui/material";
+import {useMediaQuery} from "@mui/material";
 import {type ComponentProps} from "react";
+import {MEDIA_QUERY} from "@/constants"
 
 const Textarea = ({
     name,
@@ -9,7 +10,7 @@ const Textarea = ({
     fullWidth,
     ...otherProps
 }: ComponentProps<"textarea"> & {fullWidth?: boolean}) => {
-    const matches = useMediaQuery("(min-width:1024px)")
+    const matches = useMediaQuery(MEDIA_QUERY.LG);
 
     return (
         <textarea

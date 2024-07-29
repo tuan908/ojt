@@ -4,9 +4,6 @@ import {
     addComment,
     editComment,
     registerEvent,
-    type AddCommentPayload,
-    type Comment,
-    type RegisterEvent,
 } from "@/app/actions/event.action";
 import BubbleMessage from "@/components/BubbleMessage";
 import ProgressIndicator from "@/components/ProgressIndicator";
@@ -44,16 +41,21 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import type {HashtagPayload} from "../actions/common.action";
+import type {HashtagPayload} from "@/app/actions/common.action";
+import type {
+    TRegisterEvent,
+    AddCommentPayload,
+    TComment
+} from "@/types/event-action.types";
 
 type Props = Partial<{
-    id: number;
+    eventDetailId: number;
     mode: string;
     detail: EventDetail;
     events: SelectOption[];
     hashtags: HashtagPayload[];
     auth: JwtPayload;
-}>;
+}> & {studentCode: string};
 
 type CommentState = {
     id: number;
@@ -84,18 +86,19 @@ const inputProps = {
 };
 
 export default function EventUi({
+    studentCode,
     detail,
     events: _events,
     hashtags: _hashtags,
-    id,
+    eventDetailId,
     mode,
     auth,
 }: Props) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const [comments, setComments] = useState<Comment[]>([]);
+    const [comments, setComments] = useState<TComment[]>([]);
     const [eventName, setEventName] = useState(json.event.placeholder_0);
-    const [registerData, setData] = useState<RegisterEvent["data"]>();
+    const [registerData, setData] = useState<TRegisterEvent["data"]>();
     const [error, setError] = useState(false);
     const [eventOptions, setEventOptions] = useState<SelectOption[]>([]);
     const [disable, setDisable] = useState(false);
@@ -220,6 +223,7 @@ export default function EventUi({
             return;
         } else {
             await registerEvent({
+                studentCode,
                 username: auth?.username!,
                 gradeName: auth?.grade!,
                 data: {...registerData!, eventName},
@@ -234,15 +238,16 @@ export default function EventUi({
         event?.preventDefault();
         startTransition(async () => {
             if (editState.isEditing) {
-                const response = await editComment(
-                    comment.id!,
-                    comment.content!
-                );
+                const response = await editComment({
+                    id: comment.id!,
+                    content: comment.content!,
+                    eventDetailId: eventDetailId!,
+                });
                 if (response) {
                     setComments(prev =>
                         [
                             ...prev.filter(x => x.id !== comment.id!),
-                            response.data as Comment,
+                            response.data as TComment,
                         ].sort((a, b) => a.id - b.id)
                     );
                 }
@@ -253,7 +258,7 @@ export default function EventUi({
                     await dispatch(showLoading());
                     let data: AddCommentPayload = {
                         ...comment,
-                        eventDetailId: id!,
+                        eventDetailId: eventDetailId!,
                         username: auth.username,
                     };
                     const res = await addComment(data);
@@ -476,7 +481,7 @@ export default function EventUi({
                                             inputRef={inputRef}
                                             sx={{
                                                 padding: 0,
-                                                fontSize: 1
+                                                fontSize: 1,
                                             }}
                                         />
                                     )}

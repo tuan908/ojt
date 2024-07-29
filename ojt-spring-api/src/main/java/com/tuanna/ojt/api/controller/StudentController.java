@@ -1,6 +1,8 @@
 package com.tuanna.ojt.api.controller;
 
 import java.util.HashMap;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,61 +31,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StudentController {
 
-  private final StudentService studentService;
+	private final StudentService studentService;
 
-  private final CommentService commentService;
+	private final CommentService commentService;
 
-  @PostMapping
-  @ResponseBody
-  public ResponseEntity<?> getStudentEvents(@RequestBody StudentEventRequestDto dto) {
-    var data = this.studentService.getEvents(dto);
-    return ResponseEntity.ok(data);
-  }
+	@PostMapping
+	@ResponseBody
+	public ResponseEntity<?> getStudentEvents(@RequestBody StudentEventRequestDto dto) {
+		var data = this.studentService.getEvents(dto);
+		return ResponseEntity.ok(data);
+	}
 
-  @GetMapping("/{code}")
-  @ResponseBody
-  public ResponseEntity<?> getStudentEventDetail(@PathVariable String code)
-      throws ResultNotFoundException {
-    var data = this.studentService.getEventsByStudentCode(code);
-    return ResponseEntity.ok(data);
-  }
+	@GetMapping("/{studentCode}")
+	@ResponseBody
+	public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable String studentCode,
+			@RequestParam(required = false) String grade,
+			@RequestParam(value = "event_name", required = false) String eventName,
+			@RequestParam(required = false) String status) throws ResultNotFoundException {
+		var data = this.studentService.getEventsByStudentCode(studentCode, grade, eventName, status);
+		return ResponseEntity.ok(data);
+	}
 
+	@PostMapping(path = "/{studentCode}/events")
+	@ResponseBody
+	public ResponseEntity<?> register(@PathVariable String studentCode, @RequestBody RegisterEventDto dto) {
+		this.studentService.registerOrUpdateEvent(dto);
+		return ResponseEntity.status(HttpStatus.CREATED).build();
+	}
 
-  @GetMapping("/{code}/q")
-  @ResponseBody
-  public ResponseEntity<?> getStudentEventDetailWithCondition(@PathVariable String code,
-      @RequestParam(required = false) String grade,
-      @RequestParam(value = "event_name", required = false) String eventName,
-      @RequestParam(required = false) String status)
-      throws ResultNotFoundException {
-    var data = this.studentService.getEventsByStudentCode(code, grade, eventName, status);
-    return ResponseEntity.ok(data);
+	@PostMapping(path = "/{studentCode}/events/{eventId}")
+	public ResponseEntity<?> updateStatus(@PathVariable String studentCode, @PathVariable Long eventId,
+			@RequestBody UpdateEventStatusDto dto) {
+		this.studentService.updateEventStatus(dto);
 
-  }
-
-
-  @PostMapping(path = "/event")
-  @ResponseBody
-  public ResponseEntity<?> register(@RequestBody RegisterEventDto dto) {
-    var result = this.studentService.registerOrUpdateEvent(dto);
-
-    // @formatter:off
-    var data = new SuccessResponseDto(
-          ResponseCode.SUCCESS.getValue(),
-          "Created",
-          "Created event no" + result.id(),
-          "/event/" + result.id()
-        );
-    // @formatter:on
-
-    return ResponseEntity.ok().body(data);
-  }
-
-  @PostMapping(path = "/event/detail")
-  public ResponseEntity<?> updateStatus(@RequestBody UpdateEventStatusDto dto) {
-    this.studentService.updateEventStatus(dto);
-
-    // @formatter:off
+	// @formatter:off
     var data = new SuccessResponseDto(
         ResponseCode.SUCCESS.getValue(),
         "Updated", 
@@ -92,53 +73,56 @@ public class StudentController {
       );
     // @formatter:on
 
-    return ResponseEntity.ok().body(data);
-  }
+		return ResponseEntity.ok().body(data);
+	}
 
-  @DeleteMapping(path = "/{code}/event/{id}")
-  public ResponseEntity<?> deleteEventDetailById(@PathVariable String code,
-      @PathVariable Long id) {
-    var updatedList = this.studentService.deleteEventById(code, id);
+	@DeleteMapping(path = "/{studentCode}/events/{eventId}")
+	public ResponseEntity<?> deleteEventDetailById(@PathVariable String studentCode, @PathVariable Long eventId) {
+		var updatedList = this.studentService.deleteEventById(studentCode, eventId);
 
-    return ResponseEntity.ok().body(updatedList);
-  }
+		return ResponseEntity.ok().body(updatedList);
+	}
 
-  @GetMapping(path = "/event/{id}")
-  public ResponseEntity<?> getStudentEventDetailById(@PathVariable Long id) {
-    var result = this.studentService.getStudentEventById(id);
-    return ResponseEntity.ok(result);
-  }
+	@GetMapping(path = "/{studentCode}/events/{eventId}")
+	public ResponseEntity<?> getStudentEventDetailById(@PathVariable String studentCode, @PathVariable Long id) {
+		var result = this.studentService.getStudentEventById(id);
+		return ResponseEntity.ok(result);
+	}
 
-  @PostMapping("/event/comments")
-  public ResponseEntity<?> addCommentForEventDetailById(@RequestBody AddCommentDto dto) {
-    final var data = this.commentService.add(dto);
+	@PostMapping("/{studentCode}/events/{eventId}/comments")
+	public ResponseEntity<?> addCommentForEventDetailById(@PathVariable String studentCode, @PathVariable Long eventId, @RequestBody AddCommentDto dto) {
+		final var data = this.commentService.add(dto);
 
-    return ResponseEntity.ok().body(data);
-  }
+		return ResponseEntity.ok().body(data);
+	}
 
-  @DeleteMapping("/event/comments/{id}")
-  public ResponseEntity<?> deleteCommentById(@PathVariable Long id) {
-    this.commentService.delete(id);
+	@DeleteMapping("/{studentCode}/events/{eventId}/comments/{commentId}")
+	public ResponseEntity<?> deleteCommentById(@PathVariable String studentCode, @PathVariable Long eventId,
+			@PathVariable Long commentId) {
+		this.commentService.delete(commentId);
 
-    // @formatter:off
+	// @formatter:off
     var data = new SuccessResponseDto(
         ResponseCode.SUCCESS.getValue(),
         "Deleted", 
-        "Deleted comment " + id, 
-        "/student/comments/" + id
+        "Deleted comment " + commentId, 
+        "/student/comments/" + commentId
       );
     // @formatter:on
 
-    return ResponseEntity.ok().body(data);
-  }
-  
-  @PostMapping("/event/comments/p")
-  public ResponseEntity<?> editComment(@RequestBody CommentDto commentDto) {
-	  var result = this.commentService.update(commentDto);
-	  var map = new HashMap<String, Object>();
-	  map.put("data", result);
-	  return ResponseEntity.ok(map);
-	  
-  }
+		return ResponseEntity.ok().body(data);
+	}
+
+	@PostMapping("/{studentCode}/events/{eventId}/comments/{commentId}")
+	public ResponseEntity<?> editComment(
+			@PathVariable String studentCode,
+			@PathVariable Long eventId,
+			@PathVariable Long commentId,
+			@RequestBody CommentDto commentDto) {
+		var result = this.commentService.update(commentDto);
+		var map = new HashMap<String, Object>();
+		map.put("data", result);
+		return ResponseEntity.ok(map);
+	}
 
 }

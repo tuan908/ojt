@@ -1,10 +1,13 @@
 package com.tuanna.ojt.api.service.impl;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.tuanna.ojt.api.dto.LoginDto;
 import com.tuanna.ojt.api.dto.LoginResponseDto;
 import com.tuanna.ojt.api.dto.UserDto;
@@ -12,15 +15,13 @@ import com.tuanna.ojt.api.entity.Student;
 import com.tuanna.ojt.api.entity.User;
 import com.tuanna.ojt.api.repository.UserRepository;
 import com.tuanna.ojt.api.service.UserService;
-import lombok.RequiredArgsConstructor;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
+
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = { @Autowired })
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -72,8 +73,36 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Async
-	public CompletionStage<UserDto> findByUsernameAsync(String username) {
-		var queryResult = this.userRepository.findByUsername(username);
-		return CompletableFuture.completedFuture(queryResult.map(User::toDto).orElse(null));
+	public CompletableFuture<?> findByUsernameAsync(String username) {
+		var query = entityManager.createQuery("""
+				select
+					s
+				from
+					com.tuanna.ojt.api.entity.Student s
+				join fetch s.user
+				where
+					s.code = :username
+				""", Student.class);
+			
+			query.setParameter("username", username);
+		
+		var queryResult = query.getResultStream().findFirst();	
+		if (queryResult.isEmpty()) {
+			return CompletableFuture.completedFuture(null);
+		}
+		return CompletableFuture.completedFuture(queryResult.get().toDto());
+	}
+
+	@Override
+	@Async
+	public CompletableFuture<?> findAllAsync() {
+		var query = this.entityManager.createQuery("""
+				select
+					s
+				from
+					com.tuanna.ojt.api.entity.Student s
+				join fetch s.user
+				""", Student.class).getResultStream().map(s -> s.toDto());
+		return CompletableFuture.completedFuture(query);
 	}
 }

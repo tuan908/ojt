@@ -60,7 +60,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await HttpClient.post("/students/event/detail", dto);
+    const data = await HttpClient.post(`/students/events/${dto.id}`, dto);
     revalidatePath(`/students/[id]`, "page");
     return data;
 }
@@ -74,7 +74,9 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await HttpClient.delete("/students/event/comments/" + dto.id);
+    await HttpClient.delete(
+        `/students/events/${dto.eventDetailId}/comments/${dto.id}`
+    );
     revalidatePath("/students/event/comments");
 }
 
@@ -117,7 +119,7 @@ export const getEventsByStudentCodeWithQuery = async (
 
 export const getTracking = async (code: string) => {
     const data = await HttpClient.get<TrackingData>(
-        "/students/" + code + "/trackings",
+        `/students/${code}/trackings`,
         "node"
     );
     return data;

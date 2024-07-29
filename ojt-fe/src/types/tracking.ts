@@ -1,3 +1,6 @@
+import {registerEventSchema} from "@/lib/zod";
+import {z} from "zod";
+
 export type TrackingData = {
     id: string;
     name: string;

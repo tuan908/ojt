@@ -2,48 +2,37 @@
 
 import HttpClient from "@/lib/HttpClient";
 import {decrypt} from "@/lib/auth";
-import {commentSchema, registerEventSchema} from "@/lib/zod";
+import {registerEventSchema} from "@/lib/zod";
+import type {
+    AddCommentPayload,
+    TRegisterEvent,
+} from "@/types/event-action.types";
 import type {EventDetail, StudentEventResponse} from "@/types/student";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {cache} from "react";
-import {z} from "zod";
-
-/**
- * RegisterEventDto
- */
-export type RegisterEvent = z.infer<typeof registerEventSchema>;
+import type {TComment} from "@/types/event-action.types";
 
 /**
  * Register Event
  * @param dto Register Event Dto
  */
-export async function registerEvent(dto: RegisterEvent) {
+export async function registerEvent(dto: TRegisterEvent) {
     const result = await registerEventSchema.safeParseAsync(dto);
 
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await HttpClient.post("/students/event", result.data);
+        await HttpClient.post("/students/events", result.data);
         revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }
 }
 
-export type AddCommentPayload = z.infer<typeof commentSchema>;
-
-export type Comment = AddCommentPayload & {
-    id: number;
-    name: string;
-    roleName: string;
-    createdAt: string;
-    isDeleted: boolean;
-};
-
 export async function addComment(dto: AddCommentPayload) {
-    const data = await HttpClient.post<Comment[]>(
-        `/students/event/comments`,
+    const data = await HttpClient.post<TComment[]>(
+        `/students/events/${dto.eventDetailId}/comments`,
         dto
     );
     revalidatePath("/event");
@@ -51,7 +40,9 @@ export async function addComment(dto: AddCommentPayload) {
 }
 
 export const getEventDetailById = cache(async (id: number) => {
-    const response = await HttpClient.get<EventDetail>(`/students/event/${id}`);
+    const response = await HttpClient.get<EventDetail>(
+        `/students/events/${id}`
+    );
     return response;
 });
 
@@ -65,13 +56,13 @@ export async function deleteEventDetailById(
     return res;
 }
 
-export async function editComment(id: number, content: string) {
+export async function editComment(data: Omit<AddCommentPayload, "username">) {
     const requestBody = {
-        id,
-        content,
+        id: data.id,
+        content: data.content,
     };
     const result = await HttpClient.post<{data?: unknown}>(
-        "/students/event/comments/p",
+        `/students/events/${data.eventDetailId}/comments/${data.id}`,
         requestBody
     );
     revalidatePath("/event");

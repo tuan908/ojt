@@ -3,14 +3,7 @@ import {NextResponse, type NextRequest} from "next/server";
 import {Route, UserRole} from "./constants";
 
 export const config = {
-    matcher: [
-        "/",
-        "/home",
-        "/students",
-        "/students/:id*",
-        "/events",
-        "/trackings/:id*",
-    ],
+    matcher: ["/", "/home", "/students", "/students/:id*"],
 };
 
 export async function middleware(request: NextRequest) {
@@ -47,7 +40,7 @@ export async function middleware(request: NextRequest) {
 function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
     const {role, code} = tokenPayload;
 
-    if (role === UserRole.Student) {
+    if (role === UserRole.Student.toString()) {
         return NextResponse.redirect(new URL(`/students/${code}`, request.url));
     } else {
         return NextResponse.redirect(new URL(Route.Students, request.url));
@@ -58,8 +51,8 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
     const {role, code} = tokenPayload;
     const currentPath = request.nextUrl.pathname;
 
-    if (role === UserRole.Student) {
-        if (isAllowedStudentPath(currentPath, code)) {
+    if (role === UserRole.Student.toString()) {
+        if (!isRootOrHomeRoute(currentPath)) {
             return NextResponse.next();
         } else {
             return NextResponse.redirect(
@@ -67,7 +60,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
             );
         }
     } else {
-        if (isAllowedNonStudentPath(currentPath)) {
+        if (!isRootOrHomeRoute(currentPath)) {
             return NextResponse.next();
         } else {
             return NextResponse.redirect(new URL(Route.Students, request.url));
@@ -75,18 +68,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
     }
 }
 
-function isAllowedStudentPath(path: string, code: string) {
-    const allowedStudentPaths = ["/", "/home", "/events", `/students/${code}`];
-    return allowedStudentPaths.includes(path) || path.startsWith("/trackings/");
-}
-
-function isAllowedNonStudentPath(path: string) {
-    const allowedNonStudentPaths = ["/", "/home", "/events", Route.Students];
-    return (
-        allowedNonStudentPaths.includes(path) ||
-        path.startsWith("/trackings/") ||
-        path.startsWith("/students/")
-    );
-}
+const isRootOrHomeRoute = (currentPath: string) =>
+    ["/", "/home"].includes(currentPath);
 
 // To add more routes in the future, simply add them to the `allowedStudentPaths` and `allowedNonStudentPaths` arrays.

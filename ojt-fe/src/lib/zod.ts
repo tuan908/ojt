@@ -13,6 +13,7 @@ export const signInSchema = z.object({
 });
 
 export const registerEventSchema = z.object({
+    studentCode: z.string(),
     username: z.string(),
     gradeName: z.string(),
     data: z.object({

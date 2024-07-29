@@ -127,8 +127,8 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
         dispatch(openDialogUpdateStatus(id));
     };
 
-    const getHref = useCallback((id: number) => {
-        return `/events?id=${id}&mode=${ScreenMode.CHAT}`;
+    const getHref = useCallback((id: number, screenMode: number) => {
+        return `/students/${code}/events?id=${id}&mode=${screenMode}`;
     }, []);
 
     const isActionColumnActive = useMemo(() => {
@@ -171,7 +171,9 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
                                     <StatusLabel status={item?.status} />
                                 </TableCell>
                                 <TableCell fontSemibold textEllipsis textCenter>
-                                    <Link href={getHref(item.id)}>
+                                    <Link
+                                        href={getHref(item.id, ScreenMode.CHAT)}
+                                    >
                                         <Badge
                                             badgeContent={
                                                 item.comments!?.length
@@ -214,7 +216,10 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
                                             ) : (
                                                 <>
                                                     <Link
-                                                        href={`/events?id=${item.id}&mode=${ScreenMode.EDIT}`}
+                                                        href={getHref(
+                                                            item.id,
+                                                            ScreenMode.EDIT
+                                                        )}
                                                         className={cn(
                                                             item.status ===
                                                                 EventStatus.CONFIRMED &&
