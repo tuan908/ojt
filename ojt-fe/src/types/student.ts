@@ -1,5 +1,5 @@
 import type {HashtagPayload} from "@/app/actions/common.action";
-import type {Comment} from "@/app/actions/event.action";
+import type {Comment} from "@/types/event-action.types";
 
 type EventDetail = {
     id: number;

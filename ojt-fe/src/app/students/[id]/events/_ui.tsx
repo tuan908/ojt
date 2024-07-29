@@ -43,9 +43,9 @@ import {
 } from "react";
 import type {HashtagPayload} from "@/app/actions/common.action";
 import type {
-    TRegisterEvent,
+    RegisterEvent,
     AddCommentPayload,
-    TComment
+    Comment
 } from "@/types/event-action.types";
 
 type Props = Partial<{
@@ -96,9 +96,9 @@ export default function EventUi({
 }: Props) {
     const router = useRouter();
     const dispatch = useAppDispatch();
-    const [comments, setComments] = useState<TComment[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [eventName, setEventName] = useState(json.event.placeholder_0);
-    const [registerData, setData] = useState<TRegisterEvent["data"]>();
+    const [registerData, setData] = useState<RegisterEvent["data"]>();
     const [error, setError] = useState(false);
     const [eventOptions, setEventOptions] = useState<SelectOption[]>([]);
     const [disable, setDisable] = useState(false);
@@ -247,7 +247,7 @@ export default function EventUi({
                     setComments(prev =>
                         [
                             ...prev.filter(x => x.id !== comment.id!),
-                            response.data as TComment,
+                            response.data as Comment,
                         ].sort((a, b) => a.id - b.id)
                     );
                 }

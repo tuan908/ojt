@@ -5,20 +5,20 @@ import {decrypt} from "@/lib/auth";
 import {registerEventSchema} from "@/lib/zod";
 import type {
     AddCommentPayload,
-    TRegisterEvent,
+    RegisterEvent,
 } from "@/types/event-action.types";
 import type {EventDetail, StudentEventResponse} from "@/types/student";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {cache} from "react";
-import type {TComment} from "@/types/event-action.types";
+import type {Comment} from "@/types/event-action.types";
 
 /**
  * Register Event
  * @param dto Register Event Dto
  */
-export async function registerEvent(dto: TRegisterEvent) {
+export async function registerEvent(dto: RegisterEvent) {
     const result = await registerEventSchema.safeParseAsync(dto);
 
     if (!result.success) {
@@ -31,7 +31,7 @@ export async function registerEvent(dto: TRegisterEvent) {
 }
 
 export async function addComment(dto: AddCommentPayload) {
-    const data = await HttpClient.post<TComment[]>(
+    const data = await HttpClient.post<Comment[]>(
         `/students/events/${dto.eventDetailId}/comments`,
         dto
     );

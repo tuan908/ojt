@@ -3,7 +3,7 @@ import {z} from "zod";
 
 export type AddCommentPayload = z.infer<typeof commentSchema>;
 
-export type TComment = Omit<AddCommentPayload, "id"> & {
+export type Comment = Omit<AddCommentPayload, "id"> & {
     id: number;
     name: string;
     roleName: string;
@@ -14,4 +14,4 @@ export type TComment = Omit<AddCommentPayload, "id"> & {
 /**
  * RegisterEventDto
  */
-export type TRegisterEvent = z.infer<typeof registerEventSchema>;
+export type RegisterEvent = z.infer<typeof registerEventSchema>;
