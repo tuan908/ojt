@@ -128,7 +128,7 @@ export default function EventGrid({data, studentId, code}: EventGridProps) {
     };
 
     const getHref = useCallback((id: number, screenMode: number) => {
-        return `/students/${code}/events?id=${id}&mode=${screenMode}`;
+        return `/students/${code}/events/${id}?mode=${screenMode}`;
     }, []);
 
     const isActionColumnActive = useMemo(() => {

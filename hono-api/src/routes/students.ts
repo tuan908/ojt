@@ -119,13 +119,15 @@ app.get("/:code", async ctx => {
             code: student?.code,
             name: student?.user?.name,
             grade: student?.grade?.name,
-            events: eventDetails.map(event => ({
-                id: event?.id!,
-                grade: event?.grade!?.name,
-                name: event?.event!?.name,
-                status: event?.status!,
-                comments: event?.comments,
-            })),
+            events: eventDetails
+                .sort((a, b) => cb(a?.event!?.name, b?.event!?.name))
+                .map(event => ({
+                    id: event?.id!,
+                    grade: event?.grade!?.name,
+                    name: event?.event!?.name,
+                    status: event?.status!,
+                    comments: event?.comments,
+                })),
         });
     } catch (error) {
         return ctx.json({message: "Server error"}, 500);
@@ -243,7 +245,7 @@ app.post("/:code/events/:eventId/comments", async ctx => {
     const data = (await ctx.req.json()) as IUpdateComment;
     try {
         const db = _db(ctx);
-        console.log(data)
+        console.log(data);
 
         const student = await db.query.student.findFirst({
             where: (fields, {eq}) => eq(fields.code, code),
@@ -259,8 +261,6 @@ app.post("/:code/events/:eventId/comments", async ctx => {
             },
         });
 
-        console.log(student)
-
         if (!student) {
             return ctx.json(
                 {
@@ -275,8 +275,8 @@ app.post("/:code/events/:eventId/comments", async ctx => {
             .set({content: data.content})
             .where(eq(schema.comment.id, data.id));
         return ctx.json({
-            message: "Success"
-        })
+            message: "Success",
+        });
     } catch (error) {
         console.log(error);
         return ctx.json(
@@ -293,4 +293,12 @@ export default app;
 type HashtagDetail = {
     id: number;
     value: number;
+};
+
+const cb = (a: string | null, b: string | null) => {
+    if (!a || !b) {
+        return -1;
+    }
+
+    return a.toLowerCase().localeCompare(b.toLowerCase());
 };

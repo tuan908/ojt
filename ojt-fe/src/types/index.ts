@@ -55,7 +55,7 @@ export type RecursivelyReplaceNullWithUndefined<T> = T extends null
  * Dynamic Page Props
  */
 export type DynamicPageProps = {
-    params: {id: string};
+    params: {id: string; eventId: number};
     searchParams?: {[key: string]: string | string[] | undefined};
 };
 

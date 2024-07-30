@@ -1,7 +1,7 @@
 import {cn} from "@/utils";
 import {useMediaQuery} from "@mui/material";
 import {type ComponentProps} from "react";
-import {MEDIA_QUERY} from "@/constants"
+import {MEDIA_QUERY} from "@/constants";
 
 const Textarea = ({
     name,

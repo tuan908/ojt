@@ -1,44 +1,30 @@
 "use server";
 
 import {type SelectOption} from "@/components/Select";
-import HttpClient from "@/lib/HttpClient";
+import {honoApi} from "@/lib/api";
 import {cache} from "react";
-
-type Grade = {
-    id: number;
-    name: string;
-};
-
-type HashtagPayload = {
-    id: number;
-    name: string;
-    color: string;
-};
+import type {Grade, Hashtag} from "@/types/common-action.types";
 
 /**
  * Get Grade List
  * @returns Grade List
  */
-const getGrades = cache(
-    async () => await HttpClient.get<Grade[]>("/common/grades", "node")
+export const getGrades = cache(
+    async () => await honoApi.get<Grade[]>("/common/grades")
 );
 
 /**
  * Get current event
  * @returns Event List
  */
-const getEvents = cache(
-    async () => await HttpClient.get<SelectOption[]>("/common/events", "node")
+export const getEvents = cache(
+    async () => await honoApi.get<SelectOption[]>("/common/events")
 );
 
 /**
  * Get hashtag list
  * @returns Hashtag list
  */
-const getHashtags = cache(
-    async () =>
-        await HttpClient.get<HashtagPayload[]>("/common/hashtags", "node")
+export const getHashtags = cache(
+    async () => await honoApi.get<Hashtag[]>("/common/hashtags")
 );
-
-export {getEvents, getGrades, getHashtags};
-export type {Grade, HashtagPayload};

@@ -1,10 +1,11 @@
 "use server";
 
-import HttpClient from "@/lib/HttpClient";
+import {springApi} from "@/lib/api";
 import {decrypt} from "@/lib/auth";
 import {registerEventSchema} from "@/lib/zod";
 import type {
     AddCommentPayload,
+    Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
 import type {EventDetail, StudentEventResponse} from "@/types/student";
@@ -12,7 +13,6 @@ import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
 import {cache} from "react";
-import type {Comment} from "@/types/event-action.types";
 
 /**
  * Register Event
@@ -24,14 +24,14 @@ export async function registerEvent(dto: RegisterEvent) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await HttpClient.post("/students/events", result.data);
+        await springApi.post("/students/events", result.data);
         revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }
 }
 
 export async function addComment(dto: AddCommentPayload) {
-    const data = await HttpClient.post<Comment[]>(
+    const data = await springApi.post<Comment[]>(
         `/students/events/${dto.eventDetailId}/comments`,
         dto
     );
@@ -39,18 +39,26 @@ export async function addComment(dto: AddCommentPayload) {
     return data;
 }
 
-export const getEventDetailById = cache(async (id: number) => {
-    const response = await HttpClient.get<EventDetail>(
-        `/students/events/${id}`
-    );
-    return response;
-});
+export const getEventDetailById = cache(
+    async ({
+        studentCode,
+        eventDetailId,
+    }: Readonly<{
+        studentCode: string;
+        eventDetailId: number;
+    }>) => {
+        const response = await springApi.get<EventDetail>(
+            `/students/${studentCode}/events/${eventDetailId}`
+        );
+        return response;
+    }
+);
 
 export async function deleteEventDetailById(
     code: string,
     id: number
 ): Promise<StudentEventResponse["events"] | undefined> {
-    const res = await HttpClient.delete<StudentEventResponse["events"]>(
+    const res = await springApi.delete<StudentEventResponse["events"]>(
         `/students/${code}/event/${id}`
     );
     return res;
@@ -61,7 +69,7 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
         id: data.id,
         content: data.content,
     };
-    const result = await HttpClient.post<{data?: unknown}>(
+    const result = await springApi.post<{data?: unknown}>(
         `/students/events/${data.eventDetailId}/comments/${data.id}`,
         requestBody
     );

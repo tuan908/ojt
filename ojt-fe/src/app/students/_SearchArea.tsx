@@ -1,8 +1,8 @@
 "use client";
 
-import type {Grade, HashtagPayload} from "@/app/actions/common.action";
+import type {Grade, Hashtag} from "@/types/common-action.types";
 import {getStudents} from "@/app/actions/student.action";
-import Hashtag from "@/components/Hashtag";
+import ColorHashtag from "@/components/ColorHashtag";
 import Select, {type SelectOption} from "@/components/Select";
 import {
     EVENT_OPTION_DEFAULT,
@@ -29,7 +29,7 @@ import StudentDataGrid from "./_StudentDataGrid";
 type SearchAreaProps = Partial<{
     students: Page<StudentsResponse>;
     grades: Grade[];
-    hashtags: HashtagPayload[];
+    hashtags: Hashtag[];
     events: SelectOption[];
 }>;
 
@@ -247,14 +247,14 @@ export default function SearchArea({
             </div>
             <div className="w-full px-12 flex gap-x-2 flex-wrap">
                 {skills.map((skill, index) => (
-                    <Hashtag
+                    <ColorHashtag
                         key={`skill#${index}`}
                         onRemove={() => handleRemoveHashtag(index)}
                         index={index}
                         color={skill.color}
                     >
                         {skill.label}
-                    </Hashtag>
+                    </ColorHashtag>
                 ))}
             </div>
             <hr className="border-table" />

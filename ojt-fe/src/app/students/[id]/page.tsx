@@ -41,7 +41,7 @@ export default async function Page({params}: DynamicPageProps) {
     return (
         <div className="flex flex-col w-full h-full m-auto">
             <Suspense fallback={<>Loading student info...</>}>
-                <Header auth={auth} />
+                <Header auth={auth} studentCode={params.id} />
             </Suspense>
             <PageWrapper>
                 {/* Student Info */}

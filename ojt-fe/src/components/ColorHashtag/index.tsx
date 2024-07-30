@@ -8,7 +8,7 @@ type ColorHashtagProps = {
     index: number;
 };
 
-export default function Hashtag({
+export default function ColorHashtag({
     color,
     onRemove: handleRemove,
     children,

@@ -1,7 +1,7 @@
 "use server";
 
 import {EventStatus, PAGE_SIZE} from "@/constants";
-import HttpClient from "@/lib/HttpClient";
+import {honoApi, springApi} from "@/lib/api";
 import type {
     Page,
     StudentEventResponse,
@@ -28,7 +28,7 @@ export const getStudents = cache(async (dto?: StudentsRequest) => {
         body = dto;
     }
 
-    const data = await HttpClient.post<Page<StudentsResponse>>("/students", {
+    const data = await springApi.post<Page<StudentsResponse>>("/students", {
         ...body,
         pageNumber: 1,
         pageSize: PAGE_SIZE,
@@ -43,10 +43,7 @@ export const getStudents = cache(async (dto?: StudentsRequest) => {
  * @returns Student Response
  */
 export const getStudentByCode = cache(async (code: string) => {
-    const data = await HttpClient.get<StudentEventResponse>(
-        `/students/${code}`,
-        "node"
-    );
+    const data = await honoApi.get<StudentEventResponse>(`/students/${code}`);
     return data;
 });
 
@@ -60,7 +57,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await HttpClient.post(`/students/events/${dto.id}`, dto);
+    const data = await springApi.post(`/students/events/${dto.id}`, dto);
     revalidatePath(`/students/[id]`, "page");
     return data;
 }
@@ -74,7 +71,7 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await HttpClient.delete(
+    await springApi.delete(
         `/students/events/${dto.eventDetailId}/comments/${dto.id}`
     );
     revalidatePath("/students/event/comments");
@@ -95,7 +92,7 @@ export const getEventsByStudentCodeWithQuery = async (
     }
 ) => {
     let queryParams = [];
-    let url = `/students/${code}/q?`;
+    let url = `/students/${code}?`;
 
     if (arg.grade && arg.grade !== "School Year") {
         queryParams.push(`grade=${arg.grade}`);
@@ -113,14 +110,11 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await HttpClient.get<StudentEventResponse["events"]>(url);
+    const data = await springApi.get<StudentEventResponse["events"]>(url);
     return data;
 };
 
 export const getTracking = async (code: string) => {
-    const data = await HttpClient.get<TrackingData>(
-        `/students/${code}/trackings`,
-        "node"
-    );
+    const data = await honoApi.get<TrackingData>(`/students/${code}/trackings`);
     return data;
 };

@@ -1,4 +1,4 @@
-import {type UserInfo} from "@/app/actions/auth.action";
+import type {UserInfo} from "@/types/auth-action.types";
 import {SignJWT, jwtVerify, type JWTPayload} from "jose";
 
 export type JwtPayload = JWTPayload & {

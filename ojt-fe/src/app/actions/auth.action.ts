@@ -2,31 +2,12 @@
 
 import {UserRole} from "@/constants";
 import json from "@/i18n/jp.json";
-import HttpClient from "@/lib/HttpClient";
+import {springApi} from "@/lib/api";
 import {encrypt} from "@/lib/auth";
 import {signInSchema} from "@/lib/zod";
+import type {UserInfo} from "@/types/auth-action.types";
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
-
-/**
- * UserInfo
- */
-export type UserInfo = {
-    id: number;
-    name: string;
-    username: string;
-    role: string;
-    grade: string;
-    code: string;
-};
-
-/**
- * Login State
- */
-export type LoginState = {
-    message: string;
-    user?: UserInfo;
-};
 
 /**
  * Login
@@ -52,7 +33,7 @@ export async function login(_previousState: any, formData: FormData) {
 
     const request = parse.data;
 
-    const user = await HttpClient.post<UserInfo>("/auth/login", request);
+    const user = await springApi.post<UserInfo>("/auth/login", request);
     if (!user) {
         return {
             error: json.error.wrong_username_or_password,

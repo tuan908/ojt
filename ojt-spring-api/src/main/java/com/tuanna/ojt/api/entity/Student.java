@@ -1,5 +1,6 @@
 package com.tuanna.ojt.api.entity;
 
+import java.util.Comparator;
 import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -31,72 +32,73 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Student extends BaseEntity {
 
-  private static final long serialVersionUID = -6397969402551800433L;
+	private static final long serialVersionUID = -6397969402551800433L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(columnDefinition = "text")
-  private String code;
+	@Column(columnDefinition = "text")
+	private String code;
 
-  @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  // @formatter:off
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	// @formatter:off
   @JoinTable(
       name = "ojt_student_hashtag", 
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
   // @formatter:on
-  @Builder.Default
-  private Set<Hashtag> hashtags = new java.util.HashSet<>();
+	@Builder.Default
+	private Set<Hashtag> hashtags = new java.util.HashSet<>();
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
-  @Builder.Default
-  private java.util.Set<EventDetail> events = new java.util.HashSet<>();
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
+	@Builder.Default
+	private java.util.Set<EventDetail> events = new java.util.HashSet<>();
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User user;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Grade grade;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Grade grade;
 
-  @Override
-  public boolean equals(final Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof final Student student)) {
-      return false;
-    }
-    return this.id != null && this.id.equals(student.getId());
-  }
+	@Override
+	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof final Student student)) {
+			return false;
+		}
+		return this.id != null && this.id.equals(student.getId());
+	}
 
-  @Override
-  public int hashCode() {
-    return this.getClass().hashCode();
-  }
+	@Override
+	public int hashCode() {
+		return this.getClass().hashCode();
+	}
 
-  /** Convert to dto from entity */
-  public StudentEvent toDto() {
-    var events = this.getEvents().stream().map(event -> event.getDetail().getName()).toList();
-    var hashtags = this.getHashtags().stream().map(Hashtag::toDto).toList();
+	/** Convert to dto from entity */
+	public StudentEvent toDto() {
+		var events = this.getEvents().stream().sorted(Comparator.comparing(event -> event.getDetail().getName()))
+				.map(event -> event.getDetail().getName()).toList();
+		var hashtags = this.getHashtags().stream().sorted(Comparator.comparing(h -> h.getName())).map(Hashtag::toDto)
+				.toList();
 
-    return new StudentEvent(this.id, this.code, this.user.getName(), this.grade.getName(),
-        String.join(", ", events), hashtags);
-  }
+		return new StudentEvent(this.id, this.code, this.user.getName(), this.grade.getName(),
+				String.join(", ", events), hashtags);
+	}
 
-  public void addHashtag(Hashtag hashtag) {
-    this.hashtags.add(hashtag);
-    hashtag.getStudents().add(this);
-  }
+	public void addHashtag(Hashtag hashtag) {
+		this.hashtags.add(hashtag);
+		hashtag.getStudents().add(this);
+	}
 
-  public void removeHashtag(Long hashtagId) {
-    var hashtag =
-        this.hashtags.stream().filter(t -> t.getId() == hashtagId).findFirst().orElse(null);
-    if (hashtag != null) {
-      this.hashtags.remove(hashtag);
-      hashtag.getStudents().remove(this);
-    }
-  }
+	public void removeHashtag(Long hashtagId) {
+		var hashtag = this.hashtags.stream().filter(t -> t.getId() == hashtagId).findFirst().orElse(null);
+		if (hashtag != null) {
+			this.hashtags.remove(hashtag);
+			hashtag.getStudents().remove(this);
+		}
+	}
 }

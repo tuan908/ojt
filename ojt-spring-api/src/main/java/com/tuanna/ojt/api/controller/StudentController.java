@@ -84,8 +84,8 @@ public class StudentController {
 	}
 
 	@GetMapping(path = "/{studentCode}/events/{eventId}")
-	public ResponseEntity<?> getStudentEventDetailById(@PathVariable String studentCode, @PathVariable Long id) {
-		var result = this.studentService.getStudentEventById(id);
+	public ResponseEntity<?> getStudentEventDetailById(@PathVariable String studentCode, @PathVariable Long eventId) {
+		var result = this.studentService.getStudentEventById(eventId);
 		return ResponseEntity.ok(result);
 	}
 

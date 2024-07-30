@@ -14,6 +14,12 @@ import json from "@/i18n/jp.json";
 import type {JwtPayload} from "@/lib/auth";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
+import type {Hashtag} from "@/types/common-action.types";
+import type {
+    AddCommentPayload,
+    Comment,
+    RegisterEvent,
+} from "@/types/event-action.types";
 import type {EventDetail} from "@/types/student";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
@@ -41,19 +47,13 @@ import {
     type ComponentProps,
     type SyntheticEvent,
 } from "react";
-import type {HashtagPayload} from "@/app/actions/common.action";
-import type {
-    RegisterEvent,
-    AddCommentPayload,
-    Comment
-} from "@/types/event-action.types";
 
 type Props = Partial<{
     eventDetailId: number;
     mode: string;
     detail: EventDetail;
     events: SelectOption[];
-    hashtags: HashtagPayload[];
+    hashtags: Hashtag[];
     auth: JwtPayload;
 }> & {studentCode: string};
 
@@ -102,7 +102,7 @@ export default function EventUi({
     const [error, setError] = useState(false);
     const [eventOptions, setEventOptions] = useState<SelectOption[]>([]);
     const [disable, setDisable] = useState(false);
-    const [hashtags, setHashtags] = useState<HashtagPayload[]>([]);
+    const [hashtags, setHashtags] = useState<Hashtag[]>([]);
     const [openPicker, setOpen] = useState(false);
     const [comment, setComment] = useState<AddCommentPayload>(initComment);
     const [openSuggest, setOpenSuggest] = useState(false);
@@ -456,7 +456,7 @@ export default function EventUi({
                             })}
                         </div>
                         <div className="w-11/12 md:w-3/5 m-auto flex items-center gap-x-2 md:gap-x-8">
-                            <Avatar className="!hidden md:!block md:!w-16 md:!h-16" />
+                            <Avatar className="!hidden md:!flex md:!w-16 md:!h-16" />
                             <div className="w-full flex items-center relative">
                                 <Autocomplete
                                     className="w-full"
