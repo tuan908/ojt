@@ -1,8 +1,11 @@
 "use server";
 
+import {DEFAULT_EVENT_OPTION} from "@/constants";
+import json from "@/i18n/jp.json";
 import {springApi} from "@/lib/api";
 import {decrypt} from "@/lib/auth";
 import {registerEventSchema} from "@/lib/zod";
+import {StatusCode} from "@/types";
 import type {
     AddCommentPayload,
     Comment,
@@ -88,4 +91,32 @@ export async function getSession() {
     }
 
     return await decrypt(token);
+}
+
+export async function addEvent(_prevState: unknown, formData: FormData) {
+    if (!cookies().get("token")) {
+        redirect("/login");
+    }
+    const auth = await decrypt(cookies().get("token")?.value!);
+    if (formData.get("eventName") === DEFAULT_EVENT_OPTION) {
+        return {
+            code: StatusCode.Error,
+            data: {...formData},
+            error: {
+                event: json.error.select_event_required,
+            },
+        };
+    }
+    const registerEventData: RegisterEvent = {
+        username: auth?.username!,
+        gradeName: auth?.grade!,
+        studentCode: auth?.code!,
+        data: Object.fromEntries(formData) as RegisterEvent["data"],
+    };
+
+    await springApi.post(`/students/${auth?.code}/events`, registerEventData);
+    revalidatePath("/students/[id]", "page");
+    return {
+        code: StatusCode.Success
+    }
 }

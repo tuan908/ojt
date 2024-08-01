@@ -5,9 +5,9 @@ import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
 import Select, {type SelectOption} from "@/components/Select";
 import {
-    EVENT_OPTION_DEFAULT,
+    DEFAULT_EVENT_OPTION,
     EventStatus,
-    GRADE_OPTION_DEFAULT,
+    DEFAULT_GRADE_NAME_OPTION,
 } from "@/constants";
 import json from "@/i18n/jp.json";
 import {StudentEventResponse} from "@/types/student";
@@ -57,8 +57,8 @@ export default function SearchArea({
         under_reviewing: false,
         confirmed: false,
     });
-    const [grade, setGrade] = useState(GRADE_OPTION_DEFAULT);
-    const [eventName, setEventName] = useState(EVENT_OPTION_DEFAULT);
+    const [grade, setGrade] = useState(DEFAULT_GRADE_NAME_OPTION);
+    const [eventName, setEventName] = useState(DEFAULT_EVENT_OPTION);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
         setCheck({...check, [event.target.name]: !check[event.target.name]});
@@ -80,9 +80,9 @@ export default function SearchArea({
 
         try {
             const result = await getEventsByStudentCodeWithQuery(params.id, {
-                grade: grade === GRADE_OPTION_DEFAULT ? undefined : grade,
+                grade: grade === DEFAULT_GRADE_NAME_OPTION ? undefined : grade,
                 eventName:
-                    eventName === EVENT_OPTION_DEFAULT ? undefined : eventName,
+                    eventName === DEFAULT_EVENT_OPTION ? undefined : eventName,
                 status,
             });
             setData(result!);
@@ -91,11 +91,11 @@ export default function SearchArea({
                 url.searchParams.delete(key, value);
             });
 
-            if (grade.length > 0 && grade !== GRADE_OPTION_DEFAULT) {
+            if (grade.length > 0 && grade !== DEFAULT_GRADE_NAME_OPTION) {
                 url.searchParams.set("grade", grade);
             }
 
-            if (eventName.length > 0 && eventName !== EVENT_OPTION_DEFAULT) {
+            if (eventName.length > 0 && eventName !== DEFAULT_EVENT_OPTION) {
                 url.searchParams.set("event", eventName);
             }
 
@@ -128,7 +128,7 @@ export default function SearchArea({
             <div className="border-b md:px-8 px-4 flex flex-col gap-y-4 md:flex-row md:items-center py-4 md:gap-x-8">
                 {/* クラス名 */}
                 <Select
-                    defaultOption={GRADE_OPTION_DEFAULT}
+                    defaultOption={DEFAULT_GRADE_NAME_OPTION}
                     options={grades!}
                     value={grade}
                     onChange={handleSelectGrade}
@@ -136,7 +136,7 @@ export default function SearchArea({
 
                 {/* イベント */}
                 <Select
-                    defaultOption={EVENT_OPTION_DEFAULT}
+                    defaultOption={DEFAULT_EVENT_OPTION}
                     options={events!}
                     value={eventName}
                     onChange={handleSelectEvent}

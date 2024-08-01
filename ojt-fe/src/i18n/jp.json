@@ -9,7 +9,8 @@
         "user_not_found": "ユーザーが見つかりません。",
         "password_mismatch": "パスワードが間違っているか、ユーザーが存在しません。",
         "server": "内部サーバーエラー",
-        "try_again": "あとでもう一度試してみてください"
+        "try_again": "あとでもう一度試してみてください",
+        "select_event_required": "イベントを選択してください"
     },
     "table": {
         "header": {
@@ -63,7 +64,7 @@
     },
     "event": {
         "select_event": "イベントを選択",
-        "placeholder_0": "バレーボール",
+        "placeholder_0": "イベント",
         "question_1": "学校生活での出来事",
         "placeholder_1": "回答11",
         "question_2": "自分の行動",

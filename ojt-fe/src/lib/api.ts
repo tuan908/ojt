@@ -35,19 +35,24 @@ class HttpClient {
             Accept: "application/json",
         };
 
-        const response = await fetch(fullUrl, {
-            ...restOptions,
-            method,
-            headers: {...defaultHeaders, ...headers},
-        });
-
-        if (!response.ok) {
-            throw new HttpError(response);
+        try {
+            const response = await fetch(fullUrl, {
+                ...restOptions,
+                method,
+                headers: {...defaultHeaders, ...headers},
+            });
+    
+            if (!response.ok) {
+                throw new HttpError(response);
+            }
+    
+            const data = (await response.json()) as T;
+    
+            return nullsToUndefined(data);
+        } catch (error) {
+            console.log(error);
+            return undefined;
         }
-
-        const data = (await response.json()) as T;
-
-        return nullsToUndefined(data);
     }
 
     public async get<T>(url: string, options?: RequestOptions) {

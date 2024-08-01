@@ -212,7 +212,7 @@ export default function EventUi({
         e?.preventDefault();
         setData({
             ...registerData,
-            [e?.target.name]: e?.target.value,
+            [e?.target.name]: e?.target.value!,
         });
     };
 

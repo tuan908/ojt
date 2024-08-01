@@ -69,10 +69,10 @@ export enum ScreenMode {
 }
 
 /** クラス名 */
-export const GRADE_OPTION_DEFAULT = "クラス名";
+export const DEFAULT_GRADE_NAME_OPTION = "クラス名";
 
 /** イベント */
-export const EVENT_OPTION_DEFAULT = "イベント";
+export const DEFAULT_EVENT_OPTION = "イベント";
 
 export const menuProps: Partial<MenuProps> = {
     slotProps: {

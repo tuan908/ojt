@@ -29,12 +29,12 @@ export type ErrorResponse = {
  *  - UpdateError
  *  - UpdateSuccess
  */
-export enum StatusCode {
-    InternalServerError = 500,
-    ResultNotFound = 404,
-    Error = 0,
-    Success = 1,
-}
+export const StatusCode = {
+    InternalServerError: 9999,
+    ResultNotFound: 0,
+    Error: -1,
+    Success: 1,
+} as const;
 
 /**
  * LayoutProps

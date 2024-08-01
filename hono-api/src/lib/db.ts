@@ -1,8 +1,8 @@
 import {neon} from "@neondatabase/serverless";
 import {drizzle} from "drizzle-orm/neon-http";
 import schema from "../schema";
-import {Context} from "hono";
-import {Binding} from "../types";
+import {type Context} from "hono";
+import {type Binding} from "../types";
 
 export default function db(context: Context<Binding>) {
     const connectionString = context.env.DATABASE_URL;

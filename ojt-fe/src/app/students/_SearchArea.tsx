@@ -5,8 +5,8 @@ import {getStudents} from "@/app/actions/student.action";
 import ColorHashtag from "@/components/ColorHashtag";
 import Select, {type SelectOption} from "@/components/Select";
 import {
-    EVENT_OPTION_DEFAULT,
-    GRADE_OPTION_DEFAULT,
+    DEFAULT_EVENT_OPTION,
+    DEFAULT_GRADE_NAME_OPTION,
     STRING_EMPTY,
 } from "@/constants";
 import json from "@/i18n/jp.json";
@@ -50,8 +50,8 @@ export default function SearchArea({
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
     const [rows, setRows] = useState<StudentsResponse[]>(students?.content!);
     const [searchCondition, setSearchCondition] = useState<StudentsRequest>({
-        events: EVENT_OPTION_DEFAULT,
-        grade: GRADE_OPTION_DEFAULT,
+        events: DEFAULT_EVENT_OPTION,
+        grade: DEFAULT_GRADE_NAME_OPTION,
     });
 
     function handleInputChange(
@@ -123,11 +123,11 @@ export default function SearchArea({
         await dispatch(showLoading());
         try {
             let request: StudentsRequest = {};
-            if (searchCondition.grade !== GRADE_OPTION_DEFAULT) {
+            if (searchCondition.grade !== DEFAULT_GRADE_NAME_OPTION) {
                 request.grade = searchCondition.grade;
             }
 
-            if (searchCondition.events !== EVENT_OPTION_DEFAULT) {
+            if (searchCondition.events !== DEFAULT_EVENT_OPTION) {
                 request.events = searchCondition.events;
             }
 

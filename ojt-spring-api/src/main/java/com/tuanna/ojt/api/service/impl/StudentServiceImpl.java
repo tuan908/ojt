@@ -116,25 +116,24 @@ public class StudentServiceImpl implements StudentService {
 		data.put("name", student.getUser().getName());
 		data.put("grade", student.getGrade().getName());
 
-		List<HashMap<String, Object>> events =
-				student.getEvents().stream().filter(event -> !event.getIsDeleted())
-						.sorted(Comparator.comparing(EventDetail::getCreatedAt)).map(event -> {
-							var hashMap = new HashMap<String, Object>();
-							var numberOfComments = event.getComments().stream()
-									.filter(comment -> !comment.getIsDeleted()).count();
+		List<HashMap<String, Object>> events = student.getEvents().stream().filter(event -> !event.getIsDeleted())
+				.sorted(Comparator.comparing(EventDetail::getCreatedAt)).map(event -> {
+					var hashMap = new HashMap<String, Object>();
+					var numberOfComments = event.getComments().stream().filter(comment -> !comment.getIsDeleted())
+							.count();
 
-							hashMap.put("id", event.getId());
-							hashMap.put("grade", event.getGrade().getName());
-							hashMap.put("name", event.getDetail().getName());
-							hashMap.put("status", event.getStatus().getValue());
-							hashMap.put("comments", numberOfComments);
-							return hashMap;
-						}).toList();
+					hashMap.put("id", event.getId());
+					hashMap.put("grade", event.getGrade().getName());
+					hashMap.put("name", event.getDetail().getName());
+					hashMap.put("status", event.getStatus().getValue());
+					hashMap.put("comments", numberOfComments);
+					return hashMap;
+				}).toList();
 
 		data.put("events", events);
 
-		var hashtags = student.getHashtags().stream().map(Hashtag::toDto)
-				.sorted(Comparator.comparing(HashtagDto::name)).toList();
+		var hashtags = student.getHashtags().stream().map(Hashtag::toDto).sorted(Comparator.comparing(HashtagDto::name))
+				.toList();
 
 		data.put("hashtags", hashtags);
 
@@ -192,39 +191,33 @@ public class StudentServiceImpl implements StudentService {
 
 		EventDetail event = null;
 		if (result.isEmpty()) {
-
 			var data = new EventDetail.Data();
+			
 			data.setEventName(dto.getData().eventName());
 			data.setEventsInSchoolLife(dto.getData().eventsInSchoolLife());
 			data.setMyAction(dto.getData().myAction());
 			data.setMyThought(dto.getData().myThought());
 			data.setShownPower(dto.getData().shownPower());
 			data.setStrengthGrown(dto.getData().strengthGrown());
-
-	// @formatter:off
-      event = EventDetail.builder()
-          .status(EventStatus.UNCONFIRMED)
-          .detail(detail)
-          .grade(student.getGrade())
-          .data(data)
-          .createdBy(dto.getUsername())
-          .updatedBy(dto.getUsername())
-          .student(student)
-          .build();
-      // @formatter:on
+			
+			event = new EventDetail();
+			event.setStatus(EventStatus.UNCONFIRMED);
+			event.setDetail(detail);
+			event.setGrade(student.getGrade());
+			event.setData(data);
+			event.setCreatedBy(dto.getUsername());
+			event.setStudent(student);
 		} else {
 			event = result.get();
 			var eventData = event.getData();
-		// @formatter:off
-      eventData = Data.builder()
-          .eventName(dto.getData().eventName())
-          .eventsInSchoolLife(dto.getData().eventsInSchoolLife())
-          .myAction(dto.getData().myAction())
-          .myThought(dto.getData().myThought())
-          .shownPower(dto.getData().shownPower())
-          .strengthGrown(dto.getData().strengthGrown())
-          .build();
-      // @formatter:on
+			
+			eventData.setEventName(dto.getData().eventName());
+			eventData.setEventsInSchoolLife(dto.getData().eventsInSchoolLife());
+			eventData.setMyAction(dto.getData().myAction());
+			eventData.setMyThought(dto.getData().myThought());
+			eventData.setShownPower(dto.getData().shownPower());
+			eventData.setStrengthGrown(dto.getData().strengthGrown());
+
 			event.setData(eventData);
 		}
 
@@ -272,8 +265,7 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public List<EventDetailDto> getEventsByStudentCode(String code, String grade, String eventName,
-			String status) {
+	public List<EventDetailDto> getEventsByStudentCode(String code, String grade, String eventName, String status) {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		var stringBuffer = new StringBuffer();
 		var qlString = """
@@ -301,17 +293,17 @@ public class StudentServiceImpl implements StudentService {
 		if (StringUtils.hasText(status)) {
 			stringBuffer.append(" and ed.status in :status ");
 			var converted = Stream.of(status.split(",")).map(x -> (switch (Integer.valueOf(x)) {
-				case 1:
-					yield EventStatus.UNCONFIRMED;
+			case 1:
+				yield EventStatus.UNCONFIRMED;
 
-				case 2:
-					yield EventStatus.UNDER_REVIEW;
+			case 2:
+				yield EventStatus.UNDER_REVIEW;
 
-				case 3:
-					yield EventStatus.COMPLETED;
+			case 3:
+				yield EventStatus.COMPLETED;
 
-				default:
-					yield new Exception("Invalid event status");
+			default:
+				yield new Exception("Invalid event status");
 			})).collect(Collectors.toList());
 			parameters.put("status", converted);
 		}

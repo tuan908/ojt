@@ -1,3 +1,4 @@
+import {DEFAULT_EVENT_OPTION} from "@/constants";
 import json from "@/i18n/jp.json";
 import {z} from "zod";
 
@@ -17,7 +18,16 @@ export const registerEventSchema = z.object({
     username: z.string(),
     gradeName: z.string(),
     data: z.object({
-        eventName: z.string().optional(),
+        eventName: z.string().optional().superRefine((val, ctx) => {
+            if (val === "" || val === DEFAULT_EVENT_OPTION) {
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: json.error.select_event_required,
+                });
+            }
+
+            return z.NEVER
+        }),
         eventsInSchoolLife: z.string().optional(),
         myAction: z.string().optional(),
         shownPower: z.string().optional(),
