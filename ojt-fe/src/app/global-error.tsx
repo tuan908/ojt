@@ -8,7 +8,7 @@ type GlobalErrorProps = {
     reset: () => void;
 };
 
-export default function Error({error, reset}: GlobalErrorProps) {
+export default function GlobalError({error, reset}: GlobalErrorProps) {
     useEffect(() => {
         console.error(error);
     }, [error]);

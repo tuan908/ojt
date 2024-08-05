@@ -1,6 +1,5 @@
 import theme from "@/styles/theme";
 import {type LayoutProps} from "@/types";
-import {CssBaseline} from "@mui/material";
 import {AppRouterCacheProvider} from "@mui/material-nextjs/v14-appRouter";
 import {ThemeProvider} from "@mui/material/styles";
 import type {Metadata} from "next";
@@ -28,7 +27,6 @@ export default async function RootLayout({children}: LayoutProps) {
                 <ReduxProvider>
                     <AppRouterCacheProvider>
                         <ThemeProvider theme={theme}>
-                            <CssBaseline />
                             <main className={notoSansJp.className}>
                                 {children}
                             </main>

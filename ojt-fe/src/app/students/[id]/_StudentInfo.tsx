@@ -11,16 +11,15 @@ type StudentInfoProps = {
 };
 
 export default async function StudentInfo(props: StudentInfoProps) {
-    const {info, auth} = props;
-    if (auth === undefined || auth?.role === UserRole.Student) {
+    if (props.auth === undefined || props.auth?.role === UserRole.Student) {
         return null;
     }
 
     return (
         <div className="border-b px-8 py-4 flex gap-y-2 flex-col md:flex-row lg:gap-x-12">
-            <span>{info?.name} さん</span>
-            <span>{info?.code}</span>
-            <span>{info?.grade}</span>
+            <span>{props.info?.name} さん</span>
+            <span>{props.info?.code}</span>
+            <span>{props.info?.grade}</span>
         </div>
     );
 }

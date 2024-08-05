@@ -41,7 +41,7 @@ export default async function Page({params}: DynamicPageProps) {
     return (
         <div className="flex flex-col w-full h-full m-auto">
             <Suspense fallback={<>Loading student info...</>}>
-                <Header eventOptions={events!} />
+                <Header code={params.id} eventOptions={events!} />
             </Suspense>
             <PageWrapper>
                 {/* Student Info */}

@@ -1,8 +1,8 @@
 "use client";
 
-import TableCell from "@/components/TableCell";
-import TableHead from "@/components/TableHead";
-import TableRow from "@/components/TableRow";
+import TableCell from "@/components/Table/TableCell";
+import TableHead from "@/components/Table/TableHead";
+import TableRow from "@/components/Table/TableRow";
 import TextHashtag from "@/components/TextHashtag";
 import json from "@/i18n/jp.json";
 import type {StudentsResponse} from "@/types/student";
@@ -15,7 +15,6 @@ type Props = {
 };
 
 export default function StudentDataGrid(props: Props) {
-    const {rows} = props;
     const router = useRouter();
 
     const handleRowClick = (
@@ -23,7 +22,7 @@ export default function StudentDataGrid(props: Props) {
         studentCode?: string
     ) => {
         event?.stopPropagation();
-        const path = `/students/${studentCode}/events`;
+        const path = `/students/${studentCode}`;
         startTransition(() => {
             router.push(path);
         });
@@ -72,7 +71,7 @@ export default function StudentDataGrid(props: Props) {
                         </tr>
                     </thead>
                     <tbody>
-                        {rows!?.map(item => {
+                        {props.rows!?.map(item => {
                             return (
                                 <TableRow
                                     key={item.id}

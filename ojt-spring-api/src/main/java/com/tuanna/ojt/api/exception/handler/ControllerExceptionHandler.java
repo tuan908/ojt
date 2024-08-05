@@ -28,7 +28,7 @@ public class ControllerExceptionHandler {
   private ResponseEntity<ErrorResponseDto> handleException(Exception ex, ResponseCode code,
       ResponseType type) {
     var responseBody = ErrorResponseDto.builder().code(code.getValue()).type(type.getValue())
-        .message(ex.getMessage()).build();
+        .message("Internal Server Error").build();
 
     return new ResponseEntity<>(responseBody, getHttpStatus(code));
   }

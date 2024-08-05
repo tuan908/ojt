@@ -1,18 +1,27 @@
 "use client";
 
 import {addEvent} from "@/app/actions/event.action";
-import {SelectOption} from "@/components/Select";
-import Textarea from "@/components/Textarea";
-import {menuProps} from "@/constants";
+import {FormItem} from "@/components/Form/FormItem";
+import SubmitButton from "@/components/Form/SubmitButton";
+import {type SelectOption} from "@/components/Select";
+import {menuProps, UserRole} from "@/constants";
+import {useAuth} from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
-import AddCircle from "@mui/icons-material/AddCircle";
+import {StatusCode} from "@/types";
 import Close from "@mui/icons-material/Close";
-import {Button, CircularProgress, MenuItem, Modal, Select} from "@mui/material";
-import {useActionState, useState} from "react";
+import {MenuItem, Modal, Select} from "@mui/material";
+import {useActionState, useEffect, useState} from "react";
+import AddEventButton from "./_AddEventButton";
 
-export default function Header({eventOptions}: {eventOptions: SelectOption[]}) {
+interface HeaderProps {
+    eventOptions: SelectOption[];
+    code: string;
+}
+
+export default function Header(props: HeaderProps) {
     const [open, setOpen] = useState(false);
     const [state, action, isSubmitting] = useActionState(addEvent, null);
+    const {auth} = useAuth();
 
     const handleOpen = () => setOpen(true);
 
@@ -21,16 +30,18 @@ export default function Header({eventOptions}: {eventOptions: SelectOption[]}) {
         setOpen(false);
     };
 
+    useEffect(() => {
+        if (state?.code === StatusCode.Success) {
+            setOpen(false);
+        }
+    }, [state?.code]);
+
     return (
         <div className="w-24/25 m-auto flex items-center pb-3">
-            <button
-                type="button"
-                className="flex gap-x-2 items-center px-6 py-2 bg-[#33b5e5] text-white rounded-lg"
+            <AddEventButton
+                hide={auth?.role !== UserRole.Student}
                 onClick={handleOpen}
-            >
-                <AddCircle />
-                <span>新規作成</span>
-            </button>
+            />
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -68,90 +79,58 @@ export default function Header({eventOptions}: {eventOptions: SelectOption[]}) {
                             <MenuItem value={json.event.placeholder_0}>
                                 {json.event.placeholder_0}
                             </MenuItem>
-                            {eventOptions!?.map(option => (
+                            {props.eventOptions!?.map(option => (
                                 <MenuItem key={option.id} value={option.name}>
                                     {option.name}
                                 </MenuItem>
                             ))}
                         </Select>
-                        <span className="text-sm text-red-500">
-                            {state?.error?.event}
-                        </span>
+                        {state?.error?.event && (
+                            <span className="text-sm text-red-500">
+                                {state?.error?.event}
+                            </span>
+                        )}
 
                         {/* Events in school life */}
-                        <div className="flex flex-col gap-y-3">
-                            <label htmlFor="eventsInSchoolLife">
-                                {json.event.question_1}
-                            </label>
-                            <Textarea
-                                name="eventsInSchoolLife"
-                                placeholder={json.event.placeholder_1}
-                                disabled={isSubmitting}
-                            />
-                        </div>
+                        <FormItem
+                            name="eventsInSchoolLife"
+                            label={json.event.question_1}
+                            inputPlaceholder={json.event.placeholder_1}
+                            disabled={isSubmitting}
+                        />
 
                         {/* My Actions */}
-                        <div className="flex flex-col gap-y-3">
-                            <label htmlFor="eventsInSchoolLife">
-                                {json.event.question_2}
-                            </label>
-                            <Textarea
-                                name="myAction"
-                                placeholder={json.event.placeholder_2}
-                                disabled={isSubmitting}
-                            />
-                        </div>
+                        <FormItem
+                            name="myAction"
+                            label={json.event.question_2}
+                            inputPlaceholder={json.event.placeholder_2}
+                            disabled={isSubmitting}
+                        />
 
                         {/* Shown power */}
-                        <div className="flex flex-col gap-y-3">
-                            <label htmlFor="eventsInSchoolLife">
-                                {json.event.question_3}
-                            </label>
-                            <Textarea
-                                name="shownPower"
-                                placeholder={json.event.placeholder_3}
-                                disabled={isSubmitting}
-                            />
-                        </div>
+                        <FormItem
+                            name="shownPower"
+                            label={json.event.question_3}
+                            inputPlaceholder={json.event.placeholder_3}
+                            disabled={isSubmitting}
+                        />
 
                         {/* Strength that has grown */}
-                        <div className="flex flex-col gap-y-3">
-                            <label htmlFor="eventsInSchoolLife">
-                                {json.event.question_4}
-                            </label>
-                            <Textarea
-                                name="strengthGrown"
-                                placeholder={json.event.placeholder_4}
-                                disabled={isSubmitting}
-                            />
-                        </div>
+                        <FormItem
+                            name="strengthGrown"
+                            label={json.event.question_4}
+                            inputPlaceholder={json.event.placeholder_4}
+                            disabled={isSubmitting}
+                        />
 
                         {/* What I thought */}
-                        <div className="flex flex-col gap-y-3">
-                            <label htmlFor="eventsInSchoolLife">
-                                {json.event.question_5}
-                            </label>
-                            <Textarea
-                                name="myThought"
-                                placeholder={json.event.placeholder_5}
-                                disabled={isSubmitting}
-                            />
-                        </div>
-                        <Button
-                            type="submit"
-                            startIcon={
-                                isSubmitting ? (
-                                    <CircularProgress
-                                        size="1.5rem"
-                                        sx={{color: "white"}}
-                                    />
-                                ) : null
-                            }
-                            disableRipple
-                            variant="contained"
-                        >
-                            {isSubmitting ? "送信中" : "送信"}
-                        </Button>
+                        <FormItem
+                            name="myThought"
+                            label={json.event.question_5}
+                            inputPlaceholder={json.event.placeholder_5}
+                            disabled={isSubmitting}
+                        />
+                        <SubmitButton />
                     </form>
                 </div>
             </Modal>

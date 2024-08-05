@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,9 +39,9 @@ public class Event extends BaseEntity {
 
   @Column(columnDefinition = "text")
   private String description;
-
-  @OneToMany(mappedBy = "detail", cascade = CascadeType.ALL, orphanRemoval = true)
-  private java.util.Set<EventDetail> eventDetails;
+  
+  @OneToOne(mappedBy = "detail")
+  private EventDetail eventDetail;
 
   public EventDto toDto() {
     var dto = new EventDto(this.getId(), this.getName());

@@ -41,13 +41,13 @@ class HttpClient {
                 method,
                 headers: {...defaultHeaders, ...headers},
             });
-    
+
             if (!response.ok) {
                 throw new HttpError(response);
             }
-    
+
             const data = (await response.json()) as T;
-    
+
             return nullsToUndefined(data);
         } catch (error) {
             console.log(error);

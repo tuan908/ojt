@@ -1,6 +1,6 @@
 "use client";
 
-import type {Grade} from "@/app/actions/common.action";
+import type {Grade} from "@/types/common-action.types";
 import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
 import {Checkbox} from "@/components/Checkbox";
 import Select, {type SelectOption} from "@/components/Select";
@@ -188,7 +188,7 @@ export default function SearchArea({
                     code={params?.id}
                 />
             </div>
-            <div className="w-full flex justify-end items-center px-8 pt-8">
+            <div className="w-full flex justify-end items-center pr-6 pt-4">
                 <Pagination count={10} variant="text" shape="circular" />
             </div>
         </>

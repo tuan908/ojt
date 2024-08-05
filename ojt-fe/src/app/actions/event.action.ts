@@ -98,10 +98,11 @@ export async function addEvent(_prevState: unknown, formData: FormData) {
         redirect("/login");
     }
     const auth = await decrypt(cookies().get("token")?.value!);
+    const rawFormData = Object.fromEntries(formData) as RegisterEvent["data"];
     if (formData.get("eventName") === DEFAULT_EVENT_OPTION) {
         return {
             code: StatusCode.Error,
-            data: {...formData},
+            data: rawFormData,
             error: {
                 event: json.error.select_event_required,
             },
@@ -111,12 +112,12 @@ export async function addEvent(_prevState: unknown, formData: FormData) {
         username: auth?.username!,
         gradeName: auth?.grade!,
         studentCode: auth?.code!,
-        data: Object.fromEntries(formData) as RegisterEvent["data"],
+        data: rawFormData,
     };
 
     await springApi.post(`/students/${auth?.code}/events`, registerEventData);
     revalidatePath("/students/[id]", "page");
     return {
-        code: StatusCode.Success
-    }
+        code: StatusCode.Success,
+    };
 }

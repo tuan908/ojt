@@ -20,6 +20,7 @@ public interface EventDetailRepository extends JpaRepository<EventDetail, Long> 
             left join fetch ed.comments
         where
             ed.id = :id
+            and ed.isDeleted = false
     """)
     Optional<EventDetail> findById(final @NonNull @Param(value = "id") Long id);
 }

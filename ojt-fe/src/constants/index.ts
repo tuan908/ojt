@@ -11,16 +11,16 @@ export enum Entity {
     Comment = "_comment",
 }
 
-export enum UserRole {
+export const UserRole = {
     /** 学生 */
-    Student = "001",
+    Student: "001",
     /** 家族 */
-    Parent = "002",
+    Parent: "002",
     /** 先生 */
-    Teacher = "003",
+    Teacher: "003",
     /** カウンセラー */
-    Counselor = "004",
-}
+    Counselor: "004",
+} as const;
 
 export enum EventStatus {
     /** 未確認 */
