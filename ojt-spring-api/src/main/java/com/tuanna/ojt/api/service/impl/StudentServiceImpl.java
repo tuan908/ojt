@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +34,6 @@ import com.tuanna.ojt.api.service.StudentService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @Service

@@ -1,18 +1,21 @@
 import type {Hashtag} from "@/types/common-action.types";
 import type {Comment} from "@/types/event-action.types";
+
+type EventDetailData = {
+    eventsInSchoolLife: string;
+    myAction: string;
+    myThought: string;
+    shownPower: string;
+    strengthGrown: string;
+};
+
 export type EventDetail = {
     id: number;
     name: string;
     grade: string;
     status: number;
     comments: Comment[];
-    data: Partial<{
-        eventsInSchoolLife: string;
-        myAction: string;
-        myThought: string;
-        shownPower: string;
-        strengthGrown: string;
-    }>;
+    data: Partial<EventDetailData>;
 };
 
 export type StudentsResponse = Partial<{
@@ -24,7 +27,7 @@ export type StudentsResponse = Partial<{
     hashtags: Hashtag[];
 }>;
 
-export type StudentsRequest = Partial<{
+export type Student = Partial<{
     name: string;
     grade: string;
     events: string;
@@ -41,7 +44,7 @@ export type Page<T> = {
     };
 };
 
-export type StudentEventResponse = {
+export type StudentEvent = {
     id: number;
     code: string;
     name: string;

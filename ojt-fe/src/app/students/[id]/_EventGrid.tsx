@@ -16,7 +16,7 @@ import {Delete, Done, Edit} from "@/components/icon";
 import {EventStatus, ScreenMode, UserRole} from "@/constants";
 import {useAuth} from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
-import type {StudentEventResponse} from "@/types/student";
+import type {StudentEvent} from "@/types/student";
 import {cn} from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
@@ -43,7 +43,7 @@ type LocalState = {
 };
 
 type EventGridProps = {
-    data: StudentEventResponse["events"];
+    data: StudentEvent["events"];
     studentId?: number;
     code: string;
 };
@@ -89,7 +89,7 @@ const reducer = createReducer(initialState, builder => {
 export default function EventGrid({data, studentId, code}: EventGridProps) {
     const {auth} = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [rows, setRows] = useState<StudentEventResponse["events"]>([]);
+    const [rows, setRows] = useState<StudentEvent["events"]>([]);
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => setRows(data), [data]);

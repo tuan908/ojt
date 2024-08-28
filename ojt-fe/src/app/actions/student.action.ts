@@ -4,8 +4,8 @@ import {EventStatus, PAGE_SIZE} from "@/constants";
 import {honoApi, springApi} from "@/lib/api";
 import type {
     Page,
-    StudentEventResponse,
-    StudentsRequest,
+    StudentEvent,
+    Student,
     StudentsResponse,
 } from "@/types/student";
 import type {TrackingData} from "@/types/tracking";
@@ -17,7 +17,7 @@ import {cache} from "react";
  * @param dto Request Dto
  * @returns Student List
  */
-export const getStudents = cache(async (dto?: StudentsRequest) => {
+export const getStudents = cache(async (dto?: Student) => {
     // Use raw dto instead of JSON.stringify(dto) - dto already parse
     // to JSON string in fetchNoCache
     let body: Record<string, unknown> | undefined;
@@ -43,7 +43,7 @@ export const getStudents = cache(async (dto?: StudentsRequest) => {
  * @returns Student Response
  */
 export const getStudentByCode = cache(async (code: string) => {
-    const data = await honoApi.get<StudentEventResponse>(`/students/${code}`);
+    const data = await honoApi.get<StudentEvent>(`/students/${code}`);
     return data;
 });
 
@@ -110,7 +110,7 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await springApi.get<StudentEventResponse["events"]>(url);
+    const data = await springApi.get<StudentEvent["events"]>(url);
     return data;
 };
 

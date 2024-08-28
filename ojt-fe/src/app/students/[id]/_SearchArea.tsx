@@ -10,7 +10,7 @@ import {
     DEFAULT_GRADE_NAME_OPTION,
 } from "@/constants";
 import json from "@/i18n/jp.json";
-import {StudentEventResponse} from "@/types/student";
+import {StudentEvent} from "@/types/student";
 import Search from "@mui/icons-material/Search";
 import {Pagination} from "@mui/material";
 import {type SelectChangeEvent} from "@mui/material/Select";
@@ -27,7 +27,7 @@ type SearchAreaProps = {
     params: {id: string};
     grades?: Grade[];
     events?: SelectOption[];
-    data: StudentEventResponse;
+    data: StudentEvent;
 };
 
 type MuiSelectChangeHandler = (
@@ -49,9 +49,7 @@ export default function SearchArea({
     grades,
 }: SearchAreaProps) {
     const router = useRouter();
-    const [data, setData] = useState<StudentEventResponse["events"]>(
-        _data?.events
-    );
+    const [data, setData] = useState<StudentEvent["events"]>(_data?.events);
     const [check, setCheck] = useState<CheckboxState>({
         unconfirmed: false,
         under_reviewing: false,

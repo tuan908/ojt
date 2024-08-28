@@ -1,5 +1,21 @@
-import {registerEventSchema} from "@/lib/zod";
-import {z} from "zod";
+type DoughnutProps = {
+    name: string;
+    value: string;
+};
+
+type StackedProps = {
+    name: string;
+    data: number[];
+    type: "bar";
+    stack: string;
+};
+
+export type Doughnut = {
+    _data: DoughnutProps[];
+    text: string;
+};
+
+export type Stacked = StackedProps[];
 
 export type TrackingData = {
     id: string;
@@ -7,18 +23,7 @@ export type TrackingData = {
     code: string;
     count: number;
     hashtags: {
-        doughnut: {
-            _data: Array<{name: string; value: number}>;
-            text: number;
-        };
-        stacked: Array<{
-            name: string;
-            data: number[];
-            type: "bar";
-            stack: string;
-        }>;
+        doughnut: Doughnut;
+        stacked: Stacked;
     };
 };
-
-export type DoughnutData = TrackingData["hashtags"]["doughnut"];
-export type StackedData = TrackingData["hashtags"]["stacked"];

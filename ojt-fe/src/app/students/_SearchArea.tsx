@@ -12,7 +12,7 @@ import {
 import json from "@/i18n/jp.json";
 import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
 import {useAppDispatch} from "@/redux/hooks";
-import type {Page, StudentsRequest, StudentsResponse} from "@/types/student";
+import type {Page, Student, StudentsResponse} from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
@@ -49,7 +49,7 @@ export default function SearchArea({
     const [skills, setSkills] = useState<Skill[]>([]);
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
     const [rows, setRows] = useState<StudentsResponse[]>(students?.content!);
-    const [searchCondition, setSearchCondition] = useState<StudentsRequest>({
+    const [searchCondition, setSearchCondition] = useState<Student>({
         events: DEFAULT_EVENT_OPTION,
         grade: DEFAULT_GRADE_NAME_OPTION,
     });
@@ -122,7 +122,7 @@ export default function SearchArea({
         event?.preventDefault();
         await dispatch(showLoading());
         try {
-            let request: StudentsRequest = {};
+            let request: Student = {};
             if (searchCondition.grade !== DEFAULT_GRADE_NAME_OPTION) {
                 request.grade = searchCondition.grade;
             }

@@ -11,7 +11,7 @@ import type {
     Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
-import type {EventDetail, StudentEventResponse} from "@/types/student";
+import type {EventDetail, StudentEvent} from "@/types/student";
 import {revalidatePath} from "next/cache";
 import {cookies} from "next/headers";
 import {RedirectType, redirect} from "next/navigation";
@@ -26,8 +26,8 @@ export async function registerEvent(dto: RegisterEvent) {
 
     if (!result.success) {
         throw new Error("Internal Server Error");
-    } else {
-        await springApi.post("/students/events", result.data);
+    } else { 
+        await springApi.post(`/students/${dto.studentCode}/events`, result.data);
         revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }
@@ -60,8 +60,8 @@ export const getEventDetailById = cache(
 export async function deleteEventDetailById(
     code: string,
     id: number
-): Promise<StudentEventResponse["events"] | undefined> {
-    const res = await springApi.delete<StudentEventResponse["events"]>(
+): Promise<StudentEvent["events"] | undefined> {
+    const res = await springApi.delete<StudentEvent["events"]>(
         `/students/${code}/event/${id}`
     );
     return res;
