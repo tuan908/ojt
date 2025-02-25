@@ -9,7 +9,6 @@ export const signInSchema = z.object({
     password: z
         .string({ required_error: json.error.password_required })
         .min(1, json.error.password_required)
-        .min(8, json.error.password_min_length)
         .max(32, json.error.password_max_length),
 });
 

@@ -12,17 +12,19 @@ import com.tuanna.api.dto.GradeDto;
 import com.tuanna.api.dto.HashtagDto;
 import com.tuanna.api.service.CommonService;
 
-import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequestMapping(path = Constant.API_BASE_PATH + "/common")
-@RequiredArgsConstructor
 public class CommonController {
 
   private final CommonService commonService;
   
-  @GetMapping("/grades")
+  public CommonController(CommonService commonService) {
+	super();
+	this.commonService = commonService;
+}
+
+@GetMapping("/grades")
   public ResponseEntity<List<GradeDto>> getGrades() {
     var body = this.commonService.getGrades();
     return ResponseEntity.ok().body(body);

@@ -27,14 +27,16 @@ import com.tuanna.api.exception.ResultNotFoundException;
 import com.tuanna.api.service.CommentService;
 import com.tuanna.api.service.StudentService;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
 @RequestMapping(path = Constant.API_BASE_PATH + "/students")
-@RequiredArgsConstructor
 public class StudentController {
 
 	private final StudentService studentService;
+
+	public StudentController(StudentService studentService, CommentService commentService) {
+		this.studentService = studentService;
+		this.commentService = commentService;
+	}
 
 	private final CommentService commentService;
 

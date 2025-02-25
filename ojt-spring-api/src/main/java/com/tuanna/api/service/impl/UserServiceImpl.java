@@ -2,12 +2,13 @@ package com.tuanna.api.service.impl;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tuanna.api.constant.UserRole;
+import com.tuanna.api.dto.CreateAccountDto;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.dto.LoginResponseDto;
 import com.tuanna.api.dto.UserDto;
@@ -17,11 +18,9 @@ import com.tuanna.api.repository.UserRepository;
 import com.tuanna.api.service.UserService;
 
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
@@ -29,6 +28,14 @@ public class UserServiceImpl implements UserService {
 	private final PasswordEncoder passwordEncoder;
 
 	private final EntityManager entityManager;
+
+	public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+			EntityManager entityManager) {
+		super();
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.entityManager = entityManager;
+	}
 
 	@Override
 	public UserDto findByUsername(UserDto request) {
@@ -84,7 +91,7 @@ public class UserServiceImpl implements UserService {
 					s.code = :username
 				""", Student.class);
 
-			query.setParameter("username", username);
+		query.setParameter("username", username);
 
 		var queryResult = query.getResultStream().findFirst();
 		if (queryResult.isEmpty()) {
@@ -104,5 +111,18 @@ public class UserServiceImpl implements UserService {
 				join fetch s.user
 				""", Student.class).getResultStream().map(Student::toDto);
 		return CompletableFuture.completedFuture(query);
+	}
+
+	@Transactional
+	@Override
+	public Boolean create(CreateAccountDto dto) {
+		try {
+			var newUser = User.builder().name(dto.firstName() + " " + dto.lastName()).username(dto.username())
+					.password(passwordEncoder.encode(dto.password())).role(UserRole.COUNSELOR).build();
+			this.userRepository.save(newUser);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 }

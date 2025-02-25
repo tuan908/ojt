@@ -13,59 +13,58 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.api.constant.Constant;
+import com.tuanna.api.dto.CreateAccountDto;
 import com.tuanna.api.dto.UserDto;
 import com.tuanna.api.exception.ResultNotFoundException;
 import com.tuanna.api.service.UserService;
 
-import lombok.RequiredArgsConstructor;
-
-
 @RestController
 @RequestMapping(path = Constant.API_BASE_PATH + "/users")
-@RequiredArgsConstructor
 public class UserController {
 
-    private final UserService accountService;
-    
-    @PostMapping()
-    public ResponseEntity<UserDto> getOneBy(@RequestBody UserDto request)
-            throws ResultNotFoundException {
-        var body = this.accountService.findByUsername(request);
-        if (body == null) {
-            throw new ResultNotFoundException("""
-                    Sorry, We couldn't find what you're looking for. Please try again later.
-                        """);
-        } else {
-            return new ResponseEntity<UserDto>(body, HttpStatus.OK);
-        }
-    }
+	private final UserService accountService;
 
-    @GetMapping("/{username}/async")
-    public ResponseEntity<?> getOneByAsync(@PathVariable String username) {
-        var body = this.accountService.findByUsernameAsync(username);
-        try {
-            var data = body.get();
-            return ResponseEntity.ok(data);
-        } catch (InterruptedException | ExecutionException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(new HashMap<>().put("message", "Not found any user!"));
-    }
-    
-   @GetMapping("/async")
-   public ResponseEntity<?> getStudentAsync() {
-	   var result = this.accountService.findAllAsync();
-       try {
-		return ResponseEntity.ok(result.get());
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block 
-		e.printStackTrace();
-	} catch (ExecutionException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	public UserController(UserService accountService) {
+		this.accountService = accountService;
 	}
-	return null;
-   }
-   
+
+	@PostMapping()
+	public ResponseEntity<UserDto> getOneBy(@RequestBody UserDto request) throws ResultNotFoundException {
+		var body = this.accountService.findByUsername(request);
+		if (body == null) {
+			throw new ResultNotFoundException("""
+					Sorry, We couldn't find what you're looking for. Please try again later.
+					    """);
+		} else {
+			return new ResponseEntity<UserDto>(body, HttpStatus.OK);
+		}
+	}
+
+	@GetMapping("/{username}/async")
+	public ResponseEntity<?> getOneByAsync(@PathVariable String username) {
+		var body = this.accountService.findByUsernameAsync(username);
+		try {
+			var data = body.get();
+			return ResponseEntity.ok(data);
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok(new HashMap<>().put("message", "Not found any user!"));
+	}
+
+	@GetMapping("/async")
+	public ResponseEntity<?> getStudentAsync() {
+		var result = this.accountService.findAllAsync();
+		try {
+			return ResponseEntity.ok(result.get());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

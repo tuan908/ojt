@@ -2,6 +2,7 @@ package com.tuanna.api.service;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.tuanna.api.dto.CreateAccountDto;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.dto.LoginResponseDto;
 import com.tuanna.api.dto.UserDto;
@@ -20,5 +21,7 @@ public interface UserService {
   CompletableFuture<?> findByUsernameAsync(String user);
   
   CompletableFuture<?> findAllAsync();
+  
+  Boolean create(CreateAccountDto dto);
 
 }

@@ -1,5 +1,7 @@
 package com.tuanna.api.controller;
 
+import java.net.URI;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -7,23 +9,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.api.constant.Constant;
+import com.tuanna.api.dto.CreateAccountDto;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.service.UserService;
 
 @RestController
 @RequestMapping(path = Constant.API_BASE_PATH + "/auth")
 public class AuthController {
-  
-  private final UserService userService;
-  
-  public AuthController(final UserService userService) {
-    this.userService = userService;
-  }
-  
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-     var result = this.userService.login(loginDto);
-     return ResponseEntity.ok(result);
-  }
-  
+
+	private final UserService userService;
+
+	public AuthController(final UserService userService) {
+		this.userService = userService;
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+		var result = this.userService.login(loginDto);
+		return ResponseEntity.ok(result);
+	}
+
+	@PostMapping("/create")
+	public ResponseEntity<?> createUser(@RequestBody CreateAccountDto dto) {
+		try {
+			this.userService.create(dto);
+			return ResponseEntity.created(URI.create(null)).build();
+		} catch (Exception e) {
+		}
+		return ResponseEntity.internalServerError().build();
+	}
 }
