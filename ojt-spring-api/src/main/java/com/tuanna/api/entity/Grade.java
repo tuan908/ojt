@@ -1,5 +1,7 @@
 package com.tuanna.api.entity;
 
+import java.io.Serial;
+
 import com.tuanna.api.dto.GradeDto;
 
 import jakarta.persistence.CascadeType;
@@ -16,10 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serial;
-
-@Entity(name = "OjtGrade")
-@Table(name = "ojt_grade")
+@Entity(name = "Grade")
+@Table(name = "t_grade")
 @Getter
 @Setter
 @Builder
@@ -33,19 +33,19 @@ public class Grade extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String name;
-    
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")
     private java.util.Set<Student> students;
-    
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "grade_id")
     private java.util.Set<EventDetail> events;
-    
+
     public GradeDto toDto() {
       return new GradeDto(this.id, this.name);
     }
-    
+
 }

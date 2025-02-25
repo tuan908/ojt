@@ -57,7 +57,7 @@ public class StudentServiceImpl implements StudentService {
 				  select
 				    s
 				  from
-				    com.tuanna.ojt.api.entity.Student s
+				    com.tuanna.api.entity.Student s
 				    left join fetch s.events ev
 				    join fetch ev.detail
 				    join fetch s.user u
@@ -112,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
 	public Boolean updateEventStatus(UpdateEventStatusDto dto) {
 		var qlString = """
 				    update
-				      com.tuanna.ojt.api.entity.EventDetail
+				      com.tuanna.api.entity.EventDetail
 				    set
 				      status = :status,
 				      updatedBy = :updatedBy
@@ -143,7 +143,7 @@ public class StudentServiceImpl implements StudentService {
 				    select
 				      e
 				    from
-				      com.tuanna.ojt.api.entity.EventDetail e
+				      com.tuanna.api.entity.EventDetail e
 				    where
 				      e.student.code = :code
 				      and e.student.grade.name = :gradeName
@@ -210,7 +210,7 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	public PagedModel<EventDetailDto> findEventsByStudentCode(StudentEventsDto request) {
 		List<EventDetailDto> data = this.getQuery(request, false).getResultStream().toList();
-		
+
 		var count = this.getQuery(request, true).getSingleResult();
 
 		Pageable pageable = PageRequest.of(request.page() - 1, request.size());
@@ -224,21 +224,21 @@ public class StudentServiceImpl implements StudentService {
 		var parameters = new HashMap<String, Object>();
 		var stringBuffer = new StringBuffer();
 		stringBuffer.append("select											");
-		
+
 		if (!isCountQuery) {
 			stringBuffer.append("	ed										");
 		} else {
 			stringBuffer.append("	count(ed.id)							");
 		}
-		
+
 		stringBuffer.append("from											");
-		stringBuffer.append("	com.tuanna.ojt.api.entity.EventDetail ed	");
-		
+		stringBuffer.append("	com.tuanna.api.entity.EventDetail ed	");
+
 		if(!isCountQuery) {
 			stringBuffer.append("	left join fetch ed.comments				");
 			stringBuffer.append("	join fetch ed.detail					");
 		}
-		
+
 		stringBuffer.append("where											");
 		stringBuffer.append("	ed.student.code = :code						");
 		stringBuffer.append("	and ed.isDeleted = false					");
@@ -274,9 +274,9 @@ public class StudentServiceImpl implements StudentService {
 		if(!isCountQuery) {
 			stringBuffer.append(" order by ed.createdAt ");
 		}
-		
+
 		Query query = this.entityManager.createQuery(stringBuffer.toString());;
-		
+
 
 		for (String key : parameters.keySet()) {
 			query.setParameter(key, parameters.get(key));
@@ -303,7 +303,7 @@ public class StudentServiceImpl implements StudentService {
 				    select
 				      e
 				    from
-				      com.tuanna.ojt.api.entity.EventDetail e
+				      com.tuanna.api.entity.EventDetail e
 				    where
 				      e.student.code = :code
 				      and e.student.grade.name = :gradeName

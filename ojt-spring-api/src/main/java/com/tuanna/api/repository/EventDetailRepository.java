@@ -16,7 +16,7 @@ public interface EventDetailRepository extends JpaRepository<EventDetail, Long> 
         select
             ed
         from
-            com.tuanna.ojt.api.entity.EventDetail ed
+            com.tuanna.api.entity.EventDetail ed
             left join fetch ed.comments
         where
             ed.id = :id

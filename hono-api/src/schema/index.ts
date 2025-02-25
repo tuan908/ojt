@@ -10,7 +10,7 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 
-const comment = pgTable("ojt_comment", {
+const comment = pgTable("t_comment", {
     id: serial("id").primaryKey(),
     content: text("content"),
     createdAt: timestamp("created_at", {
@@ -43,7 +43,7 @@ const commentRelations = relations(comment, ({ one }) => ({
     }),
 }));
 
-const event = pgTable("ojt_event", {
+const event = pgTable("t_event", {
     id: serial("id").primaryKey(),
     description: text("description"),
     name: text("name"),
@@ -61,7 +61,7 @@ const event = pgTable("ojt_event", {
     isDeleted: boolean("is_deleted"),
 });
 
-const eventDetail = pgTable("ojt_event_detail", {
+const eventDetail = pgTable("t_event_detail", {
     id: serial("id").primaryKey(),
     data: jsonb("data"),
     status: integer("status"),
@@ -103,7 +103,7 @@ const eventDetailRelations = relations(eventDetail, ({ one, many }) => ({
     comments: many(comment),
 }));
 
-const grade = pgTable("ojt_grade", {
+const grade = pgTable("t_grade", {
     id: serial("id").primaryKey(),
     name: text("name"),
     createdAt: timestamp("created_at", {
@@ -119,7 +119,7 @@ const grade = pgTable("ojt_grade", {
     isDeleted: boolean("is_deleted"),
 });
 
-const hashtag = pgTable("ojt_hashtag", {
+const hashtag = pgTable("t_hashtag", {
     id: serial("id").primaryKey(),
     name: text("name"),
     color: text("color"),
@@ -140,7 +140,7 @@ const hashtagRelations = relations(hashtag, ({ many }) => ({
     studentHashtags: many(studentHashtag),
 }));
 
-const student = pgTable("ojt_student", {
+const student = pgTable("t_student", {
     id: serial("id").primaryKey(),
     code: text("code"),
     createdAt: timestamp("created_at", {
@@ -175,7 +175,7 @@ const studentRelations = relations(student, ({ many, one }) => ({
     }),
 }));
 
-const user = pgTable("ojt_user", {
+const user = pgTable("t_user", {
     id: serial("id").primaryKey(),
     password: text("password"),
     role: text("role", { enum: ["001", "002", "003", "004"] }),
@@ -199,7 +199,7 @@ const userRelations = relations(user, ({ many }) => ({
 }));
 
 const studentHashtag = pgTable(
-    "ojt_student_hashtag",
+    "t_student_hashtag",
     {
         studentId: integer("student_id")
             .references(() => student.id)

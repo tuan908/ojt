@@ -1,5 +1,7 @@
 package com.tuanna.api.entity;
 
+import java.io.Serial;
+
 import com.tuanna.api.dto.EventDto;
 
 import jakarta.persistence.Column;
@@ -15,10 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serial;
-
-@Entity(name = "OjtEvent")
-@Table(name = "ojt_event")
+@Entity(name = "Event")
+@Table(name = "t_event")
 @Getter
 @Setter
 @Builder
@@ -41,7 +41,7 @@ public class Event extends BaseEntity {
 
   @Column(columnDefinition = "text")
   private String description;
-  
+
   @OneToOne(mappedBy = "detail")
   private EventDetail eventDetail;
 

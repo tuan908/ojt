@@ -2,7 +2,7 @@ package com.tuanna.api.service.impl;
 
 import java.util.Comparator;
 import java.util.List;
-import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import com.tuanna.api.repository.EventDetailRepository;
 import com.tuanna.api.repository.UserRepository;
 import com.tuanna.api.service.CommentService;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -93,7 +94,7 @@ public class CommentServiceImpl implements CommentService {
 
     stringBuilder.append("""
         update
-          com.tuanna.ojt.api.entity.Comment
+          com.tuanna.api.entity.Comment
         set
           isDeleted = true
         where

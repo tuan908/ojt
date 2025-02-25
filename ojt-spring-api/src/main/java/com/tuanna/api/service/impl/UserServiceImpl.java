@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 				    select
 				      s
 				    from
-				      com.tuanna.ojt.api.entity.Student s
+				      com.tuanna.api.entity.Student s
 				    where
 				      s.user.id = :id
 				""");
@@ -78,15 +78,15 @@ public class UserServiceImpl implements UserService {
 				select
 					s
 				from
-					com.tuanna.ojt.api.entity.Student s
+					com.tuanna.api.entity.Student s
 				join fetch s.user
 				where
 					s.code = :username
 				""", Student.class);
-			
+
 			query.setParameter("username", username);
-		
-		var queryResult = query.getResultStream().findFirst();	
+
+		var queryResult = query.getResultStream().findFirst();
 		if (queryResult.isEmpty()) {
 			return CompletableFuture.completedFuture(null);
 		}
@@ -100,9 +100,9 @@ public class UserServiceImpl implements UserService {
 				select
 					s
 				from
-					com.tuanna.ojt.api.entity.Student s
+					com.tuanna.api.entity.Student s
 				join fetch s.user
-				""", Student.class).getResultStream().map(s -> s.toDto());
+				""", Student.class).getResultStream().map(Student::toDto);
 		return CompletableFuture.completedFuture(query);
 	}
 }

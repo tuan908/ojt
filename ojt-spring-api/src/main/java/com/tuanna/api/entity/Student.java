@@ -26,8 +26,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "OjtStudent")
-@Table(name = "ojt_student")
+@Entity(name = "Student")
+@Table(name = "t_student")
 @Getter
 @Setter
 @Builder
@@ -48,7 +48,7 @@ public class Student extends BaseEntity {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	// @formatter:off
   @JoinTable(
-      name = "ojt_student_hashtag", 
+      name = "t_student_hashtag",
       joinColumns = @JoinColumn(name = "student_id"),
       inverseJoinColumns = @JoinColumn(name = "hashtag_id")
     )
@@ -86,7 +86,7 @@ public class Student extends BaseEntity {
 	public StudentEvent toDto() {
 		var events = this.getEvents().stream().sorted(Comparator.comparing(event -> event.getDetail().getName()))
 				.map(event -> event.getDetail().getName()).toList();
-		var hashtags = this.getHashtags().stream().sorted(Comparator.comparing(h -> h.getName())).map(Hashtag::toDto)
+		var hashtags = this.getHashtags().stream().sorted(Comparator.comparing(Hashtag::getName)).map(Hashtag::toDto)
 				.toList();
 
 		return new StudentEvent(this.id, this.code, this.user.getName(), this.grade.getName(),

@@ -108,4 +108,4 @@ compatibility_date = "2024-06-10"
 node_compat=true
 
 [vars]
-DATABASE_URL="postgresql://ep-tight-boat-a102rfnn-pooler.ap-southeast-1.aws.neon.tech/uit-project-v1?user=tuan908&password=ch4PFt5iGABb&sslmode=require"
+DATABASE_URL="postgresql://tuan908:ch4PFt5iGABb@ep-tight-boat-a102rfnn-pooler.ap-southeast-1.aws.neon.tech/uit-project-v1?sslmode=require"

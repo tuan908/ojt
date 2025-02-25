@@ -31,8 +31,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "OjtEventDetail")
-@Table(name = "ojt_event_detail")
+@Entity(name = "EventDetail")
+@Table(name = "t_event_detail")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -60,7 +60,7 @@ public class EventDetail extends BaseEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;
-  
+
   @ManyToOne(fetch = FetchType.LAZY)
   private Student student;
 
@@ -91,9 +91,9 @@ public class EventDetail extends BaseEntity {
   public EventDetailDto toDto() {
     // @formatter:off
     final var dto = new EventDetailDto(
-          this.id, 
-          this.grade.getName(), 
-          this.detail.getName(), 
+          this.id,
+          this.grade.getName(),
+          this.detail.getName(),
           this.status.getValue(),
           this.data,
           this.comments

@@ -18,8 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "OjtComment")
-@Table(name = "ojt_comment")
+@Entity(name = "Comment")
+@Table(name = "t_comment")
 @Getter
 @Setter
 @Builder

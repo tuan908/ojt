@@ -1,13 +1,13 @@
 package com.tuanna.api.entity;
 
+import java.io.Serial;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
 
 import com.tuanna.api.constant.UserRole;
-
-import java.io.Serial;
 import com.tuanna.api.constant.converter.UserRoleConverter;
 import com.tuanna.api.dto.UserDto;
 
@@ -24,8 +24,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity(name = "OjtUser")
-@Table(name = "ojt_user")
+@Entity(name = "User")
+@Table(name = "t_user")
 @Getter
 @Setter
 @Builder
