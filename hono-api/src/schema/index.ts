@@ -1,4 +1,4 @@
-import {relations} from "drizzle-orm";
+import { relations } from "drizzle-orm";
 import {
     boolean,
     integer,
@@ -25,14 +25,14 @@ const comment = pgTable("ojt_comment", {
     }),
     isDeleted: boolean("is_deleted"),
     userId: integer("user_id")
-        .references(() => user.id, {onDelete: "cascade"})
+        .references(() => user.id, { onDelete: "cascade" })
         .notNull(),
     eventDetailId: integer("event_detail_id")
-        .references(() => eventDetail.id, {onDelete: "cascade"})
+        .references(() => eventDetail.id, { onDelete: "cascade" })
         .notNull(),
 });
 
-const commentRelations = relations(comment, ({one}) => ({
+const commentRelations = relations(comment, ({ one }) => ({
     user: one(user, {
         fields: [comment.userId],
         references: [user.id],
@@ -87,7 +87,7 @@ const eventDetail = pgTable("ojt_event_detail", {
         .notNull(),
 });
 
-const eventDetailRelations = relations(eventDetail, ({one, many}) => ({
+const eventDetailRelations = relations(eventDetail, ({ one, many }) => ({
     student: one(student, {
         fields: [eventDetail.studentId],
         references: [student.id],
@@ -136,7 +136,7 @@ const hashtag = pgTable("ojt_hashtag", {
     isDeleted: boolean("is_deleted"),
 });
 
-const hashtagRelations = relations(hashtag, ({many}) => ({
+const hashtagRelations = relations(hashtag, ({ many }) => ({
     studentHashtags: many(studentHashtag),
 }));
 
@@ -162,7 +162,7 @@ const student = pgTable("ojt_student", {
         .notNull(),
 });
 
-const studentRelations = relations(student, ({many, one}) => ({
+const studentRelations = relations(student, ({ many, one }) => ({
     eventDetail: many(eventDetail),
     user: one(user, {
         fields: [student.userId],
@@ -178,7 +178,7 @@ const studentRelations = relations(student, ({many, one}) => ({
 const user = pgTable("ojt_user", {
     id: serial("id").primaryKey(),
     password: text("password"),
-    role: text("role", {enum: ["001", "002", "003", "004"]}),
+    role: text("role", { enum: ["001", "002", "003", "004"] }),
     username: text("username"),
     name: text("name"),
     createdAt: timestamp("created_at", {
@@ -194,7 +194,7 @@ const user = pgTable("ojt_user", {
     isDeleted: boolean("is_deleted"),
 });
 
-const userRelations = relations(user, ({many}) => ({
+const userRelations = relations(user, ({ many }) => ({
     comments: many(comment),
 }));
 
@@ -210,11 +210,11 @@ const studentHashtag = pgTable(
         value: jsonb("value"),
     },
     t => ({
-        pk: primaryKey({columns: [t.studentId, t.hashtagId]}),
+        pk: primaryKey({ columns: [t.studentId, t.hashtagId] }),
     })
 );
 
-const studentHashtagRelations = relations(studentHashtag, ({one}) => ({
+const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({
     student: one(student, {
         fields: [studentHashtag.studentId],
         references: [student.id],

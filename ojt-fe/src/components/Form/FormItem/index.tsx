@@ -20,4 +20,4 @@ function FormItem(props: FormItemProps) {
     );
 }
 
-export {FormItem, type FormItemProps};
+export { FormItem, type FormItemProps };

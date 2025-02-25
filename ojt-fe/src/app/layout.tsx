@@ -1,9 +1,9 @@
 import theme from "@/styles/theme";
-import {type LayoutProps} from "@/types";
-import {AppRouterCacheProvider} from "@mui/material-nextjs/v14-appRouter";
-import {ThemeProvider} from "@mui/material/styles";
-import type {Metadata} from "next";
-import {Noto_Sans_JP} from "next/font/google";
+import { type LayoutProps } from "@/types";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import ReduxProvider from "../providers/ReduxProvider";
 import "./globals.css";
 
@@ -20,7 +20,7 @@ const notoSansJp = Noto_Sans_JP({
     subsets: ["vietnamese", "latin"],
 });
 
-export default async function RootLayout({children}: LayoutProps) {
+export default async function RootLayout({ children }: LayoutProps) {
     return (
         <html lang="en">
             <body className="text-default w-full h-full min-h-dvh max-w-dvw bg-[#ededed]">

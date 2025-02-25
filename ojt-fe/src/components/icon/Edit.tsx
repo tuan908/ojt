@@ -1,6 +1,6 @@
-import {cn} from "@/utils";
+import { cn } from "@/utils";
 
-export default function Edit({disabled}: {disabled?: boolean}) {
+export default function Edit({ disabled }: { disabled?: boolean }) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"

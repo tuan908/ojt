@@ -1,16 +1,16 @@
 "use client";
 
-import type {Doughnut} from "@/types/tracking";
+import type { Doughnut } from "@/types/tracking";
 import ReactEcharts from "echarts-for-react";
-import {PieChart, type PieSeriesOption} from "echarts/charts";
+import { PieChart, type PieSeriesOption } from "echarts/charts";
 import {
     TooltipComponent,
     type TooltipComponentOption,
 } from "echarts/components";
-import type {ComposeOption} from "echarts/core";
-import {use} from "echarts/core";
-import {LabelLayout} from "echarts/features";
-import {CanvasRenderer} from "echarts/renderers";
+import type { ComposeOption } from "echarts/core";
+import { use } from "echarts/core";
+import { LabelLayout } from "echarts/features";
+import { CanvasRenderer } from "echarts/renderers";
 
 use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
 
@@ -80,7 +80,7 @@ type Props = {
     data: Doughnut;
 };
 
-export default function DoughnutChart({data}: Props) {
+export default function DoughnutChart({ data }: Props) {
     return (
         <div className="w-[32rem] h-[20rem] relative bg-white shadow-2xl rounded-2xl">
             <ReactEcharts

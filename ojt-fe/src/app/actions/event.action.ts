@@ -1,21 +1,21 @@
 "use server";
 
-import {DEFAULT_EVENT_OPTION} from "@/constants";
+import { DEFAULT_EVENT_OPTION } from "@/constants";
 import json from "@/i18n/jp.json";
-import {springApi} from "@/lib/api";
-import {decrypt} from "@/lib/auth";
-import {registerEventSchema} from "@/lib/zod";
-import {StatusCode} from "@/types";
+import { springApi } from "@/lib/api";
+import { decrypt } from "@/lib/auth";
+import { registerEventSchema } from "@/lib/zod";
+import { StatusCode } from "@/types";
 import type {
     AddCommentPayload,
     Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
-import type {EventDetail, StudentEvent} from "@/types/student";
-import {revalidatePath} from "next/cache";
-import {cookies} from "next/headers";
-import {RedirectType, redirect} from "next/navigation";
-import {cache} from "react";
+import type { EventDetail, StudentEvent } from "@/types/student";
+import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { RedirectType, redirect } from "next/navigation";
+import { cache } from "react";
 
 /**
  * Register Event
@@ -26,8 +26,11 @@ export async function registerEvent(dto: RegisterEvent) {
 
     if (!result.success) {
         throw new Error("Internal Server Error");
-    } else { 
-        await springApi.post(`/students/${dto.studentCode}/events`, result.data);
+    } else {
+        await springApi.post(
+            `/students/${dto.studentCode}/events`,
+            result.data
+        );
         revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }
@@ -72,7 +75,7 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
         id: data.id,
         content: data.content,
     };
-    const result = await springApi.post<{data?: unknown}>(
+    const result = await springApi.post<{ data?: unknown }>(
         `/students/events/${data.eventDetailId}/comments/${data.id}`,
         requestBody
     );

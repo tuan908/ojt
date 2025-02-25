@@ -1,7 +1,7 @@
 "use client";
 
 import useInfo from "@/hooks/useInfo";
-import {type JwtPayload} from "@/lib/auth";
+import { type JwtPayload } from "@/lib/auth";
 import EventIcon from "@mui/icons-material/Event";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -15,15 +15,15 @@ import {
     ListItemIcon,
     ListItemText,
 } from "@mui/material";
-import {useState} from "react";
+import { useState } from "react";
 import json from "@/i18n/jp.json";
 
 type SidebarProps = {
     auth?: JwtPayload;
 };
 
-export default function Sidebar({auth}: SidebarProps) {
-    const {fullName, role} = useInfo(auth);
+export default function Sidebar({ auth }: SidebarProps) {
+    const { fullName, role } = useInfo(auth);
 
     const [open, setOpen] = useState(false);
 
@@ -34,11 +34,11 @@ export default function Sidebar({auth}: SidebarProps) {
     return (
         <>
             <button className="block lg:hidden" onClick={toggleDrawer(true)}>
-                <MenuIcon sx={{color: "#1f5da3", fontSize: "2rem"}} />
+                <MenuIcon sx={{ color: "#1f5da3", fontSize: "2rem" }} />
             </button>
             <Drawer open={open} onClose={toggleDrawer(false)}>
                 <Box
-                    sx={{width: 250}}
+                    sx={{ width: 250 }}
                     role="presentation"
                     onClick={toggleDrawer(false)}
                 >

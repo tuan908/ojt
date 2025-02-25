@@ -1,20 +1,20 @@
 "use client";
 
-import type {Grade} from "@/types/common-action.types";
-import {getEventsByStudentCodeWithQuery} from "@/app/actions/student.action";
-import {Checkbox} from "@/components/Checkbox";
-import Select, {type SelectOption} from "@/components/Select";
+import type { Grade } from "@/types/common-action.types";
+import { getEventsByStudentCodeWithQuery } from "@/app/actions/student.action";
+import { Checkbox } from "@/components/Checkbox";
+import Select, { type SelectOption } from "@/components/Select";
 import {
     DEFAULT_EVENT_OPTION,
     EventStatus,
     DEFAULT_GRADE_NAME_OPTION,
 } from "@/constants";
 import json from "@/i18n/jp.json";
-import {StudentEvent} from "@/types/student";
+import { StudentEvent } from "@/types/student";
 import Search from "@mui/icons-material/Search";
-import {Pagination} from "@mui/material";
-import {type SelectChangeEvent} from "@mui/material/Select";
-import {useRouter} from "next/navigation";
+import { Pagination } from "@mui/material";
+import { type SelectChangeEvent } from "@mui/material/Select";
+import { useRouter } from "next/navigation";
 import {
     startTransition,
     useState,
@@ -24,7 +24,7 @@ import {
 import EventGrid from "./_EventGrid";
 
 type SearchAreaProps = {
-    params: {id: string};
+    params: { id: string };
     grades?: Grade[];
     events?: SelectOption[];
     data: StudentEvent;
@@ -59,7 +59,7 @@ export default function SearchArea({
     const [eventName, setEventName] = useState(DEFAULT_EVENT_OPTION);
 
     const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
-        setCheck({...check, [event.target.name]: !check[event.target.name]});
+        setCheck({ ...check, [event.target.name]: !check[event.target.name] });
     };
 
     async function handleSearch() {
@@ -173,7 +173,7 @@ export default function SearchArea({
                 >
                     <Search
                         className="text-icon-default"
-                        sx={{width: 32, height: 32}}
+                        sx={{ width: 32, height: 32 }}
                     />
                 </button>
             </div>

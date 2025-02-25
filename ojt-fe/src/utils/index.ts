@@ -1,8 +1,8 @@
-import {UserRole} from "@/constants";
+import { UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import {RecursivelyReplaceNullWithUndefined} from "@/types";
-import {clsx, type ClassValue} from "clsx";
-import {twMerge} from "tailwind-merge";
+import { RecursivelyReplaceNullWithUndefined } from "@/types";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const convertRole = (role?: string) => {
     switch (role) {

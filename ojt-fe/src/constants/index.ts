@@ -1,4 +1,4 @@
-import type {MenuProps, SxProps, Theme} from "@mui/material";
+import type { MenuProps, SxProps, Theme } from "@mui/material";
 
 export enum Entity {
     User = "_user",

@@ -1,8 +1,8 @@
-import {type ComponentProps} from "react";
+import { type ComponentProps } from "react";
 
 type TableRowProps = ComponentProps<"tr"> & {};
 
-export default function TableRow({children, ...otherProps}: TableRowProps) {
+export default function TableRow({ children, ...otherProps }: TableRowProps) {
     return (
         <tr
             {...otherProps}

@@ -1,13 +1,13 @@
-import {EventStatus} from "@/constants";
-import {useMemo} from "react";
+import { EventStatus } from "@/constants";
+import { useMemo } from "react";
 import json from "@/i18n/jp.json";
 
 type StatusLabelProps = {
     status: number;
 };
 
-export function StatusLabel({status}: StatusLabelProps) {
-    const {labelText, backgroundColor} = useMemo(() => {
+export function StatusLabel({ status }: StatusLabelProps) {
+    const { labelText, backgroundColor } = useMemo(() => {
         let labelText = "";
         let backgroundColor = "";
         switch (status) {
@@ -30,12 +30,12 @@ export function StatusLabel({status}: StatusLabelProps) {
                 throw new Error("Invalid status");
         }
 
-        return {labelText, backgroundColor};
+        return { labelText, backgroundColor };
     }, [status]);
 
     return (
         <span
-            style={{backgroundColor}}
+            style={{ backgroundColor }}
             className="text-white px-4 py-2 font-medium rounded-2xl shadow-md"
         >
             {labelText}

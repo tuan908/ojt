@@ -1,10 +1,10 @@
-import {getGrades, getHashtags} from "@/app/actions/common.action";
-import {getTracking} from "@/app/actions/student.action";
+import { getGrades, getHashtags } from "@/app/actions/common.action";
+import { getTracking } from "@/app/actions/student.action";
 import Box from "@/components/Box";
 import DoughnutChart from "@/components/Chart/Doughnut";
 import StackedBarChart from "@/components/Chart/Stacked";
-import {type DynamicPageProps} from "@/types";
-import type {SxProps, Theme} from "@mui/material";
+import { type DynamicPageProps } from "@/types";
+import type { SxProps, Theme } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 
 const sx: SxProps<Theme> = {
@@ -55,7 +55,9 @@ export default async function Page(props: DynamicPageProps) {
                                   >
                                       <span
                                           className="w-3 h-3 rounded-full"
-                                          style={{backgroundColor: label.color}}
+                                          style={{
+                                              backgroundColor: label.color,
+                                          }}
                                       ></span>
                                       <span>{label.name}</span>
                                   </li>

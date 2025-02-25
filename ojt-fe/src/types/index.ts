@@ -3,7 +3,7 @@
  */
 export type ServerActionResponse = {
     data: unknown;
-    errors?: Array<{path: unknown; message: string}>;
+    errors?: Array<{ path: unknown; message: string }>;
 };
 
 /**
@@ -39,7 +39,7 @@ export const StatusCode = {
 /**
  * LayoutProps
  */
-export type LayoutProps = Readonly<{children: React.ReactNode}>;
+export type LayoutProps = Readonly<{ children: React.ReactNode }>;
 
 export type RecursivelyReplaceNullWithUndefined<T> = T extends null
     ? undefined
@@ -55,8 +55,8 @@ export type RecursivelyReplaceNullWithUndefined<T> = T extends null
  * Dynamic Page Props
  */
 export type DynamicPageProps = {
-    params: {id: string; eventId: number};
-    searchParams?: {[key: string]: string | string[] | undefined};
+    params: { id: string; eventId: number };
+    searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 export type TableDto = {

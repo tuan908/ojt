@@ -1,8 +1,8 @@
-import {neon} from "@neondatabase/serverless";
-import {drizzle} from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import { type Context } from "hono";
 import schema from "../schema";
-import {type Context} from "hono";
-import {type Binding} from "../types";
+import { type Binding } from "../types";
 
 export default function db(context: Context<Binding>) {
     const connectionString = context.env.DATABASE_URL;
@@ -10,8 +10,8 @@ export default function db(context: Context<Binding>) {
 
     try {
         const sql = neon(connectionString);
-        return drizzle(sql, {schema});
-    } catch (error) {
+        return drizzle(sql, { schema });
+    } catch (error: any) {
         throw new Error("Failed when connecting to database");
     }
 }

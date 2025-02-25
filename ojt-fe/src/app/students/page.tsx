@@ -1,8 +1,8 @@
-import {getEvents, getGrades, getHashtags} from "@/app/actions/common.action";
-import {getStudents} from "@/app/actions/student.action";
+import { getEvents, getGrades, getHashtags } from "@/app/actions/common.action";
+import { getStudents } from "@/app/actions/student.action";
 import Navbar from "@/components/Navbar";
 import PageWrapper from "@/components/PageWrapper";
-import type {Metadata} from "next";
+import type { Metadata } from "next";
 import SearchArea from "./_SearchArea";
 
 export const metadata: Metadata = {

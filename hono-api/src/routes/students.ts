@@ -1,8 +1,8 @@
-import {eq, sql} from "drizzle-orm";
-import {Hono} from "hono";
+import { eq, sql } from "drizzle-orm";
+import { Hono } from "hono";
 import _db from "../lib/db";
 import schema from "../schema";
-import {Binding, IUpdateComment} from "../types";
+import { Binding, IUpdateComment } from "../types";
 
 const app = new Hono<Binding>();
 
@@ -13,7 +13,7 @@ app.get("/", async ctx => {
                 id: true,
                 code: true,
             },
-            orderBy({code}, {asc}) {
+            orderBy({ code }, { asc }) {
                 return asc(code);
             },
             with: {
@@ -57,8 +57,8 @@ app.get("/", async ctx => {
             },
         });
         return ctx.json(result);
-    } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+    } catch (error: any) {
+        return ctx.json({ message: `Server error: ${error?.message}` }, 500);
     }
 });
 
@@ -93,7 +93,7 @@ app.get("/:code", async ctx => {
         });
 
         const eventDetails = await _db(ctx).query.eventDetail.findMany({
-            where: ({studentId, isDeleted}, {eq, and}) =>
+            where: ({ studentId, isDeleted }, { eq, and }) =>
                 and(eq(studentId, student?.id!), eq(isDeleted, false)),
             limit: pageSize,
             offset: (pageNumber - 1) * pageSize,
@@ -109,7 +109,7 @@ app.get("/:code", async ctx => {
                     },
                 },
                 comments: {
-                    where: ({isDeleted}, {eq}) => eq(isDeleted, false),
+                    where: ({ isDeleted }, { eq }) => eq(isDeleted, false),
                 },
             },
         });
@@ -130,15 +130,15 @@ app.get("/:code", async ctx => {
                 })),
         });
     } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 
 app.get("/:code/events/:id", async ctx => {
-    const {code, id} = ctx.req.param();
+    const { code, id } = ctx.req.param();
 
     if (!code || !id) {
-        return ctx.json({message: "Invalid param"}, 403);
+        return ctx.json({ message: "Invalid param" }, 403);
     }
 
     try {
@@ -151,15 +151,15 @@ app.get("/:code/events/:id", async ctx => {
         });
         return ctx.json(result);
     } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 
 app.get("/:code/trackings", async ctx => {
-    const {code} = ctx.req.param();
+    const { code } = ctx.req.param();
     try {
         let result = await _db(ctx).query.student.findFirst({
-            where: (fields, {eq}) => eq(fields.code, code),
+            where: (fields, { eq }) => eq(fields.code, code),
             columns: {
                 id: true,
                 code: true,
@@ -236,25 +236,25 @@ app.get("/:code/trackings", async ctx => {
         return ctx.json(data);
     } catch (error) {
         console.log(error);
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 
 app.post("/:code/events/:eventId/comments", async ctx => {
-    const {code, eventId} = ctx.req.param();
+    const { code, eventId } = ctx.req.param();
     const data = (await ctx.req.json()) as IUpdateComment;
     try {
         const db = _db(ctx);
         console.log(data);
 
         const student = await db.query.student.findFirst({
-            where: (fields, {eq}) => eq(fields.code, code),
+            where: (fields, { eq }) => eq(fields.code, code),
             with: {
                 eventDetail: {
-                    where: (fields, {eq}) => eq(fields.id, Number(eventId)),
+                    where: (fields, { eq }) => eq(fields.id, Number(eventId)),
                     with: {
                         comments: {
-                            where: (fields, {eq}) => eq(fields.id, data.id),
+                            where: (fields, { eq }) => eq(fields.id, data.id),
                         },
                     },
                 },
@@ -272,7 +272,7 @@ app.post("/:code/events/:eventId/comments", async ctx => {
 
         await db
             .update(schema.comment)
-            .set({content: data.content})
+            .set({ content: data.content })
             .where(eq(schema.comment.id, data.id));
         return ctx.json({
             message: "Success",

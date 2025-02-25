@@ -1,11 +1,11 @@
-import {type Comment} from "@/app/actions/event.action";
-import {deleteComment} from "@/app/actions/student.action";
+import { type Comment } from "@/app/actions/event.action";
+import { deleteComment } from "@/app/actions/student.action";
 import Button from "@/components/Button";
-import {cn} from "@/utils";
+import { cn } from "@/utils";
 import Delete from "@mui/icons-material/Delete";
 import Edit from "@mui/icons-material/Edit";
 import Avatar from "@mui/material/Avatar";
-import {type RefObject, useState} from "react";
+import { type RefObject, useState } from "react";
 
 type CommentPayload = Pick<
     Comment,
@@ -19,7 +19,7 @@ interface BubbleMessageProps {
         id: number;
         isEditing: boolean;
     };
-    setEditState: (value: {id: number; isEditing: boolean}) => void;
+    setEditState: (value: { id: number; isEditing: boolean }) => void;
     setComment: (data: CommentPayload) => void;
     comments: Comment[];
     setComments: (comments: Comment[]) => void;
@@ -85,7 +85,9 @@ export default function BubbleMessage({
                 )}
             >
                 <div className="hidden md:flex flex-col gap-y-2 items-center w-24">
-                    <Avatar sx={{width: 56, height: 56, bgcolor: "#d87579"}} />
+                    <Avatar
+                        sx={{ width: 56, height: 56, bgcolor: "#d87579" }}
+                    />
                     <span className="bg-[#00c853] text-white font-medium rounded-xl text-center leading-none px-2 py-1 flex items-center">
                         <p>{comment?.roleName}</p>
                     </span>

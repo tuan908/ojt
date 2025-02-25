@@ -7,20 +7,23 @@ import {
 } from "@/app/actions/event.action";
 import BubbleMessage from "@/components/BubbleMessage";
 import ProgressIndicator from "@/components/ProgressIndicator";
-import {type SelectOption} from "@/components/Select";
+import { type SelectOption } from "@/components/Select";
 import Textarea from "@/components/Textarea";
-import {menuProps, ScreenMode, UserRole} from "@/constants";
+import { menuProps, ScreenMode, UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import type {JwtPayload} from "@/lib/auth";
-import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import {useAppDispatch} from "@/redux/hooks";
-import type {Hashtag} from "@/types/common-action.types";
+import type { JwtPayload } from "@/lib/auth";
+import {
+    hideLoading,
+    showLoading,
+} from "@/redux/features/loading/loading.slice";
+import { useAppDispatch } from "@/redux/hooks";
+import type { Hashtag } from "@/types/common-action.types";
 import type {
     AddCommentPayload,
     Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
-import type {EventDetail} from "@/types/student";
+import type { EventDetail } from "@/types/student";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";
@@ -37,7 +40,7 @@ import {
     type AutocompleteInputChangeReason,
     type SelectProps,
 } from "@mui/material";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
     Fragment,
     useEffect,
@@ -55,7 +58,7 @@ type Props = Partial<{
     events: SelectOption[];
     hashtags: Hashtag[];
     auth: JwtPayload;
-}> & {studentCode: string};
+}> & { studentCode: string };
 
 type CommentState = {
     id: number;
@@ -135,14 +138,14 @@ export default function EventUi({
 
     function handleInputCommentChange(
         event: SyntheticEvent,
-        _value: string | {label: string; value: string} | null,
+        _value: string | { label: string; value: string } | null,
         reason: AutocompleteInputChangeReason
     ): void {
         event?.preventDefault();
         if (_value !== null) {
             switch (true) {
                 case typeof _value === "string":
-                    setComment({...comment, content: _value});
+                    setComment({ ...comment, content: _value });
                     if (
                         _value.startsWith("#") &&
                         auth?.role === UserRole.Counselor
@@ -174,7 +177,7 @@ export default function EventUi({
 
     function handleChangeComment(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {id: number; label: string}>,
+        _value: NonNullable<string | { id: number; label: string }>,
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
@@ -226,7 +229,7 @@ export default function EventUi({
                 studentCode,
                 username: auth?.username!,
                 gradeName: auth?.grade!,
-                data: {...registerData!, eventName},
+                data: { ...registerData!, eventName },
             });
             router.back();
         }
@@ -264,7 +267,7 @@ export default function EventUi({
                     const res = await addComment(data);
                     if (res) {
                         setComments(res);
-                        setComment({...comment, content: ""});
+                        setComment({ ...comment, content: "" });
                     }
                     await dispatch(hideLoading());
                 }
@@ -308,7 +311,7 @@ export default function EventUi({
                                 className="w-full border-default disabled:cursor-not-allowed"
                                 placeholder="Select Event"
                                 value={eventName}
-                                sx={{bgcolor: "#ffffff", paddingX: 1}}
+                                sx={{ bgcolor: "#ffffff", paddingX: 1 }}
                                 MenuProps={menuProps}
                                 onChange={handleSelectChange}
                                 disabled={
@@ -418,7 +421,7 @@ export default function EventUi({
                         ].includes(mode!) ? (
                             <button
                                 className="border-none px-4 py-2 text-white rounded-md m-auto hover:cursor-pointer disabled:cursor-not-allowed"
-                                style={{backgroundColor: "#4285f4"}}
+                                style={{ backgroundColor: "#4285f4" }}
                                 onClick={async e => handleAddOrUpdate(e)}
                                 disabled={disable || error}
                             >
@@ -500,10 +503,10 @@ export default function EventUi({
                                 >
                                     {!openPicker ? (
                                         <SentimentSatisfiedAlt
-                                            sx={{width: 22, height: 22}}
+                                            sx={{ width: 22, height: 22 }}
                                         />
                                     ) : (
-                                        <Close sx={{width: 22, height: 22}} />
+                                        <Close sx={{ width: 22, height: 22 }} />
                                     )}
                                 </button>
                                 {openPicker ? (

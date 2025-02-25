@@ -1,5 +1,5 @@
 import AddCircle from "@mui/icons-material/AddCircle";
-import {memo} from "react";
+import { memo } from "react";
 
 interface AddEventButtonProps {
     hide: boolean;

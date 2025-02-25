@@ -1,6 +1,6 @@
-import {decrypt} from "@/lib/auth";
-import {NextResponse, type NextRequest} from "next/server";
-import {Route, UserRole} from "./constants";
+import { decrypt } from "@/lib/auth";
+import { NextResponse, type NextRequest } from "next/server";
+import { Route, UserRole } from "./constants";
 
 export const config = {
     matcher: ["/", "/home", "/students", "/students/:id*"],
@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
 }
 
 function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
-    const {role, code} = tokenPayload;
+    const { role, code } = tokenPayload;
 
     if (role === UserRole.Student.toString()) {
         return NextResponse.redirect(new URL(`/students/${code}`, request.url));
@@ -48,7 +48,7 @@ function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
 }
 
 function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
-    const {role, code} = tokenPayload;
+    const { role, code } = tokenPayload;
     const currentPath = request.nextUrl.pathname;
 
     if (role === UserRole.Student.toString()) {

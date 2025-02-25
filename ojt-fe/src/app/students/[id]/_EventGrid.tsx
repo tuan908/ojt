@@ -1,6 +1,6 @@
 "use client";
 
-import {deleteEventDetailById} from "@/app/actions/event.action";
+import { deleteEventDetailById } from "@/app/actions/event.action";
 import {
     getStudentByCode,
     updateEventStatus,
@@ -8,19 +8,19 @@ import {
 import Button from "@/components/Button";
 import Dialog from "@/components/Dialog";
 import ProgressIndicator from "@/components/ProgressIndicator";
-import {StatusLabel} from "@/components/StatusLabel";
+import { StatusLabel } from "@/components/StatusLabel";
 import TableCell from "@/components/Table/TableCell";
 import TableHead from "@/components/Table/TableHead";
 import TableRow from "@/components/Table/TableRow";
-import {Delete, Done, Edit} from "@/components/icon";
-import {EventStatus, ScreenMode, UserRole} from "@/constants";
-import {useAuth} from "@/hooks/useAuth";
+import { Delete, Done, Edit } from "@/components/icon";
+import { EventStatus, ScreenMode, UserRole } from "@/constants";
+import { useAuth } from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
-import type {StudentEvent} from "@/types/student";
-import {cn} from "@/utils";
+import type { StudentEvent } from "@/types/student";
+import { cn } from "@/utils";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
-import {createAction, createReducer} from "@reduxjs/toolkit";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 import Link from "next/link";
 import {
     useCallback,
@@ -86,8 +86,8 @@ const reducer = createReducer(initialState, builder => {
         });
 });
 
-export default function EventGrid({data, studentId, code}: EventGridProps) {
-    const {auth} = useAuth();
+export default function EventGrid({ data, studentId, code }: EventGridProps) {
+    const { auth } = useAuth();
     const [state, dispatch] = useReducer(reducer, initialState);
     const [rows, setRows] = useState<StudentEvent["events"]>([]);
     const [isPending, startTransition] = useTransition();

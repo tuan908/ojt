@@ -1,22 +1,22 @@
-import {getEvents, getGrades} from "@/app/actions/common.action";
-import {getSession} from "@/app/actions/event.action";
-import {getStudentByCode} from "@/app/actions/student.action";
+import { getEvents, getGrades } from "@/app/actions/common.action";
+import { getSession } from "@/app/actions/event.action";
+import { getStudentByCode } from "@/app/actions/student.action";
 import PageWrapper from "@/components/PageWrapper";
-import {type DynamicPageProps} from "@/types";
-import {CircularProgress} from "@mui/material";
-import type {Metadata, ResolvingMetadata} from "next";
-import {Suspense} from "react";
+import { type DynamicPageProps } from "@/types";
+import { CircularProgress } from "@mui/material";
+import type { Metadata, ResolvingMetadata } from "next";
+import { Suspense } from "react";
 import Header from "./_Header";
 import SearchArea from "./_SearchArea";
 import StudentInfo from "./_StudentInfo";
 
 type Props = {
-    params: {id: string};
-    searchParams: {[key: string]: string | string[] | undefined};
+    params: { id: string };
+    searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export async function generateMetadata(
-    {params}: Props,
+    { params }: Props,
     _parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
@@ -30,7 +30,7 @@ export async function generateMetadata(
     };
 }
 
-export default async function Page({params}: DynamicPageProps) {
+export default async function Page({ params }: DynamicPageProps) {
     const [auth, grades, events, info] = await Promise.all([
         getSession(),
         getGrades(),

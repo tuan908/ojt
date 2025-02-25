@@ -1,16 +1,16 @@
 "use client";
 
-import {addEvent} from "@/app/actions/event.action";
-import {FormItem} from "@/components/Form/FormItem";
+import { addEvent } from "@/app/actions/event.action";
+import { FormItem } from "@/components/Form/FormItem";
 import SubmitButton from "@/components/Form/SubmitButton";
-import {type SelectOption} from "@/components/Select";
-import {menuProps, UserRole} from "@/constants";
-import {useAuth} from "@/hooks/useAuth";
+import { type SelectOption } from "@/components/Select";
+import { menuProps, UserRole } from "@/constants";
+import { useAuth } from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
-import {StatusCode} from "@/types";
+import { StatusCode } from "@/types";
 import Close from "@mui/icons-material/Close";
-import {MenuItem, Modal, Select} from "@mui/material";
-import {useActionState, useEffect, useState} from "react";
+import { MenuItem, Modal, Select } from "@mui/material";
+import { useActionState, useEffect, useState } from "react";
 import AddEventButton from "./_AddEventButton";
 
 interface HeaderProps {
@@ -21,7 +21,7 @@ interface HeaderProps {
 export default function Header(props: HeaderProps) {
     const [open, setOpen] = useState(false);
     const [state, action, isSubmitting] = useActionState(addEvent, null);
-    const {auth} = useAuth();
+    const { auth } = useAuth();
 
     const handleOpen = () => setOpen(true);
 
@@ -71,7 +71,7 @@ export default function Header(props: HeaderProps) {
                             variant="outlined"
                             className="w-full border-default disabled:cursor-not-allowed"
                             placeholder={json.event.select_event}
-                            sx={{backgroundColor: "#ffffff", paddingX: 1}}
+                            sx={{ backgroundColor: "#ffffff", paddingX: 1 }}
                             MenuProps={menuProps}
                             disabled={isSubmitting}
                             defaultValue={json.event.placeholder_0}

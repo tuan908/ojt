@@ -1,5 +1,5 @@
-import {commentSchema, registerEventSchema} from "@/lib/zod";
-import {z} from "zod";
+import { commentSchema, registerEventSchema } from "@/lib/zod";
+import { z } from "zod";
 
 export type AddCommentPayload = z.infer<typeof commentSchema>;
 

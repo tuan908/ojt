@@ -1,4 +1,4 @@
-import {useMemo, type ComponentProps} from "react";
+import { useMemo, type ComponentProps } from "react";
 
 type TableHeadProps = ComponentProps<"th"> & {
     bgColor?: string;
@@ -13,7 +13,7 @@ export default function TableHead({
     width,
     children,
 }: TableHeadProps) {
-    const {className, style} = useMemo(() => {
+    const { className, style } = useMemo(() => {
         let base =
             "border border-table text-center px-4 py-2 whitespace-nowrap";
 

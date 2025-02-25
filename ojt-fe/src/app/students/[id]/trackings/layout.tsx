@@ -1,12 +1,12 @@
 import Navbar from "@/components/Navbar";
-import type {LayoutProps} from "@/types";
-import type {Metadata} from "next";
+import type { LayoutProps } from "@/types";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "追跡",
 };
 
-export default async function Layout({children}: LayoutProps) {
+export default async function Layout({ children }: LayoutProps) {
     return (
         <div className="w-full h-full max-w-dvw min-h-dvh flex flex-col">
             <Navbar />

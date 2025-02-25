@@ -1,10 +1,10 @@
-import {CircularProgress} from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import Button from "@mui/material/Button";
-import {memo} from "react";
-import {useFormStatus} from "react-dom";
+import { memo } from "react";
+import { useFormStatus } from "react-dom";
 
 const SubmitButton = memo(function SubmitButton() {
-    const {pending} = useFormStatus();
+    const { pending } = useFormStatus();
     return (
         <Button
             type="submit"
@@ -12,7 +12,7 @@ const SubmitButton = memo(function SubmitButton() {
             variant="contained"
             startIcon={
                 pending ? (
-                    <CircularProgress size="1.5rem" sx={{color: "#fff"}} />
+                    <CircularProgress size="1.5rem" sx={{ color: "#fff" }} />
                 ) : null
             }
             disableRipple

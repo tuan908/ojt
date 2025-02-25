@@ -1,4 +1,4 @@
-import {nullsToUndefined} from "@/utils";
+import { nullsToUndefined } from "@/utils";
 
 export type HttpMethod = "GET" | "POST" | "DELETE";
 
@@ -25,7 +25,7 @@ class HttpClient {
         method: HttpMethod,
         options: RequestOptions = {}
     ) {
-        const {params, headers, ...restOptions} = options;
+        const { params, headers, ...restOptions } = options;
 
         const queryParams = params ? `?${new URLSearchParams(params)}` : "";
         const fullUrl = `${this._baseUrl}${url}${queryParams}`;
@@ -39,7 +39,7 @@ class HttpClient {
             const response = await fetch(fullUrl, {
                 ...restOptions,
                 method,
-                headers: {...defaultHeaders, ...headers},
+                headers: { ...defaultHeaders, ...headers },
             });
 
             if (!response.ok) {

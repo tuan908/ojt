@@ -1,18 +1,21 @@
 "use client";
 
-import type {Grade, Hashtag} from "@/types/common-action.types";
-import {getStudents} from "@/app/actions/student.action";
+import type { Grade, Hashtag } from "@/types/common-action.types";
+import { getStudents } from "@/app/actions/student.action";
 import ColorHashtag from "@/components/ColorHashtag";
-import Select, {type SelectOption} from "@/components/Select";
+import Select, { type SelectOption } from "@/components/Select";
 import {
     DEFAULT_EVENT_OPTION,
     DEFAULT_GRADE_NAME_OPTION,
     STRING_EMPTY,
 } from "@/constants";
 import json from "@/i18n/jp.json";
-import {hideLoading, showLoading} from "@/redux/features/loading/loading.slice";
-import {useAppDispatch} from "@/redux/hooks";
-import type {Page, Student, StudentsResponse} from "@/types/student";
+import {
+    hideLoading,
+    showLoading,
+} from "@/redux/features/loading/loading.slice";
+import { useAppDispatch } from "@/redux/hooks";
+import type { Page, Student, StudentsResponse } from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
@@ -23,7 +26,7 @@ import {
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material";
-import {useState, type SyntheticEvent} from "react";
+import { useState, type SyntheticEvent } from "react";
 import StudentDataGrid from "./_StudentDataGrid";
 
 type SearchAreaProps = Partial<{
@@ -56,7 +59,7 @@ export default function SearchArea({
 
     function handleInputChange(
         event: SyntheticEvent,
-        _value: string | {label: string; value: string} | null,
+        _value: string | { label: string; value: string } | null,
         reason: AutocompleteInputChangeReason
     ): void {
         event?.preventDefault();
@@ -86,7 +89,7 @@ export default function SearchArea({
 
     function handleChange(
         event: SyntheticEvent<Element, Event>,
-        _value: NonNullable<string | {label: string; id: number}>,
+        _value: NonNullable<string | { label: string; id: number }>,
         reason: AutocompleteChangeReason
     ): void {
         event?.preventDefault();
@@ -97,7 +100,7 @@ export default function SearchArea({
             const hashtag = hashtags!?.find(x => x.name === _value);
             setSkills([
                 ...skills,
-                {label: hashtag?.name!, color: hashtag?.color!},
+                { label: hashtag?.name!, color: hashtag?.color! },
             ]);
         }
 
@@ -108,7 +111,7 @@ export default function SearchArea({
             const hashtag = hashtags!?.find(x => x.id === _value.id);
             setSkills([
                 ...skills,
-                {label: hashtag?.name!, color: hashtag?.color!},
+                { label: hashtag?.name!, color: hashtag?.color! },
             ]);
         }
 
@@ -157,7 +160,7 @@ export default function SearchArea({
                 <Input
                     placeholder={json.common.student_name}
                     className="w-56"
-                    sx={{bgcolor: "#ffffff", paddingX: 1}}
+                    sx={{ bgcolor: "#ffffff", paddingX: 1 }}
                     name="name"
                     onChange={e =>
                         setSearchCondition(x => ({
@@ -241,7 +244,7 @@ export default function SearchArea({
                 >
                     <Search
                         className="text-icon-default"
-                        sx={{width: 32, height: 32}}
+                        sx={{ width: 32, height: 32 }}
                     />
                 </button>
             </div>

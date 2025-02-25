@@ -1,14 +1,14 @@
 "use client";
 
 import json from "@/i18n/jp.json";
-import {useEffect} from "react";
+import { useEffect } from "react";
 
 type GlobalErrorProps = {
-    error: Error & {digest?: string};
+    error: Error & { digest?: string };
     reset: () => void;
 };
 
-export default function GlobalError({error, reset}: GlobalErrorProps) {
+export default function GlobalError({ error, reset }: GlobalErrorProps) {
     useEffect(() => {
         console.error(error);
     }, [error]);

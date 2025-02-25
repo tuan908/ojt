@@ -1,5 +1,5 @@
-import {getSession} from "@/app/actions/event.action";
-import {Route, UserRole} from "@/constants";
+import { getSession } from "@/app/actions/event.action";
+import { Route, UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
 import Avatar from "@mui/material/Avatar";
 import Link from "next/link";

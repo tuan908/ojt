@@ -1,13 +1,13 @@
 "use client";
 
-import {UserRole} from "@/constants";
-import {useAuth} from "@/hooks/useAuth";
+import { UserRole } from "@/constants";
+import { useAuth } from "@/hooks/useAuth";
 import ArrowBack from "@mui/icons-material/ArrowBack";
-import {usePathname, useRouter} from "next/navigation";
-import {useMemo, type SyntheticEvent} from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo, type SyntheticEvent } from "react";
 
 export default function BackButton() {
-    const {auth} = useAuth();
+    const { auth } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
 
@@ -42,7 +42,7 @@ export default function BackButton() {
             >
                 <ArrowBack
                     className="text-icon-default"
-                    sx={{width: 36, height: 36}}
+                    sx={{ width: 36, height: 36 }}
                 />
             </button>
         </div>

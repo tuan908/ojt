@@ -1,5 +1,5 @@
-import type {UserInfo} from "@/types/auth-action.types";
-import {SignJWT, jwtVerify, type JWTPayload} from "jose";
+import type { UserInfo } from "@/types/auth-action.types";
+import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
 export type JwtPayload = JWTPayload & {
     code: string;
@@ -20,7 +20,7 @@ function getJwtSecretKey(): Uint8Array {
 
 export async function decrypt(input: string) {
     try {
-        const {payload} = await jwtVerify(input, getJwtSecretKey());
+        const { payload } = await jwtVerify(input, getJwtSecretKey());
         return payload as JwtPayload;
     } catch {
         return undefined;
@@ -36,7 +36,7 @@ export async function decrypt(input: string) {
  */
 export async function encrypt(dto: UserInfo) {
     const token = await new SignJWT(dto)
-        .setProtectedHeader({alg: "HS256"})
+        .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime("7 days")
         .sign(getJwtSecretKey());

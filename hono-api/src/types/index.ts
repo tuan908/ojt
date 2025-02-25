@@ -1,7 +1,7 @@
 export type Binding = {
     Bindings: {
         [key in keyof CloudflareBindings]: CloudflareBindings[key];
-    } & {DATABASE_URL: string};
+    } & { DATABASE_URL: string };
 };
 
 export interface IUpdateComment {

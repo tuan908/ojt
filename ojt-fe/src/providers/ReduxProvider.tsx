@@ -1,11 +1,11 @@
 "use client";
 
-import {makeStore, type AppStore} from "@/redux/configs/store.config";
-import type {LayoutProps} from "@/types";
-import {useRef} from "react";
-import {Provider} from "react-redux";
+import { makeStore, type AppStore } from "@/redux/configs/store.config";
+import type { LayoutProps } from "@/types";
+import { useRef } from "react";
+import { Provider } from "react-redux";
 
-export default function ReduxProvider({children}: LayoutProps) {
+export default function ReduxProvider({ children }: LayoutProps) {
     const storeRef = useRef<AppStore>();
     if (!storeRef.current) {
         storeRef.current = makeStore();

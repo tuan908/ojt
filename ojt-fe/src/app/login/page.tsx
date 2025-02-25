@@ -1,12 +1,12 @@
 "use client";
 
 import json from "@/i18n/jp.json";
-import {cn} from "@/utils";
+import { cn } from "@/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import {CircularProgress, InputAdornment, TextField} from "@mui/material";
+import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import Link from "next/link";
 import {
     useActionState,
@@ -15,7 +15,7 @@ import {
     useState,
     type SyntheticEvent,
 } from "react";
-import {login} from "../actions/auth.action";
+import { login } from "../actions/auth.action";
 
 type LoginFormState = {
     username: string;

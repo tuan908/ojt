@@ -1,8 +1,8 @@
-import {type UserInfo} from "@/app/actions/auth.action";
-import {type PayloadAction} from "@reduxjs/toolkit";
-import {createAppSlice} from "../../configs/base-slice.config";
+import { type UserInfo } from "@/app/actions/auth.action";
+import { type PayloadAction } from "@reduxjs/toolkit";
+import { createAppSlice } from "../../configs/base-slice.config";
 
-const initialState: {user?: UserInfo} = {};
+const initialState: { user?: UserInfo } = {};
 
 export const authSlice = createAppSlice({
     name: "AUTH",
@@ -22,6 +22,6 @@ export const authSlice = createAppSlice({
 });
 
 export const {
-    actions: {setUser},
-    selectors: {getUser},
+    actions: { setUser },
+    selectors: { getUser },
 } = authSlice;

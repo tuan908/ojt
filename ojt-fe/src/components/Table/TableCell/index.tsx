@@ -1,4 +1,4 @@
-import {useMemo, type ComponentProps} from "react";
+import { useMemo, type ComponentProps } from "react";
 
 type TableCellProps = ComponentProps<"td"> & {
     /** Align text center ? */
@@ -22,7 +22,7 @@ export default function TableCell({
     width,
     ...otherProps
 }: TableCellProps) {
-    const {className, style} = useMemo(() => {
+    const { className, style } = useMemo(() => {
         let base =
             "border border-table py-3 align-middle whitespace-nowrap z-0";
         if (fontSemibold) {
@@ -43,7 +43,7 @@ export default function TableCell({
 
         return {
             className: base,
-            style: {width: width ? `${width}rem` : 0},
+            style: { width: width ? `${width}rem` : 0 },
         };
     }, [fontSemibold, alignTextCenter, textEllipsis, classes, width]);
 

@@ -1,8 +1,8 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import {setupListeners} from "@reduxjs/toolkit/query";
-import {baseApi} from "./base-api.config";
-import {authSlice} from "../features/auth/auth.slice";
-import {loadingSlice} from "../features/loading/loading.slice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { baseApi } from "./base-api.config";
+import { authSlice } from "../features/auth/auth.slice";
+import { loadingSlice } from "../features/loading/loading.slice";
 
 const rootReducer = combineReducers({
     [authSlice.name]: authSlice.reducer,

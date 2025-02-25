@@ -1,6 +1,6 @@
-import {getSession} from "@/app/actions/event.action";
+import { getSession } from "@/app/actions/event.action";
 import json from "@/i18n/jp.json";
-import {convertRole} from "@/utils";
+import { convertRole } from "@/utils";
 
 // TODO: Remove flicker when set user info
 export default async function UserInfo() {

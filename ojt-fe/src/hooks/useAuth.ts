@@ -1,7 +1,7 @@
 "use client";
 
-import {decrypt, type JwtPayload} from "@/lib/auth";
-import {useEffect, useState} from "react";
+import { decrypt, type JwtPayload } from "@/lib/auth";
+import { useEffect, useState } from "react";
 import Cookies from "universal-cookie";
 
 export function useAuth() {
@@ -20,5 +20,5 @@ export function useAuth() {
         getVerifiedToken();
     }, []);
 
-    return {auth};
+    return { auth };
 }

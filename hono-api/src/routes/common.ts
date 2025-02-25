@@ -1,6 +1,6 @@
-import {Hono} from "hono";
+import { Hono } from "hono";
 import db from "../lib/db";
-import type {Binding} from "../types";
+import type { Binding } from "../types";
 
 const app = new Hono<Binding>();
 
@@ -14,7 +14,7 @@ app.get("/events", async ctx => {
         });
         return ctx.json(result);
     } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 
@@ -28,7 +28,7 @@ app.get("/grades", async ctx => {
         });
         return ctx.json(result);
     } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 
@@ -43,7 +43,7 @@ app.get("/hashtags", async ctx => {
         });
         return ctx.json(result);
     } catch (error) {
-        return ctx.json({message: "Server error"}, 500);
+        return ctx.json({ message: "Server error" }, 500);
     }
 });
 

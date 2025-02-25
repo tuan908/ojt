@@ -6,9 +6,9 @@ import {
     DialogTitle,
     Dialog as MuiDialog,
 } from "@mui/material";
-import {useMemo} from "react";
+import { useMemo } from "react";
 import json from "@/i18n/jp.json";
-import {cn} from "@/utils";
+import { cn } from "@/utils";
 
 type DialogProps = {
     open: boolean;

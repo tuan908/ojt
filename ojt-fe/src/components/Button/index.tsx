@@ -1,5 +1,5 @@
-import {cn} from "@/utils";
-import {type ComponentProps} from "react";
+import { cn } from "@/utils";
+import { type ComponentProps } from "react";
 
 type ButtonProps = ComponentProps<"button"> & {
     color?: "confirmed" | "unconfirmed" | "finished";
@@ -32,7 +32,7 @@ export default function Button({
     return (
         <button
             {...otherProps}
-            style={{backgroundColor}}
+            style={{ backgroundColor }}
             className={cn("border-none outline-none", classes && classes)}
         >
             {children}

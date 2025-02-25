@@ -1,4 +1,4 @@
-import {useMemo, type ComponentProps} from "react";
+import { useMemo, type ComponentProps } from "react";
 
 type TextHashtagProps = ComponentProps<"span"> & {
     color: string;

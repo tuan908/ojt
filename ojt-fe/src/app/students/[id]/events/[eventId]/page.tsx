@@ -1,9 +1,9 @@
-import {getEventDetailById, getSession} from "@/app/actions/event.action";
-import {type DynamicPageProps} from "@/types";
-import {getEvents, getHashtags} from "@/app/actions/common.action";
+import { getEventDetailById, getSession } from "@/app/actions/event.action";
+import { type DynamicPageProps } from "@/types";
+import { getEvents, getHashtags } from "@/app/actions/common.action";
 import EventUi from "./_ui";
 
-export default async function Page({searchParams, params}: DynamicPageProps) {
+export default async function Page({ searchParams, params }: DynamicPageProps) {
     const mode = !Array.isArray(searchParams?.mode!) ? searchParams?.mode : "";
 
     if (mode === "") {

@@ -1,6 +1,6 @@
 "use client";
 
-import {logOut} from "@/app/actions/auth.action";
+import { logOut } from "@/app/actions/auth.action";
 import PowerSettingsNew from "@mui/icons-material/PowerSettingsNew";
 
 export default function LogoutButton() {
@@ -17,7 +17,7 @@ export default function LogoutButton() {
             >
                 <PowerSettingsNew
                     className="text-icon-default text-bold"
-                    sx={{width: 36, height: 36}}
+                    sx={{ width: 36, height: 36 }}
                 />
             </div>
         </>

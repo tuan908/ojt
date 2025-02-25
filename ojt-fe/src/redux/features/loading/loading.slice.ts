@@ -1,8 +1,8 @@
-import {createAppSlice} from "../../configs/base-slice.config";
+import { createAppSlice } from "../../configs/base-slice.config";
 
-type LoadingState = {isLoading: boolean};
+type LoadingState = { isLoading: boolean };
 
-const initialState: LoadingState = {isLoading: false};
+const initialState: LoadingState = { isLoading: false };
 
 export const loadingSlice = createAppSlice({
     name: "LOADING",
@@ -36,6 +36,6 @@ export const loadingSlice = createAppSlice({
 });
 
 export const {
-    actions: {showLoading, hideLoading},
-    selectors: {getLoadingState},
+    actions: { showLoading, hideLoading },
+    selectors: { getLoadingState },
 } = loadingSlice;

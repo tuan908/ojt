@@ -1,13 +1,13 @@
 "use server";
 
-import {UserRole} from "@/constants";
+import { UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import {springApi} from "@/lib/api";
-import {encrypt} from "@/lib/auth";
-import {signInSchema} from "@/lib/zod";
-import type {UserInfo} from "@/types/auth-action.types";
-import {cookies} from "next/headers";
-import {redirect} from "next/navigation";
+import { springApi } from "@/lib/api";
+import { encrypt } from "@/lib/auth";
+import { signInSchema } from "@/lib/zod";
+import type { UserInfo } from "@/types/auth-action.types";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 /**
  * Login
@@ -16,7 +16,7 @@ import {redirect} from "next/navigation";
  */
 export async function login(_previousState: any, formData: FormData) {
     const data = Object.fromEntries(formData);
-    const {username, password} = data;
+    const { username, password } = data;
 
     const parse = signInSchema.safeParse({
         username,
