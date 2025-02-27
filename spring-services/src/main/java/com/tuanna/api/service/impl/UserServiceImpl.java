@@ -1,5 +1,6 @@
 package com.tuanna.api.service.impl;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +12,7 @@ import com.tuanna.api.constant.UserRole;
 import com.tuanna.api.dto.CreateAccountDto;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.dto.LoginResponseDto;
+import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.UserDto;
 import com.tuanna.api.entity.Student;
 import com.tuanna.api.entity.User;
@@ -102,16 +104,19 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Async
-	public CompletableFuture<?> findAllAsync() {
-		var query = this.entityManager.createQuery("""
-				select
-					s
-				from
-					com.tuanna.api.entity.Student s
-				join fetch s.user
-				""", Student.class).getResultStream().map(Student::toDto);
-		return CompletableFuture.completedFuture(query);
-	}
+	public CompletableFuture<List<StudentEventDto>> findAllAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            var students = this.entityManager.createQuery("""
+                    select s from com.tuanna.api.entity.Student s 
+                    join fetch s.user
+                    """, Student.class)
+                .getResultList() // Convert stream to list before returning
+                .stream()
+                .map(Student::toDto)
+                .toList();
+            return students;
+        });
+    }
 
 	@Transactional
 	@Override

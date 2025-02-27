@@ -4,7 +4,7 @@ import java.io.Serial;
 import java.util.Comparator;
 import java.util.Set;
 
-import com.tuanna.api.dto.StudentEvent;
+import com.tuanna.api.dto.StudentEventDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -83,13 +83,13 @@ public class Student extends BaseEntity {
 	}
 
 	/** Convert to dto from entity */
-	public StudentEvent toDto() {
+	public StudentEventDto toDto() {
 		var events = this.getEvents().stream().sorted(Comparator.comparing(event -> event.getDetail().getName()))
 				.map(event -> event.getDetail().getName()).toList();
 		var hashtags = this.getHashtags().stream().sorted(Comparator.comparing(Hashtag::getName)).map(Hashtag::toDto)
 				.toList();
 
-		return new StudentEvent(this.id, this.code, this.user.getName(), this.grade.getName(),
+		return new StudentEventDto(this.id, this.code, this.user.getName(), this.grade.getName(),
 				String.join(", ", events), hashtags);
 	}
 

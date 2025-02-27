@@ -22,6 +22,7 @@ import com.tuanna.api.constant.EventStatus;
 import com.tuanna.api.dto.EventDetailDto;
 import com.tuanna.api.dto.RegisterEventDto;
 import com.tuanna.api.dto.RegisterEventResponseDto;
+import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.StudentEventRequestDto;
 import com.tuanna.api.dto.StudentEventsDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
@@ -34,6 +35,7 @@ import com.tuanna.api.service.StudentService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -51,62 +53,62 @@ public class StudentServiceImpl implements StudentService {
 
 	@Override
 	public PagedModel<?> find(StudentEventRequestDto dto) {
-		var parameters = new HashMap<String, Object>();
-		var sql = new StringBuilder();
-		sql.append("""
-				  select
-				    s
-				  from
-				    com.tuanna.api.entity.Student s
-				    left join fetch s.events ev
-				    join fetch ev.detail
-				    join fetch s.user u
-				    join fetch s.grade g
-				    left join fetch s.hashtags h
-				  where
-				    1 = 1
-				""");
+	    var parameters = new HashMap<String, Object>();
+	    var sql = new StringBuilder("""
+	            select s from com.tuanna.api.entity.Student s
+	            left join fetch s.events ev
+	            join fetch ev.detail
+	            join fetch s.user u
+	            join fetch s.grade g
+	            left join fetch s.hashtags h
+	            """);
 
-		if (StringUtils.hasText(dto.name())) {
-			sql.append(" and s.name = :studentName");
-			parameters.put("studentName", dto.name());
-		}
+	    var whereClause = new StringBuilder(" where 1 = 1");
 
-		if (StringUtils.hasText(dto.grade())) {
-			sql.append(" and s.grade.name = :grade");
-			parameters.put("grade", dto.grade());
-		}
+	    if (StringUtils.hasText(dto.name())) {
+	        whereClause.append(" and s.user.name = :studentName");
+	        parameters.put("studentName", dto.name());
+	    }
 
-		if (StringUtils.hasText(dto.event())) {
-			sql.append(" and element(s.events) in :eventName ");
-			parameters.put("eventName", dto.event());
-		}
+	    if (StringUtils.hasText(dto.grade())) {
+	        whereClause.append(" and s.grade.name = :grade");
+	        parameters.put("grade", dto.grade());
+	    }
 
-		if (dto.hashtags() != null && !dto.hashtags().isEmpty()) {
-			sql.append(" and element(s.hashtags).name in :hashtags ");
-			parameters.put("hashtags", dto.hashtags());
-		}
+	    if (StringUtils.hasText(dto.event())) {
+	        whereClause.append(" and exists (select e from s.events e where e.name = :eventName)");
+	        parameters.put("eventName", dto.event());
+	    }
 
-		sql.append(" order by s.code  ");
+	    if (dto.hashtags() != null && !dto.hashtags().isEmpty()) {
+	        whereClause.append(" and exists (select h from s.hashtags h where h.name in :hashtags)");
+	        parameters.put("hashtags", dto.hashtags());
+	    }
 
-		var query = this.entityManager.createQuery(sql.toString(), Student.class);
+	    sql.append(whereClause).append(" order by s.code");
 
-		for (String key : parameters.keySet()) {
-			query.setParameter(key, parameters.get(key));
-		}
+	    TypedQuery<Student> query = this.entityManager.createQuery(sql.toString(), Student.class);
+	    parameters.forEach(query::setParameter);
 
-		query.setFirstResult((dto.pageNumber() - 1) * dto.pageSize());
-		query.setMaxResults(dto.pageSize());
+	    // Pagination
+	    int firstResult = (dto.pageNumber() - 1) * dto.pageSize();
+	    query.setFirstResult(firstResult);
+	    query.setMaxResults(dto.pageSize());
 
-		var data = query.getResultList().stream().map(Student::toDto).toList();
+	    List<StudentEventDto> data = query.getResultList().stream().map(Student::toDto).toList();
 
-		var pageImpl = new PageImpl<>(data);
+	    // Count Query for Total Records
+	    var countSql = new StringBuilder("select count(s) from com.tuanna.api.entity.Student s ");
+	    countSql.append(whereClause);
+	    TypedQuery<Long> countQuery = this.entityManager.createQuery(countSql.toString(), Long.class);
+	    parameters.forEach(countQuery::setParameter);
+	    long totalElements = countQuery.getSingleResult();
 
-		var pagedModel = new PagedModel<>(pageImpl);
+		var pagedModel = new PagedModel<>(new PageImpl<>(data, PageRequest.of(dto.pageNumber(), dto.pageSize()), totalElements));
 
 		return pagedModel;
 	}
-
+	
 	@Override
 	@Transactional
 	public Boolean updateEventStatus(UpdateEventStatusDto dto) {
