@@ -26,50 +26,49 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment extends BaseEntity {
-    @Serial
-    private static final long serialVersionUID = 5581420110882356388L;
+	@Serial
+	private static final long serialVersionUID = 5581420110882356388L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @OneToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
+	@OneToOne
+	@JoinColumn(name = "user_id", referencedColumnName = "id")
+	private User user;
 
-  private String content;
+	private String content;
 
-  private Boolean isDeleted;
+	private Boolean isDeleted;
 
-  @Override
-  public boolean equals(final Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof final Comment c)) {
-      return false;
-    }
-    return this.id != null && this.id.equals(c.getId());
-  }
+	@Override
+	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof final Comment c)) {
+			return false;
+		}
+		return this.id != null && this.id.equals(c.getId());
+	}
 
-  @Override
-  public int hashCode() {
-    return this.getClass().hashCode();
-  }
+	@Override
+	public int hashCode() {
+		return this.getClass().hashCode();
+	}
 
-  public CommentDto toDto() {
+	public CommentDto toDto() {
 
-    var roleName = switch (this.user.getRole()) {
-      case COUNSELOR -> "Counselor";
-      case PARENT -> "Parent";
-      case STUDENT -> "Student";
-      case TEACHER -> "Teacher";
-      default -> throw new IllegalArgumentException("Invalid input");
-    };
+		var roleName = switch (this.user.getRole()) {
+		case COUNSELOR -> "Counselor";
+		case PARENT -> "Parent";
+		case STUDENT -> "Student";
+		case TEACHER -> "Teacher";
+		default -> throw new IllegalArgumentException("Invalid input");
+		};
 
-    var createdAt =
-        this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
+		var createdAt = this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
 
-    // @formatter:off
+	// @formatter:off
     return new CommentDto(
           this.id,
           this.user.getName(),
@@ -80,6 +79,6 @@ public class Comment extends BaseEntity {
           this.isDeleted
         );
     // @formatter:on
-  }
+	}
 
 }

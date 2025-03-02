@@ -9,7 +9,7 @@ interface AddEventButtonProps {
 const AddEventButton = memo(function AddEventButton(
     props: AddEventButtonProps
 ) {
-    if (props.hide === true) return null;
+    if (props.hide) return null;
 
     return (
         <button

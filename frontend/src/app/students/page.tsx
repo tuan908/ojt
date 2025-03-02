@@ -3,7 +3,7 @@ import { getStudents } from "@/app/actions/student.action";
 import Navbar from "@/components/Navbar";
 import PageWrapper from "@/components/PageWrapper";
 import type { Metadata } from "next";
-import SearchArea from "./_SearchArea";
+import SearchArea from "./SearchArea";
 
 export const metadata: Metadata = {
     title: "リスト | 学生イベントリスト",

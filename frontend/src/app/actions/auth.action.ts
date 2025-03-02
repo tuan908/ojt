@@ -2,7 +2,7 @@
 
 import { UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import { springApi } from "@/lib/api";
+import API from "@/lib/api";
 import { encrypt } from "@/lib/auth";
 import { signInSchema } from "@/lib/zod";
 import type { UserInfo } from "@/types/auth-action.types";
@@ -33,7 +33,7 @@ export async function login(_previousState: any, formData: FormData) {
 
     const request = parse.data;
 
-    const user = await springApi.post<UserInfo>("/auth/login", request);
+    const user = await API.SPRING_API.post<UserInfo>("/auth/login", request);
     if (!user) {
         return {
             error: json.error.wrong_username_or_password,
@@ -42,7 +42,8 @@ export async function login(_previousState: any, formData: FormData) {
         };
     }
     const token = await encrypt(user);
-    (await cookies()).set({
+    const _cookies = await cookies();
+    _cookies.set({
         name: "token",
         value: token,
         path: "/",

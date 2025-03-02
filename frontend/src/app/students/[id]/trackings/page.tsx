@@ -13,11 +13,12 @@ const sx: SxProps<Theme> = {
     bgcolor: "#d87579",
 };
 
-export default async function Page(props: DynamicPageProps) {
+export default async function Page({ params }: DynamicPageProps) {
+    const { id } = await params;
     const [labels, grades, studentInfo] = await Promise.all([
         getHashtags(),
         getGrades(),
-        getTracking(props.params.id),
+        getTracking(id),
     ]);
 
     return (

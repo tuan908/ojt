@@ -35,45 +35,45 @@ import lombok.Setter;
 @NaturalIdCache
 public class User extends BaseEntity {
 
-    @Serial
-    private static final long serialVersionUID = -5925025823115269763L;
+	@Serial
+	private static final long serialVersionUID = -5925025823115269763L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(columnDefinition = "text")
-  private String name;
+	@Column(columnDefinition = "text")
+	private String name;
 
-  @Column(unique = true, nullable = false, columnDefinition = "text")
-  @NaturalId
-  private String username;
+	@Column(unique = true, nullable = false, columnDefinition = "text")
+	@NaturalId
+	private String username;
 
-  @Column(nullable = false, columnDefinition = "text")
-  private String password; // Hashed password
+	@Column(nullable = false, columnDefinition = "text")
+	private String password; // Hashed password
 
-  @Convert(converter = UserRoleConverter.class)
-  @Column(columnDefinition = "text")
-  private UserRole role;
+	@Convert(converter = UserRoleConverter.class)
+	@Column(columnDefinition = "text")
+	private UserRole role;
 
-  @Override
-  public boolean equals(final Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof final User user)) {
-      return false;
-    }
-    return this.id != null && this.id.equals(user.getId());
-  }
+	@Override
+	public boolean equals(final Object o) {
+		if (o == this)
+			return true;
+		if (!(o instanceof final User user)) {
+			return false;
+		}
+		return this.id != null && this.id.equals(user.getId());
+	}
 
-  @Override
-  public int hashCode() {
-    return this.getClass().hashCode();
-  }
+	@Override
+	public int hashCode() {
+		return this.getClass().hashCode();
+	}
 
-  public UserDto toDto() {
-    var dto = new UserDto(this.id, this.name, this.username, this.role.getValue());
-    return dto;
-  }
+	public UserDto toDto() {
+		var dto = new UserDto(this.id, this.name, this.username, this.role.getValue());
+		return dto;
+	}
 
 }

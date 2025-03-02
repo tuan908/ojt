@@ -2,7 +2,7 @@
 
 import { DEFAULT_EVENT_OPTION } from "@/constants";
 import json from "@/i18n/jp.json";
-import { springApi } from "@/lib/api";
+import API from "@/lib/api";
 import { decrypt } from "@/lib/auth";
 import { registerEventSchema } from "@/lib/zod";
 import { StatusCode } from "@/types";
@@ -27,7 +27,7 @@ export async function registerEvent(dto: RegisterEvent) {
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await springApi.post(
+        await API.SPRING_API.post(
             `/students/${dto.studentCode}/events`,
             result.data
         );
@@ -37,7 +37,7 @@ export async function registerEvent(dto: RegisterEvent) {
 }
 
 export async function addComment(dto: AddCommentPayload) {
-    const data = await springApi.post<Comment[]>(
+    const data = await API.SPRING_API.post<Comment[]>(
         `/students/events/${dto.eventDetailId}/comments`,
         dto
     );
@@ -53,8 +53,8 @@ export const getEventDetailById = cache(
         studentCode: string;
         eventDetailId: number;
     }>) => {
-        const response = await springApi.get<EventDetail>(
-            `/students/${studentCode}/events/${eventDetailId}`
+        const response = await API.SPRING_API.get<EventDetail>(
+            `/students/${studentCode}/events/${eventDetailId}`, {tag: "event-details"}
         );
         return response;
     }
@@ -64,7 +64,7 @@ export async function deleteEventDetailById(
     code: string,
     id: number
 ): Promise<StudentEvent["events"] | undefined> {
-    const res = await springApi.delete<StudentEvent["events"]>(
+    const res = await API.SPRING_API.delete<StudentEvent["events"]>(
         `/students/${code}/event/${id}`
     );
     return res;
@@ -75,7 +75,7 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
         id: data.id,
         content: data.content,
     };
-    const result = await springApi.post<{ data?: unknown }>(
+    const result = await API.SPRING_API.post<{ data?: unknown }>(
         `/students/events/${data.eventDetailId}/comments/${data.id}`,
         requestBody
     );
@@ -88,7 +88,8 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
  * @returns Session payload
  */
 export async function getSession() {
-    const token = cookies().get("token")?.value;
+    const _cookies = await cookies();
+    const token = _cookies.get("token")?.value;
     if (!token || !(await decrypt(token))) {
         return undefined;
     }
@@ -97,10 +98,11 @@ export async function getSession() {
 }
 
 export async function addEvent(_prevState: unknown, formData: FormData) {
-    if (!cookies().get("token")) {
+    const _cookies = await cookies();
+    if (!_cookies.get("token")) {
         redirect("/login");
     }
-    const auth = await decrypt(cookies().get("token")?.value!);
+    const auth = await decrypt(_cookies.get("token")?.value!);
     const rawFormData = Object.fromEntries(formData) as RegisterEvent["data"];
     if (formData.get("eventName") === DEFAULT_EVENT_OPTION) {
         return {
@@ -118,7 +120,7 @@ export async function addEvent(_prevState: unknown, formData: FormData) {
         data: rawFormData,
     };
 
-    await springApi.post(`/students/${auth?.code}/events`, registerEventData);
+    await API.SPRING_API.post(`/students/${auth?.code}/events`, registerEventData);
     revalidatePath("/students/[id]", "page");
     return {
         code: StatusCode.Success,

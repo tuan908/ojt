@@ -1,23 +1,27 @@
 "use client";
 
-import type { StackedData } from "@/types/tracking";
 import Box from "@/components/Box";
+import type { StackedData } from "@/types/tracking";
 import ReactEcharts from "echarts-for-react";
 import { BarChart, type BarSeriesOption } from "echarts/charts";
-import { use, type ComposeOption } from "echarts/core";
+import { use as echartUse, type ComposeOption } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 
-use([CanvasRenderer, BarChart]);
+echartUse([CanvasRenderer, BarChart]);
 
 type EChartsOption = ComposeOption<BarSeriesOption>;
 
-const getBarChartOptions = ({
-    series,
-    xAxisData,
-}: {
+type BarChartOptions = {
     xAxisData: string[];
     series: BarSeriesOption[];
-}) => {
+};
+
+type StackedBarChartProps = {
+    labels: string[];
+    data: StackedData[];
+};
+
+const getBarChartOptions = ({ series, xAxisData }: BarChartOptions) => {
     const options: EChartsOption = {
         tooltip: {
             trigger: "axis",
@@ -48,10 +52,7 @@ const getBarChartOptions = ({
 export default function StackedBarChart({
     labels,
     data: series,
-}: {
-    labels: string[];
-    data: StackedData;
-}) {
+}: StackedBarChartProps) {
     return (
         <Box fullWidth height={24} paddingY="10">
             <ReactEcharts

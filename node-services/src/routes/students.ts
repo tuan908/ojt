@@ -129,7 +129,7 @@ app.get("/:code", async ctx => {
                     comments: event?.comments,
                 })),
         });
-    } catch (error) {
+    } catch (error: any) {
         return ctx.json({ message: "Server error" }, 500);
     }
 });
@@ -150,7 +150,7 @@ app.get("/:code/events/:id", async ctx => {
             },
         });
         return ctx.json(result);
-    } catch (error) {
+    } catch (error: any) {
         return ctx.json({ message: "Server error" }, 500);
     }
 });
@@ -234,7 +234,7 @@ app.get("/:code/trackings", async ctx => {
         }
 
         return ctx.json(data);
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
         return ctx.json({ message: "Server error" }, 500);
     }
@@ -277,7 +277,7 @@ app.post("/:code/events/:eventId/comments", async ctx => {
         return ctx.json({
             message: "Success",
         });
-    } catch (error) {
+    } catch (error: any) {
         console.log(error);
         return ctx.json(
             {

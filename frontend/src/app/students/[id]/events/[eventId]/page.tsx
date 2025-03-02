@@ -1,10 +1,11 @@
+import { getEvents, getHashtags } from "@/app/actions/common.action";
 import { getEventDetailById, getSession } from "@/app/actions/event.action";
 import { type DynamicPageProps } from "@/types";
-import { getEvents, getHashtags } from "@/app/actions/common.action";
-import EventUi from "./_ui";
+import EventDetailContent from "./EventDetailContent";
 
 export default async function Page({ searchParams, params }: DynamicPageProps) {
     const mode = !Array.isArray(searchParams?.mode!) ? searchParams?.mode : "";
+    const {id, eventId} = await params;
 
     if (mode === "") {
         throw new Error("Invalid mode");
@@ -12,8 +13,8 @@ export default async function Page({ searchParams, params }: DynamicPageProps) {
 
     const [eventDetail, events, hashtags, session] = await Promise.all([
         getEventDetailById({
-            studentCode: params.id,
-            eventDetailId: params.eventId,
+            studentCode: id,
+            eventDetailId: eventId,
         }),
         getEvents(),
         getHashtags(),
@@ -21,9 +22,9 @@ export default async function Page({ searchParams, params }: DynamicPageProps) {
     ]);
 
     return (
-        <EventUi
-            studentCode={params.id}
-            eventDetailId={params.eventId}
+        <EventDetailContent
+            studentCode={id}
+            eventDetailId={eventId}
             mode={mode}
             auth={session}
             detail={eventDetail}

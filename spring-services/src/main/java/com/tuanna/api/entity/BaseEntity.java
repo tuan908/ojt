@@ -13,20 +13,20 @@ import lombok.Setter;
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = -6447104920246140053L;
+	@Serial
+	private static final long serialVersionUID = -6447104920246140053L;
 
-  private LocalDateTime createdAt;
+	private LocalDateTime createdAt;
 
-  private LocalDateTime updatedAt;
-  
-  private Boolean isDeleted;
-  
-  @PrePersist
-  public void prePersist() {
-    this.setCreatedAt(LocalDateTime.now());
-    this.setUpdatedAt(LocalDateTime.now());
-    this.setIsDeleted(false);
-  }
+	private LocalDateTime updatedAt;
+
+	private Boolean isDeleted;
+
+	@PrePersist
+	public void prePersist() {
+		this.setCreatedAt(LocalDateTime.now());
+		this.setUpdatedAt(LocalDateTime.now());
+		this.setIsDeleted(false);
+	}
 
 }

@@ -1,21 +1,19 @@
-type DoughnutProps = {
+type InternalDoughnutData = {
     name: string;
     value: string;
 };
 
-type StackedProps = {
+export type StackedData = {
     name: string;
     data: number[];
     type: "bar";
     stack: string;
 };
 
-export type Doughnut = {
-    _data: DoughnutProps[];
+export type DoughnutData = {
+    _data: InternalDoughnutData[];
     text: string;
 };
-
-export type Stacked = StackedProps[];
 
 export type TrackingData = {
     id: string;
@@ -23,7 +21,7 @@ export type TrackingData = {
     code: string;
     count: number;
     hashtags: {
-        doughnut: Doughnut;
-        stacked: Stacked;
+        doughnut: DoughnutData;
+        stacked: StackedData[];
     };
 };

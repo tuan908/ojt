@@ -6,12 +6,12 @@ import { type DynamicPageProps } from "@/types";
 import { CircularProgress } from "@mui/material";
 import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
-import Header from "./_Header";
-import SearchArea from "./_SearchArea";
-import StudentInfo from "./_StudentInfo";
+import Header from "./Header";
+import SearchArea from "./SearchArea";
+import StudentInfo from "./StudentInfo";
 
 type Props = {
-    params: { id: string };
+    params: Promise<{ id: string }>;
     searchParams: { [key: string]: string | string[] | undefined };
 };
 
@@ -20,7 +20,7 @@ export async function generateMetadata(
     _parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const id = params.id;
+    const {id} = await params
 
     // fetch data
     const student = await getStudentByCode(id);
@@ -31,17 +31,18 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: DynamicPageProps) {
+    const {id} = await params;
     const [auth, grades, events, info] = await Promise.all([
         getSession(),
         getGrades(),
         getEvents(),
-        getStudentByCode(params.id),
+        getStudentByCode(id),
     ]);
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
             <Suspense fallback={<>Loading student info...</>}>
-                <Header code={params.id} eventOptions={events!} />
+                <Header code={id} eventOptions={events!} />
             </Suspense>
             <PageWrapper>
                 {/* Student Info */}
@@ -65,7 +66,7 @@ export default async function Page({ params }: DynamicPageProps) {
                     }
                 >
                     <SearchArea
-                        params={params}
+                        id={id}
                         grades={grades!}
                         events={events!}
                         data={info!}

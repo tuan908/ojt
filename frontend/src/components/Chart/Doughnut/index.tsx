@@ -1,6 +1,6 @@
 "use client";
 
-import type { Doughnut } from "@/types/tracking";
+import type { DoughnutData } from "@/types/tracking";
 import ReactEcharts from "echarts-for-react";
 import { PieChart, type PieSeriesOption } from "echarts/charts";
 import {
@@ -31,7 +31,7 @@ export const colorPalette = [
     "#bdd333",
 ];
 
-const getOption = (data: Doughnut) => {
+const getOption = (data: DoughnutData) => {
     const options: EChartsOption = {
         tooltip: {
             trigger: "item",
@@ -77,7 +77,7 @@ const getOption = (data: Doughnut) => {
 };
 
 type Props = {
-    data: Doughnut;
+    data: DoughnutData;
 };
 
 export default function DoughnutChart({ data }: Props) {

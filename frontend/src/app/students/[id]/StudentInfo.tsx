@@ -11,7 +11,7 @@ type StudentInfoProps = {
 };
 
 export default async function StudentInfo(props: StudentInfoProps) {
-    if (props.auth === undefined || props.auth?.role === UserRole.Student) {
+    if (!props.auth || props.auth?.role === UserRole.Student) {
         return null;
     }
 

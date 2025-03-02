@@ -11,7 +11,7 @@ import { StatusCode } from "@/types";
 import Close from "@mui/icons-material/Close";
 import { MenuItem, Modal, Select } from "@mui/material";
 import { useActionState, useEffect, useState } from "react";
-import AddEventButton from "./_AddEventButton";
+import AddEventButton from "./AddEventButton";
 
 interface HeaderProps {
     eventOptions: SelectOption[];

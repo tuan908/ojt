@@ -26,28 +26,28 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Event extends BaseEntity {
 
-    @Serial
-    private static final long serialVersionUID = 1032972432116090594L;
+	@Serial
+	private static final long serialVersionUID = 1032972432116090594L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(columnDefinition = "text")
-  private String name;
+	@Column(columnDefinition = "text")
+	private String name;
 
-  @Column(columnDefinition = "text")
-  private String title;
+	@Column(columnDefinition = "text")
+	private String title;
 
-  @Column(columnDefinition = "text")
-  private String description;
+	@Column(columnDefinition = "text")
+	private String description;
 
-  @OneToOne(mappedBy = "detail")
-  private EventDetail eventDetail;
+	@OneToOne(mappedBy = "detail")
+	private EventDetail eventDetail;
 
-  public EventDto toDto() {
-    var dto = new EventDto(this.getId(), this.getName());
-    return dto;
-  }
+	public EventDto toDto() {
+		var dto = new EventDto(this.getId(), this.getName());
+		return dto;
+	}
 
 }

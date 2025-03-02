@@ -88,7 +88,7 @@ const inputProps = {
     className: "!p-1",
 };
 
-export default function EventUi({
+export default function EventDetailContent({
     studentCode,
     detail,
     events: _events,

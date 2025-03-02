@@ -6,34 +6,19 @@ type ButtonProps = ComponentProps<"button"> & {
     classes?: string;
 };
 
-export default function Button({
-    color,
-    children,
-    classes,
-    ...otherProps
-}: ButtonProps) {
-    let backgroundColor;
-    switch (color) {
-        case "unconfirmed":
-            backgroundColor = "#33b5e5";
-            break;
+const colorClasses: Record<NonNullable<ButtonProps["color"]>, string> = {
+    unconfirmed: "bg-blue-400",
+    confirmed: "bg-yellow-400",
+    finished: "bg-green-500",
+};
 
-        case "confirmed":
-            backgroundColor = "#ffbb33";
-            break;
-
-        case "finished":
-            backgroundColor = "#00c851";
-            break;
-
-        default:
-            break;
-    }
+export default function Button({ color, children, classes, ...otherProps }: ButtonProps) {
     return (
         <button
             {...otherProps}
-            style={{ backgroundColor }}
-            className={cn("border-none outline-none", classes && classes)}
+            className={cn("border-none outline-none px-4 py-2 rounded-md text-white font-medium",
+                          color ? colorClasses[color] : "",
+                          classes)}
         >
             {children}
         </button>

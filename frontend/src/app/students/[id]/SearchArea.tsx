@@ -1,15 +1,15 @@
 "use client";
 
-import type { Grade } from "@/types/common-action.types";
 import { getEventsByStudentCodeWithQuery } from "@/app/actions/student.action";
 import { Checkbox } from "@/components/Checkbox";
 import Select, { type SelectOption } from "@/components/Select";
 import {
     DEFAULT_EVENT_OPTION,
-    EventStatus,
     DEFAULT_GRADE_NAME_OPTION,
+    EventStatus,
 } from "@/constants";
 import json from "@/i18n/jp.json";
+import type { Grade } from "@/types/common-action.types";
 import { StudentEvent } from "@/types/student";
 import Search from "@mui/icons-material/Search";
 import { Pagination } from "@mui/material";
@@ -21,10 +21,10 @@ import {
     type ChangeEventHandler,
     type ReactNode,
 } from "react";
-import EventGrid from "./_EventGrid";
+import EventGrid from "./EventGrid";
 
 type SearchAreaProps = {
-    params: { id: string };
+    id: string;
     grades?: Grade[];
     events?: SelectOption[];
     data: StudentEvent;
@@ -44,7 +44,7 @@ type CheckboxState = {
 
 export default function SearchArea({
     data: _data,
-    params,
+    id,
     events,
     grades,
 }: SearchAreaProps) {
@@ -77,7 +77,7 @@ export default function SearchArea({
         }
 
         try {
-            const result = await getEventsByStudentCodeWithQuery(params.id, {
+            const result = await getEventsByStudentCodeWithQuery(id, {
                 grade: grade === DEFAULT_GRADE_NAME_OPTION ? undefined : grade,
                 eventName:
                     eventName === DEFAULT_EVENT_OPTION ? undefined : eventName,
@@ -183,7 +183,7 @@ export default function SearchArea({
                 <EventGrid
                     data={data!}
                     studentId={_data?.id}
-                    code={params?.id}
+                    code={id}
                 />
             </div>
             <div className="w-full flex justify-end items-center pr-6 pt-4">

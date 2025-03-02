@@ -10,8 +10,9 @@ export default function db(context: Context<Binding>) {
 
     try {
         const sql = neon(connectionString);
-        return drizzle(sql, { schema });
-    } catch (error: any) {
+        return drizzle(sql, { schema, logger: true });
+    } catch (error: unknown) {
+        console.error(error instanceof Error ? error.message : error);
         throw new Error("Failed when connecting to database");
     }
 }

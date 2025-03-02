@@ -1,44 +1,34 @@
 import { EventStatus } from "@/constants";
-import { useMemo } from "react";
 import json from "@/i18n/jp.json";
 
 type StatusLabelProps = {
     status: number;
 };
 
-export function StatusLabel({ status }: StatusLabelProps) {
-    const { labelText, backgroundColor } = useMemo(() => {
-        let labelText = "";
-        let backgroundColor = "";
-        switch (status) {
-            case EventStatus.UNCONFIRMED:
-                labelText = json.status.unconfirmed;
-                backgroundColor = "#33b5e5";
-                break;
+export default function StatusLabel({ status }: StatusLabelProps) {
+    const statusMap: Record<number, { label: string; color: string }> = {
+        [EventStatus.UNCONFIRMED]: {
+            label: json.status.unconfirmed,
+            color: "bg-blue-500",
+        },
+        [EventStatus.UNDER_REVIEWING]: {
+            label: json.status.under_reviewing,
+            color: "bg-yellow-500",
+        },
+        [EventStatus.CONFIRMED]: {
+            label: json.status.confirmed,
+            color: "bg-green-500",
+        },
+    };
 
-            case EventStatus.UNDER_REVIEWING:
-                labelText = json.status.under_reviewing;
-                backgroundColor = "#ffbb33";
-                break;
-
-            case EventStatus.CONFIRMED:
-                labelText = json.status.confirmed;
-                backgroundColor = "#00c851";
-                break;
-
-            default:
-                throw new Error("Invalid status");
-        }
-
-        return { labelText, backgroundColor };
-    }, [status]);
+    const { label, color } = statusMap[status] || {
+        label: "Unknown",
+        color: "bg-gray-500",
+    };
 
     return (
-        <span
-            style={{ backgroundColor }}
-            className="text-white px-4 py-2 font-medium rounded-2xl shadow-md"
-        >
-            {labelText}
+        <span className={`text-white px-4 py-2 font-medium rounded-2xl shadow-md ${color}`}>
+            {label}
         </span>
     );
 }

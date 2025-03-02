@@ -1,4 +1,6 @@
 import Button from "@/components/Button";
+import json from "@/i18n/jp.json";
+import { cn } from "@/utils";
 import {
     DialogActions,
     DialogContent,
@@ -7,8 +9,8 @@ import {
     Dialog as MuiDialog,
 } from "@mui/material";
 import { useMemo } from "react";
-import json from "@/i18n/jp.json";
-import { cn } from "@/utils";
+
+type ButtonColor = "info" | "success" | "danger";
 
 type DialogProps = {
     open: boolean;
@@ -16,11 +18,8 @@ type DialogProps = {
     title?: string;
     content: string;
     onCancelClick: () => void;
-    onActionClick:
-        | (() => void)
-        | ((args: unknown) => void)
-        | (() => Promise<void>);
-    buttonColor: "info" | "success" | "danger";
+    onActionClick: () => void | Promise<void>;
+    buttonColor?: ButtonColor;
 };
 
 export default function Dialog({
@@ -28,11 +27,11 @@ export default function Dialog({
     onClose,
     title,
     content,
-    onCancelClick: handleCancel,
-    onActionClick: handleAction,
-    buttonColor = "info",
+    onCancelClick,
+    onActionClick,
+    buttonColor = "info", // ✅ Provide a default value
 }: DialogProps) {
-    const backgroundColor = useMemo(() => {
+    const backgroundColor = useMemo<string>(() => {
         switch (buttonColor) {
             case "danger":
                 return "bg-red-400";
@@ -44,7 +43,7 @@ export default function Dialog({
                 return "bg-green-400";
 
             default:
-                throw new Error("Invalid color");
+                return "bg-blue-400"; // ✅ Fallback to prevent runtime errors
         }
     }, [buttonColor]);
 
@@ -52,21 +51,22 @@ export default function Dialog({
         <MuiDialog
             open={open}
             onClose={onClose}
-            aria-labelledby="-dialog-title"
-            aria-describedby="-dialog-description"
+            aria-labelledby="dialog-title"
+            aria-describedby="dialog-description"
             fullWidth
             maxWidth="sm"
         >
-            <DialogTitle id="-dialog-title">{title}</DialogTitle>
+            {title && <DialogTitle id="dialog-title">{title}</DialogTitle>}
             <DialogContent>
-                <DialogContentText id="-dialog-description">
+                <DialogContentText id="dialog-description">
                     {content}
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button
                     classes="px-4 py-1 border font-medium bg-slate-200 rounded-md"
-                    onClick={handleCancel}
+                    onClick={onCancelClick}
+                    aria-label="Cancel"
                 >
                     {json.dialog.cancel}
                 </Button>
@@ -75,7 +75,8 @@ export default function Dialog({
                         "px-4 py-1 font-medium border rounded-md text-white",
                         backgroundColor
                     )}
-                    onClick={handleAction}
+                    onClick={onActionClick}
+                    aria-label="Confirm"
                 >
                     {json.dialog.confirm}
                 </Button>

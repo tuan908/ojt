@@ -1,11 +1,11 @@
 "use server";
 
 import { EventStatus, PAGE_SIZE } from "@/constants";
-import { honoApi, springApi } from "@/lib/api";
+import API from "@/lib/api";
 import type {
     Page,
-    StudentEvent,
     Student,
+    StudentEvent,
     StudentsResponse,
 } from "@/types/student";
 import type { TrackingData } from "@/types/tracking";
@@ -28,7 +28,7 @@ export const getStudents = cache(async (dto?: Student) => {
         body = dto;
     }
 
-    const data = await springApi.post<Page<StudentsResponse>>("/students", {
+    const data = await API.SPRING_API.post<Page<StudentsResponse>>("/students", {
         ...body,
         pageNumber: 1,
         pageSize: PAGE_SIZE,
@@ -43,7 +43,7 @@ export const getStudents = cache(async (dto?: Student) => {
  * @returns Student Response
  */
 export const getStudentByCode = cache(async (code: string) => {
-    const data = await honoApi.get<StudentEvent>(`/students/${code}`);
+    const data = await API.NODE_API.get<StudentEvent>(`/students/${code}`, {tag: "student"});
     return data;
 });
 
@@ -57,7 +57,7 @@ export async function updateEventStatus(dto: {
     updatedBy: string;
     studentId: number;
 }) {
-    const data = await springApi.post(`/students/events/${dto.id}`, dto);
+    const data = await API.SPRING_API.post(`/students/events/${dto.id}`, dto);
     revalidatePath(`/students/[id]`, "page");
     return data;
 }
@@ -71,7 +71,7 @@ export async function deleteComment(dto: {
     eventDetailId: number;
     username: string;
 }) {
-    await springApi.delete(
+    await API.SPRING_API.delete(
         `/students/events/${dto.eventDetailId}/comments/${dto.id}`
     );
     revalidatePath("/students/event/comments");
@@ -110,11 +110,11 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await springApi.get<StudentEvent["events"]>(url);
+    const data = await API.SPRING_API.get<StudentEvent["events"]>(url, {tag: "student-events"});
     return data;
 };
 
 export const getTracking = async (code: string) => {
-    const data = await honoApi.get<TrackingData>(`/students/${code}/trackings`);
+    const data = await API.NODE_API.get<TrackingData>(`/students/${code}/trackings`, {tag: "trackings"});
     return data;
 };

@@ -1,6 +1,5 @@
 "use client";
 
-import type { Grade, Hashtag } from "@/types/common-action.types";
 import { getStudents } from "@/app/actions/student.action";
 import ColorHashtag from "@/components/ColorHashtag";
 import Select, { type SelectOption } from "@/components/Select";
@@ -15,6 +14,7 @@ import {
     showLoading,
 } from "@/redux/features/loading/loading.slice";
 import { useAppDispatch } from "@/redux/hooks";
+import type { Grade, Hashtag } from "@/types/common-action.types";
 import type { Page, Student, StudentsResponse } from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
@@ -27,7 +27,7 @@ import {
     type AutocompleteInputChangeReason,
 } from "@mui/material";
 import { useState, type SyntheticEvent } from "react";
-import StudentDataGrid from "./_StudentDataGrid";
+import StudentDataGrid from "./StudentDataGrid";
 
 type SearchAreaProps = Partial<{
     students: Page<StudentsResponse>;
