@@ -3,7 +3,6 @@ package com.tuanna.api.service.impl;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +16,9 @@ import com.tuanna.api.repository.UserRepository;
 import com.tuanna.api.service.CommentService;
 
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CommentServiceImpl implements CommentService {
 
   private final @NonNull EntityManager entityManager;
@@ -32,7 +29,16 @@ public class CommentServiceImpl implements CommentService {
 
   private final @NonNull CommentRepository commentRepository;
 
-  @Override
+  public CommentServiceImpl(EntityManager entityManager, EventDetailRepository eventDetailRepository,
+		UserRepository userRepository, CommentRepository commentRepository) {
+	super();
+	this.entityManager = entityManager;
+	this.eventDetailRepository = eventDetailRepository;
+	this.userRepository = userRepository;
+	this.commentRepository = commentRepository;
+}
+
+@Override
   public List<CommentDto> findByEventDetailId(Long eventDetailId) {
     // TODO Auto-generated method stub
     return null;

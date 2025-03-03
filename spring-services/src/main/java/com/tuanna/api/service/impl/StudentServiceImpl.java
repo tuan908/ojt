@@ -40,7 +40,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor(onConstructor_ = { @Autowired })
 public class StudentServiceImpl implements StudentService {
 
 	private final @NonNull EntityManager entityManager;
@@ -50,6 +49,14 @@ public class StudentServiceImpl implements StudentService {
 	private final @NonNull EventDetailRepository eventDetailRepository;
 
 	private final @NonNull CommonService commonService;
+
+	public StudentServiceImpl(EntityManager entityManager, StudentRepository studentRepository,
+			EventDetailRepository eventDetailRepository, CommonService commonService) {
+		this.entityManager = entityManager;
+		this.studentRepository = studentRepository;
+		this.eventDetailRepository = eventDetailRepository;
+		this.commonService = commonService;
+	}
 
 	@Override
 	public PagedModel<?> find(StudentEventRequestDto dto) {
