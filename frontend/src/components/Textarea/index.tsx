@@ -1,15 +1,17 @@
+import { MEDIA_QUERY } from "@/constants";
 import { cn } from "@/utils";
 import { useMediaQuery } from "@mui/material";
 import { type ComponentProps } from "react";
-import { MEDIA_QUERY } from "@/constants";
 
-const Textarea = ({
+type TextareaProps = ComponentProps<"textarea"> & { fullWidth?: boolean };
+
+export default function Textarea({
     name,
     placeholder,
     onChange,
     fullWidth,
     ...otherProps
-}: ComponentProps<"textarea"> & { fullWidth?: boolean }) => {
+}: TextareaProps) {
     const matches = useMediaQuery(MEDIA_QUERY.LG);
 
     return (
@@ -26,6 +28,4 @@ const Textarea = ({
             onChange={onChange}
         />
     );
-};
-
-export default Textarea;
+}

@@ -4,6 +4,9 @@ import java.io.Serial;
 import java.util.Comparator;
 import java.util.Set;
 
+import org.hibernate.annotations.DialectOverride.SQLRestriction;
+import org.hibernate.annotations.SQLDelete;
+
 import com.tuanna.api.dto.StudentEventDto;
 
 import jakarta.persistence.CascadeType;
@@ -28,6 +31,8 @@ import lombok.Setter;
 
 @Entity(name = "Student")
 @Table(name = "t_student")
+@SQLDelete(sql = "UPDATE t_student SET is_deleted = true WHERE id = ?")
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder

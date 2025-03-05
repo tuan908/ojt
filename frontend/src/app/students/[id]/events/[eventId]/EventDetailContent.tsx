@@ -23,7 +23,7 @@ import type {
     Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
-import type { EventDetail } from "@/types/student";
+import type { EventDetail } from "@/types/student.types";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import Close from "@mui/icons-material/Close";

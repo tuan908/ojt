@@ -11,7 +11,7 @@ import type {
     Comment,
     RegisterEvent,
 } from "@/types/event-action.types";
-import type { EventDetail, StudentEvent } from "@/types/student";
+import type { EventDetail, StudentEvent } from "@/types/student.types";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
@@ -88,8 +88,8 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
  * @returns Session payload
  */
 export async function getSession() {
-    const _cookies = await cookies();
-    const token = _cookies.get("token")?.value;
+    const reqCookies = await cookies();
+    const token = reqCookies.get("token")?.value;
     if (!token || !(await decrypt(token))) {
         return undefined;
     }
@@ -98,11 +98,11 @@ export async function getSession() {
 }
 
 export async function addEvent(_prevState: unknown, formData: FormData) {
-    const _cookies = await cookies();
-    if (!_cookies.get("token")) {
+    const reqCookies = await cookies();
+    if (!reqCookies.get("token")) {
         redirect("/login");
     }
-    const auth = await decrypt(_cookies.get("token")?.value!);
+    const auth = await decrypt(reqCookies.get("token")?.value!);
     const rawFormData = Object.fromEntries(formData) as RegisterEvent["data"];
     if (formData.get("eventName") === DEFAULT_EVENT_OPTION) {
         return {

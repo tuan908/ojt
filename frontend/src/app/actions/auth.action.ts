@@ -42,8 +42,8 @@ export async function login(_previousState: any, formData: FormData) {
         };
     }
     const token = await encrypt(user);
-    const _cookies = await cookies();
-    _cookies.set({
+    const reqCookies = await cookies();
+    reqCookies.set({
         name: "token",
         value: token,
         path: "/",
@@ -63,6 +63,7 @@ export async function login(_previousState: any, formData: FormData) {
  * Logout
  */
 export async function logOut() {
-    (await cookies()).delete("token");
+    const reqCookies = await cookies();
+    reqCookies.delete("token");
     redirect("/login");
 }

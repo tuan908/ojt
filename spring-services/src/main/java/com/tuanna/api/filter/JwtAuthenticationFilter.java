@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.tuanna.api.security.CustomUserDetailsService;
-import com.tuanna.api.security.JwtTokenProvider;
+import com.tuanna.api.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
-	private JwtTokenProvider jwtTokenProvider;
+	private JwtService jwtTokenProvider;
 
 	@Autowired
 	private CustomUserDetailsService userService;

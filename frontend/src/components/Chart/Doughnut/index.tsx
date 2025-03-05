@@ -1,6 +1,6 @@
 "use client";
 
-import type { DoughnutData } from "@/types/tracking";
+import type { DoughnutData } from "@/types/tracking.types";
 import ReactEcharts from "echarts-for-react";
 import { PieChart, type PieSeriesOption } from "echarts/charts";
 import {

@@ -11,17 +11,15 @@ public interface UserService {
 
   UserDto findByUsername(UserDto request);
   
-  /**
-   * Login
-   * @param loginDto Login Request DTO
-   * @return UserDto - User Info
-   */
-  LoginResponseDto login(LoginDto loginDto);
+  void findAllUsers();
+  
+  Boolean createUser(CreateAccountDto dto);
+  
+  void updateUser();
+  
+  void deleteUser();
 
   CompletableFuture<?> findByUsernameAsync(String user);
   
   CompletableFuture<?> findAllAsync();
-  
-  Boolean create(CreateAccountDto dto);
-
 }

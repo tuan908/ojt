@@ -46,41 +46,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public LoginResponseDto login(LoginDto loginDto) {
-		var sb = new StringBuilder();
-		var user = this.userRepository.findByUsername(loginDto.username()).orElse(null);
-
-		if (user == null || !passwordEncoder.matches(loginDto.password(), user.getPassword())) {
-			return null;
-		}
-
-		sb.setLength(0);
-
-		sb.append("""
-				    select
-				      s
-				    from
-				      com.tuanna.api.entity.Student s
-				    where
-				      s.user.id = :id
-				""");
-
-		var query = this.entityManager.createQuery(sb.toString(), Student.class);
-		query.setParameter("id", user.getId());
-		var student = query.getResultStream().findFirst().orElse(null);
-
-		if (student != null) {
-			var userDto = new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
-					user.getRole().getValue(), student.getGrade().getName(), student.getCode());
-			return userDto;
-		} else {
-			var userDto = new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
-					user.getRole().getValue(), null, null);
-			return userDto;
-		}
-	}
-
-	@Override
 	@Async
 	public CompletableFuture<?> findByUsernameAsync(String username) {
 		var query = entityManager.createQuery("""
@@ -120,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	@Override
-	public Boolean create(CreateAccountDto dto) {
+	public Boolean createUser(CreateAccountDto dto) {
 		try {
 			var newUser = User.builder().name(dto.firstName() + " " + dto.lastName()).username(dto.username())
 					.password(passwordEncoder.encode(dto.password())).role(UserRole.COUNSELOR).build();
@@ -129,5 +94,23 @@ public class UserServiceImpl implements UserService {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	@Override
+	public void findAllUsers() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateUser() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteUser() {
+		// TODO Auto-generated method stub
+		
 	}
 }

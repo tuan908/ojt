@@ -16,7 +16,7 @@ import { Delete, Done, Edit } from "@/components/icon";
 import { EventStatus, ScreenMode, UserRole } from "@/constants";
 import { useAuth } from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
-import type { StudentEvent } from "@/types/student";
+import type { StudentEvent } from "@/types/student.types";
 import Notifications from "@mui/icons-material/Notifications";
 import Badge from "@mui/material/Badge";
 import Link from "next/link";

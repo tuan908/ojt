@@ -2,12 +2,16 @@ package com.tuanna.api.service.impl;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tuanna.api.constant.ResponseCode;
+import com.tuanna.api.constant.ResponseType;
 import com.tuanna.api.dto.AddCommentDto;
+import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.CommentDto;
 import com.tuanna.api.entity.Comment;
 import com.tuanna.api.repository.CommentRepository;
@@ -21,94 +25,108 @@ import jakarta.persistence.EntityManager;
 @Transactional(readOnly = true)
 public class CommentServiceImpl implements CommentService {
 
-  private final @NonNull EntityManager entityManager;
+	private final @NonNull EntityManager entityManager;
 
-  private final @NonNull EventDetailRepository eventDetailRepository;
+	private final @NonNull EventDetailRepository eventDetailRepository;
 
-  private final @NonNull UserRepository userRepository;
+	private final @NonNull UserRepository userRepository;
 
-  private final @NonNull CommentRepository commentRepository;
+	private final @NonNull CommentRepository commentRepository;
 
-  public CommentServiceImpl(EntityManager entityManager, EventDetailRepository eventDetailRepository,
-		UserRepository userRepository, CommentRepository commentRepository) {
-	super();
-	this.entityManager = entityManager;
-	this.eventDetailRepository = eventDetailRepository;
-	this.userRepository = userRepository;
-	this.commentRepository = commentRepository;
-}
+	private final ResourceBundle rb;
 
-@Override
-  public List<CommentDto> findByEventDetailId(Long eventDetailId) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	public CommentServiceImpl(EntityManager entityManager, EventDetailRepository eventDetailRepository,
+			UserRepository userRepository, CommentRepository commentRepository) {
+		super();
+		this.entityManager = entityManager;
+		this.eventDetailRepository = eventDetailRepository;
+		this.userRepository = userRepository;
+		this.commentRepository = commentRepository;
+		rb = ResourceBundle.getBundle("messages");
+	}
 
-  @Override
-  public Comment findById(Long id) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	@Override
+	public List<CommentDto> findByEventDetailId(Long eventDetailId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-  @Override
-  @Transactional
-  public List<CommentDto> add(AddCommentDto dto) {
-    var eventDetail = this.eventDetailRepository.findById(dto.eventDetailId()).orElse(null);
+	@Override
+	public Comment findById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    if (eventDetail == null) {
-      return null;
-    }
+	@Override
+	@Transactional
+	public List<CommentDto> add(AddCommentDto dto) {
+		var eventDetail = this.eventDetailRepository.findById(dto.eventDetailId()).orElse(null);
 
-    var user = this.userRepository.findByUsername(dto.username()).orElse(null);
+		if (eventDetail == null) {
+			return null;
+		}
 
-    if (user == null) {
-      return null;
-    }
+		var user = this.userRepository.findByUsername(dto.username()).orElse(null);
 
-    var newComment = Comment.builder().user(user).content(dto.content()).isDeleted(false).build();
+		if (user == null) {
+			return null;
+		}
 
-    eventDetail.getComments().add(newComment);
+		var newComment = Comment.builder().user(user).content(dto.content()).build();
+		
+		newComment.setIsDeleted(false);
 
-    this.entityManager.persist(eventDetail);
-    this.entityManager.flush();
+		eventDetail.getComments().add(newComment);
 
-    var updatedComments = eventDetail.getComments().stream()
-        .sorted(Comparator.comparing(Comment::getCreatedAt)).map(Comment::toDto).toList();
+		this.entityManager.persist(eventDetail);
+		this.entityManager.flush();
 
-    return updatedComments;
-  }
+		var updatedComments = eventDetail.getComments().stream().sorted(Comparator.comparing(Comment::getCreatedAt))
+				.map(Comment::toDto).toList();
 
-  @Override
-  @Transactional
-  public CommentDto update(CommentDto commentDto) {
-    var comment = this.commentRepository.findById(commentDto.id()).orElse(null);
+		return updatedComments;
+	}
 
-    if (comment == null) {
-      return null;
-    }
+	@Override
+	@Transactional
+	public CommentDto update(CommentDto commentDto) {
+		var comment = this.commentRepository.findById(commentDto.id()).orElse(null);
 
-    comment.setContent(commentDto.content());
-    comment.setUpdatedAt(java.time.LocalDateTime.now());
-    this.commentRepository.saveAndFlush(comment);
-    return comment.toDto();
-  }
+		if (comment == null) {
+			return null;
+		}
 
-  @Override
-  @Transactional
-  public void delete(Long id) {
-    var stringBuilder = new StringBuilder();
+		comment.setContent(commentDto.content());
+		comment.setUpdatedAt(java.time.LocalDateTime.now());
+		this.commentRepository.saveAndFlush(comment);
+		return comment.toDto();
+	}
 
-    stringBuilder.append("""
-        update
-          com.tuanna.api.entity.Comment
-        set
-          isDeleted = true
-        where
-          id = :id
-         """);
-    var query = this.entityManager.createQuery(stringBuilder.toString());
-    query.setParameter("id", id);
-    query.executeUpdate();
-  }
+	@Override
+	@Transactional
+	public ApiResponse<Object> delete(String studentCode, Long eventDetailId, Long commentId) {
+		var qlString = """
+				select
+					c
+				from
+					com.tuanna.api.entity.Comment c
+					join com.tuanna.api.entity.EventDetail u on u.id = c.eventDetail.id
+				where
+					u.id = ?1
+					and c.id = ?2
+				""";
 
+		var q = this.entityManager.createQuery(qlString);
+		q.setParameter(1, eventDetailId);
+		q.setParameter(2, commentId);
+
+		var result = q.getResultStream().findFirst();
+
+		if (result.isEmpty()) {
+			return ApiResponse.error(ResponseCode.NOT_FOUND.getValue(), rb.getString("error.not-found"),
+					ResponseType.ERROR.getValue());
+		}
+		this.commentRepository.deleteById(commentId);
+		return ApiResponse.success(null, rb.getString("ok"));
+	}
 }

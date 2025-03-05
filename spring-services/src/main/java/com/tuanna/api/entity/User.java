@@ -2,10 +2,9 @@ package com.tuanna.api.entity;
 
 import java.io.Serial;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.DialectOverride.SQLRestriction;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.NaturalIdCache;
+import org.hibernate.annotations.SQLDelete;
 
 import com.tuanna.api.constant.UserRole;
 import com.tuanna.api.constant.converter.UserRoleConverter;
@@ -26,13 +25,13 @@ import lombok.Setter;
 
 @Entity(name = "User")
 @Table(name = "t_user")
+@SQLDelete(sql = "UPDATE t_user SET is_deleted = true WHERE id = ?")
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@NaturalIdCache
 public class User extends BaseEntity {
 
 	@Serial

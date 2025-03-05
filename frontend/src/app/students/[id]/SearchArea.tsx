@@ -10,7 +10,7 @@ import {
 } from "@/constants";
 import json from "@/i18n/jp.json";
 import type { Grade } from "@/types/common-action.types";
-import { StudentEvent } from "@/types/student";
+import { StudentEvent } from "@/types/student.types";
 import Search from "@mui/icons-material/Search";
 import { Pagination } from "@mui/material";
 import { type SelectChangeEvent } from "@mui/material/Select";

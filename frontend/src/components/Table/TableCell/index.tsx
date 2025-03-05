@@ -1,4 +1,7 @@
+import { cn } from "@/utils";
 import { useMemo, type ComponentProps } from "react";
+
+type TableCellVariant = "default" | "header" | "footer";
 
 type TableCellProps = ComponentProps<"td"> & {
     /** Align text center ? */
@@ -11,6 +14,8 @@ type TableCellProps = ComponentProps<"td"> & {
     classes?: string;
     /** Width in rem ? */
     width?: number;
+    /** Cell variant */
+    variant?: TableCellVariant;
 };
 
 export default function TableCell({
@@ -20,35 +25,33 @@ export default function TableCell({
     textEllipsis,
     classes,
     width,
+    variant = "default",
     ...otherProps
 }: TableCellProps) {
-    const { className, style } = useMemo(() => {
-        let base =
-            "border border-table py-3 align-middle whitespace-nowrap z-0";
-        if (fontSemibold) {
-            base += ` font-semibold`;
-        }
+    const cellClasses = useMemo(() => {
+        const baseClasses = [
+            "border border-table py-3 align-middle whitespace-nowrap z-0",
+            fontSemibold && "font-semibold",
+            alignTextCenter && "text-center",
+            textEllipsis && "overflow-hidden whitespace-nowrap text-ellipsis",
+            variant === "header" && "bg-gray-100 font-bold",
+            variant === "footer" && "bg-gray-50 font-medium",
+            classes
+        ];
 
-        if (alignTextCenter) {
-            base += ` text-center`;
-        }
+        return cn(baseClasses.filter(Boolean).join(" "));
+    }, [fontSemibold, alignTextCenter, textEllipsis, classes, variant]);
 
-        if (textEllipsis) {
-            base += ` overflow-hidden whitespace-nowrap text-ellipsis`;
-        }
-
-        if (classes) {
-            base += ` ${classes}`;
-        }
-
-        return {
-            className: base,
-            style: { width: width ? `${width}rem` : 0 },
-        };
-    }, [fontSemibold, alignTextCenter, textEllipsis, classes, width]);
+    const cellStyle = useMemo(() => ({
+        width: width ? `${width}rem` : undefined
+    }), [width]);
 
     return (
-        <td {...otherProps} style={style} className={className}>
+        <td
+            {...otherProps}
+            style={cellStyle}
+            className={cellClasses}
+        >
             {children}
         </td>
     );

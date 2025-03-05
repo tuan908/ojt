@@ -15,7 +15,7 @@ import {
 } from "@/redux/features/loading/loading.slice";
 import { useAppDispatch } from "@/redux/hooks";
 import type { Grade, Hashtag } from "@/types/common-action.types";
-import type { Page, Student, StudentsResponse } from "@/types/student";
+import type { Page, Student, StudentsResponse } from "@/types/student.types";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {

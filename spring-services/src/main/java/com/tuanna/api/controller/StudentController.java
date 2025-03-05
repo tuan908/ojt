@@ -1,7 +1,6 @@
 package com.tuanna.api.controller;
 
 import java.util.HashMap;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,13 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.api.constant.Constant;
-import com.tuanna.api.constant.ResponseCode;
 import com.tuanna.api.dto.AddCommentDto;
+import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.CommentDto;
 import com.tuanna.api.dto.RegisterEventDto;
 import com.tuanna.api.dto.StudentEventRequestDto;
 import com.tuanna.api.dto.StudentEventsDto;
-import com.tuanna.api.dto.SuccessResponseDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.exception.ResultNotFoundException;
 import com.tuanna.api.service.CommentService;
@@ -52,8 +50,7 @@ public class StudentController {
 	public ResponseEntity<?> findByStudentCode(@PathVariable String studentCode,
 			@RequestParam(required = false) String grade,
 			@RequestParam(value = "event_name", required = false) String eventName,
-			@RequestParam(required = false) String status,
-			@RequestParam(required = false, defaultValue = "1") int page,
+			@RequestParam(required = false) String status, @RequestParam(required = false, defaultValue = "1") int page,
 			@RequestParam(required = false, defaultValue = "10") int size) throws ResultNotFoundException {
 		var request = new StudentEventsDto(studentCode, grade, eventName, status, page, size);
 		var data = this.studentService.findEventsByStudentCode(request);
@@ -79,16 +76,7 @@ public class StudentController {
 			@RequestBody UpdateEventStatusDto dto) {
 		this.studentService.updateEventStatus(dto);
 
-	// @formatter:off
-    var data = new SuccessResponseDto(
-        ResponseCode.SUCCESS.getValue(),
-        "Updated", 
-        "Updated status for event " + dto.id(), 
-        "/student/" + dto.studentId()
-      );
-    // @formatter:on
-
-		return ResponseEntity.ok().body(data);
+		return ResponseEntity.ok().body(ApiResponse.success(null, null));
 	}
 
 	@DeleteMapping(path = "/{studentCode}/events/{eventId}")
@@ -113,14 +101,9 @@ public class StudentController {
 	}
 
 	@DeleteMapping("/{studentCode}/events/{eventId}/comments/{commentId}")
-	public ResponseEntity<?> deleteComment(@PathVariable String studentCode, @PathVariable Long eventId,
+	public ResponseEntity<ApiResponse<?>> deleteComment(@PathVariable String studentCode, @PathVariable Long eventId,
 			@PathVariable Long commentId) {
-		this.commentService.delete(commentId);
-
-		var data = new SuccessResponseDto(ResponseCode.SUCCESS.getValue(), "Deleted", "Deleted comment " + commentId,
-				"/student/comments/" + commentId);
-
-		return ResponseEntity.ok().body(data);
+		return ResponseEntity.ok(this.commentService.delete(studentCode, eventId, commentId));
 	}
 
 	@PostMapping("/{studentCode}/events/{eventId}/comments/{commentId}")

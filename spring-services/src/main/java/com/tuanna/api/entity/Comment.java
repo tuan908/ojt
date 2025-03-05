@@ -3,13 +3,18 @@ package com.tuanna.api.entity;
 import java.io.Serial;
 import java.time.format.DateTimeFormatter;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.DialectOverride.SQLRestriction;
+
 import com.tuanna.api.dto.CommentDto;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -20,6 +25,8 @@ import lombok.Setter;
 
 @Entity(name = "Comment")
 @Table(name = "t_comment")
+@SQLDelete(sql = "UPDATE t_comment SET is_deleted = true WHERE id = ?")
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder
@@ -38,8 +45,9 @@ public class Comment extends BaseEntity {
 	private User user;
 
 	private String content;
-
-	private Boolean isDeleted;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	private EventDetail eventDetail;
 
 	@Override
 	public boolean equals(final Object o) {
@@ -76,7 +84,7 @@ public class Comment extends BaseEntity {
           roleName,
           this.content,
           createdAt,
-          this.isDeleted
+          this.getIsDeleted()
         );
     // @formatter:on
 	}

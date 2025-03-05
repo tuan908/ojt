@@ -13,12 +13,13 @@ import com.tuanna.api.repository.UserRepository;
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
-	private static ResourceBundle messageBundle = ResourceBundle.getBundle("messages");
+	private final ResourceBundle messageBundle;
 
 	private final UserRepository userRepository;
 
 	public CustomUserDetailsService(UserRepository userRepository) {
 		this.userRepository = userRepository;
+		messageBundle = ResourceBundle.getBundle("messages");
 	}
 
 	@Override
@@ -35,6 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	/**
 	 * Find User By ID
+	 *
 	 * @param uid The userID to find
 	 * @return UserDetails
 	 */

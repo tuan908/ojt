@@ -7,8 +7,8 @@ import type {
     Student,
     StudentEvent,
     StudentsResponse,
-} from "@/types/student";
-import type { TrackingData } from "@/types/tracking";
+} from "@/types/student.types";
+import type { TrackingData } from "@/types/tracking.types";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 

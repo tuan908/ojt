@@ -3,8 +3,12 @@ package com.tuanna.api.entity;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,20 +17,37 @@ import lombok.Setter;
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
-	@Serial
-	private static final long serialVersionUID = -6447104920246140053L;
+    @Serial
+    private static final long serialVersionUID = -6447104920246140053L;
 
-	private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-	private LocalDateTime updatedAt;
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
 
-	private Boolean isDeleted;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted;
 
-	@PrePersist
-	public void prePersist() {
-		this.setCreatedAt(LocalDateTime.now());
-		this.setUpdatedAt(LocalDateTime.now());
-		this.setIsDeleted(false);
-	}
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        this.setCreatedAt(now);
+        this.setUpdatedAt(now);
+        this.setIsDeleted(false);
+    }
 
+    @PreUpdate
+    public void preUpdate() {
+        this.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+    }
+
+    public void softDelete() {
+        this.setIsDeleted(true);
+        this.setUpdatedAt(LocalDateTime.now(ZoneOffset.UTC));
+    }
+
+    public boolean isDeleted() {
+        return Boolean.TRUE.equals(this.isDeleted);
+    }
 }

@@ -2,6 +2,9 @@ package com.tuanna.api.entity;
 
 import java.io.Serial;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.DialectOverride.SQLRestriction;
+
 import com.tuanna.api.dto.EventDto;
 
 import jakarta.persistence.Column;
@@ -19,6 +22,8 @@ import lombok.Setter;
 
 @Entity(name = "Event")
 @Table(name = "t_event")
+@SQLDelete(sql = "UPDATE t_event SET is_deleted = true WHERE id = ?")
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder
