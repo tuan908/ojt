@@ -1,4 +1,4 @@
-import { createAppSlice } from "../../configs/base-slice.config";
+import { createAppSlice } from "@/redux/slice";
 
 type LoadingState = { isLoading: boolean };
 

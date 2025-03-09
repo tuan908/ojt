@@ -5,16 +5,18 @@ import java.util.List;
 import org.springframework.data.web.PagedModel;
 import org.springframework.lang.NonNull;
 
+import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.EventDetailDto;
 import com.tuanna.api.dto.RegisterEventDto;
 import com.tuanna.api.dto.RegisterEventResponseDto;
+import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.StudentEventRequestDto;
 import com.tuanna.api.dto.StudentEventsDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 
 public interface StudentService {
 
-  PagedModel<?> find(StudentEventRequestDto dto);
+  ApiResponse<List<StudentEventDto>> findAll(StudentEventRequestDto dto);
 
   Boolean updateEventStatus(UpdateEventStatusDto dto);
 

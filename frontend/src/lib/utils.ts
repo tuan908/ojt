@@ -4,7 +4,11 @@ import { RecursivelyReplaceNullWithUndefined } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export const convertRole = (role?: string) => {
+export function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
+
+export function convertRole(role?: string) {
     switch (role) {
         case UserRole.Counselor:
             return json.role.counselor;
@@ -21,9 +25,7 @@ export const convertRole = (role?: string) => {
         default:
             throw new Error("Invalid Role");
     }
-};
-
-export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+}
 
 export function nullsToUndefined<T>(
     obj: T

@@ -2,13 +2,13 @@
 
 import { EventStatus, PAGE_SIZE } from "@/constants";
 import API from "@/lib/api";
+import { ApiResponse } from "@/types";
 import type {
-    Page,
     Student,
     StudentEvent,
-    StudentsResponse,
-} from "@/types/student.types";
-import type { TrackingData } from "@/types/tracking.types";
+    StudentsResponse
+} from "@/types/student";
+import type { TrackingData } from "@/types/tracking";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -28,7 +28,7 @@ export const getStudents = cache(async (dto?: Student) => {
         body = dto;
     }
 
-    const data = await API.SPRING_API.post<Page<StudentsResponse>>("/students", {
+    const data = await API.SPRING_API.post<ApiResponse<StudentsResponse[]>>("/students", {
         ...body,
         pageNumber: 1,
         pageSize: PAGE_SIZE,

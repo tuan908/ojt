@@ -1,5 +1,5 @@
-import type { Hashtag } from "@/types/common-action.types";
-import type { Comment } from "@/types/event-action.types";
+import type { Hashtag } from "@/types/common";
+import type { Comment } from "@/types/event";
 
 type EventDetailData = {
     eventsInSchoolLife: string;

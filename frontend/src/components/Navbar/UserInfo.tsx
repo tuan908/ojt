@@ -1,17 +1,19 @@
-import { getSession } from "@/app/actions/event.action";
 import json from "@/i18n/jp.json";
-import { convertRole } from "@/utils";
+import { convertRole } from "@/lib/utils";
 
-// TODO: Remove flicker when set user info
-export default async function UserInfo() {
-    const auth = await getSession();
-
+export default async function UserInfo({
+    fullName,
+    role,
+}: {
+    fullName?: string;
+    role?: string;
+}) {
     return (
         <div className="flex flex-col">
             <h1 className="text-xl font-normal text-[#abb7bc]">
-                {json.common.hello} {auth?.name}
+                {json.common.hello} {fullName}
             </h1>
-            <h1 className="text-[#c3cbcf]">{convertRole(auth?.role)}</h1>
+            <h1 className="text-[#c3cbcf]">{convertRole(role)}</h1>
         </div>
     );
 }

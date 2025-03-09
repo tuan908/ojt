@@ -1,5 +1,5 @@
 import { UserRole } from "@/constants";
-import type { JwtPayload } from "@/lib/auth";
+import type { JwtPayload } from "@/lib/session";
 
 type StudentInfoProps = {
     info?: {

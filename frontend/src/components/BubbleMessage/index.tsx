@@ -1,11 +1,12 @@
-import { deleteComment } from "@/app/actions/student.action";
-import Button from "@/components/Button";
-import { type Comment } from "@/types/event-action.types";
-import { cn } from "@/utils";
+import { deleteComment } from "@/app/actions/student";
+import json from "@/i18n/jp.json";
+import { cn, convertRole } from "@/lib/utils";
+import { type Comment } from "@/types/event";
+import { Edit } from "@mui/icons-material";
 import Delete from "@mui/icons-material/Delete";
-import Edit from "@mui/icons-material/Edit";
+import { Tooltip } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
-import { type RefObject, useCallback } from "react";
+import { type RefObject, useCallback, useState } from "react";
 
 type CommentPayload = Pick<
     Comment,
@@ -29,7 +30,6 @@ interface BubbleMessageProps {
 export default function BubbleMessage({
     comment,
     isCommentOfActiveUser,
-    editState,
     setEditState,
     setComment,
     comments,
@@ -37,7 +37,7 @@ export default function BubbleMessage({
     inputRef,
 }: BubbleMessageProps) {
     // Compute `show` dynamically instead of using state
-    const showActions = isCommentOfActiveUser && editState.id !== comment.id;
+    const [showActions, setShow] = useState(false);
 
     const handleDelete = useCallback(async () => {
         await deleteComment({
@@ -60,30 +60,58 @@ export default function BubbleMessage({
         inputRef?.current?.focus();
     }, [comment, setEditState, setComment, inputRef]);
 
+    const handleMouseEnter = () => setShow(true);
+
+    const handleMouseLeave = () => setShow(false);
+
     return (
-        <div className={cn("w-full flex items-center gap-x-6", isCommentOfActiveUser && "flex-row-reverse")}>
-            <div className="hidden md:flex flex-col gap-y-2 items-center w-24">
-                <Avatar sx={{ width: 56, height: 56, bgcolor: "#d87579" }} />
-                <span className="bg-[#00c853] text-white font-medium rounded-xl text-center px-2 py-1">
-                    {comment.roleName}
-                </span>
+        <div
+            className={cn(
+                "w-full flex items-center gap-x-6",
+                isCommentOfActiveUser && "flex-row-reverse"
+            )}
+        >
+            <div className="w-28">
+                <div className="w-full hidden md:flex flex-col gap-y-2 items-center ">
+                    <Avatar
+                        sx={{ width: 56, height: 56, bgcolor: "#d87579" }}
+                    />
+                    <span className="bg-[#00c853] text-white font-medium rounded-xl text-center px-2 py-1">
+                        {convertRole(comment.roleName)}
+                    </span>
+                </div>
             </div>
             <div className="w-full md:w-1/2 relative">
                 <div
                     className="bg-[#fcf8ed] flex flex-col px-4 py-2 rounded-lg hover:cursor-pointer border"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                 >
-                    <span className="font-semibold text-[#058af4]">{comment.name}</span>
+                    <span className="font-semibold text-[#058af4]">
+                        {comment.name}
+                    </span>
                     <span className="py-2">{comment.content}</span>
                     <span className="text-[12px]">{comment.createdAt}</span>
 
                     {showActions && (
-                        <div className="absolute top-1 right-2 bg-transparent flex">
-                            <Button classes="px-1" onClick={enableEdit}>
-                                <Edit className="text-icon-default" />
-                            </Button>
-                            <Button onClick={handleDelete}>
-                                <Delete color="error" />
-                            </Button>
+                        <div className="absolute top-1 right-1 flex items-center gap-x-3 bg-white rounded-md px-2 py-1">
+                            <Tooltip title={json.common.edit}>
+                                <button
+                                    onClick={enableEdit}
+                                    className="cursor-pointer"
+                                >
+                                    <Edit className="text-icon-default" />
+                                </button>
+                            </Tooltip>
+
+                            <Tooltip title={json.common.delete}>
+                                <button
+                                    onClick={handleDelete}
+                                    className="cursor-pointer"
+                                >
+                                    <Delete color="error" />
+                                </button>
+                            </Tooltip>
                         </div>
                     )}
                 </div>

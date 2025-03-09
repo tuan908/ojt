@@ -1,6 +1,6 @@
 "use client";
 
-import { getStudents } from "@/app/actions/student.action";
+import { getStudents } from "@/app/actions/student";
 import ColorHashtag from "@/components/ColorHashtag";
 import Select, { type SelectOption } from "@/components/Select";
 import {
@@ -14,8 +14,9 @@ import {
     showLoading,
 } from "@/redux/features/loading/loading.slice";
 import { useAppDispatch } from "@/redux/hooks";
-import type { Grade, Hashtag } from "@/types/common-action.types";
-import type { Page, Student, StudentsResponse } from "@/types/student.types";
+import { ApiResponse } from "@/types";
+import type { Grade, Hashtag } from "@/types/common";
+import type { Student, StudentsResponse } from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
 import Search from "@mui/icons-material/Search";
 import {
@@ -27,10 +28,10 @@ import {
     type AutocompleteInputChangeReason,
 } from "@mui/material";
 import { useState, type SyntheticEvent } from "react";
-import StudentDataGrid from "./StudentDataGrid";
+import StudentDataGrid from "./StudentDatatable";
 
-type SearchAreaProps = Partial<{
-    students: Page<StudentsResponse>;
+type StudentContentProps = Partial<{
+    students: ApiResponse<StudentsResponse[]>;
     grades: Grade[];
     hashtags: Hashtag[];
     events: SelectOption[];
@@ -41,17 +42,17 @@ type Skill = {
     color: string;
 };
 
-export default function SearchArea({
+export default function StudentContent({
     students,
     grades,
     hashtags,
     events,
-}: SearchAreaProps) {
+}: StudentContentProps) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const [skills, setSkills] = useState<Skill[]>([]);
     const [inputValue, setInputValue] = useState(STRING_EMPTY);
-    const [rows, setRows] = useState<StudentsResponse[]>(students?.content!);
+    const [rows, setRows] = useState<StudentsResponse[]>(students!?.data!);
     const [searchCondition, setSearchCondition] = useState<Student>({
         events: DEFAULT_EVENT_OPTION,
         grade: DEFAULT_GRADE_NAME_OPTION,
@@ -141,7 +142,7 @@ export default function SearchArea({
             };
 
             const students = await getStudents(searchParams);
-            setRows(students!?.content);
+            setRows(students?.data ?? []);
         } catch (error: any) {
             throw new Error(error?.message);
         }
@@ -264,7 +265,7 @@ export default function SearchArea({
             <StudentDataGrid rows={rows} />
             <div className="w-full flex justify-end items-center pr-12">
                 <Pagination
-                    count={students?.page?.totalPage}
+                    count={students?.pagination!?.totalPages}
                     variant="outlined"
                     shape="rounded"
                 />

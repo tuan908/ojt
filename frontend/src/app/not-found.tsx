@@ -1,16 +1,16 @@
 import { UserRole } from "@/constants";
+import { verifySession } from "@/lib/dal";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Link from "next/link";
-import { getSession } from "./actions/event.action";
 
 export default async function NotFound() {
-    const auth = await getSession();
+    const session = await verifySession();
 
     let href = "";
-    if (!auth) {
+    if (!session) {
         href = "/login";
-    } else if (auth?.role === UserRole.Student) {
-        href = "/students/" + auth?.code;
+    } else if (session?.role === UserRole.Student) {
+        href = "/students/" + session?.code;
     } else {
         href = "/students";
     }

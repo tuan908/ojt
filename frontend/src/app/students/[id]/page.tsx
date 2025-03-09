@@ -1,13 +1,13 @@
-import { getEvents, getGrades } from "@/app/actions/common.action";
-import { getSession } from "@/app/actions/event.action";
-import { getStudentByCode } from "@/app/actions/student.action";
+import { getEvents, getGrades } from "@/app/actions/common";
+import { getStudentByCode } from "@/app/actions/student";
 import PageWrapper from "@/components/PageWrapper";
+import { verifySession } from "@/lib/dal";
 import { type DynamicPageProps } from "@/types";
 import { CircularProgress } from "@mui/material";
 import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
 import Header from "./Header";
-import SearchArea from "./SearchArea";
+import StudentDetailContent from "./StudentDetailContent";
 import StudentInfo from "./StudentInfo";
 
 type Props = {
@@ -33,7 +33,7 @@ export async function generateMetadata(
 export default async function Page({ params }: DynamicPageProps) {
     const {id} = await params;
     const [auth, grades, events, info] = await Promise.all([
-        getSession(),
+        verifySession(),
         getGrades(),
         getEvents(),
         getStudentByCode(id),
@@ -42,7 +42,7 @@ export default async function Page({ params }: DynamicPageProps) {
     return (
         <div className="flex flex-col w-full h-full m-auto">
             <Suspense fallback={<>Loading student info...</>}>
-                <Header code={id} eventOptions={events!} />
+                <Header code={id} eventOptions={events!} role={auth?.role} />
             </Suspense>
             <PageWrapper>
                 {/* Student Info */}
@@ -65,11 +65,12 @@ export default async function Page({ params }: DynamicPageProps) {
                         </div>
                     }
                 >
-                    <SearchArea
+                    <StudentDetailContent
                         id={id}
                         grades={grades!}
                         events={events!}
                         data={info!}
+                        auth={auth}
                     />
                 </Suspense>
             </PageWrapper>

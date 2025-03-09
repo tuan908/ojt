@@ -1,9 +1,9 @@
-import { getEvents, getGrades, getHashtags } from "@/app/actions/common.action";
-import { getStudents } from "@/app/actions/student.action";
+import { getEvents, getGrades, getHashtags } from "@/app/actions/common";
+import { getStudents } from "@/app/actions/student";
 import Navbar from "@/components/Navbar";
 import PageWrapper from "@/components/PageWrapper";
 import type { Metadata } from "next";
-import SearchArea from "./SearchArea";
+import StudentContent from "./StudentContent";
 
 export const metadata: Metadata = {
     title: "リスト | 学生イベントリスト",
@@ -23,8 +23,8 @@ export default async function Page() {
             <Navbar />
             <div className="w-full h-full flex-1 flex justify-center items-center bg-[#ededed]">
                 <PageWrapper gapY>
-                    <SearchArea
-                        students={students!}
+                    <StudentContent
+                        students={students}
                         grades={grades!}
                         events={events!}
                         hashtags={hashtags!}

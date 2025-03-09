@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.hibernate.Session;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.tuanna.api.constant.EventStatus;
+import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.EventDetailDto;
+import com.tuanna.api.dto.Pagination;
 import com.tuanna.api.dto.RegisterEventDto;
 import com.tuanna.api.dto.RegisterEventResponseDto;
 import com.tuanna.api.dto.StudentEventDto;
@@ -57,15 +61,16 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public PagedModel<?> find(StudentEventRequestDto dto) {
+	@Cacheable(value = "students", key = "#dto.toString()") // Redis caching
+	public ApiResponse<List<StudentEventDto>> findAll(StudentEventRequestDto dto) {
 		var parameters = new HashMap<String, Object>();
 		var sql = new StringBuilder("""
-				select s from com.tuanna.api.entity.Student s
-				left join fetch s.events ev
+				select distinct s from com.tuanna.api.entity.Student s
+				join fetch s.events ev
 				join fetch ev.detail
 				join fetch s.user u
 				join fetch s.grade g
-				left join fetch s.hashtags h
+				join fetch s.hashtags h
 				""");
 
 		var whereClause = new StringBuilder(" where 1 = 1");
@@ -92,27 +97,27 @@ public class StudentServiceImpl implements StudentService {
 
 		sql.append(whereClause).append(" order by s.code");
 
-		TypedQuery<Student> query = this.entityManager.createQuery(sql.toString(), Student.class);
+		// Batch Processing Optimization
+		var session = entityManager.unwrap(Session.class);
+		session.setJdbcBatchSize(100);
+
+		TypedQuery<Student> query = entityManager.createQuery(sql.toString(), Student.class);
 		parameters.forEach(query::setParameter);
 
-		// Pagination
-		int firstResult = (dto.pageNumber() - 1) * dto.pageSize();
-		query.setFirstResult(firstResult);
+		query.setFirstResult((dto.pageNumber() - 1) * dto.pageSize());
 		query.setMaxResults(dto.pageSize());
 
 		List<StudentEventDto> data = query.getResultList().stream().map(Student::toDto).toList();
 
 		// Count Query for Total Records
-		var countSql = new StringBuilder("select count(s) from com.tuanna.api.entity.Student s ");
+		var countSql = new StringBuilder("select count(distinct s) from com.tuanna.api.entity.Student s ");
 		countSql.append(whereClause);
-		TypedQuery<Long> countQuery = this.entityManager.createQuery(countSql.toString(), Long.class);
+		TypedQuery<Long> countQuery = entityManager.createQuery(countSql.toString(), Long.class);
 		parameters.forEach(countQuery::setParameter);
 		long totalElements = countQuery.getSingleResult();
 
-		var pagedModel = new PagedModel<>(
-				new PageImpl<>(data, PageRequest.of(dto.pageNumber(), dto.pageSize()), totalElements));
-
-		return pagedModel;
+		// API Response using custom paging
+		return ApiResponse.paginated(data, null, Pagination.of(dto.pageNumber(), dto.pageSize(), totalElements));
 	}
 
 	@Override

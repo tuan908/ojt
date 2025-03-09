@@ -1,7 +1,8 @@
 "use client";
 
 import useInfo from "@/hooks/useInfo";
-import { type JwtPayload } from "@/lib/auth";
+import json from "@/i18n/jp.json";
+import { type JwtPayload } from "@/lib/session";
 import EventIcon from "@mui/icons-material/Event";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
@@ -16,7 +17,6 @@ import {
     ListItemText,
 } from "@mui/material";
 import { useState } from "react";
-import json from "@/i18n/jp.json";
 
 type SidebarProps = {
     auth?: JwtPayload;

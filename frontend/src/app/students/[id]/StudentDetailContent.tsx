@@ -1,6 +1,6 @@
 "use client";
 
-import { getEventsByStudentCodeWithQuery } from "@/app/actions/student.action";
+import { getEventsByStudentCodeWithQuery } from "@/app/actions/student";
 import { Checkbox } from "@/components/Checkbox";
 import Select, { type SelectOption } from "@/components/Select";
 import {
@@ -9,8 +9,9 @@ import {
     EventStatus,
 } from "@/constants";
 import json from "@/i18n/jp.json";
-import type { Grade } from "@/types/common-action.types";
-import { StudentEvent } from "@/types/student.types";
+import { JwtPayload } from "@/lib/session";
+import type { Grade } from "@/types/common";
+import { StudentEvent } from "@/types/student";
 import Search from "@mui/icons-material/Search";
 import { Pagination } from "@mui/material";
 import { type SelectChangeEvent } from "@mui/material/Select";
@@ -21,13 +22,14 @@ import {
     type ChangeEventHandler,
     type ReactNode,
 } from "react";
-import EventGrid from "./EventGrid";
+import StudentEventsDatatable from "./StudentEventsDatatable";
 
 type SearchAreaProps = {
     id: string;
     grades?: Grade[];
     events?: SelectOption[];
     data: StudentEvent;
+    auth: JwtPayload | undefined
 };
 
 type MuiSelectChangeHandler = (
@@ -42,11 +44,12 @@ type CheckboxState = {
     [x: string]: boolean;
 };
 
-export default function SearchArea({
+export default function StudentDetailContent({
     data: _data,
     id,
     events,
     grades,
+    auth
 }: SearchAreaProps) {
     const router = useRouter();
     const [data, setData] = useState<StudentEvent["events"]>(_data?.events);
@@ -180,10 +183,12 @@ export default function SearchArea({
 
             {/* Table */}
             <div className="w-full px-10 pt-6">
-                <EventGrid
+                <StudentEventsDatatable
                     data={data!}
                     studentId={_data?.id}
                     code={id}
+                    role={auth?.role!}
+                    username={auth?.username}
                 />
             </div>
             <div className="w-full flex justify-end items-center pr-6 pt-4">

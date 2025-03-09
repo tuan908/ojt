@@ -3,15 +3,15 @@
 import { DEFAULT_EVENT_OPTION } from "@/constants";
 import json from "@/i18n/jp.json";
 import API from "@/lib/api";
-import { decrypt } from "@/lib/auth";
+import { decrypt } from "@/lib/session";
 import { registerEventSchema } from "@/lib/zod";
 import { StatusCode } from "@/types";
 import type {
     AddCommentPayload,
     Comment,
     RegisterEvent,
-} from "@/types/event-action.types";
-import type { EventDetail, StudentEvent } from "@/types/student.types";
+} from "@/types/event";
+import type { EventDetail, StudentEvent } from "@/types/student";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
@@ -83,26 +83,12 @@ export async function editComment(data: Omit<AddCommentPayload, "username">) {
     return result;
 }
 
-/**
- * getSession
- * @returns Session payload
- */
-export async function getSession() {
-    const reqCookies = await cookies();
-    const token = reqCookies.get("token")?.value;
-    if (!token || !(await decrypt(token))) {
-        return undefined;
-    }
-
-    return await decrypt(token);
-}
 
 export async function addEvent(_prevState: unknown, formData: FormData) {
     const reqCookies = await cookies();
-    if (!reqCookies.get("token")) {
+    if (!reqCookies.get("session")) {
         redirect("/login");
     }
-    const auth = await decrypt(reqCookies.get("token")?.value!);
     const rawFormData = Object.fromEntries(formData) as RegisterEvent["data"];
     if (formData.get("eventName") === DEFAULT_EVENT_OPTION) {
         return {
@@ -113,14 +99,16 @@ export async function addEvent(_prevState: unknown, formData: FormData) {
             },
         };
     }
+
+    const session = await decrypt(reqCookies.get("token")?.value!);
     const registerEventData: RegisterEvent = {
-        username: auth?.username!,
-        gradeName: auth?.grade!,
-        studentCode: auth?.code!,
+        username: session?.username!,
+        gradeName: session?.grade!,
+        studentCode: session?.code!,
         data: rawFormData,
     };
 
-    await API.SPRING_API.post(`/students/${auth?.code}/events`, registerEventData);
+    await API.SPRING_API.post(`/students/${session?.code}/events`, registerEventData);
     revalidatePath("/students/[id]", "page");
     return {
         code: StatusCode.Success,

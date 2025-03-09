@@ -1,5 +1,5 @@
 import { MEDIA_QUERY } from "@/constants";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@mui/material";
 import { type ComponentProps } from "react";
 

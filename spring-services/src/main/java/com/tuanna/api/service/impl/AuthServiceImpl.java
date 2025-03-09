@@ -4,6 +4,7 @@ import java.util.ResourceBundle;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.LoginDto;
@@ -19,6 +20,7 @@ import com.tuanna.api.service.AuthService;
 import jakarta.persistence.EntityManager;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
 	private final StudentRepository studentRepository;
@@ -56,7 +58,11 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		// Fetch student details if available
-		Student student = this.studentRepository.findById(user.getId()).orElse(null);
+		String qlString = "select s from com.tuanna.api.entity.Student s where s.user.id = :id";
+		var q = this.entityManager.createQuery(qlString, Student.class);
+		q.setParameter("id", user.getId());
+		
+		Student student = q.getResultStream().findFirst().orElse(null);
 
 		// Generate JWT token
 		String token = jwtService.generateToken(new CustomUserDetails(user));

@@ -8,9 +8,10 @@
         "password_max_length": "パスワードは 32 文字未満である必要があります。",
         "user_not_found": "ユーザーが見つかりません。",
         "password_mismatch": "パスワードが間違っているか、ユーザーが存在しません。",
-        "server": "内部サーバーエラー",
+        "server_error": "内部サーバーエラー",
         "try_again": "あとでもう一度試してみてください",
-        "select_event_required": "イベントを選択してください"
+        "select_event_required": "イベントを選択してください",
+        "invalid_response": "Invalid response"
     },
     "table": {
         "header": {
@@ -21,6 +22,13 @@
                 "events": "イベント",
                 "hashtags": "ハッシュタグ",
                 "tracking": "トラッキング"
+            },
+            "studentEvents": {
+                "notification": "通知",
+                "status": "ステータス",
+                "name": "イベント",
+                "grade": "クラス名",
+                "action": "アクション"
             }
         }
     },
@@ -30,7 +38,15 @@
         "student_name": "学生の名前",
         "hashtag": "#ハッシュタグ",
         "hello": "こにちは",
-        "application_name": "社会人基礎力"
+        "application_name": "社会人基礎力",
+        "error": "エラー",
+        "edit": "編集",
+        "delete": "消去",
+        "return": "返る",
+        "logout": "ログアウト",
+        "emoji": "絵文字",
+        "view_statistics": "追跡データ",
+        "done": "終わり"
     },
     "role": {
         "student": "学生",

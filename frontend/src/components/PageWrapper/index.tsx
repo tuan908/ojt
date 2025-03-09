@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { useMemo, type ReactNode } from "react";
 
 type PageWrapperProps = Readonly<{ children: ReactNode; gapY?: boolean }>;

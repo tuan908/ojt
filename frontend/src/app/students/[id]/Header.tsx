@@ -1,11 +1,10 @@
 "use client";
 
-import { addEvent } from "@/app/actions/event.action";
+import { addEvent } from "@/app/actions/event";
 import { FormItem } from "@/components/Form/FormItem";
 import SubmitButton from "@/components/Form/SubmitButton";
 import { type SelectOption } from "@/components/Select";
 import { menuProps, UserRole } from "@/constants";
-import { useAuth } from "@/hooks/useAuth";
 import json from "@/i18n/jp.json";
 import { StatusCode } from "@/types";
 import Close from "@mui/icons-material/Close";
@@ -16,12 +15,12 @@ import AddEventButton from "./AddEventButton";
 interface HeaderProps {
     eventOptions: SelectOption[];
     code: string;
+    role?: string
 }
 
 export default function Header(props: HeaderProps) {
     const [open, setOpen] = useState(false);
     const [state, action, isSubmitting] = useActionState(addEvent, null);
-    const { auth } = useAuth();
 
     const handleOpen = () => setOpen(true);
 
@@ -39,7 +38,7 @@ export default function Header(props: HeaderProps) {
     return (
         <div className="w-24/25 m-auto flex items-center pb-3">
             <AddEventButton
-                hide={auth?.role !== UserRole.Student}
+                hide={props.role !== UserRole.Student}
                 onClick={handleOpen}
             />
             <Modal

@@ -10,6 +10,8 @@ export type UserInfo = {
     code: string;
 };
 
+export type LoginResponseDto = UserInfo & { accessToken: string };
+
 /**
  * Login State
  */

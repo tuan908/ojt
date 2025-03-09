@@ -1,7 +1,7 @@
 "use client";
 
-import type { JwtPayload } from "@/lib/auth";
-import { convertRole } from "@/utils";
+import type { JwtPayload } from "@/lib/session";
+import { convertRole } from "@/lib/utils";
 import { useMemo } from "react";
 
 export default function useInfo(auth?: JwtPayload) {

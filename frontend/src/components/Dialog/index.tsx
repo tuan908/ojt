@@ -1,6 +1,6 @@
 import Button from "@/components/Button";
 import json from "@/i18n/jp.json";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import {
     DialogActions,
     DialogContent,

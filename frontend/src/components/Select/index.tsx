@@ -1,7 +1,7 @@
 "use client";
 
 import { menuProps, sx } from "@/constants";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import {
     MenuItem,
     Select as MuiSelect,

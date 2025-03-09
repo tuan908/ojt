@@ -1,5 +1,6 @@
 import { EventStatus } from "@/constants";
 import json from "@/i18n/jp.json";
+import { cn } from "@/lib/utils";
 
 type StatusLabelProps = {
     status: number;
@@ -27,7 +28,7 @@ export default function StatusLabel({ status }: StatusLabelProps) {
     };
 
     return (
-        <span className={`text-white px-4 py-2 font-medium rounded-2xl shadow-md ${color}`}>
+        <span className={cn("text-white px-3 py-1 font-medium rounded-2xl shadow-md", color)}>
             {label}
         </span>
     );

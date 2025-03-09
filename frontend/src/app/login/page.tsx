@@ -1,7 +1,7 @@
 "use client";
 
 import json from "@/i18n/jp.json";
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";
 import Visibility from "@mui/icons-material/Visibility";
@@ -15,7 +15,7 @@ import {
     useState,
     type SyntheticEvent,
 } from "react";
-import { login } from "../actions/auth.action";
+import { login } from "../actions/auth";
 
 type LoginFormState = {
     username: string;

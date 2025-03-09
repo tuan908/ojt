@@ -1,4 +1,4 @@
-import type { UserInfo } from "@/types/auth-action.types";
+import type { UserInfo } from "@/types/auth";
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 
 export type JwtPayload = JWTPayload & {
@@ -10,12 +10,12 @@ export type JwtPayload = JWTPayload & {
 };
 
 function getJwtSecretKey(): Uint8Array {
-    const jwtSecretKey = process.env["NEXT_PUBLIC_JWT_SECRET_KEY"];
+    const sessionSecret = process.env.SESSION_SECRET;
 
-    if (!jwtSecretKey) {
+    if (!sessionSecret) {
         throw new Error("JWT Secret key is not defined");
     }
-    return new TextEncoder().encode(jwtSecretKey);
+    return new TextEncoder().encode(sessionSecret);
 }
 
 export async function decrypt(input: string) {
@@ -35,10 +35,9 @@ export async function decrypt(input: string) {
  * @author tuanna
  */
 export async function encrypt(dto: UserInfo) {
-    const token = await new SignJWT(dto)
+    return await new SignJWT(dto)
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
-        .setExpirationTime("7 days")
+        .setExpirationTime("1 days")
         .sign(getJwtSecretKey());
-    return token;
 }

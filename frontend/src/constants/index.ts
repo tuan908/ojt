@@ -100,3 +100,6 @@ export const MEDIA_QUERY = {
     XL: "(min-width:1280px)",
     "2XL": "(min-width:1536px)",
 } as const;
+
+
+export const SESSION = "session";

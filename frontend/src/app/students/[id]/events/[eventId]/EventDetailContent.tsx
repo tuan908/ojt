@@ -1,33 +1,23 @@
 "use client";
 
-import {
-    addComment,
-    editComment,
-    registerEvent,
-} from "@/app/actions/event.action";
+import { addComment, editComment, registerEvent } from "@/app/actions/event";
 import BubbleMessage from "@/components/BubbleMessage";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { type SelectOption } from "@/components/Select";
 import Textarea from "@/components/Textarea";
 import { menuProps, ScreenMode, UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import type { JwtPayload } from "@/lib/auth";
+import type { JwtPayload } from "@/lib/session";
 import {
     hideLoading,
     showLoading,
 } from "@/redux/features/loading/loading.slice";
 import { useAppDispatch } from "@/redux/hooks";
-import type { Hashtag } from "@/types/common-action.types";
-import type {
-    AddCommentPayload,
-    Comment,
-    RegisterEvent,
-} from "@/types/event-action.types";
-import type { EventDetail } from "@/types/student.types";
+import type { Hashtag } from "@/types/common";
+import type { AddCommentPayload, Comment, RegisterEvent } from "@/types/event";
+import type { EventDetail } from "@/types/student";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
-import Close from "@mui/icons-material/Close";
-import Send from "@mui/icons-material/Send";
 import SentimentSatisfiedAlt from "@mui/icons-material/SentimentSatisfiedAlt";
 import {
     Autocomplete,
@@ -35,11 +25,13 @@ import {
     MenuItem,
     Select,
     TextField,
+    Tooltip,
     useMediaQuery,
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
     type SelectProps,
 } from "@mui/material";
+import { X as Close, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
     Fragment,
@@ -497,7 +489,8 @@ export default function EventDetailContent({
                                     disablePortal
                                     freeSolo
                                 />
-                                <button
+                              <Tooltip title={json.common.emoji}>
+                              <button
                                     onClick={() => setOpen(!openPicker)}
                                     className="absolute top-1 right-2 z-50"
                                 >
@@ -506,9 +499,10 @@ export default function EventDetailContent({
                                             sx={{ width: 22, height: 22 }}
                                         />
                                     ) : (
-                                        <Close sx={{ width: 22, height: 22 }} />
+                                        <Close size={22} />
                                     )}
                                 </button>
+                              </Tooltip>
                                 {openPicker ? (
                                     <div className="absolute -right-12 -top-0 lg:top-6">
                                         <EmojiPicker
@@ -528,14 +522,7 @@ export default function EventDetailContent({
                                 onClick={handleAddComment}
                                 disabled={comment?.content!?.length === 0}
                             >
-                                <Send
-                                    className="-rotate-[50deg]"
-                                    sx={{
-                                        width: 32,
-                                        height: 32,
-                                        color: "#0078ff",
-                                    }}
-                                />
+                                <Send size={32} className="text-icon-default" />
                             </button>
                             {editState.isEditing ? (
                                 <button
@@ -544,11 +531,8 @@ export default function EventDetailContent({
                                     disabled={comment?.content!?.length === 0}
                                 >
                                     <Close
-                                        sx={{
-                                            width: 32,
-                                            height: 32,
-                                            color: "#0078ff",
-                                        }}
+                                        className="text-icon-default"
+                                        size={32}
                                     />
                                 </button>
                             ) : null}

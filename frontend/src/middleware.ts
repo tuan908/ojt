@@ -1,4 +1,4 @@
-import { decrypt } from "@/lib/auth";
+import { decrypt } from "@/lib/session";
 import { NextResponse, type NextRequest } from "next/server";
 import { Route, UserRole } from "./constants";
 
@@ -7,7 +7,7 @@ export const config = {
 };
 
 export async function middleware(request: NextRequest) {
-    const token = request.cookies.get("token");
+    const session = request.cookies.get("session");
     const currentPath = request.nextUrl.pathname;
 
     const loginUrl = new URL(Route.Login, request.url);
@@ -15,8 +15,8 @@ export async function middleware(request: NextRequest) {
 
     // Allow access to the login page without authentication
     if (currentPath === Route.Login) {
-        if (token) {
-            const maybeValidToken = await decrypt(token.value);
+        if (session) {
+            const maybeValidToken = await decrypt(session.value);
             if (maybeValidToken) {
                 return handleAuthenticatedRedirect(maybeValidToken, request);
             }
@@ -24,11 +24,11 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    if (!token) {
+    if (!session) {
         return NextResponse.redirect(loginUrl);
     }
 
-    const maybeValidToken = await decrypt(token.value);
+    const maybeValidToken = await decrypt(session.value);
 
     if (!maybeValidToken) {
         return NextResponse.redirect(loginUrl);

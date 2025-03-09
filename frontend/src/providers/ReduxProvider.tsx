@@ -1,6 +1,6 @@
 "use client";
 
-import { makeStore, type AppStore } from "@/redux/configs/store.config";
+import { makeStore, type AppStore } from "@/redux/store";
 import type { LayoutProps } from "@/types";
 import { useRef } from "react";
 import { Provider } from "react-redux";

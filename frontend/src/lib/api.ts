@@ -1,4 +1,4 @@
-import { nullsToUndefined } from "@/utils";
+import { nullsToUndefined } from "@/lib/utils";
 
 export type HttpMethod = "GET" | "POST" | "DELETE";
 

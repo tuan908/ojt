@@ -1,6 +1,6 @@
-import { UserInfo } from "@/types/auth-action.types";
+import { createAppSlice } from "@/redux/slice";
+import { UserInfo } from "@/types/auth";
 import { type PayloadAction } from "@reduxjs/toolkit";
-import { createAppSlice } from "../../configs/base-slice.config";
 
 const initialState: { user?: UserInfo } = {};
 

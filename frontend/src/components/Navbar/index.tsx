@@ -1,21 +1,13 @@
-import { getSession } from "@/app/actions/event.action";
 import { Route, UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
-import Avatar from "@mui/material/Avatar";
+import { verifySession } from "@/lib/dal";
+import { convertRole } from "@/lib/utils";
 import Link from "next/link";
-import BackButton from "./BackButton";
-import LogoutButton from "./LogOut";
+import ActionMenu from "./ActionMenu";
 import Sidebar from "./Sidebar";
-import UserInfo from "./UserInfo";
-
-const avatarSx = {
-    width: 44,
-    height: 44,
-    bgcolor: "#31bafd",
-};
 
 export default async function Navbar() {
-    const auth = await getSession();
+    const auth = await verifySession();
     const href =
         auth?.role !== UserRole.Student
             ? Route.Students
@@ -32,17 +24,18 @@ export default async function Navbar() {
                 </Link>
             </div>
             <div className="hidden items-center justify-between gap-x-2 lg:flex">
-                {/* Back Button */}
-                <BackButton />
 
-                <LogoutButton />
-
-                <div className="pr-2">
-                    <Avatar sx={avatarSx} />
-                </div>
+               <ActionMenu name={auth?.name} />
 
                 {/* Username */}
-                <UserInfo />
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-normal text-[#abb7bc]">
+                        {json.common.hello} {auth?.name}
+                    </h1>
+                    <h1 className="text-[#c3cbcf]">
+                        {convertRole(auth?.role)}
+                    </h1>
+                </div>
             </div>
         </nav>
     );

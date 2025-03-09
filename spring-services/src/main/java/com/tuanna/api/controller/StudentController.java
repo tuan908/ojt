@@ -40,8 +40,8 @@ public class StudentController {
 
 	@PostMapping
 	@ResponseBody
-	public ResponseEntity<?> find(@RequestBody StudentEventRequestDto dto) {
-		var data = this.studentService.find(dto);
+	public ResponseEntity<?> getAll(@RequestBody StudentEventRequestDto dto) {
+		var data = this.studentService.findAll(dto);
 		return ResponseEntity.ok(data);
 	}
 

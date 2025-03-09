@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { useMemo, type ComponentProps } from "react";
 
 type TableCellVariant = "default" | "header" | "footer";

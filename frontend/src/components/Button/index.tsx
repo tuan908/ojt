@@ -1,4 +1,4 @@
-import { cn } from "@/utils";
+import { cn } from "@/lib/utils";
 import { type ComponentProps } from "react";
 
 type ButtonProps = ComponentProps<"button"> & {
