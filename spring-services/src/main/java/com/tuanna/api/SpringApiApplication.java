@@ -13,14 +13,14 @@ import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerial
 @EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
 public class SpringApiApplication {
 
-	public static void main(String[] args) {
-		List<String> finalArgs = new ArrayList<String>();
-		// Use profile local if exist:
-		if (!List.of(args).contains("--spring.profiles.active=default")) {
-			finalArgs.add("--spring.profiles.active=local");
-		}
+  public static void main(String[] args) {
+    List<String> finalArgs = new ArrayList<String>();
+    // Use profile local if exist:
+    if (!List.of(args).contains("--spring.profiles.active=default")) {
+      finalArgs.add("--spring.profiles.active=local");
+    }
 
-		SpringApplication.run(SpringApiApplication.class, finalArgs.toArray(String[]::new));
-	}
+    SpringApplication.run(SpringApiApplication.class, finalArgs.toArray(String[]::new));
+  }
 
 }

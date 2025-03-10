@@ -188,7 +188,7 @@ app.get("/:code/trackings", async ctx => {
         let data;
 
         if (result) {
-            const _hashtags = result.studentHashtag.sort((a, b) =>
+            const _hashtags = result.studentHashtag?.sort((a, b) =>
                 a.hashtag
                     .name!?.toLowerCase()
                     .localeCompare(b.hashtag.name!?.toLowerCase())
@@ -202,7 +202,7 @@ app.get("/:code/trackings", async ctx => {
                     doughnut: {
                         _data: _hashtags.map(h => {
                             return {
-                                value: (h.value as HashtagDetail[]).reduce(
+                                value: (h.value as HashtagDetail[])?.reduce(
                                     (sum: number, a) => sum + a.value,
                                     0
                                 ),
@@ -211,7 +211,7 @@ app.get("/:code/trackings", async ctx => {
                         }),
                         text: _hashtags
                             .map(h =>
-                                (h.value as HashtagDetail[]).reduce(
+                                (h.value as HashtagDetail[])?.reduce(
                                     (sum: number, a) => sum + a.value,
                                     0
                                 )
@@ -219,7 +219,7 @@ app.get("/:code/trackings", async ctx => {
                             .reduce((sum, a) => sum + a, 0),
                     },
                     stacked: _hashtags.map(hashtag => {
-                        const data = (hashtag.value as HashtagDetail[]).map(
+                        const data = (hashtag.value as HashtagDetail[])?.map(
                             h => h.value
                         );
                         return {

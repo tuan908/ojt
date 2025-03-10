@@ -10,17 +10,17 @@ import org.springframework.lang.NonNull;
 import com.tuanna.api.entity.EventDetail;
 
 public interface EventDetailRepository extends JpaRepository<EventDetail, Long> {
-    @Override
-    @NonNull
-    @Query(value = """
-        select
-            ed
-        from
-            com.tuanna.api.entity.EventDetail ed
-            left join fetch ed.comments
-        where
-            ed.id = :id
-            and ed.isDeleted = false
-    """)
-    Optional<EventDetail> findById(final @NonNull @Param(value = "id") Long id);
+  @Override
+  @NonNull
+  @Query(value = """
+          select
+              ed
+          from
+              com.tuanna.api.entity.EventDetail ed
+              left join fetch ed.comments
+          where
+              ed.id = :id
+              and ed.isDeleted = false
+      """)
+  Optional<EventDetail> findById(final @NonNull @Param(value = "id") Long id);
 }

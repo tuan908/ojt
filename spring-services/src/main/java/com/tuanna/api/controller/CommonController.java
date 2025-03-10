@@ -18,13 +18,13 @@ import com.tuanna.api.service.CommonService;
 public class CommonController {
 
   private final CommonService commonService;
-  
-  public CommonController(CommonService commonService) {
-	super();
-	this.commonService = commonService;
-}
 
-@GetMapping("/grades")
+  public CommonController(CommonService commonService) {
+    super();
+    this.commonService = commonService;
+  }
+
+  @GetMapping("/grades")
   public ResponseEntity<List<GradeDto>> getGrades() {
     var body = this.commonService.getGrades();
     return ResponseEntity.ok().body(body);
@@ -35,7 +35,7 @@ public class CommonController {
     var body = this.commonService.getEvents();
     return ResponseEntity.ok().body(body);
   }
-  
+
   @GetMapping("/hashtags")
   public ResponseEntity<List<HashtagDto>> getHashtags() {
     var data = this.commonService.getHashtags();

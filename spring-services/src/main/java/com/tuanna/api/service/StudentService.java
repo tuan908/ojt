@@ -21,11 +21,12 @@ public interface StudentService {
   Boolean updateEventStatus(UpdateEventStatusDto dto);
 
   RegisterEventResponseDto register(RegisterEventDto dto);
-  
+
   RegisterEventResponseDto update(RegisterEventDto dto);
 
   /**
    * Delete event and return updated list
+   * 
    * @param code Student code
    * @param id Event id
    * @return {@code List<EventDetailDto>}
@@ -35,5 +36,5 @@ public interface StudentService {
   EventDetailDto findById(@NonNull Long id);
 
   PagedModel<EventDetailDto> findEventsByStudentCode(StudentEventsDto request);
-  
+
 }

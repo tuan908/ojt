@@ -209,9 +209,11 @@ const studentHashtag = pgTable(
             .notNull(),
         value: jsonb("value"),
     },
-    t => ({
-        pk: primaryKey({ columns: [t.studentId, t.hashtagId] }),
-    })
+    t => [
+        {
+            pk: primaryKey({ columns: [t.studentId, t.hashtagId] }),
+        },
+    ]
 );
 
 const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({

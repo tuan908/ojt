@@ -21,49 +21,57 @@ import java.util.Map;
 @EnableCaching
 public class CacheConfig {
 
-	@Value("${spring.data.redis.host:localhost}")
-	private String redisHost;
+  @Value("${spring.data.redis.host:localhost}")
+  private String redisHost;
 
-	@Value("${spring.data.redis.port:6379}")
-	private int redisPort;
+  @Value("${spring.data.redis.port:6379}")
+  private int redisPort;
 
-	@Value("${spring.data.redis.password}")
-	private String redisPassword;
+  @Value("${spring.data.redis.password}")
+  private String redisPassword;
 
-	@Bean
-	LettuceConnectionFactory redisConnectionFactory() {
-		var redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
-		
-		if (redisPassword != null && !redisPassword.isEmpty()) {
-			redisConfig.setPassword(redisPassword);
-		}
+  @Bean
+  LettuceConnectionFactory redisConnectionFactory() {
+    var redisConfig = new RedisStandaloneConfiguration(redisHost, redisPort);
 
-		LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-				.commandTimeout(Duration.ofSeconds(5)) // Set timeout
-				.shutdownTimeout(Duration.ofMillis(100)) // Faster shutdown
-				.useSsl() // use Ssl connection
-				.build();
+    if (redisPassword != null && !redisPassword.isEmpty()) {
+      redisConfig.setPassword(redisPassword);
+    }
 
-		return new LettuceConnectionFactory(redisConfig, clientConfig);
-	}
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration
+        .builder()
+        .commandTimeout(Duration.ofSeconds(5)) // Set timeout
+        .shutdownTimeout(Duration.ofMillis(100)) // Faster shutdown
+        .useSsl() // use Ssl connection
+        .build();
 
-	@Bean
-	CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
-		// Default cache settings
-		RedisCacheConfiguration defaultCacheConfig = createCacheConfig(Duration.ofMinutes(10));
+    return new LettuceConnectionFactory(redisConfig, clientConfig);
+  }
 
-		// Custom cache settings
-		Map<String, RedisCacheConfiguration> cacheConfigurations = Map.of("grades",
-				createCacheConfig(Duration.ofHours(1)), "events", createCacheConfig(Duration.ofHours(4)), "hashtags",
-				createCacheConfig(Duration.ofDays(1)));
+  @Bean
+  CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+    // Default cache settings
+    RedisCacheConfiguration defaultCacheConfig = createCacheConfig(Duration.ofMinutes(10));
 
-		return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(defaultCacheConfig)
-				.withInitialCacheConfigurations(cacheConfigurations).build();
-	}
+    // Custom cache settings
+    Map<String, RedisCacheConfiguration> cacheConfigurations = Map
+        .of("grades", createCacheConfig(Duration.ofHours(1)), "events",
+            createCacheConfig(Duration.ofHours(4)), "hashtags",
+            createCacheConfig(Duration.ofDays(1)));
 
-	private RedisCacheConfiguration createCacheConfig(Duration ttl) {
-		return RedisCacheConfiguration.defaultCacheConfig().entryTtl(ttl).disableCachingNullValues()
-				.serializeValuesWith(RedisSerializationContext.SerializationPair
-						.fromSerializer(new GenericJackson2JsonRedisSerializer()));
-	}
+    return RedisCacheManager
+        .builder(redisConnectionFactory)
+        .cacheDefaults(defaultCacheConfig)
+        .withInitialCacheConfigurations(cacheConfigurations)
+        .build();
+  }
+
+  private RedisCacheConfiguration createCacheConfig(Duration ttl) {
+    return RedisCacheConfiguration
+        .defaultCacheConfig()
+        .entryTtl(ttl)
+        .disableCachingNullValues()
+        .serializeValuesWith(RedisSerializationContext.SerializationPair
+            .fromSerializer(new GenericJackson2JsonRedisSerializer()));
+  }
 }

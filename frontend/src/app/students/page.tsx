@@ -6,8 +6,8 @@ import type { Metadata } from "next";
 import StudentContent from "./StudentContent";
 
 export const metadata: Metadata = {
-    title: "リスト | 学生イベントリスト",
-    description: "リスト | 学生イベント",
+    title: "学生イベントリスト",
+    description: "学生イベント",
 };
 
 export default async function Page() {

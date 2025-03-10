@@ -15,15 +15,15 @@ import com.tuanna.api.service.AuthService;
 @RequestMapping(path = Constant.API_BASE_PATH + "/auth")
 public class AuthController {
 
-	private final AuthService authService;
+  private final AuthService authService;
 
-	public AuthController(final AuthService authService) {
-		this.authService = authService;
-	}
+  public AuthController(final AuthService authService) {
+    this.authService = authService;
+  }
 
-	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws AuthenticationException {
-		var result = this.authService.login(loginDto);
-		return ResponseEntity.ok(result);
-	}
+  @PostMapping("/login")
+  public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws AuthenticationException {
+    var result = this.authService.login(loginDto);
+    return ResponseEntity.ok(result);
+  }
 }

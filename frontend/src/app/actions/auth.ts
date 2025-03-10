@@ -1,6 +1,6 @@
 "use server";
 
-import { SESSION, UserRole } from "@/constants";
+import { Route, SESSION, UserRole } from "@/constants";
 import json from "@/i18n/jp.json";
 import API from "@/lib/api";
 import { encrypt } from "@/lib/session";
@@ -86,5 +86,5 @@ export async function login(_previousState: any, formData: FormData) {
 export async function logOut() {
     const reqCookies = await cookies();
     reqCookies.delete(SESSION);
-    redirect("/login");
+    redirect(Route.Login.toString());
 }

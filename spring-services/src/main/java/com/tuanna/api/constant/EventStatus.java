@@ -2,7 +2,9 @@ package com.tuanna.api.constant;
 
 public enum EventStatus {
 
-  UNCONFIRMED(1), UNDER_REVIEW(2), COMPLETED(3);
+  UNCONFIRMED(1),
+  UNDER_REVIEW(2),
+  COMPLETED(3);
 
   private Integer value;
 

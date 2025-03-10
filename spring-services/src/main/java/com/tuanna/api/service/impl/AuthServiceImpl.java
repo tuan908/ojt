@@ -23,83 +23,94 @@ import jakarta.persistence.EntityManager;
 @Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
-	private final StudentRepository studentRepository;
+  private final StudentRepository studentRepository;
 
-	private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-	private final PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
-	private final EntityManager entityManager;
+  private final EntityManager entityManager;
 
-	private final JwtService jwtService;
+  private final JwtService jwtService;
 
-	private final ResourceBundle rb;
+  private final ResourceBundle rb;
 
-	public AuthServiceImpl(StudentRepository studentRepository, UserRepository userRepository,
-			PasswordEncoder passwordEncoder, EntityManager entityManager, JwtService jtp) {
-		super();
-		this.studentRepository = studentRepository;
-		this.userRepository = userRepository;
-		this.passwordEncoder = passwordEncoder;
-		this.entityManager = entityManager;
-		this.jwtService = jtp;
-		rb = ResourceBundle.getBundle("messages");
-	}
+  public AuthServiceImpl(
+      StudentRepository studentRepository,
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
+      EntityManager entityManager,
+      JwtService jtp) {
+    super();
+    this.studentRepository = studentRepository;
+    this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
+    this.entityManager = entityManager;
+    this.jwtService = jtp;
+    rb = ResourceBundle.getBundle("messages");
+  }
 
-	@Override
-	public ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws AuthenticationException {
-		var msg = rb.getString("error.invalid-credentials");
-		
-		var user = userRepository.findByUsername(loginDto.username())
-				.orElseThrow(() -> new AuthenticationException(msg));
+  @Override
+  public ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws AuthenticationException {
+    var msg = rb.getString("error.invalid-credentials");
 
-		if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
-			throw new AuthenticationException(msg);
-		}
+    var user = userRepository
+        .findByUsername(loginDto.username())
+        .orElseThrow(() -> new AuthenticationException(msg));
 
-		// Fetch student details if available
-		String qlString = "select s from com.tuanna.api.entity.Student s where s.user.id = :id";
-		var q = this.entityManager.createQuery(qlString, Student.class);
-		q.setParameter("id", user.getId());
-		
-		Student student = q.getResultStream().findFirst().orElse(null);
+    if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+      throw new AuthenticationException(msg);
+    }
 
-		// Generate JWT token
-		String token = jwtService.generateToken(new CustomUserDetails(user));
+    // Fetch student details if available
+    String qlString = "select s from com.tuanna.api.entity.Student s where s.user.id = :id";
+    var q = this.entityManager.createQuery(qlString, Student.class);
+    q.setParameter("id", user.getId());
 
-		return ApiResponse.success(new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
-				user.getRole().getValue(), (student != null) ? student.getGrade().getName() : null,
-				(student != null) ? student.getCode() : null, token), null);
-	}
+    Student student = q.getResultStream().findFirst().orElse(null);
 
-	@Override
-	public void logout() {
-		// TODO Auto-generated method stub
+    // Generate JWT token
+    String token = jwtService.generateToken(new CustomUserDetails(user));
 
-	}
+    return ApiResponse
+        .success(new LoginResponseDto(
+            user.getId(),
+            user.getName(),
+            user.getUsername(),
+            user.getRole().getValue(),
+            (student != null) ? student.getGrade().getName() : null,
+            (student != null) ? student.getCode() : null,
+            token), null);
+  }
 
-	@Override
-	public void refreshToken() {
-		// TODO Auto-generated method stub
+  @Override
+  public void logout() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void validateToken() {
-		// TODO Auto-generated method stub
+  @Override
+  public void refreshToken() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void resetPassword() {
-		// TODO Auto-generated method stub
+  @Override
+  public void validateToken() {
+    // TODO Auto-generated method stub
 
-	}
+  }
 
-	@Override
-	public void changePassword() {
-		// TODO Auto-generated method stub
+  @Override
+  public void resetPassword() {
+    // TODO Auto-generated method stub
 
-	}
+  }
+
+  @Override
+  public void changePassword() {
+    // TODO Auto-generated method stub
+
+  }
 
 }

@@ -14,7 +14,12 @@ import com.tuanna.api.entity.EventDetail;
  * @param data Event's details
  * @param comments Event's comments
  */
-public record EventDetailDto(Long id, String grade, String name, Integer status,
-    EventDetail.Data data, List<CommentDto> comments) {
+public record EventDetailDto(
+    Long id,
+    String grade,
+    String name,
+    Integer status,
+    EventDetail.Data data,
+    List<CommentDto> comments) {
 
 }

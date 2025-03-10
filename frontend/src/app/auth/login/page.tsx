@@ -15,7 +15,7 @@ import {
     useState,
     type SyntheticEvent,
 } from "react";
-import { login } from "../actions/auth";
+import { login } from "../../actions/auth";
 
 type LoginFormState = {
     username: string;
@@ -49,7 +49,7 @@ export default function Page() {
         initPasswordInputState
     );
 
-    function showOrHidePassword(e: SyntheticEvent<HTMLDivElement>) {
+    function showOrHidePassword(e: SyntheticEvent<HTMLButtonElement>) {
         e.preventDefault();
         setState(x => ({
             ...x,
@@ -66,12 +66,12 @@ export default function Page() {
 
     return (
         <div
-            className="w-full h-full max-w-dvw min-h-dvh flex items-center justify-center bg-cover"
+            className="flex items-center justify-center min-h-screen bg-cover"
             style={{
                 backgroundImage: "url('/login-background.jpg')",
             }}
         >
-            <div className="flex flex-col w-4/5 lg:w-1/5 h-full bg-white rounded-lg shadow-lg">
+            <div className="w-4/5 lg:w-1/4 bg-white rounded-lg shadow-lg">
                 <h1 className="text-3xl text-center pt-8 md:pt-20">
                     {json.login.title}
                 </h1>
@@ -111,16 +111,19 @@ export default function Page() {
                                 </InputAdornment>
                             ),
                             endAdornment: (
-                                <InputAdornment
-                                    position="end"
-                                    className="hover:cursor-pointer"
-                                    onClick={showOrHidePassword}
-                                >
-                                    {inputState.show ? (
-                                        <VisibilityOff />
-                                    ) : (
-                                        <Visibility />
-                                    )}
+                                <InputAdornment position="end">
+                                    <button
+                                        className="cursor-pointer"
+                                        onClick={showOrHidePassword}
+                                        onMouseDown={e => e.preventDefault()}
+                                        onMouseUp={e => e.preventDefault()}
+                                    >
+                                        {inputState.show ? (
+                                            <VisibilityOff />
+                                        ) : (
+                                            <Visibility />
+                                        )}
+                                    </button>
                                 </InputAdornment>
                             ),
                         }}
@@ -133,7 +136,7 @@ export default function Page() {
                         <button
                             type="submit"
                             className={cn(
-                                "bg-[#407ed9] text-white font-bold px-4 py-2 m-auto rounded-xl text-sm outline-none",
+                                "bg-[#407ed9] text-white font-bold px-4 py-2 m-auto rounded-xl text-sm outline-none cursor-pointer",
                                 isPending && "bg-[rgba(64,126,217,0.5)]"
                             )}
                             aria-disabled={isPending}

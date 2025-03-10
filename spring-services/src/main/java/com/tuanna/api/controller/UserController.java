@@ -24,60 +24,63 @@ import com.tuanna.api.service.UserService;
 @RequestMapping(path = Constant.API_BASE_PATH + "/users")
 public class UserController {
 
-	private final UserService userService;
+  private final UserService userService;
 
-	private final ResourceBundle messageBundle;
+  private final ResourceBundle messageBundle;
 
-	public UserController(UserService accountService) {
-		this.userService = accountService;
-		messageBundle = ResourceBundle.getBundle("messages");
-	}
+  public UserController(UserService accountService) {
+    this.userService = accountService;
+    messageBundle = ResourceBundle.getBundle("messages");
+  }
 
-	@PostMapping()
-	public ResponseEntity<ApiResponse<UserDto>> getOneBy(@RequestBody UserDto request) throws ResultNotFoundException {
-		var body = this.userService.findByUsername(request);
-		if (body == null) {
-			throw new ResultNotFoundException(messageBundle.getString("message.user.not-found"));
-		} 
-		return ResponseEntity.ok(ApiResponse.success(body, null));
-	}
+  @PostMapping()
+  public ResponseEntity<ApiResponse<UserDto>> getOneBy(@RequestBody UserDto request)
+      throws ResultNotFoundException {
+    var body = this.userService.findByUsername(request);
+    if (body == null) {
+      throw new ResultNotFoundException(messageBundle.getString("message.user.not-found"));
+    }
+    return ResponseEntity.ok(ApiResponse.success(body, null));
+  }
 
-	@GetMapping("/{username}/async")
-	public ResponseEntity<?> getOneByAsync(@PathVariable String username) {
-		var body = this.userService.findByUsernameAsync(username);
-		try {
-			var data = body.get();
-			return ResponseEntity.ok(ApiResponse.success(data, null));
-		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return ResponseEntity.ok(ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR.getValue(), null,
-				ResponseCode.INTERNAL_SERVER_ERROR.getValue()));
-	}
+  @GetMapping("/{username}/async")
+  public ResponseEntity<?> getOneByAsync(@PathVariable String username) {
+    var body = this.userService.findByUsernameAsync(username);
+    try {
+      var data = body.get();
+      return ResponseEntity.ok(ApiResponse.success(data, null));
+    } catch (InterruptedException | ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return ResponseEntity
+        .ok(ApiResponse
+            .error(ResponseCode.INTERNAL_SERVER_ERROR.getValue(), null,
+                ResponseCode.INTERNAL_SERVER_ERROR.getValue()));
+  }
 
-	@GetMapping("/async")
-	public ResponseEntity<?> getStudentAsync() {
-		var result = this.userService.findAllAsync();
-		try {
-			return ResponseEntity.ok(result.get());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	@PostMapping("/create")
-	public ResponseEntity<?> createUser(@RequestBody CreateAccountDto dto) {
-		try {
-			this.userService.createUser(dto);
-			return ResponseEntity.created(URI.create(null)).build();
-		} catch (Exception e) {
-		}
-		return ResponseEntity.internalServerError().build();
-	}
+  @GetMapping("/async")
+  public ResponseEntity<?> getStudentAsync() {
+    var result = this.userService.findAllAsync();
+    try {
+      return ResponseEntity.ok(result.get());
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (ExecutionException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @PostMapping("/create")
+  public ResponseEntity<?> createUser(@RequestBody CreateAccountDto dto) {
+    try {
+      this.userService.createUser(dto);
+      return ResponseEntity.created(URI.create(null)).build();
+    } catch (Exception e) {
+    }
+    return ResponseEntity.internalServerError().build();
+  }
 }

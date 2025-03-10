@@ -2,7 +2,11 @@ package com.tuanna.api.constant;
 
 public enum UserRole {
 
-  UNKNOWN("000"), STUDENT("001"), PARENT("002"), TEACHER("003"), COUNSELOR("004");
+  UNKNOWN("000"),
+  STUDENT("001"),
+  PARENT("002"),
+  TEACHER("003"),
+  COUNSELOR("004");
 
   private String value;
 

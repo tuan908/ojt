@@ -12,9 +12,9 @@ import json from "@/i18n/jp.json";
 import { JwtPayload } from "@/lib/session";
 import type { Grade } from "@/types/common";
 import { StudentEvent } from "@/types/student";
-import Search from "@mui/icons-material/Search";
-import { Pagination } from "@mui/material";
+import { Pagination, Tooltip } from "@mui/material";
 import { type SelectChangeEvent } from "@mui/material/Select";
+import { Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
     startTransition,
@@ -29,7 +29,7 @@ type SearchAreaProps = {
     grades?: Grade[];
     events?: SelectOption[];
     data: StudentEvent;
-    auth: JwtPayload | undefined
+    auth: JwtPayload | undefined;
 };
 
 type MuiSelectChangeHandler = (
@@ -49,7 +49,7 @@ export default function StudentDetailContent({
     id,
     events,
     grades,
-    auth
+    auth,
 }: SearchAreaProps) {
     const router = useRouter();
     const [data, setData] = useState<StudentEvent["events"]>(_data?.events);
@@ -170,15 +170,14 @@ export default function StudentDetailContent({
                         handleChange={handleChange}
                     />
                 </div>
-                <button
-                    className="border-none outline-none flex items-center justify-center"
-                    onClick={handleSearch}
-                >
-                    <Search
-                        className="text-icon-default"
-                        sx={{ width: 32, height: 32 }}
-                    />
-                </button>
+                <Tooltip title={json.common.search}>
+                    <button
+                        className="border-none outline-none flex items-center justify-center cursor-pointer"
+                        onClick={handleSearch}
+                    >
+                        <Search className="text-icon-default" size={24} />
+                    </button>
+                </Tooltip>
             </div>
 
             {/* Table */}

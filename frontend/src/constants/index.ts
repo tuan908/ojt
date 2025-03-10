@@ -46,18 +46,18 @@ export const SORT_ORDER_ASCENDING = 1;
 /** Sort decrement */
 export const SORT_ORDER_DESCENDING = 1;
 
-export enum Route {
+export const Route = {
     /** /students */
-    Students = "/students",
+    Students: "/students",
     /** /event/register */
-    RegisterEvent = "/event/register",
+    RegisterEven: "/event/register",
     /** /login */
-    Login = "/login",
+    Login: "/auth/login",
     /** / */
-    Root = "/",
+    Root: "/",
     /** /home */
-    Home = "/home",
-}
+    Home: "/home",
+} as const;
 
 /** Empty string - "" */
 export const STRING_EMPTY = "";
@@ -100,6 +100,5 @@ export const MEDIA_QUERY = {
     XL: "(min-width:1280px)",
     "2XL": "(min-width:1536px)",
 } as const;
-
 
 export const SESSION = "session";

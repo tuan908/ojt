@@ -22,58 +22,58 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-	private User user;
+  private User user;
 
-    @Serial
-    private static final long serialVersionUID = -6545253880120000014L;
+  @Serial
+  private static final long serialVersionUID = -6545253880120000014L;
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		String roleLabel = switch (this.user.getRole()) {
-			case COUNSELOR:
-			case TEACHER:
-			case PARENT:
-			case STUDENT:
-				yield this.user.getRole().getValue();
-	
-			default:
-				yield "";
-		};
-		if (StringUtils.hasLength(roleLabel)) {
-			authorities.add(new SimpleGrantedAuthority(roleLabel));
-		}
-		return authorities;
-	}
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    Collection<GrantedAuthority> authorities = new ArrayList<>();
+    String roleLabel = switch (this.user.getRole()) {
+      case COUNSELOR:
+      case TEACHER:
+      case PARENT:
+      case STUDENT:
+        yield this.user.getRole().getValue();
 
-	@Override
-	public String getPassword() {
-		return user.getPassword();
-	}
+      default:
+        yield "";
+    };
+    if (StringUtils.hasLength(roleLabel)) {
+      authorities.add(new SimpleGrantedAuthority(roleLabel));
+    }
+    return authorities;
+  }
 
-	@Override
-	public String getUsername() {
-		return user.getUsername();
-	}
+  @Override
+  public String getPassword() {
+    return user.getPassword();
+  }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
+  @Override
+  public String getUsername() {
+    return user.getUsername();
+  }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return true;
-	}
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-	@Override
-	public boolean isEnabled() {
-		return true;
-	}
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
 }

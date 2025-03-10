@@ -2,6 +2,7 @@ package com.tuanna.api.dto;
 
 /**
  * User DTO
+ * 
  * @param id User Id
  * @param name User's full name
  * @param username User's username

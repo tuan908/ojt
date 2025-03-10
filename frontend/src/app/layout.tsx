@@ -1,6 +1,6 @@
 import theme from "@/styles/theme";
 import { type LayoutProps } from "@/types";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";

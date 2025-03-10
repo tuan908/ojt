@@ -26,59 +26,58 @@ import lombok.Setter;
 @Entity(name = "Comment")
 @Table(name = "t_comment")
 @SQLDelete(sql = "UPDATE t_comment SET is_deleted = true WHERE id = ?")
-@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class,
+    override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment extends BaseEntity {
-	@Serial
-	private static final long serialVersionUID = 5581420110882356388L;
+  @Serial
+  private static final long serialVersionUID = 5581420110882356388L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
+  @OneToOne
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User user;
 
-	private String content;
+  private String content;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	private EventDetail eventDetail;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private EventDetail eventDetail;
 
-	@Override
-	public boolean equals(final Object o) {
-		if (o == this)
-			return true;
-		if (!(o instanceof final Comment c)) {
-			return false;
-		}
-		return this.id != null && this.id.equals(c.getId());
-	}
+  @Override
+  public boolean equals(final Object o) {
+    if (o == this)
+      return true;
+    if (!(o instanceof final Comment c)) {
+      return false;
+    }
+    return this.id != null && this.id.equals(c.getId());
+  }
 
-	@Override
-	public int hashCode() {
-		return this.getClass().hashCode();
-	}
+  @Override
+  public int hashCode() {
+    return this.getClass().hashCode();
+  }
 
-	public CommentDto toDto() {
+  public CommentDto toDto() {
 
-		var createdAt = this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
+    var createdAt =
+        this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
 
-	// @formatter:off
     return new CommentDto(
-          this.id,
-          this.user.getName(),
-          this.user.getUsername(),
-          this.user.getRole().getValue(),
-          this.content,
-          createdAt,
-          this.getIsDeleted()
-        );
-    // @formatter:on
-	}
+        this.id,
+        this.user.getName(),
+        this.user.getUsername(),
+        this.user.getRole().getValue(),
+        this.content,
+        createdAt,
+        this.getIsDeleted());
+  }
 
 }

@@ -16,19 +16,29 @@ import com.tuanna.api.constant.Constant;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	@Bean
-	SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
-		final String pattern = Constant.API_BASE_PATH + "/**";
-		http.csrf(CsrfConfigurer::disable).cors(Customizer.withDefaults()).authorizeHttpRequests(
-				authorize -> authorize.requestMatchers(pattern).permitAll().anyRequest().authenticated());
+  @Bean
+  SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
+    final String pattern = Constant.API_BASE_PATH + "/**";
+    http
+        .csrf(CsrfConfigurer::disable)
+        .cors(Customizer.withDefaults())
+        .authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(pattern)
+            .permitAll()
+            .anyRequest()
+            .authenticated());
 
-		return http.build();
-	}
+    return http.build();
+  }
 
-	@Bean
-	PasswordEncoder passwordEncoder() {
-		var argon2Encoder = new Argon2PasswordEncoder(Constant.ARGON2_SALT_LENGTH, Constant.ARGON2_HASH_LENGTH,
-				Constant.ARGON2_PARALLELISM, Constant.ARGON2_MEMORY, Constant.ARGON2_PARALLELISM);
-		return argon2Encoder;
-	}
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    var argon2Encoder = new Argon2PasswordEncoder(
+        Constant.ARGON2_SALT_LENGTH,
+        Constant.ARGON2_HASH_LENGTH,
+        Constant.ARGON2_PARALLELISM,
+        Constant.ARGON2_MEMORY,
+        Constant.ARGON2_PARALLELISM);
+    return argon2Encoder;
+  }
 }

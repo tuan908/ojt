@@ -15,9 +15,9 @@ public interface CommonService {
   List<HashtagDto> getHashtags();
 
   List<GradeDto> getGrades();
-  
+
   Event findEventByName(String name);
-  
+
   Grade findGradeByName(String name);
 
 }

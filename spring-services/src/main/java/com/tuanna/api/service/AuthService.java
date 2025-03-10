@@ -6,15 +6,15 @@ import com.tuanna.api.dto.LoginResponseDto;
 import com.tuanna.api.exception.AuthenticationException;
 
 public interface AuthService {
-	ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws AuthenticationException;
+  ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws AuthenticationException;
 
-	void logout();
+  void logout();
 
-	void refreshToken();
+  void refreshToken();
 
-	void validateToken();
+  void validateToken();
 
-	void resetPassword();
+  void resetPassword();
 
-	void changePassword();
+  void changePassword();
 }

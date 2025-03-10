@@ -24,7 +24,8 @@ import lombok.Setter;
 @Entity(name = "Grade")
 @Table(name = "t_grade")
 @SQLDelete(sql = "UPDATE t_grade SET is_deleted = true WHERE id = ?")
-@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class, override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
+@SQLRestriction(dialect = org.hibernate.dialect.PostgreSQLDialect.class,
+    override = @org.hibernate.annotations.SQLRestriction("is_deleted = false"))
 @Getter
 @Setter
 @Builder
@@ -32,25 +33,25 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Grade extends BaseEntity {
 
-    @Serial
-    private static final long serialVersionUID = 2442385200898045268L;
+  @Serial
+  private static final long serialVersionUID = 2442385200898045268L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String name;
+  private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "grade_id")
-    private java.util.Set<Student> students;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "grade_id")
+  private java.util.Set<Student> students;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "grade_id")
-    private java.util.Set<EventDetail> events;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "grade_id")
+  private java.util.Set<EventDetail> events;
 
-    public GradeDto toDto() {
-      return new GradeDto(this.id, this.name);
-    }
+  public GradeDto toDto() {
+    return new GradeDto(this.id, this.name);
+  }
 
 }

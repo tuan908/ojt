@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
     const session = request.cookies.get("session");
     const currentPath = request.nextUrl.pathname;
 
-    const loginUrl = new URL(Route.Login, request.url);
+    const loginUrl = new URL(Route.Login.toString(), request.url);
     loginUrl.searchParams.set("from", currentPath);
 
     // Allow access to the login page without authentication

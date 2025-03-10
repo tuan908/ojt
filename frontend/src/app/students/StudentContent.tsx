@@ -18,15 +18,16 @@ import { ApiResponse } from "@/types";
 import type { Grade, Hashtag } from "@/types/common";
 import type { Student, StudentsResponse } from "@/types/student";
 import Clear from "@mui/icons-material/Clear";
-import Search from "@mui/icons-material/Search";
 import {
     Autocomplete,
     Input,
     Pagination,
     TextField,
+    Tooltip,
     type AutocompleteChangeReason,
     type AutocompleteInputChangeReason,
 } from "@mui/material";
+import { Search } from "lucide-react";
 import { useState, type SyntheticEvent } from "react";
 import StudentDataGrid from "./StudentDatatable";
 
@@ -239,15 +240,14 @@ export default function StudentContent({
                 />
 
                 {/* Search Button */}
-                <button
-                    className="border-none outline-none flex items-center justify-center"
+               <Tooltip title={json.common.search}>
+               <button
+                    className="border-none outline-none flex items-center justify-center cursor-pointer"
                     onClick={handleSearch}
                 >
-                    <Search
-                        className="text-icon-default"
-                        sx={{ width: 32, height: 32 }}
-                    />
+                    <Search className="text-icon-default" size={32} />
                 </button>
+               </Tooltip>
             </div>
             <div className="w-full px-12 flex gap-x-2 flex-wrap">
                 {skills.map((skill, index) => (

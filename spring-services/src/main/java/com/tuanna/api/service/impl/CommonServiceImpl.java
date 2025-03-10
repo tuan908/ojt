@@ -29,8 +29,10 @@ public class CommonServiceImpl implements CommonService {
   @Cacheable("grades")
   public List<GradeDto> getGrades() {
     return this.entityManager
-        .createQuery("select g from com.tuanna.api.entity.Grade g", Grade.class).getResultStream()
-        .map(Grade::toDto).toList();
+        .createQuery("select g from com.tuanna.api.entity.Grade g", Grade.class)
+        .getResultStream()
+        .map(Grade::toDto)
+        .toList();
   }
 
   @Override
@@ -38,7 +40,9 @@ public class CommonServiceImpl implements CommonService {
   public List<EventDto> getEvents() {
     return this.entityManager
         .createQuery("select e from com.tuanna.api.entity.Event e", Event.class)
-        .getResultStream().map(Event::toDto).toList();
+        .getResultStream()
+        .map(Event::toDto)
+        .toList();
   }
 
   @Override
@@ -46,21 +50,25 @@ public class CommonServiceImpl implements CommonService {
   public List<HashtagDto> getHashtags() {
     return this.entityManager
         .createQuery("select h from com.tuanna.api.entity.Hashtag h", Hashtag.class)
-        .getResultStream().map(Hashtag::toDto).toList();
+        .getResultStream()
+        .map(Hashtag::toDto)
+        .toList();
   }
 
   @Override
   public Event findEventByName(String name) {
-    TypedQuery<Event> query = this.entityManager.createQuery(
-        "select e from com.tuanna.api.entity.Event e where e.name = :name", Event.class);
+    TypedQuery<Event> query = this.entityManager
+        .createQuery("select e from com.tuanna.api.entity.Event e where e.name = :name",
+            Event.class);
     query.setParameter("name", name);
     return query.getResultStream().findFirst().orElse(null);
   }
 
   @Override
   public Grade findGradeByName(String name) {
-    TypedQuery<Grade> query = this.entityManager.createQuery(
-        "select e from com.tuanna.api.entity.Grade e where e.name = :name", Grade.class);
+    TypedQuery<Grade> query = this.entityManager
+        .createQuery("select e from com.tuanna.api.entity.Grade e where e.name = :name",
+            Grade.class);
     query.setParameter("name", name);
     return query.getResultStream().findFirst().orElse(null);
   }
