@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.api.constant.Constant;
 import com.tuanna.api.dto.LoginDto;
-import com.tuanna.api.exception.AuthenticationException;
+import com.tuanna.api.exception.BusinessException;
 import com.tuanna.api.service.AuthService;
 
 @RestController
@@ -21,8 +21,8 @@ public class AuthController {
     this.authService = authService;
   }
 
-  @PostMapping("/login")
-  public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws AuthenticationException {
+  @PostMapping("/signin")
+  public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws BusinessException {
     var result = this.authService.login(loginDto);
     return ResponseEntity.ok(result);
   }

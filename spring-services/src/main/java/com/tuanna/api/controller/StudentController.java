@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.tuanna.api.constant.Constant;
 import com.tuanna.api.dto.AddCommentDto;
 import com.tuanna.api.dto.ApiResponse;
@@ -21,7 +20,6 @@ import com.tuanna.api.dto.RegisterEventDto;
 import com.tuanna.api.dto.StudentEventRequestDto;
 import com.tuanna.api.dto.StudentEventsDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
-import com.tuanna.api.exception.ResultNotFoundException;
 import com.tuanna.api.service.CommentService;
 import com.tuanna.api.service.StudentService;
 
@@ -52,8 +50,7 @@ public class StudentController {
       @RequestParam(value = "event_name", required = false) String eventName,
       @RequestParam(required = false) String status,
       @RequestParam(required = false, defaultValue = "1") int page,
-      @RequestParam(required = false, defaultValue = "10") int size)
-      throws ResultNotFoundException {
+      @RequestParam(required = false, defaultValue = "10") int size) {
     var request = new StudentEventsDto(studentCode, grade, eventName, status, page, size);
     var data = this.studentService.findEventsByStudentCode(request);
     return ResponseEntity.ok(data);

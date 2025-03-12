@@ -51,8 +51,8 @@ export const Route = {
     Students: "/students",
     /** /event/register */
     RegisterEven: "/event/register",
-    /** /login */
-    Login: "/auth/login",
+    /** /signin */
+    Login: "/auth/signin",
     /** / */
     Root: "/",
     /** /home */

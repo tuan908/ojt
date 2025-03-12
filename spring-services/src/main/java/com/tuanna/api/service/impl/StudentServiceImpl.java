@@ -64,8 +64,7 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  @Cacheable(value = "students", key = "#dto != null ? #dto.toString() : 'defaultKey'") // Redis
-                                                                                        // caching
+  @Cacheable(value = "students")
   public ApiResponse<List<StudentEventDto>> findAll(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
     var sql = new StringBuilder("""

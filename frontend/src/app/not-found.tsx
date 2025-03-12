@@ -8,7 +8,7 @@ export default async function NotFound() {
 
     let href = "";
     if (!session) {
-        href = "/login";
+        href = "/signin";
     } else if (session?.role === UserRole.Student) {
         href = "/students/" + session?.code;
     } else {

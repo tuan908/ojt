@@ -15,7 +15,7 @@ import {
     useState,
     type SyntheticEvent,
 } from "react";
-import { login } from "../../actions/auth";
+import { signIn } from "../../actions/auth";
 
 type LoginFormState = {
     username: string;
@@ -44,7 +44,7 @@ export default function Page() {
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Use new hook useActionState - from React version 19.x
-    const [state, formAction, isPending] = useActionState(login, initialState);
+    const [state, formAction, isPending] = useActionState(signIn, initialState);
     const [inputState, setState] = useState<PasswordInputState>(
         initPasswordInputState
     );
@@ -68,12 +68,12 @@ export default function Page() {
         <div
             className="flex items-center justify-center min-h-screen bg-cover"
             style={{
-                backgroundImage: "url('/login-background.jpg')",
+                backgroundImage: "url('/signin-background.jpg')",
             }}
         >
             <div className="w-4/5 lg:w-1/4 bg-white rounded-lg shadow-lg">
                 <h1 className="text-3xl text-center pt-8 md:pt-20">
-                    {json.login.title}
+                    {json.signIn.title}
                 </h1>
                 <form
                     action={formAction}
@@ -83,7 +83,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="username"
-                        placeholder={json.login.username}
+                        placeholder={json.signIn.username}
                         inputRef={inputRef}
                         className="w-full"
                         InputProps={{
@@ -101,7 +101,7 @@ export default function Page() {
                     <TextField
                         variant="standard"
                         name="password"
-                        placeholder={json.login.password}
+                        placeholder={json.signIn.password}
                         type={inputState.type}
                         className="w-full"
                         InputProps={{
@@ -150,10 +150,10 @@ export default function Page() {
                                         }}
                                         size="1rem"
                                     />
-                                    {json.login.login_pending}
+                                    {json.signIn.pending}
                                 </div>
                             ) : (
-                                <>{json.login.title}</>
+                                <>{json.signIn.title}</>
                             )}
                         </button>
                     </div>
@@ -161,7 +161,7 @@ export default function Page() {
                         href="/forgot-password"
                         className="m-auto pb-2 font-medium"
                     >
-                        {json.login.forgot_password}
+                        {json.signIn.forgot_password}
                     </Link>
                     {state.error ? (
                         <span className="text-red-500 m-auto text-[0.875rem] leading-none md:whitespace-nowrap">

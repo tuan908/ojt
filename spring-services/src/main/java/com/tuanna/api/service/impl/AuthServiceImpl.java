@@ -10,7 +10,7 @@ import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.dto.LoginResponseDto;
 import com.tuanna.api.entity.Student;
-import com.tuanna.api.exception.AuthenticationException;
+import com.tuanna.api.exception.BusinessException;
 import com.tuanna.api.repository.StudentRepository;
 import com.tuanna.api.repository.UserRepository;
 import com.tuanna.api.security.CustomUserDetails;
@@ -51,15 +51,13 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
-  public ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws AuthenticationException {
+  public ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws BusinessException {
     var msg = rb.getString("error.invalid-credentials");
 
-    var user = userRepository
-        .findByUsername(loginDto.username())
-        .orElseThrow(() -> new AuthenticationException(msg));
+    var user = userRepository.findByUsername(loginDto.username()).orElse(null);
 
-    if (!passwordEncoder.matches(loginDto.password(), user.getPassword())) {
-      throw new AuthenticationException(msg);
+    if (user == null || !passwordEncoder.matches(loginDto.password(), user.getPassword())) {
+      throw new BusinessException(msg);
     }
 
     // Fetch student details if available

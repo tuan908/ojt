@@ -60,11 +60,11 @@
         "under_reviewing": "確認中",
         "confirmed": "修了"
     },
-    "login": {
+    "signIn": {
         "username": "ユーザーネーム",
         "password": "パスワード",
         "title": "ログイン",
-        "login_pending": "ログインする。。。",
+        "pending": "ログインする。。。",
         "forgot_password": "パスワードを忘れた？"
     },
     "dialog": {

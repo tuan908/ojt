@@ -14,7 +14,7 @@ export async function middleware(request: NextRequest) {
     loginUrl.searchParams.set("from", currentPath);
 
     // Allow access to the login page without authentication
-    if (currentPath === Route.Login) {
+    if (currentPath === Route.Login.toString()) {
         if (session) {
             const maybeValidToken = await decrypt(session.value);
             if (maybeValidToken) {
@@ -43,7 +43,7 @@ function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
     if (role === UserRole.Student.toString()) {
         return NextResponse.redirect(new URL(`/students/${code}`, request.url));
     } else {
-        return NextResponse.redirect(new URL(Route.Students, request.url));
+        return NextResponse.redirect(new URL(Route.Students.toString(), request.url));
     }
 }
 
@@ -63,7 +63,7 @@ function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
         if (!isRootOrHomeRoute(currentPath)) {
             return NextResponse.next();
         } else {
-            return NextResponse.redirect(new URL(Route.Students, request.url));
+            return NextResponse.redirect(new URL(Route.Students.toString(), request.url));
         }
     }
 }

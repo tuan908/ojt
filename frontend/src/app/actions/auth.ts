@@ -15,7 +15,7 @@ import { redirect } from "next/navigation";
  * @param _ Previous state
  * @param formData FormData
  */
-export async function login(_previousState: any, formData: FormData) {
+export async function signIn(_previousState: any, formData: FormData) {
     let redirectPath = "";
     try {
         // Convert FormData to object
@@ -35,7 +35,7 @@ export async function login(_previousState: any, formData: FormData) {
         // API Request to Spring Backend
         const response = await API.SPRING_API.post<
             ApiResponse<LoginResponseDto>
-        >("/auth/login", parse.data);
+        >(Route.Login.toString(), parse.data);
 
         if (!response) {
             return {
