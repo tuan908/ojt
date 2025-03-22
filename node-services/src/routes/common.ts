@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import db from "../lib/db";
-import schema from "../schema";
+import DbSchema from "../schema";
 import type { Binding } from "../types";
 
 const app = new Hono<Binding>();
@@ -8,8 +8,8 @@ const app = new Hono<Binding>();
 app.get("/events", async ctx => {
     try {
         const result = await db(ctx)
-            .select({ id: schema.event.id, name: schema.event.name })
-            .from(schema.event);
+            .select({ id: DbSchema.event.id, name: DbSchema.event.name })
+            .from(DbSchema.event);
         return ctx.json(result);
     } catch (error: unknown) {
         console.error(error instanceof Error ? error.message : error);

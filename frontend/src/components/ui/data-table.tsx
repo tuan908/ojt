@@ -8,6 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import Pagination from "@mui/material/Pagination";
 import {
     flexRender,
     getCoreRowModel,
@@ -16,13 +17,13 @@ import {
 
 type DataTableProps<TData> = {
     columns: any;
-    data: TData[];
+    rows: TData[];
     onRowClick?: (row: TData) => void;
 };
 
 export function DataTable<TData>({
     columns,
-    data,
+    rows: data,
     onRowClick,
 }: DataTableProps<TData>) {
     const table = useReactTable({
@@ -32,41 +33,46 @@ export function DataTable<TData>({
     });
 
     return (
-        <div className="w-full border rounded-lg overflow-hidden">
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows.map(row => (
-                        <TableRow
-                            key={row.id}
-                            onMouseDown={() => onRowClick?.(row.original)}
-                            className="cursor-pointer hover:bg-gray-100"
-                        >
-                            {row.getVisibleCells().map(cell => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+        <>
+            <div className="w-full border rounded-lg overflow-hidden">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows.map(row => (
+                            <TableRow
+                                key={row.id}
+                                onClick={() => onRowClick?.(row.original)}
+                                className="cursor-pointer hover:bg-gray-100"
+                            >
+                                {row.getVisibleCells().map(cell => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+            <div className="w-full flex justify-end items-center pr-6 pt-4">
+                <Pagination count={10} variant="text" shape="circular" />
+            </div>
+        </>
     );
 }

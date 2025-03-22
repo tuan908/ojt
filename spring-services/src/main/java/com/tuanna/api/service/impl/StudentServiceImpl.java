@@ -64,7 +64,6 @@ public class StudentServiceImpl implements StudentService {
   }
 
   @Override
-  @Cacheable(value = "students")
   public ApiResponse<List<StudentEventDto>> findAll(StudentEventRequestDto dto) {
     var parameters = new HashMap<String, Object>();
     var sql = new StringBuilder("""
@@ -193,15 +192,7 @@ public class StudentServiceImpl implements StudentService {
     return response;
   }
 
-  @Override
-  public EventDetailDto findById(@NonNull Long id) {
-    var eventDetail = this.eventDetailRepository.findById(id).orElse(null);
-    if (eventDetail != null) {
-      var eventDto = eventDetail.toDto();
-      return eventDto;
-    }
-    return null;
-  }
+
 
   @Override
   @Transactional

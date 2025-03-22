@@ -30,7 +30,7 @@ export type StudentsResponse = Partial<{
 export type Student = Partial<{
     name: string;
     grade: string;
-    events: string;
+    event: string;
     hashtags: string[];
 }>;
 
@@ -44,16 +44,18 @@ export type Page<T> = {
     };
 };
 
+type StudentEventData = {
+    id: number;
+    grade: string;
+    name: string;
+    status: number;
+    comments: Comment[];
+};
+
 export type StudentEvent = {
     id: number;
     code: string;
     name: string;
     grade: string;
-    events: Array<{
-        id: number;
-        grade: string;
-        name: string;
-        status: number;
-        comments: Comment[];
-    }>;
+    events: StudentEventData[];
 };

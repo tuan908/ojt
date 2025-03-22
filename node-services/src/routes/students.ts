@@ -1,14 +1,14 @@
 import { eq, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import _db from "../lib/db";
-import schema from "../schema";
+import DbSchema from "../schema";
 import { Binding, IUpdateComment } from "../types";
 
 const app = new Hono<Binding>();
 
 app.get("/", async ctx => {
     try {
-        const result = await _db(ctx).query.student.findMany({
+        const result = await _db(ctx).query.Student.findMany({
             columns: {
                 id: true,
                 code: true,
@@ -18,7 +18,7 @@ app.get("/", async ctx => {
             },
             with: {
                 eventDetail: {
-                    where: eq(schema.eventDetail.isDeleted, false),
+                    where: eq(DbSchema.EventDetail.isDeleted, false),
                     columns: {
                         createdAt: false,
                         updatedAt: false,
@@ -64,35 +64,33 @@ app.get("/", async ctx => {
 
 app.get("/:code", async ctx => {
     const code = ctx.req.param("code");
+    const db = ctx.get("db");
     /** Limit */
     const pageNumber = Number.parseInt(ctx.req.query("page")!) || 1;
     /** Offset */
     const pageSize = Number.parseInt(ctx.req.query("page_size")!) || 10;
     try {
-        const student = await _db(ctx).query.student.findFirst({
-            where: eq(schema.student.code, code),
-            columns: {
-                userId: false,
-                gradeId: false,
-                isDeleted: false,
-                createdAt: false,
-                updatedAt: false,
-            },
-            with: {
-                user: {
-                    columns: {
-                        name: true,
-                    },
-                },
-                grade: {
-                    columns: {
-                        name: true,
-                    },
-                },
-            },
-        });
+        const [student] = await db
+            .select({
+                id: DbSchema.Student.id,
+                code: DbSchema.Student.code,
+                username: DbSchema.User.name,
+                grade: DbSchema.Grade.name,
+            })
+            .from(DbSchema.Student)
+            .innerJoin(
+                DbSchema.User,
+                eq(DbSchema.Student.userId, DbSchema.User.id)
+            )
+            .innerJoin(
+                DbSchema.Grade,
+                eq(DbSchema.Student.gradeId, DbSchema.Grade.id)
+            )
+            .where(
+                sql`${DbSchema.Student.code} = ${code} and ${DbSchema.Student.isDeleted} = false`
+            );
 
-        const eventDetails = await _db(ctx).query.eventDetail.findMany({
+        const eventDetails = await _db(ctx).query.EventDetail.findMany({
             where: ({ studentId, isDeleted }, { eq, and }) =>
                 and(eq(studentId, student?.id!), eq(isDeleted, false)),
             limit: pageSize,
@@ -117,8 +115,8 @@ app.get("/:code", async ctx => {
         return ctx.json({
             id: student?.id,
             code: student?.code,
-            name: student?.user?.name,
-            grade: student?.grade?.name,
+            name: student?.username,
+            grade: student?.grade,
             events: eventDetails
                 .sort((a, b) => cb(a?.event!?.name, b?.event!?.name))
                 .map(event => ({
@@ -142,8 +140,8 @@ app.get("/:code/events/:id", async ctx => {
     }
 
     try {
-        const result = await _db(ctx).query.eventDetail.findFirst({
-            where: sql`${schema.eventDetail.id} = ${id} and ${schema.eventDetail.isDeleted} = false`,
+        const result = await _db(ctx).query.EventDetail.findFirst({
+            where: sql`${DbSchema.EventDetail.id} = ${id} and ${DbSchema.EventDetail.isDeleted} = false`,
             columns: {
                 id: true,
                 data: true,
@@ -158,7 +156,7 @@ app.get("/:code/events/:id", async ctx => {
 app.get("/:code/trackings", async ctx => {
     const { code } = ctx.req.param();
     try {
-        let result = await _db(ctx).query.student.findFirst({
+        let result = await _db(ctx).query.Student.findFirst({
             where: (fields, { eq }) => eq(fields.code, code),
             columns: {
                 id: true,
@@ -240,14 +238,14 @@ app.get("/:code/trackings", async ctx => {
     }
 });
 
-app.post("/:code/events/:eventId/comments", async ctx => {
+app.post("/:code/events/:eventId/Comments", async ctx => {
     const { code, eventId } = ctx.req.param();
     const data = (await ctx.req.json()) as IUpdateComment;
     try {
         const db = _db(ctx);
         console.log(data);
 
-        const student = await db.query.student.findFirst({
+        const student = await db.query.Student.findFirst({
             where: (fields, { eq }) => eq(fields.code, code),
             with: {
                 eventDetail: {
@@ -271,9 +269,9 @@ app.post("/:code/events/:eventId/comments", async ctx => {
         }
 
         await db
-            .update(schema.comment)
+            .update(DbSchema.Comment)
             .set({ content: data.content })
-            .where(eq(schema.comment.id, data.id));
+            .where(eq(DbSchema.Comment.id, data.id));
         return ctx.json({
             message: "Success",
         });

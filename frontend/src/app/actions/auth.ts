@@ -1,7 +1,7 @@
 "use server";
 
 import { Route, SESSION, UserRole } from "@/constants";
-import json from "@/i18n/jp.json";
+import json from "@/i18n/locales/ja.json";
 import API from "@/lib/api";
 import { encrypt } from "@/lib/session";
 import { signInSchema } from "@/lib/zod";

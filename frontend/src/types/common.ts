@@ -8,3 +8,8 @@ export type Hashtag = {
     name: string;
     color: string;
 };
+
+export type SelectOption = {
+    id: number;
+    name: string;
+};

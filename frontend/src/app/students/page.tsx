@@ -1,9 +1,9 @@
 import { getEvents, getGrades, getHashtags } from "@/app/actions/common";
 import { getStudents } from "@/app/actions/student";
-import Navbar from "@/components/Navbar";
-import PageWrapper from "@/components/PageWrapper";
+import Navbar from "@/components/ui/navbar";
+import PageWrapper from "@/components/ui/page-wrapper";
 import type { Metadata } from "next";
-import StudentContent from "./StudentContent";
+import StudentContent from "./_components/content";
 
 export const metadata: Metadata = {
     title: "学生イベントリスト",

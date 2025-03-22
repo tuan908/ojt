@@ -1,10 +1,12 @@
+import ReactQueryProvider from "@/providers/react-query";
 import theme from "@/styles/theme";
 import { type LayoutProps } from "@/types";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
-import ReduxProvider from "../providers/ReduxProvider";
+import { Toaster } from "sonner";
+import ReduxProvider from "../providers/redux";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,15 +26,18 @@ export default async function RootLayout({ children }: LayoutProps) {
     return (
         <html lang="en">
             <body className="text-default w-full h-full min-h-dvh max-w-dvw bg-[#ededed]">
-                <ReduxProvider>
-                    <AppRouterCacheProvider>
-                        <ThemeProvider theme={theme}>
-                            <main className={notoSansJp.className}>
-                                {children}
-                            </main>
-                        </ThemeProvider>
-                    </AppRouterCacheProvider>
-                </ReduxProvider>
+                <ReactQueryProvider>
+                    <ReduxProvider>
+                        <AppRouterCacheProvider>
+                            <ThemeProvider theme={theme}>
+                                <main className={notoSansJp.className}>
+                                    {children}
+                                </main>
+                            </ThemeProvider>
+                        </AppRouterCacheProvider>
+                    </ReduxProvider>
+                </ReactQueryProvider>
+                <Toaster />
             </body>
         </html>
     );

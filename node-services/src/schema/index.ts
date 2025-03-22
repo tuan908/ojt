@@ -10,7 +10,7 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 
-const comment = pgTable("t_comment", {
+const Comment = pgTable("t_comment", {
     id: serial("id").primaryKey(),
     content: text("content"),
     createdAt: timestamp("created_at", {
@@ -25,25 +25,25 @@ const comment = pgTable("t_comment", {
     }),
     isDeleted: boolean("is_deleted"),
     userId: integer("user_id")
-        .references(() => user.id, { onDelete: "cascade" })
+        .references(() => User.id, { onDelete: "cascade" })
         .notNull(),
     eventDetailId: integer("event_detail_id")
-        .references(() => eventDetail.id, { onDelete: "cascade" })
+        .references(() => EventDetail.id, { onDelete: "cascade" })
         .notNull(),
 });
 
-const commentRelations = relations(comment, ({ one }) => ({
-    user: one(user, {
-        fields: [comment.userId],
-        references: [user.id],
+const commentRelations = relations(Comment, ({ one }) => ({
+    user: one(User, {
+        fields: [Comment.userId],
+        references: [User.id],
     }),
-    eventDetail: one(eventDetail, {
-        fields: [comment.eventDetailId],
-        references: [eventDetail.id],
+    eventDetail: one(EventDetail, {
+        fields: [Comment.eventDetailId],
+        references: [EventDetail.id],
     }),
 }));
 
-const event = pgTable("t_event", {
+const Event = pgTable("t_event", {
     id: serial("id").primaryKey(),
     description: text("description"),
     name: text("name"),
@@ -61,7 +61,7 @@ const event = pgTable("t_event", {
     isDeleted: boolean("is_deleted"),
 });
 
-const eventDetail = pgTable("t_event_detail", {
+const EventDetail = pgTable("t_event_detail", {
     id: serial("id").primaryKey(),
     data: jsonb("data"),
     status: integer("status"),
@@ -77,33 +77,33 @@ const eventDetail = pgTable("t_event_detail", {
     }),
     isDeleted: boolean("is_deleted"),
     detailId: integer("detail_id")
-        .references(() => event.id)
+        .references(() => Event.id)
         .notNull(),
     gradeId: integer("grade_id")
-        .references(() => grade.id)
+        .references(() => Grade.id)
         .notNull(),
     studentId: integer("student_id")
-        .references(() => student.id)
+        .references(() => Student.id)
         .notNull(),
 });
 
-const eventDetailRelations = relations(eventDetail, ({ one, many }) => ({
-    student: one(student, {
-        fields: [eventDetail.studentId],
-        references: [student.id],
+const eventDetailRelations = relations(EventDetail, ({ one, many }) => ({
+    student: one(Student, {
+        fields: [EventDetail.studentId],
+        references: [Student.id],
     }),
-    event: one(event, {
-        fields: [eventDetail.detailId],
-        references: [event.id],
+    event: one(Event, {
+        fields: [EventDetail.detailId],
+        references: [Event.id],
     }),
-    grade: one(grade, {
-        fields: [eventDetail.gradeId],
-        references: [grade.id],
+    grade: one(Grade, {
+        fields: [EventDetail.gradeId],
+        references: [Grade.id],
     }),
-    comments: many(comment),
+    comments: many(Comment),
 }));
 
-const grade = pgTable("t_grade", {
+const Grade = pgTable("t_grade", {
     id: serial("id").primaryKey(),
     name: text("name"),
     createdAt: timestamp("created_at", {
@@ -119,7 +119,7 @@ const grade = pgTable("t_grade", {
     isDeleted: boolean("is_deleted"),
 });
 
-const hashtag = pgTable("t_hashtag", {
+const Hashtag = pgTable("t_hashtag", {
     id: serial("id").primaryKey(),
     name: text("name"),
     color: text("color"),
@@ -136,11 +136,11 @@ const hashtag = pgTable("t_hashtag", {
     isDeleted: boolean("is_deleted"),
 });
 
-const hashtagRelations = relations(hashtag, ({ many }) => ({
-    studentHashtags: many(studentHashtag),
+const hashtagRelations = relations(Hashtag, ({ many }) => ({
+    studentHashtags: many(StudentHashtag),
 }));
 
-const student = pgTable("t_student", {
+const Student = pgTable("t_student", {
     id: serial("id").primaryKey(),
     code: text("code"),
     createdAt: timestamp("created_at", {
@@ -155,27 +155,27 @@ const student = pgTable("t_student", {
     }),
     isDeleted: boolean("is_deleted"),
     userId: integer("user_id")
-        .references(() => user.id)
+        .references(() => User.id)
         .notNull(),
     gradeId: integer("grade_id")
-        .references(() => grade.id)
+        .references(() => Grade.id)
         .notNull(),
 });
 
-const studentRelations = relations(student, ({ many, one }) => ({
-    eventDetail: many(eventDetail),
-    user: one(user, {
-        fields: [student.userId],
-        references: [user.id],
+const studentRelations = relations(Student, ({ many, one }) => ({
+    eventDetail: many(EventDetail),
+    user: one(User, {
+        fields: [Student.userId],
+        references: [User.id],
     }),
-    studentHashtag: many(studentHashtag),
-    grade: one(grade, {
-        fields: [student.gradeId],
-        references: [grade.id],
+    studentHashtag: many(StudentHashtag),
+    grade: one(Grade, {
+        fields: [Student.gradeId],
+        references: [Grade.id],
     }),
 }));
 
-const user = pgTable("t_user", {
+const User = pgTable("t_user", {
     id: serial("id").primaryKey(),
     password: text("password"),
     role: text("role", { enum: ["001", "002", "003", "004"] }),
@@ -194,18 +194,18 @@ const user = pgTable("t_user", {
     isDeleted: boolean("is_deleted"),
 });
 
-const userRelations = relations(user, ({ many }) => ({
-    comments: many(comment),
+const userRelations = relations(User, ({ many }) => ({
+    comments: many(Comment),
 }));
 
-const studentHashtag = pgTable(
+const StudentHashtag = pgTable(
     "t_student_hashtag",
     {
         studentId: integer("student_id")
-            .references(() => student.id)
+            .references(() => Student.id)
             .notNull(),
         hashtagId: integer("hashtag_id")
-            .references(() => hashtag.id)
+            .references(() => Hashtag.id)
             .notNull(),
         value: jsonb("value"),
     },
@@ -216,32 +216,32 @@ const studentHashtag = pgTable(
     ]
 );
 
-const studentHashtagRelations = relations(studentHashtag, ({ one }) => ({
-    student: one(student, {
-        fields: [studentHashtag.studentId],
-        references: [student.id],
+const studentHashtagRelations = relations(StudentHashtag, ({ one }) => ({
+    student: one(Student, {
+        fields: [StudentHashtag.studentId],
+        references: [Student.id],
     }),
-    hashtag: one(hashtag, {
-        fields: [studentHashtag.hashtagId],
-        references: [hashtag.id],
+    hashtag: one(Hashtag, {
+        fields: [StudentHashtag.hashtagId],
+        references: [Hashtag.id],
     }),
 }));
 
-const schema = {
-    student,
-    comment,
-    commentRelations,
-    event,
-    eventDetail,
-    eventDetailRelations,
-    grade,
-    hashtag,
-    hashtagRelations,
+const DbSchema = {
+    Student,
+    Comment,
+    Event,
+    EventDetail,
+    Grade,
+    Hashtag,
+    StudentHashtag,
+    User,
     studentRelations,
-    studentHashtag,
+    commentRelations,
+    eventDetailRelations,
+    hashtagRelations,
     studentHashtagRelations,
-    user,
     userRelations,
 };
 
-export default schema;
+export default DbSchema;

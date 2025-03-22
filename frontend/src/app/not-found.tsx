@@ -1,6 +1,6 @@
 import { UserRole } from "@/constants";
 import { verifySession } from "@/lib/dal";
-import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 export default async function NotFound() {
@@ -18,7 +18,7 @@ export default async function NotFound() {
     return (
         <div className="w-full h-screen flex flex-col">
             <div className="px-12 py-8 flex items-center">
-                <ArrowBackIos sx={{ fontSize: "1.5rem" }} />
+                <ChevronLeft size="1.5rem" />
                 <Link href={href} className="text-base font-semibold">
                     ホームページに戻ります
                 </Link>

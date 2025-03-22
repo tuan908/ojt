@@ -1,5 +1,5 @@
 import { DEFAULT_EVENT_OPTION } from "@/constants";
-import json from "@/i18n/jp.json";
+import json from "@/i18n/locales/ja.json";
 import { z } from "zod";
 
 export const signInSchema = z.object({

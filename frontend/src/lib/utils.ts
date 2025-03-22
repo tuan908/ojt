@@ -1,5 +1,5 @@
 import { UserRole } from "@/constants";
-import json from "@/i18n/jp.json";
+import json from "@/i18n/locales/ja.json";
 import { RecursivelyReplaceNullWithUndefined } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

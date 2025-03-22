@@ -60,7 +60,7 @@ public class StudentController {
   @ResponseBody
   public ResponseEntity<?> create(@PathVariable String studentCode,
       @RequestBody RegisterEventDto dto) {
-    this.studentService.update(dto);
+    this.studentService.register(dto);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

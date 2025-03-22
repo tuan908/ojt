@@ -1,6 +1,6 @@
 "use client";
 
-import json from "@/i18n/jp.json";
+import json from "@/i18n/locales/ja.json";
 import { useEffect } from "react";
 
 type GlobalErrorProps = {

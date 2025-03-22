@@ -1,6 +1,6 @@
 "use client";
 
-import json from "@/i18n/jp.json";
+import json from "@/i18n/locales/ja.json";
 import { cn } from "@/lib/utils";
 import Https from "@mui/icons-material/Https";
 import PersonOutline from "@mui/icons-material/PersonOutline";

@@ -1,9 +1,9 @@
-import { CircularProgress } from "@mui/material";
+import Progress from "@/components/ui/progress";
 
 export default async function Loading() {
     return (
         <div className="w-dvw h-dvh flex flex-col items-center justify-center">
-            <CircularProgress color="info" size="5rem" />
+            <Progress />
         </div>
     );
 }

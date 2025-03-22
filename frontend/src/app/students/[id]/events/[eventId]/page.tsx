@@ -2,7 +2,7 @@ import { getEvents, getHashtags } from "@/app/actions/common";
 import { getEventDetailById } from "@/app/actions/event";
 import { verifySession } from "@/lib/dal";
 import { type DynamicPageProps } from "@/types";
-import EventDetailContent from "./EventDetailContent";
+import EventDetailContent from "./page-content";
 
 export default async function Page({ searchParams, params }: DynamicPageProps) {
     const { mode } = await searchParams!;

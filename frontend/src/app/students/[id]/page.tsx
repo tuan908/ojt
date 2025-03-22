@@ -1,14 +1,14 @@
 import { getEvents, getGrades } from "@/app/actions/common";
 import { getStudentByCode } from "@/app/actions/student";
-import PageWrapper from "@/components/PageWrapper";
+import PageWrapper from "@/components/ui/page-wrapper";
 import { verifySession } from "@/lib/dal";
 import { type DynamicPageProps } from "@/types";
 import { CircularProgress } from "@mui/material";
 import type { Metadata, ResolvingMetadata } from "next";
 import { Suspense } from "react";
-import Header from "./Header";
-import StudentDetailContent from "./StudentDetailContent";
-import StudentInfo from "./StudentInfo";
+import StudentDetailContent from "./_components/content";
+import Header from "./_components/header";
+import StudentInfo from "./_components/student-info";
 
 type Props = {
     params: Promise<{ id: string }>;
