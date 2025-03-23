@@ -8,8 +8,8 @@ const app = new Hono<Binding>();
 app.get("/events", async ctx => {
     try {
         const result = await db(ctx)
-            .select({ id: DbSchema.event.id, name: DbSchema.event.name })
-            .from(DbSchema.event);
+            .select({ id: DbSchema.Event.id, name: DbSchema.Event.name })
+            .from(DbSchema.Event);
         return ctx.json(result);
     } catch (error: unknown) {
         console.error(error instanceof Error ? error.message : error);
@@ -19,7 +19,7 @@ app.get("/events", async ctx => {
 
 app.get("/grades", async ctx => {
     try {
-        const result = await db(ctx).query.grade.findMany({
+        const result = await db(ctx).query.Grade.findMany({
             columns: { id: true, name: true },
         });
         return ctx.json(result);
@@ -31,7 +31,7 @@ app.get("/grades", async ctx => {
 
 app.get("/hashtags", async ctx => {
     try {
-        const result = await db(ctx).query.hashtag.findMany({
+        const result = await db(ctx).query.Hashtag.findMany({
             columns: { id: true, name: true, color: true },
         });
         return ctx.json(result);
