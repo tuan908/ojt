@@ -1,8 +1,8 @@
 "use server";
 
-import { type SelectOption } from "@/components/Select";
 import API from "@/lib/api";
 import type { Grade, Hashtag } from "@/types/common";
+import { type SelectOption } from "@/types/common";
 import { cache } from "react";
 
 /**
