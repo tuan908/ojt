@@ -1,11 +1,11 @@
 "use client";
 
-import Box from "@/components/Box";
 import type { StackedData } from "@/types/tracking";
 import ReactEcharts from "echarts-for-react";
 import { BarChart, type BarSeriesOption } from "echarts/charts";
 import { use as echartUse, type ComposeOption } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
+import Box from "./legacy/box";
 
 echartUse([CanvasRenderer, BarChart]);
 

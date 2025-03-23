@@ -1,43 +1,19 @@
 "use client";
 
-import ReactEcharts from "echarts-for-react";
-import { PieChart, type PieSeriesOption } from "echarts/charts";
+import type { DoughnutData, EChartsOption } from "@/types/tracking";
+import { PieChart } from "echarts/charts";
 import {
-    TooltipComponent,
-    type TooltipComponentOption,
+    TooltipComponent
 } from "echarts/components";
-import type { ComposeOption } from "echarts/core";
 import { use } from "echarts/core";
 import { LabelLayout } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
+import dynamic from "next/dynamic";
 import { memo } from "react";
 
+const ReactEchart = dynamic(() => import("echarts-for-react"))
+
 use([TooltipComponent, PieChart, CanvasRenderer, LabelLayout]);
-
-type EChartsOption = ComposeOption<TooltipComponentOption | PieSeriesOption>;
-
-export type StackedData = {
-    name: string;
-    data: number[];
-    type: "bar";
-    stack: string;
-};
-
-export type DoughnutData = {
-    _data: PieSeriesOption["data"];
-    text: string;
-};
-
-export type TrackingData = {
-    id: string;
-    name: string;
-    code: string;
-    count: number;
-    hashtags: {
-        doughnut: DoughnutData;
-        stacked: StackedData[];
-    };
-};
 
 export const colorPalette = [
     "#4ad295",
@@ -104,7 +80,7 @@ type Props = {
 const DoughnutChart = memo(({ data }: Props) => {
     return (
         <div className="w-[32rem] h-[20rem] relative bg-white shadow-2xl rounded-2xl">
-            <ReactEcharts
+            <ReactEchart
                 option={getDefault(data)}
                 className="!h-[22rem] !w-full m-auto absolute -top-3"
             />
