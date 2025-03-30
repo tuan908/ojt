@@ -17,10 +17,12 @@ public interface StudentEventRepository extends JpaRepository<StudentEvent, Long
               ed
           from
               com.tuanna.api.entity.StudentEvent ed
-              left join fetch ed.comments
+              left join fetch ed.comments c
           where
               ed.id = :id
               and ed.isDeleted = false
+          order by
+              c.createdAt ASC
       """)
   Optional<StudentEvent> findById(final @NonNull @Param(value = "id") Long id);
 }

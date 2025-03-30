@@ -1,11 +1,12 @@
 "use client";
 
 import { addComment, createEvent, editComment } from "@/app/actions/event";
+import { studentEventOptions } from "@/app/students/[id]/events/event";
 import type { AddCommentPayload, TComment } from "@/features/comment/types";
-import { RegisterEvent, StudentEvent } from "@/features/student/types";
+import { RegisterEvent } from "@/features/student/types";
 import BubbleMessage from "@/features/students/components/bubble-message";
 import Textarea from "@/shared/components/legacy/textarea";
-import { menuProps, ScreenMode, UserRole } from "@/shared/constants";
+import { menuProps, QUERY_KEY, ScreenMode, UserRole } from "@/shared/constants";
 import json from "@/shared/i18n/locales/ja.json";
 import { ISession } from "@/shared/lib/session";
 import { hideLoading, showLoading } from "@/shared/redux/features/loadingSlice";
@@ -26,8 +27,11 @@ import {
     type AutocompleteInputChangeReason,
     type SelectProps,
 } from "@mui/material";
+import {
+    useQuery,
+    useQueryClient
+} from "@tanstack/react-query";
 import { X as Close, Send } from "lucide-react";
-import { useRouter } from "next/navigation";
 import {
     Fragment,
     useEffect,
@@ -40,32 +44,17 @@ import {
 } from "react";
 
 interface IEventDetailContentProps {
-    studentId: string;
+    studentCode: string;
     studentEventId: number;
     screenMode: string;
-    studentEvent: StudentEvent;
     events: IEvent[];
     hashtags: Hashtag[];
     session: ISession;
 }
 
-type CommentState = {
-    id: number;
-    studentEventId: number;
-    content: string;
-    username: string;
-};
-
 type EditCommentState = {
     id: number;
     isEditing: boolean;
-};
-
-const initComment: CommentState = {
-    id: -1,
-    studentEventId: -1,
-    content: "",
-    username: "",
 };
 
 const initEditState: EditCommentState = {
@@ -79,32 +68,44 @@ export default function StudentEventContent({
     studentEventId,
     screenMode,
     session,
-    studentEvent,
 }: IEventDetailContentProps) {
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const dispatch = useAppDispatch();
-    const [comments, setComments] = useState<TComment[]>([]);
-    const [eventName, setEventName] = useState(
-        studentEvent?.name ?? json.event.placeholder0
+    const { data: studentEvent } = useQuery(
+        studentEventOptions({
+            studentCode: session?.code,
+            studentEventId: studentEventId.toString(),
+        })
     );
-    const [registerData, setData] = useState<RegisterEvent["data"]>(() => studentEvent.data!);
+
+    const [comments, setComments] = useState<TComment[]>([]);
+    const [eventName, setEventName] = useState(() => json.event.placeholder0);
+    const [registerData, setData] = useState<RegisterEvent["data"]>(
+        () => studentEvent!?.data!
+    );
     const [error, setError] = useState(false);
     const [disable, setDisable] = useState(false);
     const [openPicker, setOpen] = useState(false);
-    const [comment, setComment] = useState<AddCommentPayload>(initComment);
-    const [openSuggest, setOpenSuggest] = useState(false);
+    const [newComment, setNewComment] = useState<string>("");
+    const [editingComment, setEditingComment] = useState<TComment | null>(null);
     const [editState, setEditState] = useState<EditCommentState>(initEditState);
+    const [openSuggest, setOpenSuggest] = useState(false);
     const [isPending, startTransition] = useTransition();
 
     useEffect(() => {
-        if (
-            screenMode === ScreenMode.CHAT.toString() &&
-            session?.role !== UserRole.Student
-        ) {
+        if (screenMode === ScreenMode.CHAT.toString()) {
             setDisable(true);
         }
     }, []);
 
+    useEffect(() => {
+        if (studentEvent) {
+            setComments(studentEvent.comments);
+            setEventName(studentEvent.name);
+        }
+    }, [studentEvent]);
+
+    // Update the input change handler to work with both states
     function handleInputCommentChange(
         event: SyntheticEvent,
         input: string | { label: string; value: string } | null,
@@ -115,18 +116,21 @@ export default function StudentEventContent({
             return;
         }
 
-        if (typeof input === "string") {
-            setComment({ ...comment, content: input });
-            if (input.startsWith("#") && session?.role === UserRole.Counselor) {
-                setOpenSuggest(true);
-            }
+        const content = typeof input === "string" ? input : input.value;
+
+        // Update the appropriate state based on editing mode
+        if (editState.isEditing && editingComment) {
+            setEditingComment({
+                ...editingComment,
+                content,
+            });
+        } else {
+            setNewComment(content);
         }
 
-        if (typeof input === "object") {
-            setComment({
-                ...comment,
-                content: input.value,
-            });
+        // Handle hashtag suggestions
+        if (content.startsWith("#") && session?.role === UserRole.Counselor) {
+            setOpenSuggest(true);
         }
 
         if (reason === "reset") {
@@ -138,6 +142,7 @@ export default function StudentEventContent({
         }
     }
 
+    // Update the change handler similarly
     function handleChangeComment(
         event: SyntheticEvent<Element, Event>,
         input: NonNullable<string | { id: number; label: string }>,
@@ -147,18 +152,20 @@ export default function StudentEventContent({
         let content = [];
         if (typeof input === "string") {
             content.push(input);
-            setComment({
-                ...comment,
-                content: content.join(","),
-            });
+        } else if (typeof input === "object") {
+            content.push(input.label);
         }
 
-        if (typeof input === "object") {
-            content.push(input.label);
-            setComment({
-                ...comment,
-                content: content.join(","),
+        const finalContent = content.join(",");
+
+        // Update the appropriate state based on editing mode
+        if (editState.isEditing && editingComment) {
+            setEditingComment({
+                ...editingComment,
+                content: finalContent,
             });
+        } else {
+            setNewComment(finalContent);
         }
 
         if (reason === "selectOption" && openSuggest) {
@@ -198,56 +205,102 @@ export default function StudentEventContent({
         }
     }
 
-    function handleAddComment(
+    const revalidate = () => {
+        queryClient.invalidateQueries({
+            queryKey: [QUERY_KEY.EVENT, session?.code, studentEventId],
+        });
+    };
+
+    async function handleAddComment(
         event: SyntheticEvent<HTMLButtonElement, MouseEvent>
     ) {
         event?.preventDefault();
+
+        if (!newComment.trim() || !session?.username) {
+            return;
+        }
+
         startTransition(async () => {
-            if (editState.isEditing) {
-                const response = await editComment({
-                    id: comment.id!,
-                    content: comment.content!,
-                    studentEventId: Number(studentEventId),
-                });
-                if (response) {
-                    setComments([]);
-                }
-                setComment(initComment);
-                setEditState(initEditState);
-            } else {
-                if (session && session?.username) {
-                    await dispatch(showLoading());
-                    let data: AddCommentPayload = {
-                        ...comment,
-                        studentEventId: Number(studentEventId),
-                        username: session.username,
-                    };
-                    const res = await addComment(data);
-                    if (res) {
-                        setComments([]);
-                        setComment({ ...comment, content: "" });
-                    }
-                    await dispatch(hideLoading());
-                }
+            await dispatch(showLoading());
+
+            const data: AddCommentPayload = {
+                content: newComment,
+                studentEventId: Number(studentEventId),
+                username: session.username,
+            };
+
+            const response = await addComment(data);
+            if (response) {
+                revalidate();
             }
+
+            await dispatch(hideLoading());
             setOpenSuggest(false);
         });
     }
 
-    function handleSelect(emoji: any) {
-        if (!emoji?.native) return;
-        setComment({
-            ...comment,
-            content: comment?.content!?.concat(emoji?.native),
+    // Separate function for updating an existing comment
+    async function handleEditComment(
+        event: SyntheticEvent<HTMLButtonElement, MouseEvent>
+    ) {
+        event?.preventDefault();
+
+        if (!editingComment || !editingComment?.content!?.trim()) {
+            return;
+        }
+
+        startTransition(async () => {
+            await dispatch(showLoading());
+
+            const response = await editComment({
+                id: editingComment.id,
+                content: editingComment?.content!,
+                studentEventId: Number(studentEventId),
+            });
+
+            if (response) {
+                revalidate();
+            }
+
+            setEditingComment(null);
+            setEditState(initEditState);
+            await dispatch(hideLoading());
+            setOpenSuggest(false);
         });
     }
 
-    const exitEditComment = () => {
-        setComment(initComment);
+    // Function to start editing a comment
+    function startEditComment(comment: TComment) {
+        setEditingComment(comment);
+        setEditState({
+            id: comment.id,
+            isEditing: true,
+        });
+    }
+
+    // Function to cancel editing
+    function cancelEditComment() {
+        setEditingComment(null);
         setEditState(initEditState);
-    };
+    }
+
+    // Handle emoji selection
+    function handleSelect(emoji: any) {
+        if (!emoji?.native) return;
+
+        if (editState.isEditing && editingComment) {
+            setEditingComment({
+                ...editingComment,
+                content: editingComment?.content!?.concat(emoji.native),
+            });
+        } else {
+            setNewComment(newComment.concat(emoji.native));
+        }
+    }
 
     const inputRef = useRef<HTMLInputElement>(null);
+
+    const commentRef = useRef<HTMLInputElement>(null);
 
     const isSelectDisabled = useMemo(
         () =>
@@ -275,7 +328,9 @@ export default function StudentEventContent({
                                 {comment.isDeleted ? null : (
                                     <BubbleMessage
                                         comment={comment}
-                                        setComment={setComment}
+                                        onEditStart={() =>
+                                            startEditComment(comment)
+                                        }
                                         comments={comments}
                                         setComments={setComments}
                                         editState={editState}
@@ -284,7 +339,7 @@ export default function StudentEventContent({
                                             session?.username! ===
                                             comment?.username!
                                         }
-                                        inputRef={inputRef!}
+                                        inputRef={commentRef!}
                                     />
                                 )}
                             </Fragment>
@@ -325,7 +380,11 @@ export default function StudentEventContent({
                             onInputChange={handleInputCommentChange}
                             onChange={handleChangeComment}
                             open={openSuggest}
-                            inputValue={comment.content}
+                            inputValue={
+                                editState.isEditing
+                                    ? editingComment?.content || ""
+                                    : newComment
+                            }
                             disableListWrap
                             disableClearable
                             disablePortal
@@ -353,29 +412,46 @@ export default function StudentEventContent({
                             </div>
                         ) : null}
                     </div>
-                    <button
-                        className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
-                        onClick={handleAddComment}
-                        disabled={comment?.content!?.length === 0}
-                    >
-                        <Send size={32} className="text-icon-default" />
-                    </button>
+
+                    {/* Update the action buttons */}
                     {editState.isEditing ? (
+                        <>
+                            <button
+                                className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
+                                onClick={handleEditComment}
+                                disabled={
+                                    !editingComment?.content ||
+                                    editingComment.content.length === 0
+                                }
+                            >
+                                <Send size={32} className="text-icon-default" />
+                            </button>
+                            <button
+                                className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3"
+                                onClick={cancelEditComment}
+                            >
+                                <Close
+                                    className="text-icon-default"
+                                    size={32}
+                                />
+                            </button>
+                        </>
+                    ) : (
                         <button
                             className="border-none outline-none bg-white rounded-full flex items-center justify-center p-3 disabled:cursor-not-allowed"
-                            onClick={exitEditComment}
-                            disabled={comment?.content!?.length === 0}
+                            onClick={handleAddComment}
+                            disabled={newComment.length === 0}
                         >
-                            <Close className="text-icon-default" size={32} />
+                            <Send size={32} className="text-icon-default" />
                         </button>
-                    ) : null}
+                    )}
                 </div>
             </>
         );
     };
 
     return (
-        <Fragment>
+        <div className="flex flex-col w-full pt-20 pb-10">
             <div className="pt-6 w-full flex flex-col gap-y-4 relative">
                 <div className="w-4/5 md:w-1/2 m-auto bg-white rounded-xl shadow-sm">
                     <div className="w-[90%] m-auto flex flex-col gap-y-4 py-6">
@@ -506,6 +582,6 @@ export default function StudentEventContent({
 
                 {renderComments()}
             </div>
-        </Fragment>
+        </div>
     );
 }

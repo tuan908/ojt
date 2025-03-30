@@ -2,6 +2,7 @@ package com.tuanna.api.entity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,7 +64,9 @@ public class StudentEvent extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "student_event_id")
-  private Set<Comment> comments;
+  @OrderBy("createdAt ASC")
+  @Builder.Default
+  private Set<Comment> comments = new LinkedHashSet<>();
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Grade grade;

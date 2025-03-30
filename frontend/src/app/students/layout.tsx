@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: {
-        default: "学生イベント",
-        template: "%s | 学生イベント",
+        default: "学生",
+        template: "%s | 学生",
     },
     description: "学生イベント",
 };

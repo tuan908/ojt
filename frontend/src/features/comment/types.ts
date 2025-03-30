@@ -1,4 +1,4 @@
-import { CommentSchema } from "@/shared/lib/validations";
+import { CommentSchema } from "@/features/student/validations";
 import { z } from "zod";
 
 export type AddCommentPayload = z.infer<typeof CommentSchema>;

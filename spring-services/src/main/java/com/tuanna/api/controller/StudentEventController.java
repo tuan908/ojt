@@ -72,7 +72,6 @@ public class StudentEventController {
   @PostMapping("/{studentEventId}/comments")
   public ResponseEntity<ApiResponse<CreateDto>> addComment(@RequestBody AddCommentDto dto) {
     final var data = this.commentService.create(dto);
-
     return ResponseEntity.ok().body(data);
   }
 

@@ -1,4 +1,3 @@
-import { getStudentEvent } from "@/app/actions/event";
 import { getEvents, getHashtags } from "@/app/actions/shared";
 import { verifySession } from "@/shared/lib/dal";
 import type { DynamicPageProps } from "@/shared/types";
@@ -30,26 +29,17 @@ export default async function Page({ searchParams, params }: DynamicPageProps) {
         : _searchParams?.eventId!;
 
     const { data } = await tryCatch(
-        Promise.all([
-            getStudentEvent({
-                studentCode,
-                studentEventId,
-            }),
-            getEvents(),
-            getHashtags(),
-            verifySession(),
-        ])
+        Promise.all([getEvents(), getHashtags(), verifySession()])
     );
 
-    const [studentEvent, events, hashtags, session] = data!;
+    const [events, hashtags, session] = data!;
 
     return (
         <StudentEventContent
-            studentId={studentCode}
+            studentCode={studentCode}
             studentEventId={Number.parseInt(studentEventId)}
             screenMode={screenMode}
             session={session!}
-            studentEvent={studentEvent!}
             events={events}
             hashtags={hashtags}
         />

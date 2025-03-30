@@ -1,3 +1,5 @@
+"use server"
+
 import type { TrackingData } from "@/features/tracking/types";
 import ApiClient from "@/shared/lib/api-client";
 import type { ApiResponse } from "@/shared/types";

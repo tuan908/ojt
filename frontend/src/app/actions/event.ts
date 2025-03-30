@@ -1,3 +1,5 @@
+"use server";
+
 import type {
     RegisterEvent,
     StudentDto,
@@ -104,11 +106,11 @@ export async function addComment(data: {
     id?: number | undefined;
     content?: string | undefined;
 }) {
-    const response = await ApiClient.Spring.post(
+    const response = await ApiClient.Spring.post<ApiResponse>(
         `/student-events/${data.studentEventId}/comments`,
         data
     );
-    return {};
+    return response;
 }
 
 export async function editComment(p0: {
@@ -120,5 +122,5 @@ export async function editComment(p0: {
         `/student-events/${p0.studentEventId}/comments`,
         p0
     );
-    return {};
+    return response;
 }

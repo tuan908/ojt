@@ -105,6 +105,7 @@ export const SESSION = "session";
 
 export const QUERY_KEY = {
     STUDENTS: "Students",
+    EVENT: "Event"
 }
 
 /**

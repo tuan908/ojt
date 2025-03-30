@@ -63,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
   @Override
   @Transactional
   public ApiResponse<CreateDto> create(AddCommentDto dto) {
-    var eventDetail = this.eventDetailRepository.findById(dto.eventDetailId()).orElse(null);
+    var eventDetail = this.eventDetailRepository.findById(dto.studentEventId()).orElse(null);
 
     if (eventDetail == null) {
       return null;
@@ -75,15 +75,13 @@ public class CommentServiceImpl implements CommentService {
       return null;
     }
 
-    var newComment = Comment.builder().user(user).content(dto.content()).build();
-
-    newComment.setIsDeleted(false);
+    var newComment =
+        Comment.builder().user(user).content(dto.content()).studentEvent(eventDetail).build();
 
     eventDetail.getComments().add(newComment);
 
     this.entityManager.persist(eventDetail);
     this.entityManager.flush();
-
 
     return ApiResponse.success(new CreateDto(newComment.getId()), null);
   }

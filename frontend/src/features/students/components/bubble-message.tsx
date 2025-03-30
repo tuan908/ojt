@@ -21,7 +21,7 @@ interface BubbleMessageProps {
         isEditing: boolean;
     };
     setEditState: (value: { id: number; isEditing: boolean }) => void;
-    setComment: (data: CommentPayload) => void;
+    onEditStart: (data: CommentPayload) => void;
     comments: TComment[];
     setComments: (comments: TComment[]) => void;
     inputRef: RefObject<HTMLInputElement | null>;
@@ -31,7 +31,7 @@ export default function BubbleMessage({
     comment,
     isCommentOfActiveUser,
     setEditState,
-    setComment,
+    onEditStart: setComment,
     comments,
     setComments,
     inputRef,
