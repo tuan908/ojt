@@ -1,41 +1,10 @@
 "use server";
 
-import { EventStatus, PAGE_SIZE } from "@/constants";
-import API from "@/lib/api";
-import { ApiResponse } from "@/types";
-import type {
-    Student,
-    StudentEvent,
-    StudentsResponse
-} from "@/types/student";
-import type { TrackingData } from "@/types/tracking";
-import { revalidatePath } from "next/cache";
+import type { StudentDto } from "@/features/student/types";
+import { EventStatus } from "@/shared/constants";
+import ApiClient from "@/shared/lib/api-client";
+import type { ApiResponse } from "@/shared/types";
 import { cache } from "react";
-
-/**
- * Get Student List By Conditions
- * @param dto Request Dto
- * @returns Student List
- */
-export const getStudents = cache(async (dto?: Student) => {
-    // Use raw dto instead of JSON.stringify(dto) - dto already parse
-    // to JSON string in fetchNoCache
-    let body: Record<string, unknown> | undefined;
-
-    if (!dto) {
-        body = {};
-    } else {
-        body = dto;
-    }
-
-    const data = await API.SPRING_API.post<ApiResponse<StudentsResponse[]>>("/students", {
-        ...body,
-        pageNumber: 1,
-        pageSize: PAGE_SIZE,
-    });
-
-    return data;
-});
 
 /**
  * Get student by code
@@ -43,39 +12,14 @@ export const getStudents = cache(async (dto?: Student) => {
  * @returns Student Response
  */
 export const getStudentByCode = cache(async (code: string) => {
-    const data = await API.NODE_API.get<StudentEvent>(`/students/${code}`, {tag: "student"});
-    return data;
-});
-
-/**
- * Update Event Status
- * @param dto Update Event Status Dto
- * @param code Student Code
- */
-export async function updateEventStatus(dto: {
-    id: number;
-    updatedBy: string;
-    studentId: number;
-}) {
-    const data = await API.SPRING_API.post(`/students/events/${dto.id}`, dto);
-    revalidatePath(`/students/[id]`, "page");
-    return data;
-}
-
-/**
- * Delete comment
- * @param dto Request dto
- */
-export async function deleteComment(dto: {
-    id: number;
-    eventDetailId: number;
-    username: string;
-}) {
-    await API.SPRING_API.delete(
-        `/students/events/${dto.eventDetailId}/comments/${dto.id}`
+    const apiResponse = await ApiClient.Spring.get<ApiResponse<StudentDto>>(
+        `/students/${code}`,
+        {
+            tag: "student",
+        }
     );
-    revalidatePath("/students/event/comments");
-}
+    return apiResponse?.data;
+});
 
 /**
  * Get event by student code
@@ -110,11 +54,8 @@ export const getEventsByStudentCodeWithQuery = async (
 
     url += queryParams.join("&");
 
-    const data = await API.SPRING_API.get<StudentEvent["events"]>(url, {tag: "student-events"});
-    return data;
-};
-
-export const getTracking = async (code: string) => {
-    const data = await API.NODE_API.get<TrackingData>(`/students/${code}/trackings`, {tag: "trackings"});
+    const data = await ApiClient.Spring.get<StudentDto["events"]>(url, {
+        tag: "student-events",
+    });
     return data;
 };

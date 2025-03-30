@@ -1,5 +1,5 @@
-import Navbar from "@/components/Navbar";
-import type { LayoutProps } from "@/types";
+import Navbar from "@/shared/components/navbar";
+import type { LayoutProps } from "@/shared/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

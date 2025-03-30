@@ -23,8 +23,6 @@ import jakarta.persistence.EntityManager;
 @Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
 
-  private final StudentRepository studentRepository;
-
   private final UserRepository userRepository;
 
   private final PasswordEncoder passwordEncoder;
@@ -42,7 +40,6 @@ public class AuthServiceImpl implements AuthService {
       EntityManager entityManager,
       JwtService jtp) {
     super();
-    this.studentRepository = studentRepository;
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.entityManager = entityManager;
@@ -75,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
             user.getId(),
             user.getName(),
             user.getUsername(),
-            user.getRole().getValue(),
+            user.getUserRole().getValue(),
             (student != null) ? student.getGrade().getName() : null,
             (student != null) ? student.getCode() : null,
             token), null);

@@ -1,12 +1,24 @@
 package com.tuanna.api.dto;
 
 import java.util.List;
+import com.tuanna.api.entity.StudentEvent;
 
-public final record StudentEventDto(
+/**
+ * Student Event Data Transfer Object (DTO)
+ *
+ * @param id Student event id
+ * @param grade Grade name
+ * @param name Event name
+ * @param status Event status
+ * @param data Event's details
+ * @param commentCount Comment count
+ */
+public record StudentEventDto(
     Long id,
-    String code,
-    String name,
     String grade,
-    String events,
-    List<HashtagDto> hashtags) {
+    String name,
+    Integer status,
+    StudentEvent.Data data,
+    List<CommentDto> comments) {
+
 }

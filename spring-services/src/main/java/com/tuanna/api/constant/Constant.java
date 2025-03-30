@@ -1,12 +1,6 @@
 package com.tuanna.api.constant;
 
-import java.io.Serial;
-import java.io.Serializable;
-
-public class Constant implements Serializable {
-  @Serial
-  private static final long serialVersionUID = -5939961552007067863L;
-
+public class Constant {
   /** Page size for paged student list */
   public static final int PAGE_SIZE = 10;
 
@@ -33,4 +27,9 @@ public class Constant implements Serializable {
 
   /** Iterations */
   public static final int ARGON2_ITERATIONS = 2;
+
+  /** yyyy-MM-dd HH:mm:ss.SSS */
+  public static final String DATETIME_FORMAT_DASH = "yyyy-MM-dd HH:mm:ss.SSS";
+
+  public static final String CODE_OK = "ok";
 }

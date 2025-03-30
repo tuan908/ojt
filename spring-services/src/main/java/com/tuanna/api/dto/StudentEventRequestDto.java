@@ -7,7 +7,7 @@ public record StudentEventRequestDto(
     String grade,
     String event,
     List<String> hashtags,
-    int pageNumber,
-    int pageSize) {
+    int page,
+    int limit) {
 
 }

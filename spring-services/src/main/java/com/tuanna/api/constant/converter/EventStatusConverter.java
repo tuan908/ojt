@@ -15,7 +15,7 @@ public class EventStatusConverter implements AttributeConverter<EventStatus, Int
 
   @Override
   public EventStatus convertToEntityAttribute(Integer dbData) {
-    return EventStatus.fromShortName(dbData);
+    return dbData == null ? null : EventStatus.fromShortName(dbData);
   }
 
 }

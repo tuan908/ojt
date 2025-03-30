@@ -1,5 +1,5 @@
-import { UserRole } from "@/constants";
-import { verifySession } from "@/lib/dal";
+import { UserRole } from "@/shared/constants";
+import { verifySession } from "@/shared/lib/dal";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -8,9 +8,9 @@ export default async function NotFound() {
 
     let href = "";
     if (!session) {
-        href = "/signin";
+        href = "/auth/login";
     } else if (session?.role === UserRole.Student) {
-        href = "/students/" + session?.code;
+        href = "/students/" + session.id;
     } else {
         href = "/students";
     }

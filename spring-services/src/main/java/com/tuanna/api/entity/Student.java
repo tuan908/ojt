@@ -7,7 +7,7 @@ import java.util.Set;
 import org.hibernate.annotations.DialectOverride.SQLRestriction;
 import org.hibernate.annotations.SQLDelete;
 
-import com.tuanna.api.dto.StudentEventDto;
+import com.tuanna.api.dto.StudentsDto;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -50,11 +50,10 @@ public class Student extends BaseEntity {
   private String code;
 
   @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-  private Set<StudentHashtag> hashtags;
+  private Set<StudentHashtag> studentHashtags;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "student")
-  @Builder.Default
-  private java.util.Set<EventDetail> events = new java.util.HashSet<>();
+  private Set<StudentEvent> studentEvents;
 
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -79,22 +78,22 @@ public class Student extends BaseEntity {
   }
 
   /** Convert to dto from entity */
-  public StudentEventDto toDto() {
+  public StudentsDto toDto() {
     var events = this
-        .getEvents()
+        .getStudentEvents()
         .stream()
-        .sorted(Comparator.comparing(event -> event.getDetail().getName()))
-        .map(event -> event.getDetail().getName())
+        .sorted(Comparator.comparing(event -> event.getEvent().getName()))
+        .map(event -> event.getEvent().getName())
         .toList();
     var hashtags = this
-        .getHashtags()
+        .getStudentHashtags()
         .stream()
-        .map(sh -> sh.getHashtag())
+        .map(StudentHashtag::getHashtag)
         .sorted(Comparator.comparing(Hashtag::getName))
         .map(Hashtag::toDto)
         .toList();
 
-    return new StudentEventDto(
+    return new StudentsDto(
         this.id,
         this.code,
         this.user.getName(),
@@ -104,20 +103,20 @@ public class Student extends BaseEntity {
   }
 
   public void addHashtag(Hashtag hashtag) {
-    this.hashtags.stream().map(s -> s.getHashtag()).toList().add(hashtag);
-    hashtag.getStudents().stream().map(s -> s.getStudent()).toList().add(this);
+    this.studentHashtags.stream().map(StudentHashtag::getHashtag).toList().add(hashtag);
+    hashtag.getStudentHashtags().stream().map(StudentHashtag::getStudent).toList().add(this);
   }
 
   public void removeHashtag(Long hashtagId) {
-    var hashtag = this.hashtags
+    var hashtag = this.studentHashtags
         .stream()
-        .map(sh -> sh.getHashtag())
+        .map(StudentHashtag::getHashtag)
         .filter(t -> t.getId() == hashtagId)
         .findFirst()
         .orElse(null);
     if (hashtag != null) {
-      this.hashtags.stream().map(sh -> sh.getHashtag()).toList().remove(hashtag);
-      hashtag.getStudents().stream().map(s -> s.getStudent()).toList().remove(this);
+      this.studentHashtags.stream().map(StudentHashtag::getHashtag).toList().remove(hashtag);
+      hashtag.getStudentHashtags().stream().map(StudentHashtag::getStudent).toList().remove(this);
     }
   }
 }

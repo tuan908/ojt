@@ -1,12 +1,12 @@
 package com.tuanna.api.entity;
 
 import java.io.Serial;
-import java.time.format.DateTimeFormatter;
 
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.DialectOverride.SQLRestriction;
+import org.hibernate.annotations.SQLDelete;
 
 import com.tuanna.api.dto.CommentDto;
+import com.tuanna.api.helper.DateTimeHelper;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -48,7 +48,7 @@ public class Comment extends BaseEntity {
   private String content;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private EventDetail eventDetail;
+  private StudentEvent studentEvent;
 
   @Override
   public boolean equals(final Object o) {
@@ -66,17 +66,13 @@ public class Comment extends BaseEntity {
   }
 
   public CommentDto toDto() {
-
-    var createdAt =
-        this.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss.SSS"));
-
     return new CommentDto(
         this.id,
         this.user.getName(),
         this.user.getUsername(),
-        this.user.getRole().getValue(),
+        this.user.getUserRole().getValue(),
         this.content,
-        createdAt,
+        DateTimeHelper.formatDateString(this.getCreatedAt()),
         this.getIsDeleted());
   }
 

@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.tuanna.api.constant.UserRole;
 import com.tuanna.api.dto.CreateAccountDto;
-import com.tuanna.api.dto.StudentEventDto;
+import com.tuanna.api.dto.StudentsDto;
 import com.tuanna.api.dto.UserDto;
 import com.tuanna.api.entity.Student;
 import com.tuanna.api.entity.User;
@@ -48,15 +48,18 @@ public class UserServiceImpl implements UserService {
   @Override
   @Async
   public CompletableFuture<?> findByUsernameAsync(String username) {
-    var query = entityManager.createQuery("""
-        select
-        	s
-        from
-        	com.tuanna.api.entity.Student s
-        join fetch s.user
-        where
-        	s.code = :username
-        """, Student.class);
+    var sql = new StringBuffer();
+
+    sql.append("select                              ");
+    sql.append("    s                               ");
+    sql.append("from                                ");
+    sql.append("    com.tuanna.api.entity.Student s ");
+    sql.append("join fetch                          ");
+    sql.append("    s.user                          ");
+    sql.append("where                               ");
+    sql.append("    s.code = :username               ");
+
+    var query = entityManager.createQuery(sql.toString(), Student.class);
 
     query.setParameter("username", username);
 
@@ -69,13 +72,19 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Async
-  public CompletableFuture<List<StudentEventDto>> findAllAsync() {
+  public CompletableFuture<List<StudentsDto>> findAllAsync() {
     return CompletableFuture.supplyAsync(() -> {
+      var sql = new StringBuffer();
+
+      sql.append("select                              ");
+      sql.append("    s                               ");
+      sql.append("from                                ");
+      sql.append("    com.tuanna.api.entity.Student s ");
+      sql.append("join fetch                          ");
+      sql.append("    s.user                          ");
+
       var students = this.entityManager
-          .createQuery("""
-              select s from com.tuanna.api.entity.Student s
-              join fetch s.user
-              """, Student.class)
+          .createQuery(sql.toString(), Student.class)
           .getResultList() // Convert stream to list before returning
           .stream()
           .map(Student::toDto)
@@ -93,7 +102,7 @@ public class UserServiceImpl implements UserService {
           .name(dto.firstName() + " " + dto.lastName())
           .username(dto.username())
           .password(passwordEncoder.encode(dto.password()))
-          .role(UserRole.COUNSELOR)
+          .userRole(UserRole.COUNSELOR)
           .build();
       this.userRepository.save(newUser);
       return true;

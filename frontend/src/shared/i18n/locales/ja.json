@@ -1,0 +1,97 @@
+{
+    "error": {
+        "missingRequiredFields": "必要な項目が欠けています。",
+        "wrong_username_or_password": "ユーザー名またはパスワードが間違っています。",
+        "usernameRequired": "ユーザー名は必須です。",
+        "passwordRequired": "パスワードが必要。",
+        "passwordMinLength": "パスワードは8文字以上である必要があります。",
+        "passwordMaxLength": "パスワードは 32 文字未満である必要があります。",
+        "userNotFound": "ユーザーが見つかりません。",
+        "passwordMismatch": "パスワードが間違っているか、ユーザーが存在しません。",
+        "serverError": "内部サーバーエラー",
+        "tryAgain": "あとでもう一度試してみてください",
+        "eventFieldRequired": "イベントを選択してください",
+        "invalidResponse": "応答が無効です",
+        "missingEnvironmentVariables": "重要な環境変数が見つかりません"
+    },
+    "successOperation": "イベントが作成されました",
+    "tableHeader": {
+        "event": {
+            "code": "学生コード",
+            "name": "学生の名前",
+            "grade": "クラス名",
+            "events": "イベント",
+            "hashtags": "ハッシュタグ",
+            "tracking": "トラッキング"
+        },
+        "studentEvents": {
+            "notification": "通知",
+            "status": "ステータス",
+            "name": "イベント",
+            "grade": "クラス名",
+            "action": "アクション"
+        }
+    },
+    "common": {
+        "event": "イベント",
+        "grade": "クラス名",
+        "studentName": "学生の名前",
+        "hashtag": "#ハッシュタグ",
+        "hello": "こにちは",
+        "appName": "社会人基礎力",
+        "error": "エラー",
+        "edit": "編集",
+        "delete": "消去",
+        "return": "返る",
+        "logout": "ログアウト",
+        "emoji": "絵文字",
+        "viewStatistics": "追跡データ",
+        "done": "終わり",
+        "search": "検索"
+    },
+    "role": {
+        "student": "学生",
+        "parent": "家族",
+        "teacher": "先生",
+        "counselor": "カウンセラー"
+    },
+    "status": {
+        "unconfirmed": "未確認",
+        "under_reviewing": "確認中",
+        "confirmed": "修了"
+    },
+    "signIn": {
+        "username": "ユーザーネーム",
+        "password": "パスワード",
+        "title": "ログイン",
+        "pending": "ログインする。。。",
+        "forgotPassword": "パスワードを忘れた？"
+    },
+    "dialog": {
+        "update": {
+            "title": "スターテス",
+            "content": "このイベントのステータスを変更しますか?"
+        },
+        "delete": {
+            "title": "更新",
+            "content": "このイベントを削除しますか?"
+        },
+        "confirm": "確かめる",
+        "cancel": "キャンセル"
+    },
+    "event": {
+        "selectEvent": "イベントを選択",
+        "placeholder0": "イベント",
+        "question1": "学校生活での出来事",
+        "placeholder1": "回答11",
+        "question2": "自分の行動",
+        "placeholder2": "回答22",
+        "question3": "発揮した力",
+        "placeholder3": "回答33",
+        "question4": "伸びた能力",
+        "placeholder4": "回答44",
+        "question5": "考えたこと",
+        "placeholder5": "回答55",
+        "addComment": "... コメント追加"
+    }
+}
