@@ -1,105 +1,124 @@
-"use server";
-
-import API from "@/lib/api";
-import { decrypt } from "@/lib/session";
-import { registerEventSchema } from "@/lib/zod";
-import { StatusCode } from "@/types";
-import type { AddCommentPayload, Comment, RegisterEvent } from "@/types/event";
-import type { EventDetail, StudentEvent } from "@/types/student";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
-import { RedirectType, redirect } from "next/navigation";
+import type {
+    RegisterEvent,
+    StudentDto,
+    StudentEvent,
+} from "@/features/student/types";
+import { StudentEventSchema } from "@/features/student/validations";
+import ApiClient from "@/shared/lib/api-client";
+import type { ApiResponse } from "@/shared/types";
+import { tryCatch } from "@/shared/utils";
+import { redirect, RedirectType } from "next/navigation";
 import { cache } from "react";
-import { NewEventFormData } from "../students/[id]/_components/header";
+
+/**
+ * Update Event Status
+ * @param dto Update Event Status Dto
+ * @param code Student Code
+ */
+export async function updateEventStatus(dto: {
+    id: number;
+    updatedBy: string;
+    studentId: number;
+}) {
+    const data = await ApiClient.Spring.post(`/students/events/${dto.id}`, dto);
+    return data;
+}
 
 /**
  * Register Event
  * @param dto Register Event Dto
  */
-export async function registerEvent(dto: RegisterEvent) {
-    const result = await registerEventSchema.safeParseAsync(dto);
+export async function createEvent(dto: RegisterEvent) {
+    const result = await StudentEventSchema.safeParseAsync(dto);
 
     if (!result.success) {
         throw new Error("Internal Server Error");
     } else {
-        await API.SPRING_API.post(
+        await ApiClient.Spring.patch(
             `/students/${dto.studentCode}/events`,
             result.data
         );
-        revalidatePath("/events");
         redirect("/events", RedirectType.push);
     }
 }
 
-export async function addComment(dto: AddCommentPayload) {
-    const data = await API.SPRING_API.post<Comment[]>(
-        `/students/events/${dto.eventDetailId}/comments`,
-        dto
-    );
-    revalidatePath("/event");
-    return data;
-}
-
-export const getEventDetailById = cache(
+export const getStudentEvent = cache(
     async ({
         studentCode,
-        eventDetailId,
+        studentEventId,
     }: Readonly<{
         studentCode: string;
-        eventDetailId: number;
+        studentEventId: string;
     }>) => {
-        const response = await API.SPRING_API.get<EventDetail>(
-            `/students/${studentCode}/events/${eventDetailId}`,
-            { tag: "event-details" }
+        const response = await ApiClient.Spring.get<ApiResponse<StudentEvent>>(
+            `/student-events`,
+            {
+                tag: "event-details",
+                params: {
+                    studentCode,
+                    studentEventId,
+                },
+            }
         );
-        return response;
+        return response?.data;
     }
 );
 
 export async function deleteEventDetailById(
-    code: string,
     id: number
-): Promise<StudentEvent["events"] | undefined> {
-    const res = await API.SPRING_API.delete<StudentEvent["events"]>(
-        `/students/${code}/event/${id}`
+): Promise<StudentDto["events"] | undefined> {
+    const res = await ApiClient.Spring.delete<StudentDto["events"]>(
+        `/events/${id}`
     );
     return res;
 }
 
-export async function editComment(data: Omit<AddCommentPayload, "username">) {
-    const requestBody = {
-        id: data.id,
-        content: data.content,
-    };
-    const result = await API.SPRING_API.post<{ data?: unknown }>(
-        `/students/events/${data.eventDetailId}/comments/${data.id}`,
-        requestBody
+export async function addEvent(data: RegisterEvent) {
+    const { data: result } = await tryCatch(
+        ApiClient.Spring.post(`/events`, data)
     );
-    revalidatePath("/event");
-    return result;
+    console.log(data);
+    return {
+        code: "ok",
+    };
 }
 
-export async function addEvent(data: NewEventFormData) {
-    const reqCookies = await cookies();
-    if (!reqCookies.get("session")) {
-        redirect("/login");
-    }
-
-    const session = await decrypt(reqCookies.get("session")?.value!);
-    const registerEventData: RegisterEvent = {
-        username: session?.username!,
-        gradeName: session?.grade!,
-        studentCode: session?.code!,
-        data: data,
-    };
-    console.log(registerEventData)
-
-    await API.SPRING_API.post(
-        `/students/${session?.code}/events`,
-        registerEventData
+export async function deleteComment({
+    studentEventId,
+    commentId,
+}: {
+    studentEventId: number;
+    commentId: number;
+}) {
+    const { data, error } = await tryCatch(
+        ApiClient.Hono.delete(`/events/${studentEventId}/comments/${commentId}`)
     );
-    revalidatePath("/students/[id]", "page");
-    return {
-        code: StatusCode.Success,
-    };
+    console.log(data);
+    console.log(error);
+    return {};
+}
+
+export async function addComment(data: {
+    studentEventId: number;
+    username: string;
+    id?: number | undefined;
+    content?: string | undefined;
+}) {
+    const response = await ApiClient.Spring.post(
+        `/student-events/${data.studentEventId}/comments`,
+        data
+    );
+    return {};
+}
+
+export async function editComment(p0: {
+    id: number;
+    content: string;
+    studentEventId: number;
+}) {
+    const response = await ApiClient.Spring.patch(
+        `/student-events/${p0.studentEventId}/comments`,
+        p0
+    );
+    return {};
 }

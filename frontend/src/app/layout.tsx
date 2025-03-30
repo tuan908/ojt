@@ -1,12 +1,12 @@
-import ReactQueryProvider from "@/providers/react-query";
-import theme from "@/styles/theme";
-import { type LayoutProps } from "@/types";
+import ReactQueryProvider from "@/shared/providers/react-query";
+import theme from "@/shared/styles/theme";
+import { type LayoutProps } from "@/shared/types";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Toaster } from "sonner";
-import ReduxProvider from "../providers/redux";
+import ReduxProvider from "../shared/providers/redux";
 import "./globals.css";
 
 export const metadata: Metadata = {

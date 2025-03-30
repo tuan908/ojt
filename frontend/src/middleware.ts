@@ -1,6 +1,6 @@
-import { decrypt } from "@/lib/session";
+import { decrypt } from "@/shared/lib/session";
 import { NextResponse, type NextRequest } from "next/server";
-import { Route, UserRole } from "./constants";
+import { Route, UserRole } from "./shared/constants";
 
 export const config = {
     matcher: ["/", "/home", "/students", "/students/:id*"],

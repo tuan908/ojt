@@ -1,6 +1,6 @@
 "use client";
 
-import json from "@/i18n/locales/ja.json";
+import json from "@/shared/i18n/locales/ja.json";
 import { useEffect } from "react";
 
 type GlobalErrorProps = {
@@ -19,7 +19,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             <h1 className="text-red-500 text-4xl font-bold">
                 エラーが発生しました
             </h1>
-            <button onClick={() => reset()}>{json.error.try_again}</button>
+            <button onClick={() => reset()}>{json.error.tryAgain}</button>
         </div>
     );
 }

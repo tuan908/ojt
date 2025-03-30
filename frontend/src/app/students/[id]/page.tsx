@@ -1,14 +1,23 @@
-import { getEvents, getGrades } from "@/app/actions/common";
+import { getEvents, getGrades } from "@/app/actions/shared";
 import { getStudentByCode } from "@/app/actions/student";
-import PageWrapper from "@/components/ui/page-wrapper";
-import { verifySession } from "@/lib/dal";
-import { type DynamicPageProps } from "@/types";
-import { CircularProgress } from "@mui/material";
+import { verifySession } from "@/shared/lib/dal";
+import { type DynamicPageProps } from "@/shared/types";
 import type { Metadata, ResolvingMetadata } from "next";
-import { Suspense } from "react";
-import StudentDetailContent from "./_components/content";
-import Header from "./_components/header";
-import StudentInfo from "./_components/student-info";
+import dynamic from "next/dynamic";
+import { notFound } from "next/navigation";
+
+const NewEventForm = dynamic(
+    () => import("@/features/student/components/new-event-form")
+);
+const StudentDetailContent = dynamic(
+    () => import("@/features/student/components/student-detail")
+);
+const StudentInfo = dynamic(
+    () => import("@/features/student/components/student-info")
+);
+const PageWrapper = dynamic(
+    () => import("@/features/students/components/page-wrapper")
+);
 
 type Props = {
     params: Promise<{ id: string }>;
@@ -20,7 +29,7 @@ export async function generateMetadata(
     _parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const {id} = await params
+    const { id } = await params;
 
     // fetch data
     const student = await getStudentByCode(id);
@@ -31,8 +40,13 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: DynamicPageProps) {
-    const {id} = await params;
-    const [auth, grades, events, info] = await Promise.all([
+    const { id } = await params;
+
+    if (!id) {
+        notFound();
+    }
+
+    const [user, grades, events, student] = await Promise.all([
         verifySession(),
         getGrades(),
         getEvents(),
@@ -41,38 +55,33 @@ export default async function Page({ params }: DynamicPageProps) {
 
     return (
         <div className="flex flex-col w-full h-full m-auto">
-            <Suspense fallback={<>Loading student info...</>}>
-                <Header code={id} eventOptions={events!} role={auth?.role} />
-            </Suspense>
+            <NewEventForm
+                studentCode={id}
+                eventOptions={events!}
+                gradeName={user!?.grade}
+                username={user?.username!}
+            />
+
             <PageWrapper>
                 {/* Student Info */}
-                <Suspense fallback={<>Loading student info...</>}>
-                    <StudentInfo
-                        auth={auth}
-                        info={{
-                            code: info?.code,
-                            name: info?.name,
-                            grade: info?.grade,
-                        }}
-                    />
-                </Suspense>
+
+                <StudentInfo
+                    auth={user}
+                    info={{
+                        code: student?.code,
+                        name: student?.name,
+                        grade: student?.grade,
+                    }}
+                />
 
                 {/* ?? */}
-                <Suspense
-                    fallback={
-                        <div className="w-full h-full flex items-center justify-center">
-                            <CircularProgress color="success" />
-                        </div>
-                    }
-                >
-                    <StudentDetailContent
-                        id={id}
-                        grades={grades!}
-                        events={events!}
-                        data={info!}
-                        auth={auth}
-                    />
-                </Suspense>
+                <StudentDetailContent
+                    id={id}
+                    grades={grades!}
+                    events={events!}
+                    data={student!}
+                    auth={user}
+                />
             </PageWrapper>
         </div>
     );

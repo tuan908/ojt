@@ -1,6 +1,6 @@
 package com.tuanna.api.exception;
 
-import com.tuanna.api.constant.ResponseCode;
+import com.tuanna.api.constant.ErrorCodes;
 
 public class BusinessException extends RuntimeException {
 
@@ -12,10 +12,10 @@ public class BusinessException extends RuntimeException {
     super(message);
     this.errorCode = errorCode;
   }
-  
+
   public BusinessException(String message) {
     super(message);
-    this.errorCode = ResponseCode.ERROR.getValue();
+    this.errorCode = ErrorCodes.BUSINESS_CONSTRAINT_VIOLATION.getValue();
   }
 
   public String getErrorCode() {

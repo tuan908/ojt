@@ -11,55 +11,82 @@ import com.tuanna.api.dto.GradeDto;
 import com.tuanna.api.dto.HashtagDto;
 import com.tuanna.api.entity.Event;
 import com.tuanna.api.entity.Grade;
-import com.tuanna.api.entity.Hashtag;
 import com.tuanna.api.service.CommonService;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 @Service
 @Transactional(readOnly = true)
 public class CommonServiceImpl implements CommonService {
 
-  @PersistenceContext
-  private EntityManager entityManager;
+  private final EntityManager entityManager;
+
+  public CommonServiceImpl(EntityManager entityManager) {
+    super();
+    this.entityManager = entityManager;
+  }
 
   @Override
   @Cacheable("grades")
   public List<GradeDto> getGrades() {
+    StringBuffer stringBuffer = new StringBuffer();
+
+    stringBuffer.append("select                                             ");
+    stringBuffer.append("     new com.tuanna.api.dto.GradeDto(e.id, e.name) ");
+    stringBuffer.append("from                                               ");
+    stringBuffer.append("     com.tuanna.api.entity.Grade e                 ");
+
     return this.entityManager
-        .createQuery("select g from com.tuanna.api.entity.Grade g", Grade.class)
+        .createQuery(stringBuffer.toString(), GradeDto.class)
         .getResultStream()
-        .map(Grade::toDto)
         .toList();
   }
 
   @Override
   @Cacheable("events")
   public List<EventDto> getEvents() {
+    StringBuffer stringBuffer = new StringBuffer();
+
+    stringBuffer.append("select                                             ");
+    stringBuffer.append("     new com.tuanna.api.dto.EventDto(e.id, e.name) ");
+    stringBuffer.append("from                                               ");
+    stringBuffer.append("     com.tuanna.api.entity.Event e                 ");
+
     return this.entityManager
-        .createQuery("select e from com.tuanna.api.entity.Event e", Event.class)
+        .createQuery(stringBuffer.toString(), EventDto.class)
         .getResultStream()
-        .map(Event::toDto)
         .toList();
   }
 
   @Override
   @Cacheable("hashtags")
   public List<HashtagDto> getHashtags() {
+    StringBuffer stringBuffer = new StringBuffer();
+
+    stringBuffer.append("select                                               ");
+    stringBuffer.append("     new com.tuanna.api.dto.HashtagDto(e.id, e.name) ");
+    stringBuffer.append("from                                                 ");
+    stringBuffer.append("     com.tuanna.api.entity.Hashtag e                 ");
+
     return this.entityManager
-        .createQuery("select h from com.tuanna.api.entity.Hashtag h", Hashtag.class)
+        .createQuery("select h from com.tuanna.api.entity.Hashtag h", HashtagDto.class)
         .getResultStream()
-        .map(Hashtag::toDto)
         .toList();
   }
 
   @Override
   public Event findEventByName(String name) {
-    TypedQuery<Event> query = this.entityManager
-        .createQuery("select e from com.tuanna.api.entity.Event e where e.name = :name",
-            Event.class);
+    StringBuffer sb = new StringBuffer();
+
+    sb.append("select                             ");
+    sb.append("     e                             ");
+    sb.append("from                               ");
+    sb.append("     com.tuanna.api.entity.Event e ");
+    sb.append("where                              ");
+    sb.append("     e.name = :name                ");
+
+    TypedQuery<Event> query = this.entityManager.createQuery(sb.toString(), Event.class);
     query.setParameter("name", name);
     return query.getResultStream().findFirst().orElse(null);
   }

@@ -2,8 +2,8 @@ package com.tuanna.api.entity;
 
 import java.io.Serial;
 
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.DialectOverride.SQLRestriction;
+import org.hibernate.annotations.SQLDelete;
 
 import com.tuanna.api.dto.EventDto;
 
@@ -43,13 +43,10 @@ public class Event extends BaseEntity {
   private String name;
 
   @Column(columnDefinition = "text")
-  private String title;
-
-  @Column(columnDefinition = "text")
   private String description;
 
-  @OneToOne(mappedBy = "detail")
-  private EventDetail eventDetail;
+  @OneToOne(mappedBy = "event")
+  private StudentEvent studentEvent;
 
   public EventDto toDto() {
     var dto = new EventDto(this.getId(), this.getName());

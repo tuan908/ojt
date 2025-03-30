@@ -5,18 +5,19 @@ import java.util.List;
 import com.tuanna.api.dto.AddCommentDto;
 import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.CommentDto;
+import com.tuanna.api.dto.CreateDto;
 import com.tuanna.api.entity.Comment;
 
 public interface CommentService {
 
-  List<CommentDto> findByEventDetailId(Long eventDetailId);
+  ApiResponse<List<CommentDto>> findByEventDetailId(Long eventDetailId);
 
-  Comment findById(Long id);
+  ApiResponse<Comment> findById(Long id);
 
-  List<CommentDto> add(AddCommentDto addCommentDto);
+  ApiResponse<CreateDto> create(AddCommentDto addCommentDto);
 
-  CommentDto update(CommentDto commentDto);
+  ApiResponse<CommentDto> update(CommentDto commentDto);
 
-  ApiResponse<Object> delete(String studentCode, Long id, Long commentId);
+  ApiResponse<Object> delete(Long studentEventId, Long commentId);
 
 }

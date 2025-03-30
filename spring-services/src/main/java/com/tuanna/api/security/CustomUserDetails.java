@@ -30,12 +30,12 @@ public class CustomUserDetails implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     Collection<GrantedAuthority> authorities = new ArrayList<>();
-    String roleLabel = switch (this.user.getRole()) {
+    String roleLabel = switch (this.user.getUserRole()) {
       case COUNSELOR:
       case TEACHER:
       case PARENT:
       case STUDENT:
-        yield this.user.getRole().getValue();
+        yield this.user.getUserRole().getValue();
 
       default:
         yield "";

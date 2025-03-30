@@ -1,6 +1,7 @@
 package com.tuanna.api.entity;
 
 import java.io.Serial;
+import java.util.Set;
 
 import org.hibernate.annotations.DialectOverride.SQLRestriction;
 import org.hibernate.annotations.SQLDelete;
@@ -44,11 +45,11 @@ public class Grade extends BaseEntity {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "grade_id")
-  private java.util.Set<Student> students;
+  private Set<Student> students;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "grade_id")
-  private java.util.Set<EventDetail> events;
+  private Set<StudentEvent> events;
 
   public GradeDto toDto() {
     return new GradeDto(this.id, this.name);

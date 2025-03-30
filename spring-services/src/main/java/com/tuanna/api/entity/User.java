@@ -54,7 +54,7 @@ public class User extends BaseEntity {
 
   @Convert(converter = UserRoleConverter.class)
   @Column(columnDefinition = "text")
-  private UserRole role;
+  private UserRole userRole;
 
   @Override
   public boolean equals(final Object o) {
@@ -72,7 +72,7 @@ public class User extends BaseEntity {
   }
 
   public UserDto toDto() {
-    var dto = new UserDto(this.id, this.name, this.username, this.role.getValue());
+    var dto = new UserDto(this.id, this.name, this.username, this.userRole.getValue());
     return dto;
   }
 

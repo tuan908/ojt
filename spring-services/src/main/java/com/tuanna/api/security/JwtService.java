@@ -51,7 +51,7 @@ public class JwtService {
 
     var claims = Map
         .of("name", userDetails.getUser().getName(), "role",
-            userDetails.getUser().getRole().getValue());
+            userDetails.getUser().getUserRole().getValue());
 
     return Jwts
         .builder()

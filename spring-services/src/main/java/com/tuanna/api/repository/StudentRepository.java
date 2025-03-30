@@ -25,7 +25,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
            from
              com.tuanna.api.entity.Student s
              left join fetch s.events ev
-             join fetch ev.detail evd
+             join fetch ev.event evd
              left join fetch ev.comments evc
              join fetch s.user u
              left join fetch s.hashtags h

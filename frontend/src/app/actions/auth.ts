@@ -1,12 +1,13 @@
 "use server";
 
-import { Route, SESSION, UserRole } from "@/constants";
-import json from "@/i18n/locales/ja.json";
-import API from "@/lib/api";
-import { encrypt } from "@/lib/session";
-import { signInSchema } from "@/lib/zod";
-import { ApiResponse } from "@/types";
-import type { LoginResponseDto } from "@/types/auth";
+import type { LoginResponseDto } from "@/features/auth/types";
+import { Route, SESSION, UserRole } from "@/shared/constants";
+import json from "@/shared/i18n/locales/ja.json";
+import ApiClient from "@/shared/lib/api-client";
+import { encrypt } from "@/shared/lib/session";
+import { SignInSchema } from "@/shared/lib/validations";
+import { ApiResponse } from "@/shared/types";
+import { tryCatch } from "@/shared/utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -23,17 +24,17 @@ export async function signIn(_previousState: any, formData: FormData) {
         const { username, password } = data;
 
         // Validate input
-        const parse = signInSchema.safeParse({ username, password });
+        const parse = SignInSchema.safeParse({ username, password });
         if (!parse.success) {
             return {
-                error: json.error.missing_required_fields,
+                error: json.error.missingRequiredFields,
                 username,
                 password,
             };
         }
 
         // API Request to Spring Backend
-        const response = await API.SPRING_API.post<
+        const response = await ApiClient.Spring.post<
             ApiResponse<LoginResponseDto>
         >(Route.Login.toString(), parse.data);
 
@@ -50,31 +51,40 @@ export async function signIn(_previousState: any, formData: FormData) {
 
         if (!userProps.username || !token) {
             return {
-                error: json.error.invalid_response,
+                error: json.error.invalidResponse,
                 username,
                 password,
             };
         }
 
         // Set HttpOnly Cookie (Prevents XSS Attacks)
-        const reqCookies = await cookies();
-        const session = await encrypt(userProps);
 
-        reqCookies.set(SESSION, session, {
-            path: "/",
-            secure: process.env.NODE_ENV === "production", // Secure in production
-        });
+        const { data: headers } = await tryCatch(
+            Promise.all([cookies(), encrypt(userProps)])
+        );
 
-        // Determine Redirect Path Based on Role
+        if (headers) {
+            const [reqCookies, session] = headers;
 
-        redirectPath =
-            userProps.role !== UserRole.Student
-                ? "/students"
-                : `/students/${userProps.code}`;
+            reqCookies.set(SESSION, session, {
+                path: "/",
+                secure: process.env.NODE_ENV === "production", // Secure in production
+            });
+
+            // Determine Redirect Path Based on Role
+
+            redirectPath =
+                userProps.role !== UserRole.Student
+                    ? "/students"
+                    : `/students/${userProps.code}`;
+        }
     } catch (error) {
         console.error("Login Error:", error);
         return {
-            error: json.error.server_error,
+            error: true,
+            message: json.error.serverError,
+            success: false,
+            data: null,
         };
     } finally {
         redirect(redirectPath);

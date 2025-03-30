@@ -21,7 +21,7 @@ public class AuthController {
     this.authService = authService;
   }
 
-  @PostMapping("/signin")
+  @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginDto loginDto) throws BusinessException {
     var result = this.authService.login(loginDto);
     return ResponseEntity.ok(result);

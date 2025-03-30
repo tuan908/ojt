@@ -50,7 +50,7 @@ public class Hashtag extends BaseEntity {
   private String color;
 
   @OneToMany(mappedBy = "hashtag", cascade = CascadeType.ALL)
-  private Set<StudentHashtag> students;
+  private Set<StudentHashtag> studentHashtags;
 
   public HashtagDto toDto() {
     return new HashtagDto(this.getId(), this.getName(), this.getColor());
