@@ -1,7 +1,3 @@
-Here's your improved and detailed **README.md** with added information about the project structure, frontend, backend, and missing installation steps.
-
----
-
 # OJT
 
 *Empowering Students Through Seamless Event Management*
