@@ -1,74 +1,75 @@
-import { decrypt } from "@/shared/lib/session";
-import { NextResponse, type NextRequest } from "next/server";
-import { Route, UserRole } from "./shared/constants";
+import {NextResponse, type NextRequest} from 'next/server';
+import {decrypt} from '~/shared/lib/session';
+import {Route, UserRole} from './shared/constants';
 
 export const config = {
-    matcher: ["/", "/home", "/students", "/students/:id*"],
+  matcher: ['/', '/home', '/students', '/students/:id*'],
 };
 
 export async function middleware(request: NextRequest) {
-    const session = request.cookies.get("session");
-    const currentPath = request.nextUrl.pathname;
+  const session = request.cookies.get('session');
+  const currentPath = request.nextUrl.pathname;
+  const isLoginPath = currentPath === Route.Login.toString();
 
-    const loginUrl = new URL(Route.Login.toString(), request.url);
-    loginUrl.searchParams.set("from", currentPath);
+  // Create login URL with redirect parameter
+  const loginUrl = new URL(Route.Login.toString(), request.url);
+  loginUrl.searchParams.set('from', currentPath);
 
-    // Allow access to the login page without authentication
-    if (currentPath === Route.Login.toString()) {
-        if (session) {
-            const maybeValidToken = await decrypt(session.value);
-            if (maybeValidToken) {
-                return handleAuthenticatedRedirect(maybeValidToken, request);
-            }
-        }
-        return NextResponse.next();
+  // Try to get valid token if session exists
+  const tokenPayload = session ? await decrypt(session.value) : null;
+
+  // Handle login page separately
+  if (isLoginPath) {
+    return tokenPayload
+      ? getRedirectForRole(tokenPayload, request)
+      : NextResponse.next();
+  }
+
+  // Redirect to login if no valid session
+  if (!tokenPayload) {
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Handle authenticated user navigation
+  const {role, code} = tokenPayload;
+  const isRootOrHome = ['/', '/home'].includes(currentPath);
+  const redirectUrl =
+    role === UserRole.Student.toString()
+      ? `/students/${code}`
+      : Route.Students.toString();
+
+  if (isRootOrHome) {
+    return NextResponse.redirect(new URL(redirectUrl, request.url));
+  }
+
+  // NEW LOGIC: Restrict students from accessing general students route
+  if (role === UserRole.Student.toString()) {
+    // Check if trying to access general students route
+    if (currentPath === Route.Students.toString()) {
+      // Redirect student to their specific page
+      return NextResponse.redirect(new URL(`/students/${code}`, request.url));
     }
 
-    if (!session) {
-        return NextResponse.redirect(loginUrl);
+    // Check if student is trying to access another student's page
+    if (
+      currentPath.startsWith('/students/') &&
+      !currentPath.startsWith(`/students/${code}`)
+    ) {
+      // Redirect to their own page
+      return NextResponse.redirect(new URL(`/students/${code}`, request.url));
     }
+  }
 
-    const maybeValidToken = await decrypt(session.value);
-
-    if (!maybeValidToken) {
-        return NextResponse.redirect(loginUrl);
-    }
-
-    return handleAuthenticatedRequest(maybeValidToken, request);
+  return NextResponse.next();
 }
 
-function handleAuthenticatedRedirect(tokenPayload: any, request: NextRequest) {
-    const { role, code } = tokenPayload;
+// Helper function to get the appropriate redirect based on user role
+function getRedirectForRole(tokenPayload: any, request: NextRequest) {
+  const {role, code} = tokenPayload;
+  const redirectPath =
+    role === UserRole.Student.toString()
+      ? `/students/${code}`
+      : Route.Students.toString();
 
-    if (role === UserRole.Student.toString()) {
-        return NextResponse.redirect(new URL(`/students/${code}`, request.url));
-    } else {
-        return NextResponse.redirect(new URL(Route.Students.toString(), request.url));
-    }
+  return NextResponse.redirect(new URL(redirectPath, request.url));
 }
-
-function handleAuthenticatedRequest(tokenPayload: any, request: NextRequest) {
-    const { role, code } = tokenPayload;
-    const currentPath = request.nextUrl.pathname;
-
-    if (role === UserRole.Student.toString()) {
-        if (!isRootOrHomeRoute(currentPath)) {
-            return NextResponse.next();
-        } else {
-            return NextResponse.redirect(
-                new URL(`/students/${code}`, request.url)
-            );
-        }
-    } else {
-        if (!isRootOrHomeRoute(currentPath)) {
-            return NextResponse.next();
-        } else {
-            return NextResponse.redirect(new URL(Route.Students.toString(), request.url));
-        }
-    }
-}
-
-const isRootOrHomeRoute = (currentPath: string) =>
-    ["/", "/home"].includes(currentPath);
-
-// To add more routes in the future, simply add them to the `allowedStudentPaths` and `allowedNonStudentPaths` arrays.

@@ -1,20 +1,21 @@
-import type { ApiResponse, PaginationInfo, ValidationError } from "../types";
+import json from '~/shared/i18n/locales/ja.json';
+import type {IApiResponse, IPagination, IValidationError} from '~/shared/types';
 
 // Create a successful response
-export function createSuccessResponse<T>(
-  data: T,
+export function createSuccessResponse<TData>(
+  data: TData,
   options?: {
     code?: number;
     message?: string;
     requestId?: string;
-    pagination?: PaginationInfo;
-  }
-): ApiResponse<T> {
+    pagination?: IPagination;
+  },
+): IApiResponse<TData> {
   return {
     success: true,
     status: {
       code: options?.code ?? 200,
-      message: options?.message ?? "Success",
+      message: options?.message ?? 'Success',
     },
     requestId: options?.requestId ?? generateRequestId(),
     timestamp: generateTimestamp(),
@@ -30,15 +31,15 @@ export function createErrorResponse(
     message: string;
     details?: unknown;
     statusCode?: number;
-    errors?: ValidationError[];
+    errors?: IValidationError[];
   },
-  requestId?: string
-): ApiResponse {
+  requestId?: string,
+): IApiResponse {
   return {
     success: false,
     status: {
       code: error.statusCode ?? 400,
-      message: "Error",
+      message: 'Error',
     },
     requestId: requestId ?? generateRequestId(),
     timestamp: new Date().toISOString(),
@@ -60,37 +61,39 @@ export function generateTimestamp(): string {
   return new Date().toISOString();
 }
 
-
 /**
  * Error handling utilities
  */
-export function getErrorMessage(error: ApiResponse): string {
-  return error.error?.message || "An unknown error occurred";
+export function getErrorMessage(error: IApiResponse): string {
+  return error.error?.message || json.error.unknown;
 }
 
 export function getFieldError(
-  error: ApiResponse,
-  field: string
+  error: IApiResponse,
+  field: string,
 ): string | undefined {
-  return error.error?.errors?.find((err) => err.field === field)?.message;
+  return error.error?.errors?.find(err => err.field === field)?.message;
 }
 
-export function getFieldErrors(error: ApiResponse): Record<string, string> {
+export function getFieldErrors(error: IApiResponse): Record<string, string> {
   if (!error.error?.errors) return {};
 
-  return error.error.errors.reduce((acc, err) => {
-    if (err.field) {
-      acc[err.field] = err.message;
-    }
-    return acc;
-  }, {} as Record<string, string>);
+  return error.error.errors.reduce(
+    (acc, err) => {
+      if (err.field) {
+        acc[err.field] = err.message;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 }
 
 /**
  * Type guard to check if response is successful
  */
 export function isSuccessResponse<T>(
-  response: ApiResponse<T>
-): response is ApiResponse<T> & { data: T } {
+  response: IApiResponse<T>,
+): response is IApiResponse<T> & {data: T} {
   return response.success === true && response.data !== undefined;
 }

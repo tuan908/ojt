@@ -1,9 +1,8 @@
-"use server";
+'use server';
 
-import ApiClient from "@/shared/lib/api-client";
-import type { ApiResponse, Student, Students } from "@/shared/types";
-import { removeUndefined } from "@/shared/utils";
-import { cache } from "react";
+import {cache} from 'react';
+import ApiClient from '~/shared/lib/api-client';
+import type {IApiResponse, IStudentDto, IStudentsDto} from '~/shared/types';
 
 /**
  * Get Student List By Conditions
@@ -11,23 +10,52 @@ import { cache } from "react";
  * @returns Student List
  */
 
-type StudentsRequest = Student & { page?: string; limit?: string };
+type StudentsRequest = IStudentDto & {page?: string; pageSize?: string};
 
 export const getStudents = cache(async (dto?: StudentsRequest) => {
-    // Use raw dto instead of JSON.stringify(dto) - dto already parse
-    // to JSON string in fetchNoCache
+  // Use raw dto instead of JSON.stringify(dto) - dto already parse
+  // to JSON string in fetchNoCache
 
-    let params: Record<string, string>;
+  let params: Record<string, string> | undefined = undefined;
 
-    if (typeof dto === "undefined") params = {};
-    params = { ...removeUndefined<StudentsRequest>(dto!) };
+  if (typeof dto === 'undefined') {
+    params = undefined;
+  } else {
+    const searchParams = new URLSearchParams();
 
-    const data = await ApiClient.Spring.get<ApiResponse<Students[]>>(
-        "/students",
-        {
-            params,
-        }
-    );
+    if (dto.name) {
+      searchParams.append('name', dto.name);
+    }
 
-    return data;
+    if (dto.grade) {
+      searchParams.append('grade', dto.grade);
+    }
+
+    if (dto.event) {
+      searchParams.append('event', dto.event);
+    }
+
+    if (dto.hashtags) {
+      searchParams.append('hashtags', dto.hashtags);
+    }
+
+    if (dto.page) {
+      searchParams.append('page', dto.page);
+    }
+
+    if (dto.pageSize) {
+      searchParams.append('page_size', dto.pageSize);
+    }
+
+    params = Object.fromEntries(searchParams.entries());
+  }
+
+  const data = await ApiClient.Spring.get<IApiResponse<IStudentsDto[]>>(
+    '/students',
+    {
+      params,
+    },
+  );
+
+  return data;
 });
