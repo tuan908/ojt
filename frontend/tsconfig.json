@@ -19,7 +19,6 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitOverride": true,
-    "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
@@ -30,7 +29,7 @@
       }
     ],
     "paths": {
-      "@/*": [
+      "~/*": [
         "./src/*"
       ]
     },
@@ -41,7 +40,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    ".prettierrc.js"
   ],
   "exclude": [
     "node_modules"

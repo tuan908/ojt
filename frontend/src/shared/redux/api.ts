@@ -1,9 +1,10 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query";
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query';
+import {getUrl} from '../utils';
 
 export const baseApi = createApi({
-    reducerPath: "API",
-    baseQuery: fetchBaseQuery({
-        baseUrl: process.env["NEXT_PUBLIC_URL"],
-    }),
-    endpoints: () => ({}),
+  reducerPath: 'API',
+  baseQuery: fetchBaseQuery({
+    baseUrl: getUrl(),
+  }),
+  endpoints: () => ({}),
 });

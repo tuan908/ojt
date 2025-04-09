@@ -1,67 +1,84 @@
-"use client";
+'use client';
 
-import Box from "@/shared/components/legacy/box";
-import ReactEcharts from "echarts-for-react";
-import { BarChart, type BarSeriesOption } from "echarts/charts";
-import { use as echartUse, type ComposeOption } from "echarts/core";
-import { CanvasRenderer } from "echarts/renderers";
-import { StackedData } from "../types";
+import {BarChart, type BarSeriesOption} from 'echarts/charts';
+import {use as echartUse, type ComposeOption} from 'echarts/core';
+import {CanvasRenderer} from 'echarts/renderers';
+import dynamic from 'next/dynamic';
+import {useMemo} from 'react';
+import Box from '~/shared/components/legacy/box';
+import ProgressIndicator from '~/shared/components/ui/progress';
+import type {IStackedData} from '../types';
 
 echartUse([CanvasRenderer, BarChart]);
 
-type EChartsOption = ComposeOption<BarSeriesOption>;
+const ReactEchart = dynamic(
+  () => import('echarts-for-react').then(mod => mod.default),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center">
+        <ProgressIndicator />
+      </div>
+    ),
+  },
+);
 
-type BarChartOptions = {
-    xAxisData: string[];
-    series: BarSeriesOption[];
-};
+interface IEChartsOption extends ComposeOption<BarSeriesOption> {}
 
-type StackedBarChartProps = {
-    labels: string[];
-    data: StackedData[];
-};
+interface IBarChartOptions {
+  xAxisData: string[];
+  series: BarSeriesOption[];
+}
 
-const getBarChartOptions = ({ series, xAxisData }: BarChartOptions) => {
-    const options: EChartsOption = {
-        tooltip: {
-            trigger: "axis",
+interface IStackedBarChartProps {
+  labels: string[];
+  data: IStackedData[];
+}
+
+const getBarChartOptions = ({series, xAxisData}: IBarChartOptions) => {
+  const options: IEChartsOption = {
+    tooltip: {
+      trigger: 'axis',
+    },
+    legend: {},
+    xAxis: [
+      {
+        type: 'category',
+        data: xAxisData,
+      },
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        axisLine: {
+          lineStyle: {
+            type: 'dotted',
+          },
         },
-        legend: {},
-        xAxis: [
-            {
-                type: "category",
-                data: xAxisData,
-            },
-        ],
-        yAxis: [
-            {
-                type: "value",
-                axisLine: {
-                    lineStyle: {
-                        type: "dotted",
-                    },
-                },
-            },
-        ],
-        series,
-    };
+      },
+    ],
+    series,
+  };
 
-    return options;
+  return options;
 };
 
 export default function StackedBarChart({
-    labels,
-    data: series,
-}: StackedBarChartProps) {
-    return (
-        <Box fullWidth height={24} paddingY="10">
-            <ReactEcharts
-                className="!h-full"
-                option={getBarChartOptions({
-                    series: series,
-                    xAxisData: labels,
-                })}
-            />
-        </Box>
-    );
+  labels,
+  data: series,
+}: IStackedBarChartProps) {
+  const option = useMemo(
+    () =>
+      getBarChartOptions({
+        series: series,
+        xAxisData: labels,
+      }),
+    [labels, series],
+  );
+
+  return (
+    <Box fullWidth height={26} paddingY="10">
+      <ReactEchart className="!h-full" option={option} />
+    </Box>
+  );
 }

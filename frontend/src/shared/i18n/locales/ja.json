@@ -1,18 +1,22 @@
 {
     "error": {
         "missingRequiredFields": "必要な項目が欠けています。",
-        "wrong_username_or_password": "ユーザー名またはパスワードが間違っています。",
+        "invalidCredentials": "ユーザー名またはパスワードが間違っています。",
         "usernameRequired": "ユーザー名は必須です。",
         "passwordRequired": "パスワードが必要。",
         "passwordMinLength": "パスワードは8文字以上である必要があります。",
         "passwordMaxLength": "パスワードは 32 文字未満である必要があります。",
         "userNotFound": "ユーザーが見つかりません。",
         "passwordMismatch": "パスワードが間違っているか、ユーザーが存在しません。",
-        "serverError": "内部サーバーエラー",
+        "internalServerError": "内部サーバーエラー",
         "tryAgain": "あとでもう一度試してみてください",
         "eventFieldRequired": "イベントを選択してください",
         "invalidResponse": "応答が無効です",
-        "missingEnvironmentVariables": "重要な環境変数が見つかりません"
+        "missingEnvironmentVariables": "重要な環境変数が見つかりません",
+        "notFound": "リソースが見つかりません",
+        "badRequest": "要求の形式が正しくありません",
+        "unknown": "不明なエラーが発生しました",
+        "unauthorized": "この操作を行うにはログインが必要です。"
     },
     "successOperation": "イベントが作成されました",
     "tableHeader": {
@@ -57,7 +61,7 @@
     },
     "status": {
         "unconfirmed": "未確認",
-        "under_reviewing": "確認中",
+        "underReviewing": "確認中",
         "confirmed": "修了"
     },
     "signIn": {
@@ -76,8 +80,11 @@
             "title": "更新",
             "content": "このイベントを削除しますか?"
         },
-        "confirm": "確かめる",
-        "cancel": "キャンセル"
+        "unsavedChanges": "このページを離れると、変更内容が失われます。保存せずに終了してもよろしいですか？",
+        "confirmation": "確かめる",
+        "cancel": "キャンセル",
+        "exitWithoutSaving": "保存せずに終了",
+        "saveAndExit": "保存して終了"
     },
     "event": {
         "selectEvent": "イベントを選択",
@@ -93,5 +100,12 @@
         "question5": "考えたこと",
         "placeholder5": "回答55",
         "addComment": "... コメント追加"
+    },
+    "label": {
+        "event": "イベント",
+        "grade": "クラス名",
+        "studentName": "学生の名前",
+        "hashtag": "#ハッシュタグ",
+        "tracking": "トラッキング"
     }
 }

@@ -1,17 +1,17 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
-import type { MiddlewareHandler } from "hono";
-import DbSchema from "../schema";
+import {neon} from '@neondatabase/serverless';
+import {drizzle} from 'drizzle-orm/neon-http';
+import type {MiddlewareHandler} from 'hono';
+import DbSchema from '../schema';
 
 /**
  * Create a Hono middleware for database access using Neon's HTTP client
  * which is better suited for serverless environments like Cloudflare Workers
  */
 export const createDbMiddlewareFactory = (
-  connectionStringOverride?: string
+  connectionStringOverride?: string,
 ): MiddlewareHandler<{
   Bindings: {DATABASE_URL: string};
-  Variables: { db: ReturnType<typeof drizzle> };
+  Variables: {db: ReturnType<typeof drizzle>};
 }> => {
   return async (c, next) => {
     const start = Date.now();
@@ -21,7 +21,7 @@ export const createDbMiddlewareFactory = (
       const connectionString = connectionStringOverride || c.env.DATABASE_URL;
 
       if (!connectionString) {
-        throw new Error("Database connection string is required");
+        throw new Error('Database connection string is required');
       }
 
       // Create a new SQL client for this request using HTTP mode
@@ -29,32 +29,36 @@ export const createDbMiddlewareFactory = (
       const sql = neon(connectionString);
 
       // Create a Drizzle instance
-      const db = drizzle({ client: sql, schema: DbSchema, logger: true });
+      const db = drizzle({client: sql, schema: DbSchema, logger: true});
 
       // Add to context
-      c.set("db", db);
+      c.set('db', db);
 
       // Continue to next middleware/handler
-      await next();
+      const res = await next();
 
       // Log slow operations
       const duration = Date.now() - start;
       if (duration > 1000) {
         console.warn(
-          `Slow database operation: ${duration}ms for ${c.req.path}`
+          `Slow database operation: ${duration}ms for ${c.req.path}`,
         );
       }
+
+      console.log(`Database operation: ${duration}ms for ${c.req.path}`);
+
+      return res;
     } catch (error: any) {
-      console.error("Database middleware error:", error?.message);
+      console.error('Database middleware error:', error?.message);
 
       // Return appropriate error response
       return c.json(
         {
-          error: "Database connection error",
-          message: "Unable to connect to the database",
+          error: 'Database connection error',
+          message: 'Unable to connect to the database',
           statusCode: 503,
         },
-        503
+        503,
       );
     }
   };
@@ -64,8 +68,8 @@ export const createDbMiddlewareFactory = (
  * Simple health check function that creates a one-time connection
  */
 export const checkDatabaseHealth = async (
-  connectionString: string
-): Promise<{ healthy: boolean; latency: number }> => {
+  connectionString: string,
+): Promise<{healthy: boolean; latency: number}> => {
   const startTime = Date.now();
 
   try {
@@ -75,9 +79,9 @@ export const checkDatabaseHealth = async (
     // Test the connection
     await sql`SELECT 1`;
 
-    return { healthy: true, latency: Date.now() - startTime };
+    return {healthy: true, latency: Date.now() - startTime};
   } catch (error) {
-    console.error("Database health check failed:", error);
-    return { healthy: false, latency: Date.now() - startTime };
+    console.error('Database health check failed:', error);
+    return {healthy: false, latency: Date.now() - startTime};
   }
 };

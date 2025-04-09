@@ -1,0 +1,68 @@
+# Conversion to YAML from Properties formar report
+# Warnings:
+# - The yaml file had comments which are lost in the refactoring!
+spring:
+  application:
+    name: spring-api
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: ALL
+      hibernate:
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+        jdbc:
+          '[batch_size]': 30
+        '[order_updates]': true
+        '[order_inserts]': true
+        '[format_sql]': true
+    show-sql: true
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: lazy
+    redis:
+      repositories:
+        enabled: true
+      ssl:
+        enabled: true
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+            client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+server:
+  port: 8082
+logging:
+  level:
+    web: debug
+    net:
+      ttddyy:
+        dsproxy:
+          listener: debug
+jwt:
+  token:
+    secret: ${JWT_TOKEN_SECRET}
+  refresh-token:
+    secret: ${JWT_REFRESH_TOKEN_SECRET}
+    expired-time: 2592000000
+  secret:
+    expired-time: 86400000

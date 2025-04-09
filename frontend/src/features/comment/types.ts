@@ -1,12 +1,19 @@
-import { CommentSchema } from "@/features/student/validations";
-import { z } from "zod";
+import {z} from 'zod';
+import {CreateCommentSchema} from '../student/validations';
 
-export type AddCommentPayload = z.infer<typeof CommentSchema>;
+export interface ICreateCommentDto
+  extends z.infer<typeof CreateCommentSchema> {}
 
-export type TComment = Omit<AddCommentPayload, "id"> & {
-    id: number;
-    name: string;
-    roleName: string;
-    createdAt: string;
-    isDeleted: boolean;
-};
+export interface ICommentDto {
+  id?: number;
+  name?: string;
+  roleName?: string;
+  createdAt?: string;
+  username?: string;
+  content?: string;
+}
+
+export interface IDeleteCommentDto {
+  studentEventId: number;
+  commentId: number;
+}

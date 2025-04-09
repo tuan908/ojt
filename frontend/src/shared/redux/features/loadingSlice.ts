@@ -1,41 +1,41 @@
-import { createAppSlice } from "../slice";
+import {createAppSlice} from '../slice';
 
-type LoadingState = { isLoading: boolean };
+type LoadingState = {isLoading: boolean};
 
-const initialState: LoadingState = { isLoading: false };
+const initialState: LoadingState = {isLoading: false};
 
 export const loadingSlice = createAppSlice({
-    name: "LOADING",
-    initialState,
-    reducers: create => ({
-        showLoading: create.asyncThunk(
-            async (_arg: void) => {
-                return true;
-            },
-            {
-                settled: state => {
-                    state.isLoading = true;
-                },
-            }
-        ),
-        hideLoading: create.asyncThunk(
-            async (_arg: void) => {
-                return false;
-            },
-            {
-                settled: state => {
-                    state.isLoading = false;
-                },
-            }
-        ),
-    }),
+  name: 'LOADING',
+  initialState,
+  reducers: create => ({
+    showLoading: create.asyncThunk(
+      async (_arg: void) => {
+        return true;
+      },
+      {
+        settled: state => {
+          state.isLoading = true;
+        },
+      },
+    ),
+    hideLoading: create.asyncThunk(
+      async (_arg: void) => {
+        return false;
+      },
+      {
+        settled: state => {
+          state.isLoading = false;
+        },
+      },
+    ),
+  }),
 
-    selectors: {
-        getLoadingState: state => state.isLoading,
-    },
+  selectors: {
+    getLoadingState: state => state.isLoading,
+  },
 });
 
 export const {
-    actions: { showLoading, hideLoading },
-    selectors: { getLoadingState },
+  actions: {showLoading, hideLoading},
+  selectors: {getLoadingState},
 } = loadingSlice;

@@ -1,30 +1,32 @@
-import type { UserInfo } from "@/features/auth/types";
-import { SignJWT, jwtVerify, type JWTPayload } from "jose";
+import {SignJWT, jwtVerify, type JWTPayload} from 'jose';
+import {cookies} from 'next/headers';
+import {cache} from 'react';
+import {SESSION} from '~/shared/constants';
 
 export interface ISession extends JWTPayload {
-    code: string;
-    name: string;
-    username: string;
-    grade: string;
-    role: string;
+  code: string;
+  name: string;
+  username: string;
+  grade: string;
+  role: string;
 }
 
 function getJwtSecretKey(): Uint8Array {
-    const sessionSecret = process.env.SESSION_SECRET;
+  const sessionSecret = process.env.SESSION_SECRET;
 
-    if (!sessionSecret) {
-        throw new Error("JWT Secret key is not defined");
-    }
-    return new TextEncoder().encode(sessionSecret);
+  if (!sessionSecret) {
+    throw new Error('JWT Secret key is not defined');
+  }
+  return new TextEncoder().encode(sessionSecret);
 }
 
 export async function decrypt(input: string) {
-    try {
-        const { payload } = await jwtVerify(input, getJwtSecretKey());
-        return payload as ISession;
-    } catch {
-        return undefined;
-    }
+  try {
+    const {payload} = await jwtVerify(input, getJwtSecretKey());
+    return payload as ISession;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
@@ -34,10 +36,21 @@ export async function decrypt(input: string) {
  * @returns JWT Token
  * @author tuanna
  */
-export async function encrypt(dto: UserInfo) {
-    return await new SignJWT(dto)
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime("1 days")
-        .sign(getJwtSecretKey());
+export async function encrypt(dto: ISession) {
+  return await new SignJWT(dto)
+    .setProtectedHeader({alg: 'HS256'})
+    .setIssuedAt()
+    .setExpirationTime('1 days')
+    .sign(getJwtSecretKey());
 }
+
+export const getSession = cache(async () => {
+  const reqCookies = await cookies();
+  const session = reqCookies.get(SESSION)?.value;
+
+  if (!session || !(await decrypt(session))) {
+    return undefined;
+  }
+
+  return await decrypt(session);
+});

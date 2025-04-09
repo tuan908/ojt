@@ -1,9 +1,9 @@
-import Progress from "@/shared/components/progress";
+import Progress from '~/shared/components/ui/progress';
 
 export default async function Loading() {
-    return (
-        <div className="w-dvw h-dvh flex flex-col items-center justify-center">
-            <Progress />
-        </div>
-    );
+  return (
+    <div className="w-dvw h-dvh flex flex-col items-center justify-center">
+      <Progress />
+    </div>
+  );
 }

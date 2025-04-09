@@ -1,0 +1,86 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ *
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const projectRoot = __dirname;
+const monorepoRoot = path.join(projectRoot, '../../');
+
+function getPackageIncludePaths(packageName, nodeModulePaths) {
+  let packagePath = null;
+
+  for (const nodeModulePath of nodeModulePaths) {
+    const packageJsonPath = path.resolve(
+      nodeModulePath,
+      packageName,
+      'package.json'
+    );
+    if (fs.existsSync(packageJsonPath)) {
+      packagePath = path.dirname(packageJsonPath);
+      break;
+    }
+  }
+  if (!packagePath) {
+    throw new Error(`Could not find package ${packageName}`);
+  }
+
+  return [
+    path.join(packagePath, '**/*.{js,mjs}'),
+    '!' + path.join(packagePath, 'node_modules/**/*.{js,mjs}'),
+  ];
+}
+
+const openPropsIncludePaths = getPackageIncludePaths('@stylexjs/open-props', [
+  path.join(projectRoot, 'node_modules'),
+  path.join(monorepoRoot, 'node_modules'),
+]);
+
+const dev = process.env.NODE_ENV !== 'production';
+
+const config = {
+  plugins: {
+    '@tailwindcss/postcss': {},
+    '@stylexjs/postcss-plugin': {
+      include: [
+        'app/**/*.{js,jsx,ts,tsx}',
+        'features/**/*.{js,jsx,ts,tsx}',
+        'shared/**/*.{js,jsx,ts,tsx}',
+        ...openPropsIncludePaths,
+      ],
+      babelConfig: {
+        babelrc: false,
+        parserOpts: {
+          plugins: ['typescript', 'jsx'],
+        },
+        plugins: [
+          [
+            '@stylexjs/babel-plugin',
+            {
+              dev: dev,
+              runtimeInjection: false,
+              genConditionalClasses: true,
+              treeshakeCompensation: true,
+              aliases: {
+                '@/*': [path.join(__dirname, '*')],
+              },
+              unstable_moduleResolution: {
+                type: 'commonJS',
+              },
+            },
+          ],
+        ],
+      },
+      useCSSLayers: true,
+    },
+    autoprefixer: {},
+  },
+};
+
+module.exports = config;

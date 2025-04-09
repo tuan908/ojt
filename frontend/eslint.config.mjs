@@ -1,26 +1,31 @@
-import { FlatCompat } from "@eslint/eslintrc";
-import js from "@eslint/js";
-import reactCompiler from "eslint-plugin-react-compiler";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+'use strict';
+
+import {FlatCompat} from '@eslint/eslintrc';
+import js from '@eslint/js';
+import stylisticJs from '@stylistic/eslint-plugin-js';
+import reactCompiler from 'eslint-plugin-react-compiler';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all,
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
 });
 
 export default [
-    ...compat.extends("next/core-web-vitals"),
-    {
-        plugins: {
-            "react-compiler": reactCompiler,
-        },
-
-        rules: {
-            "react-compiler/react-compiler": "error",
-        },
+  ...compat.extends('next/core-web-vitals'),
+  {
+    plugins: {
+      'react-compiler': reactCompiler,
+      '@stylistic/js': stylisticJs,
     },
+
+    rules: {
+      'react-compiler/react-compiler': 'error',
+      '@stylistic/js/object-curly-spacing': ['error', 'never'],
+    },
+  },
 ];

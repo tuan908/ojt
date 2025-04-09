@@ -1,15 +1,25 @@
-"use client";
+'use client';
 
-import type { LayoutProps } from "@/shared/types";
-import { useRef } from "react";
-import { Provider } from "react-redux";
-import { makeStore, type AppStore } from "../redux/store";
+import {isServer} from '@tanstack/react-query';
+import {type PropsWithChildren, useState} from 'react';
+import {Provider} from 'react-redux';
+import {AppStore, makeStore} from '../redux/store';
 
-export default function ReduxProvider({ children }: LayoutProps) {
-    const storeRef = useRef<AppStore>(null);
-    if (!storeRef.current) {
-        storeRef.current = makeStore();
-    }
-
-    return <Provider store={storeRef.current}>{children}</Provider>;
+export default function ReduxProvider({children}: PropsWithChildren) {
+  const [store] = useState(() => inititlizeStore());
+  return <Provider store={store}>{children}</Provider>;
 }
+
+const inititlizeStore = () => {
+  let store: AppStore | undefined = undefined;
+
+  if (isServer) {
+    store = makeStore();
+    return store;
+  }
+
+  if (!store) {
+    store = makeStore();
+  }
+  return store;
+};
