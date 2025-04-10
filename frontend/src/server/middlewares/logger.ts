@@ -4,7 +4,7 @@ import {Context, Next} from 'hono';
  * Logging middleware for Hono
  * Logs incoming requests, execution time, and errors.
  */
-export async function loggerMiddleware(ctx: Context, next: Next) {
+export async function createLogMiddleware(ctx: Context, next: Next) {
   const start = Date.now();
   const {method, url} = ctx.req;
 

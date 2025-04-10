@@ -45,12 +45,12 @@ public class StudentController {
 
   @GetMapping("/{studentCode}")
   @ResponseBody
-  public ResponseEntity<ApiResponse<List<EventData>>> findByStudentCode(@PathVariable String studentCode,
-      @RequestParam(required = false) String grade,
+  public ResponseEntity<ApiResponse<List<EventData>>> findByStudentCode(
+      @PathVariable String studentCode, @RequestParam(required = false) String grade,
       @RequestParam(value = "event_name", required = false) String eventName,
       @RequestParam(required = false) String status,
       @RequestParam(required = false, defaultValue = "1") int page,
-      @RequestParam(required = false, defaultValue = "10", value="page_size") int pageSize) {
+      @RequestParam(required = false, defaultValue = "10", value = "page_size") int pageSize) {
     var request = new StudentEventsDto(studentCode, grade, eventName, status, page, pageSize);
     var data = this.studentService.findByStudentCode(request);
     return ResponseEntity.ok(data);

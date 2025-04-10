@@ -41,7 +41,7 @@ public class Event extends BaseEntity {
 
   @Column(columnDefinition = "text")
   private String title;
-  
+
   @Column(columnDefinition = "text")
   private String name;
 

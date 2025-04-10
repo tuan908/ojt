@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {CreateStudentEventSchema, StudentEventDataSchema} from './validations';
 
-interface IStudentEventDataDto {
+export interface IStudentEventDataDto {
   eventName: string;
   eventsInSchoolLife: string;
   myAction: string;

@@ -11,26 +11,33 @@ import {Checkbox} from '~/shared/components/legacy/checkbox';
 import LegacySelect from '~/shared/components/legacy/select';
 import {EventStatus, QUERY_KEY} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
-import type {ISession} from '~/shared/lib/session';
 import type {IEventDto, IGradeDto} from '~/shared/types';
 import {tryCatch} from '~/shared/utils';
-import StudentEventsDatatable from './student-datatable';
+import StudentEventsDataTable from './student-datatable';
 
 interface IStudentDetailProps {
   code: string;
-  grades?: IGradeDto[];
-  events?: IEventDto[];
-  auth?: ISession;
+  grades: IGradeDto[];
+  events: IEventDto[];
+  role: string;
+  username?: string;
 }
+
+type StatusKey = 'unconfirmed' | 'under_reviewing' | 'confirmed';
 
 interface ICheckboxState {
   unconfirmed: boolean;
   under_reviewing: boolean;
   confirmed: boolean;
-  [key: string]: boolean;
 }
 
-const INIT_PAGINATION = {
+const STATUS_MAP: Record<StatusKey, EventStatus> = {
+  unconfirmed: EventStatus.UNCONFIRMED,
+  under_reviewing: EventStatus.UNDER_REVIEWING,
+  confirmed: EventStatus.CONFIRMED,
+};
+
+const INIT_PAGINATION: PaginationState = {
   pageIndex: 0,
   pageSize: 10,
 };
@@ -39,173 +46,202 @@ export default function StudentDetail({
   code,
   events,
   grades,
-  auth,
+  role,
+  username,
 }: IStudentDetailProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  // Initialize state from URL search params
-  const [check, setCheck] = useState<ICheckboxState>(() => {
-    const statusParam = searchParams.get('status');
-    const statusValues = statusParam ? statusParam.split(',') : [];
-
-    return {
-      unconfirmed: statusValues.includes(EventStatus.UNCONFIRMED.toString()),
-      under_reviewing: statusValues.includes(
-        EventStatus.UNDER_REVIEWING.toString(),
-      ),
-      confirmed: statusValues.includes(EventStatus.CONFIRMED.toString()),
-    };
+  // Initialize filter states from URL
+  const [filterState, setFilterState] = useState({
+    grade: searchParams.get('grade') || '',
+    eventName: searchParams.get('event') || '',
+    statusFilters: initStatusFilters(searchParams.get('status')),
   });
 
-  const [grade, setGrade] = useState(searchParams.get('grade') || '');
-  const [eventName, setEventName] = useState(searchParams.get('event') || '');
-  const [pagination, setPagination] = useState<PaginationState>(
-    () => INIT_PAGINATION,
-  );
+  const [pagination, setPagination] =
+    useState<PaginationState>(INIT_PAGINATION);
 
+  // Create memoized query key for consistency
   const getQueryKey = useCallback(() => {
     return [QUERY_KEY.EVENT, code, pagination.pageIndex, pagination.pageSize];
-  }, [code, pagination]);
+  }, [code, pagination.pageIndex, pagination.pageSize]);
 
-  // Memoized status array to prevent unnecessary re-renders
-  const status = useMemo(() => {
-    return Object.entries(check)
+  // Convert checkbox state to status array
+  const statusArray = useMemo(() => {
+    return Object.entries(filterState.statusFilters)
       .filter(([_, checked]) => checked)
-      .map(
-        ([key]) => EventStatus[key.toUpperCase() as keyof typeof EventStatus],
-      );
-  }, [check]);
+      .map(([key]) => STATUS_MAP[key as StatusKey]);
+  }, [filterState.statusFilters]);
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = event => {
+  // Handle checkbox changes
+  const handleStatusChange: ChangeEventHandler<HTMLInputElement> = event => {
     const {name, checked} = event.target;
-    setCheck(prev => ({
+    setFilterState(prev => ({
       ...prev,
-      [name]: checked,
+      statusFilters: {
+        ...prev.statusFilters,
+        [name]: checked,
+      },
     }));
   };
 
-  const {data: rows} = useQuery({
+  // Handle dropdown changes
+  const handleGradeChange = (value: string) => {
+    setFilterState(prev => ({...prev, grade: value}));
+  };
+
+  const handleEventChange = (value: string) => {
+    setFilterState(prev => ({...prev, eventName: value}));
+  };
+
+  // Data fetching with React Query
+  const {data: rows = []} = useQuery({
     queryKey: getQueryKey(),
     queryFn: async () => {
       const res = await getStudentEventsByStudentCode(code, {
-        grade,
-        eventName,
-        status,
+        grade: filterState.grade,
+        eventName: filterState.eventName,
+        status: statusArray,
         page: pagination.pageIndex + 1,
         pageSize: pagination.pageSize,
       });
 
-      if (!res || !res?.data) {
-        return [];
-      }
-      return res.data;
+      return res?.data || [];
     },
   });
 
-  console.log(rows);
-
-  async function handleSearch() {
+  // Search function that updates URL and refetches data
+  const handleSearch = useCallback(async () => {
     const params = new URLSearchParams();
 
-    if (grade != '') {
-      params.set('grade', grade);
+    if (filterState.grade) {
+      params.set('grade', filterState.grade);
     }
 
-    if (eventName != '') {
-      params.set('event', eventName);
+    if (filterState.eventName) {
+      params.set('event', filterState.eventName);
     }
 
-    if (status.length > 0) {
-      params.set('status', status.join(','));
+    if (statusArray.length > 0) {
+      params.set('status', statusArray.join(','));
     }
 
+    // Fetch data with current filters
     const studentPromise = getStudentEventsByStudentCode(code, {
-      grade,
-      eventName,
-      status,
+      grade: filterState.grade,
+      eventName: filterState.eventName,
+      status: statusArray,
     });
 
     const {data: result} = await tryCatch(studentPromise);
-    const events = result ? result!?.data : [];
+    const events = result && Array.isArray(result?.data) ? result.data : [];
+
+    // Update cache
     queryClient.setQueryData(getQueryKey(), events);
 
+    // Update URL
     const search = params.toString();
     const url = search ? `${pathname}?${search}` : pathname;
     router.push(url);
-  }
+  }, [
+    code,
+    filterState,
+    statusArray,
+    queryClient,
+    getQueryKey,
+    pathname,
+    router,
+  ]);
 
   return (
     <>
       <div className="border-b md:px-8 px-4 flex flex-col gap-y-4 md:flex-row md:items-center py-4 md:gap-x-8">
-        {/* クラス名 */}
+        {/* Grade/Class filter */}
         <LegacySelect
           name="grade"
           label={json.label.grade}
-          options={grades ?? []}
-          value={grade}
-          onChange={e => setGrade(e.target.value)}
+          options={grades || []}
+          value={filterState.grade}
+          onChange={e => handleGradeChange(e.target.value)}
         />
 
-        {/* イベント */}
+        {/* Event filter */}
         <LegacySelect
           name="event"
           label={json.label.event}
-          options={events ?? []}
-          value={eventName}
-          onChange={e => setEventName(e.target.value)}
+          options={events || []}
+          value={filterState.eventName}
+          onChange={e => handleEventChange(e.target.value)}
         />
 
+        {/* Status filters */}
         <div className="flex flex-col items-center md:flex-row md:gap-x-8">
           <span>ステータス：</span>
 
-          {/* 未確認 */}
+          {/* Unconfirmed */}
           <Checkbox
             label={json.status.unconfirmed}
             name="unconfirmed"
-            checked={check.unconfirmed}
-            handleChange={handleChange}
+            checked={filterState.statusFilters.unconfirmed}
+            handleChange={handleStatusChange}
           />
 
-          {/* 確認中 */}
+          {/* Under review */}
           <Checkbox
             label={json.status.underReviewing}
             name="under_reviewing"
-            checked={check.under_reviewing}
-            handleChange={handleChange}
+            checked={filterState.statusFilters.under_reviewing}
+            handleChange={handleStatusChange}
           />
 
-          {/* 修了*/}
+          {/* Confirmed */}
           <Checkbox
             label={json.status.confirmed}
             name="confirmed"
-            checked={check.confirmed}
-            handleChange={handleChange}
+            checked={filterState.statusFilters.confirmed}
+            handleChange={handleStatusChange}
           />
         </div>
 
+        {/* Search button */}
         <Tooltip title={json.common.search}>
           <button
             className="border-none outline-none flex items-center justify-center cursor-pointer"
-            onClick={handleSearch}>
+            onClick={handleSearch}
+            aria-label="Search">
             <Search className="text-icon-default" size="1.5rem" />
           </button>
         </Tooltip>
       </div>
 
-      {/* Table */}
+      {/* Data table */}
       <div className="w-full px-10 pt-6">
-        <StudentEventsDatatable
-          rows={rows ?? []}
+        <StudentEventsDataTable
+          rows={rows}
           code={code}
-          role={auth?.role}
-          username={auth?.username}
+          role={role}
+          username={username || ''}
           pagination={pagination}
           setPagination={setPagination}
+          getQueryKey={getQueryKey}
         />
       </div>
     </>
   );
+}
+
+// Helper function to initialize status filters from URL
+function initStatusFilters(statusParam: string | null): ICheckboxState {
+  const statusValues = statusParam ? statusParam.split(',') : [];
+
+  return {
+    unconfirmed: statusValues.includes(EventStatus.UNCONFIRMED.toString()),
+    under_reviewing: statusValues.includes(
+      EventStatus.UNDER_REVIEWING.toString(),
+    ),
+    confirmed: statusValues.includes(EventStatus.CONFIRMED.toString()),
+  };
 }

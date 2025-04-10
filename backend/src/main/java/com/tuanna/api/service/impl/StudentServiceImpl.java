@@ -148,8 +148,10 @@ public class StudentServiceImpl implements StudentService {
 
     if (StringUtils.hasText(request.status())) {
       stringBuffer.append(" and se.eventStatus in :status ");
-      List<EventStatus> converted = Stream.of(request.status().split(","))
-          .map(x -> EventStatus.fromShortName(Integer.valueOf(x))).collect(Collectors.toList());
+      List<EventStatus> converted = Stream
+          .of(request.status().split(","))
+          .map(x -> EventStatus.fromShortName(Integer.valueOf(x)))
+          .collect(Collectors.toList());
       parameters.put("status", converted);
     }
     stringBuffer.append(" order by se.createdAt ");

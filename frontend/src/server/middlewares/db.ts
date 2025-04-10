@@ -7,7 +7,7 @@ import DbSchema from '../schema';
  * Create a Hono middleware for database access using Neon's HTTP client
  * which is better suited for serverless environments like Cloudflare Workers
  */
-export const createDbMiddlewareFactory = (
+export const createDbMiddleware = (
   connectionStringOverride?: string,
 ): MiddlewareHandler<{
   Bindings: {DATABASE_URL: string};

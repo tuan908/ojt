@@ -7,7 +7,7 @@ import {nullsToUndefined, tryCatch} from '~/shared/utils';
 import {createErrorResponse, createSuccessResponse} from '../lib/api-response';
 import {invalidateCache} from '../lib/cache';
 import DbSchema from '../schema';
-import {type IUpdateCommentDto} from '../types';
+import type {IUpdateCommentDto} from '../types';
 
 const commentRouter = new Hono()
   .get('/', async c => {

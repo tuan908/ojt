@@ -290,3 +290,11 @@ export const scales = stylex.defineVars({
   medium: 'scale(1)',
   large: 'scale(1.2)',
 });
+
+export const MediaQueries = {
+  SM: `@media (width >= 80rem)`,
+  MD: `@media (width >= 80rem)`,
+  LG: `@media (width >= 80rem)`,
+  XL: `@media (width >= 80rem)`,
+  '2XL': `@media (width >= 80rem)`,
+} as const;

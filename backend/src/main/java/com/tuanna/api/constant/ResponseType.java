@@ -5,11 +5,19 @@ import java.util.HashMap;
 
 public enum ResponseType {
 
-  SUCCESS("Success"), CREATED("Created"), ACCEPTED("Accepted"), NO_CONTENT(
-      "No Content"), BAD_REQUEST("Bad Request"), UNAUTHORIZED("Unauthorized"), FORBIDDEN(
-          "Forbidden"), NOT_FOUND("Not Found"), CONFLICT("Conflict"), INTERNAL_SERVER_ERROR(
-              "Internal Server Error"), SERVICE_UNAVAILABLE(
-                  "Service Unavailable"), ERROR("Error"), TIMEOUT("Timeout");
+  SUCCESS("Success"),
+  CREATED("Created"),
+  ACCEPTED("Accepted"),
+  NO_CONTENT("No Content"),
+  BAD_REQUEST("Bad Request"),
+  UNAUTHORIZED("Unauthorized"),
+  FORBIDDEN("Forbidden"),
+  NOT_FOUND("Not Found"),
+  CONFLICT("Conflict"),
+  INTERNAL_SERVER_ERROR("Internal Server Error"),
+  SERVICE_UNAVAILABLE("Service Unavailable"),
+  ERROR("Error"),
+  TIMEOUT("Timeout");
 
   private static final Map<String, ResponseType> VALUE_MAP = new HashMap<>();
 

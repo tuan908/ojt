@@ -66,9 +66,14 @@ public class Comment extends BaseEntity {
   }
 
   public CommentDto toDto() {
-    return new CommentDto(this.id, this.user.getName(), this.user.getUsername(),
-        this.user.getUserRole().getValue(), this.content,
-        DateTimeHelper.formatDateString(this.getCreatedAt()), this.getIsDeleted());
+    return new CommentDto(
+        this.id,
+        this.user.getName(),
+        this.user.getUsername(),
+        this.user.getUserRole().getValue(),
+        this.content,
+        DateTimeHelper.formatDateString(this.getCreatedAt()),
+        this.getIsDeleted());
   }
 
 }

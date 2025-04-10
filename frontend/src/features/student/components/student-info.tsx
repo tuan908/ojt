@@ -1,25 +1,46 @@
+import * as stylex from '@stylexjs/stylex';
 import {UserRole} from '~/shared/constants';
-import type {ISession} from '~/shared/lib/session';
+import {MediaQueries} from '~/shared/styles/globalTokens.stylex';
 
 type StudentInfoProps = {
-  info?: {
-    code?: string;
-    name?: string;
-    grade?: string;
-  };
-  auth?: ISession;
+  code?: string;
+  name?: string;
+  grade?: string;
+  role?: string;
 };
 
-export default async function StudentInfo(props: StudentInfoProps) {
-  if (!props.auth || props.auth?.role === UserRole.Student) {
+export default function StudentInfo({
+  code,
+  name,
+  grade,
+  role,
+}: StudentInfoProps) {
+  if (role === UserRole.Student) {
     return null;
   }
 
+  const styles = stylex.create({
+    div: {
+      borderBottom: '1px solid',
+      display: 'flex',
+      flexDirection: {
+        default: 'column',
+        [MediaQueries.MD]: 'row',
+      },
+      padding: '1rem 2rem',
+      rowGap: '0.5rem',
+      columnGap: {
+        default: null,
+        [MediaQueries.LG]: '3rem',
+      },
+    },
+  });
+
   return (
-    <div className="border-b px-8 py-4 flex gap-y-2 flex-col md:flex-row lg:gap-x-12">
-      <span>{props.info?.name} さん</span>
-      <span>{props.info?.code}</span>
-      <span>{props.info?.grade}</span>
+    <div {...stylex.props(styles.div)}>
+      <span>{name} さん</span>
+      <span>{code}</span>
+      <span>{grade}</span>
     </div>
   );
 }

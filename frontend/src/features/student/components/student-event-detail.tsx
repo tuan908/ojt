@@ -544,11 +544,7 @@ export default function StudentEventDetail({
                   {studentEventData?.eventName ?? json.event.placeholder0}
                 </MenuItem>
                 {events!?.map(x => (
-                  <MenuItem
-                    key={x.id}
-                    value={x.name}
-                    disableRipple
-                    disableTouchRipple>
+                  <MenuItem key={x.id} value={x.name}>
                     {x.name}
                   </MenuItem>
                 ))}

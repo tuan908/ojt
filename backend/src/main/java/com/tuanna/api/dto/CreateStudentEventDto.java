@@ -14,7 +14,12 @@ public class CreateStudentEventDto {
   private String gradeName;
   private Data data;
 
-  public static record Data(String eventName, String eventsInSchoolLife, String myAction,
-      String myThought, String shownPower, String strengthGrown) {
+  public static record Data(
+      String eventName,
+      String eventsInSchoolLife,
+      String myAction,
+      String myThought,
+      String shownPower,
+      String strengthGrown) {
   }
 }

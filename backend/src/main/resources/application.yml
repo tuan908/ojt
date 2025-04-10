@@ -3,7 +3,7 @@
 # - The yaml file had comments which are lost in the refactoring!
 spring:
   application:
-    name: spring-api
+    name: backend
   threads:
     virtual:
       enabled: true

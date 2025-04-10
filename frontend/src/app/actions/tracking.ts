@@ -1,16 +1,10 @@
 'use server';
 
-import type {ITrackingData} from '~/features/tracking/types';
-import ApiClient from '~/shared/lib/api-client';
-import type {IApiResponse} from '~/shared/types';
+import {client} from '~/shared/lib/hono-client';
 
 export async function getTracking(studentCode: string) {
-  const response = await ApiClient.Hono.get<IApiResponse<ITrackingData>>(
-    `/trackings`,
-    {
-      tag: 'trackings',
-      params: {studentCode},
-    },
-  );
-  return response?.data;
+  const res = await client.trackings.$get(studentCode);
+  const resJson = await res.json();
+  const studentInfo = resJson.data;
+  return studentInfo;
 }

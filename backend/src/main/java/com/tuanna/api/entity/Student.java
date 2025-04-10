@@ -81,14 +81,27 @@ public class Student extends BaseEntity {
 
   /** Convert to dto from entity */
   public StudentsDto toDto() {
-    var events = this.getStudentEvents().stream()
+    var events = this
+        .getStudentEvents()
+        .stream()
         .sorted(Comparator.comparing(event -> event.getEvent().getName()))
-        .map(event -> event.getEvent().getName()).toList();
-    var hashtags = this.getStudentHashtags().stream().map(StudentHashtag::getHashtag)
-        .sorted(Comparator.comparing(Hashtag::getName)).map(Hashtag::toDto).toList();
+        .map(event -> event.getEvent().getName())
+        .toList();
+    var hashtags = this
+        .getStudentHashtags()
+        .stream()
+        .map(StudentHashtag::getHashtag)
+        .sorted(Comparator.comparing(Hashtag::getName))
+        .map(Hashtag::toDto)
+        .toList();
 
-    return new StudentsDto(this.id, this.code, this.user.getName(), this.grade.getName(),
-        String.join(", ", events), hashtags);
+    return new StudentsDto(
+        this.id,
+        this.code,
+        this.user.getName(),
+        this.grade.getName(),
+        String.join(", ", events),
+        hashtags);
   }
 
   public void addHashtag(Hashtag hashtag) {
@@ -97,8 +110,12 @@ public class Student extends BaseEntity {
   }
 
   public void removeHashtag(Long hashtagId) {
-    var hashtag = this.studentHashtags.stream().map(StudentHashtag::getHashtag)
-        .filter(t -> t.getId() == hashtagId).findFirst().orElse(null);
+    var hashtag = this.studentHashtags
+        .stream()
+        .map(StudentHashtag::getHashtag)
+        .filter(t -> t.getId() == hashtagId)
+        .findFirst()
+        .orElse(null);
     if (hashtag != null) {
       this.studentHashtags.stream().map(StudentHashtag::getHashtag).toList().remove(hashtag);
       hashtag.getStudentHashtags().stream().map(StudentHashtag::getStudent).toList().remove(this);

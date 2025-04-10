@@ -1,5 +1,5 @@
 import type {IApiResponse} from '~/shared/types';
-import {getUrl, nullsToUndefined, tryCatch} from '~/shared/utils';
+import {getUrl, nullsToUndefined, tryCatch} from '../utils';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 

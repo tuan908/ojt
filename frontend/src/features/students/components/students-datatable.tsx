@@ -8,13 +8,7 @@ import type {
 } from '@tanstack/react-table';
 import {ChartNoAxesCombined} from 'lucide-react';
 import {useRouter} from 'next/navigation';
-import {
-  MouseEvent,
-  startTransition,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import {MouseEvent, startTransition, useCallback} from 'react';
 import TextHashtag from '~/features/students/components/text-hashtag';
 import {Button} from '~/shared/components/ui/button';
 import DataTable from '~/shared/components/ui/data-table';
@@ -33,12 +27,6 @@ export default function StudentsDataTable({
   setPagination,
 }: IStudentsDataTableProps) {
   const router = useRouter();
-
-  const [actualRows, setRows] = useState<IStudentsDto[]>([]);
-
-  useEffect(() => {
-    setRows(rows);
-  }, [rows]);
 
   const handleRowClick = (studentCode?: string) => {
     if (!studentCode) return;
@@ -119,11 +107,11 @@ export default function StudentsDataTable({
         pagination={pagination}
         setPagination={setPagination}
         columns={columns}
-        rows={actualRows}
+        rows={rows}
         onRowClick={row => handleRowClick(row.code)}
       />
     ),
-    [pagination, setPagination, columns, actualRows],
+    [pagination, setPagination, columns, rows],
   );
 
   return (

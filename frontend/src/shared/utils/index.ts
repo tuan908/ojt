@@ -2,7 +2,7 @@ import {clsx, type ClassValue} from 'clsx';
 import {twMerge} from 'tailwind-merge';
 import {UserRole} from '~/shared/constants';
 import type {RecursivelyReplaceNullWithUndefined} from '~/shared/types';
-import json from './i18n/locales/ja.json';
+import json from '../i18n/locales/ja.json';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

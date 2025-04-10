@@ -23,7 +23,7 @@ export default function Button({
       {...otherProps}
       className={cn(
         'border-none outline-none px-4 py-2 rounded-md text-white font-medium',
-        color ? colorClasses[color] : '',
+        color && colorClasses[color],
         classes,
       )}>
       {children}

@@ -6,7 +6,8 @@ import com.tuanna.api.constant.Constant;
 import com.tuanna.api.constant.ResponseType;
 
 @JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null values
-public record ApiResponse<T>(T data, // Payload (generic type for flexibility)
+public record ApiResponse<T>(
+    T data, // Payload (generic type for flexibility)
     String code, // Response code (e.g., SUCCESS, NOT_FOUND)
     String message, // Human-readable message
     String error, // Error description (null if success)
@@ -37,8 +38,12 @@ public record ApiResponse<T>(T data, // Payload (generic type for flexibility)
    */
   public static <T> ApiResponse<List<T>> paginated(List<T> data, String message,
       Pagination pagination) {
-    return new ApiResponse<>(data != null ? data : List.of(), // Prevents null lists
-        ResponseType.SUCCESS.getValue(), message != null ? message : "Success", null, true,
+    return new ApiResponse<>(
+        data != null ? data : List.of(), // Prevents null lists
+        ResponseType.SUCCESS.getValue(),
+        message != null ? message : "Success",
+        null,
+        true,
         pagination);
   }
 

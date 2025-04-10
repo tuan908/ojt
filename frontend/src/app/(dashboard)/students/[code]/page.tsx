@@ -1,4 +1,4 @@
-import type {Metadata, ResolvingMetadata} from 'next';
+import type {Metadata} from 'next';
 import {notFound, unauthorized} from 'next/navigation';
 import {getEvents, getGrades} from '~/app/actions/shared';
 import {getStudentByCode} from '~/app/actions/student';
@@ -10,10 +10,9 @@ import {UserRole} from '~/shared/constants';
 import {getSession} from '~/shared/lib/session';
 import type {IPageProps} from '~/shared/types';
 
-export async function generateMetadata(
-  {params}: IPageProps,
-  _parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: IPageProps): Promise<Metadata> {
   // read route params
   const {code} = await params;
 
@@ -27,18 +26,17 @@ export async function generateMetadata(
 
 export default async function Page({params}: IPageProps) {
   const {code} = await params;
-  const session = await getSession();
+  const user = await getSession();
 
   if (!code) {
     notFound();
   }
 
-  if (!session) {
+  if (!user) {
     unauthorized();
   }
 
-  const [user, grades, events, student] = await Promise.all([
-    getSession(),
+  const [grades, events, student] = await Promise.all([
     getGrades(),
     getEvents(),
     getStudentByCode(code),
@@ -52,31 +50,25 @@ export default async function Page({params}: IPageProps) {
 
   return (
     <div className="flex flex-col w-full h-full m-auto">
-      {user?.role === UserRole.Student && (
+      {user.role === UserRole.Student && (
         <NewEventForm
           studentCode={code}
-          eventOptions={events!}
-          gradeName={user!?.grade}
-          username={user?.username!}
+          eventOptions={events}
+          gradeName={user.grade}
+          username={user.username}
         />
       )}
 
       <Container>
         {/* Student Info */}
-        <StudentInfo
-          auth={user}
-          info={{
-            name,
-            grade,
-          }}
-        />
+        <StudentInfo code={code} name={name} grade={grade} role={user?.role} />
 
         {/* Student Details */}
         <StudentDetail
           code={code}
-          grades={grades!}
-          events={events!}
-          auth={user}
+          grades={grades}
+          events={events}
+          role={user.role}
         />
       </Container>
     </div>

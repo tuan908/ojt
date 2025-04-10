@@ -29,7 +29,9 @@ public class UserServiceImpl implements UserService {
 
   private final EntityManager entityManager;
 
-  public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder,
+  public UserServiceImpl(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
       EntityManager entityManager) {
     super();
     this.userRepository = userRepository;
@@ -81,13 +83,17 @@ public class UserServiceImpl implements UserService {
       sql.append("join fetch                          ");
       sql.append("    s.user                          ");
 
-      var students = this.entityManager.createQuery(sql.toString(), Student.class).getResultList() // Convert
-                                                                                                   // stream
-                                                                                                   // to
-                                                                                                   // list
-                                                                                                   // before
-                                                                                                   // returning
-          .stream().map(Student::toDto).toList();
+      var students = this.entityManager
+          .createQuery(sql.toString(), Student.class)
+          .getResultList() // Convert
+                           // stream
+                           // to
+                           // list
+                           // before
+                           // returning
+          .stream()
+          .map(Student::toDto)
+          .toList();
       return students;
     });
   }
@@ -96,9 +102,13 @@ public class UserServiceImpl implements UserService {
   @Override
   public Boolean createUser(CreateAccountDto dto) {
     try {
-      var newUser = User.builder().name(dto.firstName() + " " + dto.lastName())
-          .username(dto.username()).password(passwordEncoder.encode(dto.password()))
-          .userRole(UserRole.COUNSELOR).build();
+      var newUser = User
+          .builder()
+          .name(dto.firstName() + " " + dto.lastName())
+          .username(dto.username())
+          .password(passwordEncoder.encode(dto.password()))
+          .userRole(UserRole.COUNSELOR)
+          .build();
       this.userRepository.save(newUser);
       return true;
     } catch (Exception e) {

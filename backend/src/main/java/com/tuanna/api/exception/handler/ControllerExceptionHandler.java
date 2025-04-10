@@ -33,9 +33,9 @@ public class ControllerExceptionHandler {
   }
 
   private ResponseEntity<ApiResponse<?>> handle(Exception ex, ErrorCodes code, ResponseType type) {
-    var errorMessage =
-        code.compareTo(ErrorCodes.INTERNAL_SERVER_ERROR) == 0 ? messagesBundle.getString("error.internalServerError")
-            : ex.getMessage();
+    var errorMessage = code.compareTo(ErrorCodes.INTERNAL_SERVER_ERROR) == 0
+        ? messagesBundle.getString("error.internalServerError")
+        : ex.getMessage();
     return ResponseEntity.ok(ApiResponse.error(code.getValue(), errorMessage, type.getValue()));
   }
 }

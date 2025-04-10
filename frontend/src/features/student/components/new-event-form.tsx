@@ -5,7 +5,7 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import {FormLabel} from '@mui/material';
 import {useMutation, useQueryClient} from '@tanstack/react-query';
 import {Loader2} from 'lucide-react';
-import {useState} from 'react';
+import {type FC, useCallback, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {addEvent} from '~/app/actions/event';
@@ -173,7 +173,6 @@ export default function NewEventForm({
               />
 
               {/* Shown power */}
-
               <FormField
                 control={form.control}
                 name="shownPower"
@@ -217,16 +216,7 @@ export default function NewEventForm({
                   </FormItem>
                 )}
               />
-              <Button className="w-full" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span>送信中。。。</span>
-                  </>
-                ) : (
-                  <span>送信</span>
-                )}
-              </Button>
+              <SubmitButton isSubmitting={isSubmitting} />
             </form>
           </Form>
         </DialogContent>
@@ -234,3 +224,24 @@ export default function NewEventForm({
     </div>
   );
 }
+
+const SubmitButton: FC<{isSubmitting: boolean}> = ({isSubmitting}) => {
+  let ButtonContent = useCallback(() => {
+    if (!isSubmitting) {
+      return <span>送信</span>;
+    } else {
+      return (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <span>送信中。。。</span>
+        </>
+      );
+    }
+  }, [isSubmitting]);
+
+  return (
+    <Button className="w-full" type="submit" disabled={isSubmitting}>
+      <ButtonContent />
+    </Button>
+  );
+};

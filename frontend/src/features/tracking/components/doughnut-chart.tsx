@@ -1,5 +1,6 @@
 'use client';
 
+import * as stylex from '@stylexjs/stylex';
 import {PieChart} from 'echarts/charts';
 import {TitleComponent, TooltipComponent} from 'echarts/components';
 import {use as echartUse} from 'echarts/core';
@@ -8,6 +9,7 @@ import {CanvasRenderer} from 'echarts/renderers';
 import dynamic from 'next/dynamic';
 import {memo, useMemo} from 'react';
 import ProgressIndicator from '~/shared/components/ui/progress';
+import {cn} from '~/shared/utils';
 import type {IDoughnutData, IEChartsOption} from '../types';
 
 // Register ECharts components once outside the component
@@ -20,7 +22,7 @@ echartUse([
 ]);
 
 // Dynamic import with loading state
-const ReactEchart = dynamic(
+const ReactEChart = dynamic(
   () => import('echarts-for-react').then(mod => mod.default),
   {
     ssr: false,
@@ -107,14 +109,24 @@ const DoughnutChart = memo(
       };
     }, [data]);
 
+    const reactEChartHeight = `calc(${height} + 2rem)`;
+
+    const styles = stylex.create({
+      chart: {
+        width: '100%',
+        position: 'absolute',
+        height: reactEChartHeight,
+        top: '-0.75rem',
+      },
+    });
+
     return (
       <div
-        className={`relative bg-white shadow-2xl rounded-2xl ${className}`}
+        className={cn('relative bg-white shadow-2xl rounded-2xl', className)}
         style={{width, height}}>
-        <ReactEchart
+        <ReactEChart
+          {...stylex.props(styles.chart)}
           option={chartOptions}
-          style={{height: `calc(${height} + 2rem)`, width: '100%'}}
-          className="absolute -top-3"
           notMerge={true}
           lazyUpdate={true}
         />

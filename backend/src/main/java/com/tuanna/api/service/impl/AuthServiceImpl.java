@@ -33,8 +33,12 @@ public class AuthServiceImpl implements AuthService {
 
   private final ResourceBundle messagesBundle;
 
-  public AuthServiceImpl(StudentRepository studentRepository, UserRepository userRepository,
-      PasswordEncoder passwordEncoder, EntityManager entityManager, JwtService jwtService) {
+  public AuthServiceImpl(
+      StudentRepository studentRepository,
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
+      EntityManager entityManager,
+      JwtService jwtService) {
     super();
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
@@ -64,9 +68,14 @@ public class AuthServiceImpl implements AuthService {
     String token = jwtService.generateToken(new CustomUserDetails(user));
 
     return ApiResponse
-        .success(new LoginResponseDto(user.getId(), user.getName(), user.getUsername(),
-            user.getUserRole().getValue(), (student != null) ? student.getGrade().getName() : null,
-            (student != null) ? student.getCode() : null, token), null);
+        .success(new LoginResponseDto(
+            user.getId(),
+            user.getName(),
+            user.getUsername(),
+            user.getUserRole().getValue(),
+            (student != null) ? student.getGrade().getName() : null,
+            (student != null) ? student.getCode() : null,
+            token), null);
   }
 
   @Override

@@ -74,9 +74,6 @@ importers:
       jose:
         specifier: ^6.0.10
         version: 6.0.10
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
       next:
         specifier: 15.2.4
         version: 15.2.4(@babel/core@7.26.10)(babel-plugin-react-compiler@19.0.0-beta-3229e95-20250315)(react-dom@19.1.0-canary-313332d1-20250326(react@19.1.0-canary-313332d1-20250326))(react@19.1.0-canary-313332d1-20250326)(sass@1.86.0)
@@ -147,9 +144,6 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.0.15
         version: 4.0.15
-      '@types/js-cookie':
-        specifier: ^3.0.6
-        version: 3.0.6
       '@types/node':
         specifier: ^22.13.11
         version: 22.13.11
@@ -1315,9 +1309,6 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
-  '@types/js-cookie@3.0.6':
-    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
-
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
@@ -2334,10 +2325,6 @@ packages:
 
   jose@6.0.10:
     resolution: {integrity: sha512-skIAxZqcMkOrSwjJvplIPYrlXGpxTPnro2/QWTDCxAdWQrSTV5/KqspMWmi5WAx5+ULswASJiZ0a+1B/Lxt9cw==}
-
-  js-cookie@3.0.5:
-    resolution: {integrity: sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==}
-    engines: {node: '>=14'}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4230,8 +4217,6 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
-  '@types/js-cookie@3.0.6': {}
-
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
@@ -5368,8 +5353,6 @@ snapshots:
   jiti@2.4.2: {}
 
   jose@6.0.10: {}
-
-  js-cookie@3.0.5: {}
 
   js-tokens@4.0.0: {}
 

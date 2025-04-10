@@ -25,7 +25,8 @@ public class JwtService {
   private final long accessTokenExpiration;
   private final long refreshTokenExpiration;
 
-  public JwtService(@Value("${jwt.token.secret}") String accessTokenSecret,
+  public JwtService(
+      @Value("${jwt.token.secret}") String accessTokenSecret,
       @Value("${jwt.token.expiration}") long accessTokenExpiration,
       @Value("${jwt.refresh.secret}") String refreshTokenSecret,
       @Value("${jwt.refresh.expiration}") long refreshTokenExpiration) {
@@ -48,11 +49,18 @@ public class JwtService {
     var now = new Date();
     var expiryDate = new Date(now.getTime() + expirationTime);
 
-    var claims = Map.of("name", userDetails.getUser().getName(), "role",
-        userDetails.getUser().getUserRole().getValue());
+    var claims = Map
+        .of("name", userDetails.getUser().getName(), "role",
+            userDetails.getUser().getUserRole().getValue());
 
-    return Jwts.builder().subject(userDetails.getUser().getId().toString()).claims(claims)
-        .issuedAt(now).expiration(expiryDate).signWith(key, Jwts.SIG.HS256).compact();
+    return Jwts
+        .builder()
+        .subject(userDetails.getUser().getId().toString())
+        .claims(claims)
+        .issuedAt(now)
+        .expiration(expiryDate)
+        .signWith(key, Jwts.SIG.HS256)
+        .compact();
   }
 
   public Long getUserIdFromJwt(String token) {

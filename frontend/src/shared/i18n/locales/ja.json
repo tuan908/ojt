@@ -5,7 +5,7 @@
         "usernameRequired": "ユーザー名は必須です。",
         "passwordRequired": "パスワードが必要。",
         "passwordMinLength": "パスワードは8文字以上である必要があります。",
-        "passwordMaxLength": "パスワードは 32 文字未満である必要があります。",
+        "passwordMaxLength": "パスワードは32文字未満である必要があります。",
         "userNotFound": "ユーザーが見つかりません。",
         "passwordMismatch": "パスワードが間違っているか、ユーザーが存在しません。",
         "internalServerError": "内部サーバーエラー",
@@ -107,5 +107,6 @@
         "studentName": "学生の名前",
         "hashtag": "#ハッシュタグ",
         "tracking": "トラッキング"
-    }
+    },
+    "appName": "社会人基礎力"
 }

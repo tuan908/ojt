@@ -17,6 +17,7 @@ import {
 import {type SvgIconTypeMap, Tooltip} from '@mui/material';
 import Badge from '@mui/material/Badge';
 import type {OverridableComponent} from '@mui/material/OverridableComponent';
+import {useQueryClient} from '@tanstack/react-query';
 import type {
   ColumnDef,
   OnChangeFn,
@@ -30,7 +31,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
-import {startTransition, useEffect, useMemo, useState} from 'react';
+import {startTransition, useCallback, useMemo, useState} from 'react';
 import {deleteEventDetailById, updateEventStatus} from '~/app/actions/event';
 import {getStudentEventsByStudentCode} from '~/app/actions/student';
 import Dialog from '~/shared/components/legacy/dialog';
@@ -41,38 +42,177 @@ import json from '~/shared/i18n/locales/ja.json';
 import {cn} from '~/shared/utils';
 import type {IStudentDto} from '../types';
 
-type StudentEventsDatatableProps = {
+// Define types
+type IStudentEventsDataTableProps = {
   rows: IStudentDto['events'];
   code: string;
   role?: string;
   username?: string;
   pagination: PaginationState;
   setPagination: OnChangeFn<PaginationState>;
+  getQueryKey: () => (string | number)[];
 };
 
-type InternalStudentEventsDatatableProps = IStudentDto['events'][number];
+type DataTableRow = IStudentDto['events'][number];
+type DialogState = {open: boolean; id: number};
 
-export default function StudentEventsDatatable({
+// Icon type definition
+interface IIconType extends OverridableComponent<SvgIconTypeMap<{}, 'svg'>> {
+  muiName: string;
+}
+
+// Icon mapping utility
+const EVENT_ICON_MAP: Record<string, IIconType> = {
+  swimming: Pool,
+  soccer: SportsSoccer,
+  event: CalendarMonth,
+  volleyball: SportsVolleyball,
+  reading: Book,
+  badminton: SportsTennis,
+  music: MusicNote,
+  cooking: OutdoorGrill,
+  calligraphy: Title,
+  flower_arrangement: LocalFlorist,
+  festival: Festival,
+  camping: HolidayVillage,
+};
+
+const getEventIcon = (eventType: string) => {
+  const IconComponent =
+    EVENT_ICON_MAP[eventType.toLowerCase()] || CalendarMonth;
+  return <IconComponent />;
+};
+
+export default function StudentEventsDataTable({
   rows,
   code,
   role,
   username,
   pagination,
   setPagination,
-}: StudentEventsDatatableProps) {
+  getQueryKey,
+}: IStudentEventsDataTableProps) {
+  const queryClient = useQueryClient();
   const router = useRouter();
-  const [dialogs, setDialogs] = useState({
-    delete: {open: false, id: -1},
-    updateStatus: {open: false, id: -1},
+
+  // Use React's useReducer pattern through useState for dialog management
+  const [deleteDialog, setDeleteDialog] = useState<DialogState>({
+    open: false,
+    id: -1,
+  });
+  const [statusDialog, setStatusDialog] = useState<DialogState>({
+    open: false,
+    id: -1,
   });
 
-  const [actualRows, setActualRows] = useState<IStudentDto['events']>([]);
+  // Memoized callback functions
+  const refetchDataRows = useCallback(() => {
+    startTransition(async () => {
+      const res = await getStudentEventsByStudentCode(code);
+      const data = res && Array.isArray(res.data) ? res.data : [];
+      queryClient.setQueryData(getQueryKey(), data);
+    });
+  }, [code, queryClient, getQueryKey]);
 
-  useEffect(() => {
-    setActualRows(rows);
-  }, [rows]);
+  const getHref = useCallback(
+    (id: number, screenMode: number) => {
+      const params = new URLSearchParams();
+      params.append('student_code', encodeURIComponent(code));
+      params.append('mode', encodeURIComponent(screenMode));
+      params.append('student_event_id', encodeURIComponent(id));
+      return `/student-regist?${params.toString()}`;
+    },
+    [code],
+  );
 
-  const columns: ColumnDef<InternalStudentEventsDatatableProps>[] = useMemo(
+  // Dialog handlers
+  const handleDone = useCallback(async () => {
+    if (!username) return;
+
+    await updateEventStatus({
+      event_id: statusDialog.id,
+      student_code: code,
+      updated_by: username,
+    });
+
+    refetchDataRows();
+    setStatusDialog({open: false, id: -1});
+  }, [statusDialog.id, code, username, refetchDataRows]);
+
+  const handleDelete = useCallback(async () => {
+    await deleteEventDetailById(deleteDialog.id);
+    refetchDataRows();
+    setDeleteDialog({open: false, id: -1});
+  }, [deleteDialog.id, refetchDataRows]);
+
+  // Action buttons based on role
+  const renderActionButtons = useCallback(
+    ({id, status}: {id: number; status: EventStatus}) => {
+      if (!role) return null;
+
+      if (role === UserRole.Counselor) {
+        return (
+          <Tooltip title={json.common.done}>
+            <button
+              onClick={() => setStatusDialog({open: true, id})}
+              disabled={status === EventStatus.CONFIRMED}>
+              <Done
+                size="1.5rem"
+                stroke={
+                  status === EventStatus.CONFIRMED ? '#31bafd' : '#7d7e7e'
+                }
+              />
+            </button>
+          </Tooltip>
+        );
+      }
+
+      if (role === UserRole.Student) {
+        return (
+          <>
+            <Tooltip title={json.common.edit}>
+              <button
+                className="cursor-pointer"
+                onClick={() => router.push(getHref(id, ScreenMode.EDIT))}>
+                <Pencil
+                  size="1.5rem"
+                  className={cn(
+                    'text-icon-default',
+                    status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
+                  )}
+                />
+              </button>
+            </Tooltip>
+            <Tooltip title={json.common.delete}>
+              <button
+                className="cursor-pointer"
+                disabled={status === EventStatus.CONFIRMED}
+                onClick={() => setDeleteDialog({open: true, id})}>
+                <Trash2
+                  size="1.5rem"
+                  className={cn(
+                    'text-red-500',
+                    status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
+                  )}
+                />
+              </button>
+            </Tooltip>
+          </>
+        );
+      }
+
+      if ([UserRole.Parent, UserRole.Teacher].includes(role)) {
+        // Return default actions for parent/teacher if needed
+        return null;
+      }
+
+      return null;
+    },
+    [role, router, getHref],
+  );
+
+  // Memoized columns definition
+  const columns = useMemo<ColumnDef<DataTableRow>[]>(
     () => [
       {
         accessorKey: 'grade',
@@ -94,23 +234,17 @@ export default function StudentEventsDatatable({
       {
         accessorKey: 'status',
         header: json.tableHeader.studentEvents.status,
-        cell: ({row}) => (
-          <>
-            <StatusLabel status={row.original.status} />
-          </>
-        ),
+        cell: ({row}) => <StatusLabel status={row.original.status} />,
       },
       {
         accessorKey: 'notifications',
         header: json.tableHeader.studentEvents.notification,
         cell: ({row}) => (
-          <>
-            <Link href={getHref(row.original.studentEventId, ScreenMode.CHAT)}>
-              <Badge badgeContent={row.original.commentCount} color="error">
-                <Notifications className="text-icon-default" size={24} />
-              </Badge>
-            </Link>
-          </>
+          <Link href={getHref(row.original.studentEventId, ScreenMode.CHAT)}>
+            <Badge badgeContent={row.original.commentCount} color="error">
+              <Notifications className="text-icon-default" size={24} />
+            </Badge>
+          </Link>
         ),
       },
       {
@@ -126,161 +260,37 @@ export default function StudentEventsDatatable({
         ),
       },
     ],
-    [],
+    [getHref, renderActionButtons],
   );
-
-  // Open dialog functions
-  const openDeleteDialog = (id: number) =>
-    setDialogs(prev => ({...prev, delete: {open: true, id}}));
-  const openUpdateStatusDialog = (id: number) =>
-    setDialogs(prev => ({...prev, updateStatus: {open: true, id}}));
-
-  // Close dialog functions
-  const closeDeleteDialog = () =>
-    setDialogs(prev => ({...prev, delete: {open: false, id: -1}}));
-  const closeUpdateStatusDialog = () =>
-    setDialogs(prev => ({
-      ...prev,
-      updateStatus: {open: false, id: -1},
-    }));
-
-  function handleDone() {
-    try {
-      startTransition(async () => {
-        await updateEventStatus({
-          event_id: dialogs.updateStatus.id,
-          student_code: code,
-          updated_by: username!,
-        });
-        await getStudentEventsByStudentCode(code);
-      });
-    } catch (error) {
-      console.error('Error while updating status');
-    }
-    closeUpdateStatusDialog();
-  }
-
-  function handleDeleteEventDetailById(): void {
-    startTransition(async () => {
-      await deleteEventDetailById(dialogs.delete.id);
-    });
-    closeDeleteDialog();
-  }
-
-  const getHref = (id: number, screenMode: number) => {
-    const params = new URLSearchParams();
-    params.append('student_code', encodeURIComponent(code));
-    params.append('mode', encodeURIComponent(screenMode));
-    params.append('student_event_id', encodeURIComponent(id));
-
-    return `/student-regist?${params.toString()}`;
-  };
-
-  const renderActionButtons = (item: {id: number; status: EventStatus}) => {
-    if (role && role !== UserRole.Student) {
-      return (
-        <Tooltip title={json.common.done}>
-          <button
-            onClick={() => openUpdateStatusDialog(item.id)}
-            disabled={item?.status === EventStatus.CONFIRMED}>
-            <Done
-              size="1.5rem"
-              stroke={
-                item.status === EventStatus.CONFIRMED ? '#31bafd' : '#7d7e7e'
-              }
-            />
-          </button>
-        </Tooltip>
-      );
-    }
-
-    return (
-      <>
-        <Tooltip title={json.common.edit}>
-          <button
-            className="cursor-pointer"
-            onClick={() => router.push(getHref(item.id, ScreenMode.EDIT))}>
-            <Pencil
-              size="1.5rem"
-              className={cn(
-                'text-icon-default',
-                item.status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
-              )}
-            />
-          </button>
-        </Tooltip>
-        <Tooltip title={json.common.delete}>
-          <button
-            className="cursor-pointer"
-            disabled={item.status === EventStatus.CONFIRMED}
-            onClick={() => openDeleteDialog(item.id)}>
-            <Trash2
-              size="1.5rem"
-              className={cn(
-                'text-red-500',
-                item.status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
-              )}
-            />
-          </button>
-        </Tooltip>
-      </>
-    );
-  };
 
   return (
     <>
       <DataTable
-        key={actualRows.length}
         columns={columns}
-        rows={actualRows}
+        rows={rows}
         pagination={pagination}
         setPagination={setPagination}
       />
 
       <Dialog
-        open={dialogs.delete.open}
-        onClose={() => closeDeleteDialog()}
+        open={deleteDialog.open}
+        onClose={() => setDeleteDialog({open: false, id: -1})}
         title={json.dialog.delete.title}
         content={json.dialog.delete.content}
-        onCancelClick={() => closeDeleteDialog()}
-        onActionClick={handleDeleteEventDetailById}
+        onCancelClick={() => setDeleteDialog({open: false, id: -1})}
+        onActionClick={handleDelete}
         buttonColor="danger"
       />
 
       <Dialog
-        open={dialogs.updateStatus.open}
-        onClose={() => closeUpdateStatusDialog()}
+        open={statusDialog.open}
+        onClose={() => setStatusDialog({open: false, id: -1})}
         title={json.dialog.update.title}
         content={json.dialog.update.content}
-        onCancelClick={() => closeUpdateStatusDialog()}
+        onCancelClick={() => setStatusDialog({open: false, id: -1})}
         onActionClick={handleDone}
         buttonColor="info"
       />
     </>
   );
 }
-
-interface IIconType extends OverridableComponent<SvgIconTypeMap<{}, 'svg'>> {
-  muiName: string;
-}
-
-const getEventIcon = (eventType: string) => {
-  const iconMap: Record<string, IIconType> = {
-    swimming: Pool,
-    soccer: SportsSoccer,
-    event: CalendarMonth,
-    volleyball: SportsVolleyball,
-    reading: Book,
-    badminton: SportsTennis,
-    music: MusicNote,
-    cooking: OutdoorGrill,
-    calligraphy: Title,
-    flower_arrangement: LocalFlorist,
-    festival: Festival,
-    camping: HolidayVillage,
-    // Add more mappings as needed
-  };
-
-  const IconComponent = iconMap[eventType.toLowerCase()] || CalendarMonth;
-  return <IconComponent />;
-};

@@ -14,7 +14,7 @@ import type {IEnvironment} from '../types';
 let cacheStore: RedisCacheStore | null = null;
 
 // Cache middleware factory
-export const createCacheMiddlewareFactory = (
+export const createCacheMiddleware = (
   options: ICacheOptions = {},
 ): MiddlewareHandler<{Bindings: IEnvironment}> => {
   // Merge provided options with defaults

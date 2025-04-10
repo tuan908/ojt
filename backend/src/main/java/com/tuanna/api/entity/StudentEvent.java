@@ -97,12 +97,15 @@ public class StudentEvent extends BaseEntity {
 
     @JsonCreator
     public static Data fromJson(Map<String, Object> props) {
-      return Data.builder().eventName(getStringOrNull(props, "eventName"))
+      return Data
+          .builder()
+          .eventName(getStringOrNull(props, "eventName"))
           .eventsInSchoolLife(getStringOrNull(props, "eventsInSchoolLife"))
           .myAction(getStringOrNull(props, "myAction"))
           .myThought(getStringOrNull(props, "myThought"))
           .shownPower(getStringOrNull(props, "shownPower"))
-          .strengthGrown(getStringOrNull(props, "strengthGrown")).build();
+          .strengthGrown(getStringOrNull(props, "strengthGrown"))
+          .build();
     }
 
     // Utility method to safely extract string values
@@ -113,16 +116,25 @@ public class StudentEvent extends BaseEntity {
   }
 
   public StudentDto.EventData toEventDataDto() {
-    var dto = StudentDto.EventData.builder().studentEventId(this.id).title(this.event.getTitle())
-        .eventName(this.event.getName()).grade(this.grade.getName())
-        .status(this.eventStatus.getValue()).commentCount(Long.valueOf(this.comments.size()))
+    var dto = StudentDto.EventData
+        .builder()
+        .studentEventId(this.id)
+        .title(this.event.getTitle())
+        .eventName(this.event.getName())
+        .grade(this.grade.getName())
+        .status(this.eventStatus.getValue())
+        .commentCount(Long.valueOf(this.comments.size()))
         .build();
     return dto;
   }
 
   public StudentEventDto toStudentEventDto() {
-    var dto = new StudentEventDto(this.id, this.event.getName(), this.grade.getName(),
-        this.eventStatus.getValue(), data);
+    var dto = new StudentEventDto(
+        this.id,
+        this.event.getName(),
+        this.grade.getName(),
+        this.eventStatus.getValue(),
+        data);
     return dto;
   }
 

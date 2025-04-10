@@ -11,7 +11,7 @@ import type {IStackedData} from '../types';
 
 echartUse([CanvasRenderer, BarChart]);
 
-const ReactEchart = dynamic(
+const ReactEChart = dynamic(
   () => import('echarts-for-react').then(mod => mod.default),
   {
     ssr: false,
@@ -78,7 +78,7 @@ export default function StackedBarChart({
 
   return (
     <Box fullWidth height={26} paddingY="10">
-      <ReactEchart className="!h-full" option={option} />
+      <ReactEChart className="!h-full" option={option} />
     </Box>
   );
 }

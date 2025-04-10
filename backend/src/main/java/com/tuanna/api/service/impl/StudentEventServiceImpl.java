@@ -1,5 +1,6 @@
 package com.tuanna.api.service.impl;
 
+import java.util.ResourceBundle;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.tuanna.api.constant.EventStatus;
@@ -10,6 +11,7 @@ import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.CreateStudentEventDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.dto.UpdateStudentEventDto;
+import com.tuanna.api.dto.response.UpdateEventStatusResponseDto;
 import com.tuanna.api.entity.Grade;
 import com.tuanna.api.entity.StudentEvent;
 import com.tuanna.api.repository.StudentEventRepository;
@@ -26,36 +28,59 @@ public class StudentEventServiceImpl implements StudentEventService {
   private final StudentRepository studentRepository;
   private final CommonService commonService;
   private final StudentEventRepository studentEventRepository;
+  private final ResourceBundle resourceBundle;
 
-  public StudentEventServiceImpl(EntityManager entityManager, StudentRepository studentRepository,
-      CommonService commonService, StudentEventRepository studentEventRepository) {
+  public StudentEventServiceImpl(
+      EntityManager entityManager,
+      StudentRepository studentRepository,
+      CommonService commonService,
+      StudentEventRepository studentEventRepository) {
     super();
     this.entityManager = entityManager;
     this.studentRepository = studentRepository;
     this.commonService = commonService;
     this.studentEventRepository = studentEventRepository;
+    this.resourceBundle = ResourceBundle.getBundle("messages");
   }
 
   @Override
   @Transactional
-  public ApiResponse<Boolean> changeStatus(UpdateEventStatusDto dto) {
+  public ApiResponse<UpdateEventStatusResponseDto> changeStatus(UpdateEventStatusDto dto) {
+    var selectQl = new StringBuffer();
+    selectQl.append("select                                   ");
+    selectQl.append("  se.id                                  ");
+    selectQl.append("from                                     ");
+    selectQl.append("  com.tuanna.api.entity.StudentEvent se  ");
+    selectQl.append("where                                    ");
+    selectQl.append("  id = :id                               ");
+    var selectQuery = this.entityManager.createQuery(selectQl.toString(), Long.class);
+
+    selectQuery.setParameter("id", dto.event_id());
+
+    var queryResult = selectQuery.getResultStream().findFirst().orElse(null);
+
+    if (queryResult == null)
+      return ApiResponse
+          .error(ErrorCodes.NOT_FOUND.getValue(), this.resourceBundle.getString("error.notFound"),
+              null);
+
     var sql = new StringBuffer();
-    sql.append("update                              ");
-    sql.append("  com.tuanna.api.entity.StudentEvent ");
-    sql.append("set                                 ");
-    sql.append("  status = :status,                 ");
-    sql.append("  updatedBy = :updatedBy            ");
-    sql.append("where                               ");
-    sql.append("  id = :id                          ");
+    sql.append("update                                  ");
+    sql.append("  com.tuanna.api.entity.StudentEvent    ");
+    sql.append("set                                     ");
+    sql.append("  status = :status,                     ");
+    sql.append("  updatedBy = :updatedBy                ");
+    sql.append("where                                   ");
+    sql.append("  id = :id                              ");
 
     var query = this.entityManager.createQuery(sql.toString());
     query.setParameter("id", dto.event_id());
     query.setParameter("status", EventStatus.COMPLETED);
     query.setParameter("updatedBy", dto.updated_by());
 
-    int result = query.executeUpdate();
+    query.executeUpdate();
 
-    return ApiResponse.success(result > 0, null);
+    return ApiResponse.success(new UpdateEventStatusResponseDto(queryResult), null);
   }
 
   @Override

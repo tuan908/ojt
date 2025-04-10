@@ -33,36 +33,32 @@ interface ISelectProps {
 
 export default function LegacySelect({
   label,
-  options,
   className,
   onChange,
   value,
   name,
   suppressContentEditableWarning = true,
+  options = [],
   variant = 'standard',
 }: ISelectProps) {
   return (
     <MuiSelect
-      sx={sx}
-      MenuProps={menuProps}
-      variant={variant}
       className={cn('w-48', className)}
-      label={label}
-      onChange={onChange}
-      value={value}
-      name={name}
       displayEmpty
-      suppressContentEditableWarning={suppressContentEditableWarning}>
+      onChange={onChange}
+      label={label}
+      name={name}
+      suppressContentEditableWarning={suppressContentEditableWarning}
+      sx={sx}
+      variant={variant}
+      value={value}
+      MenuProps={menuProps}>
       <MenuItem value="" disabled>
         {label}
       </MenuItem>
 
-      {options!?.map(option => (
-        <MenuItem
-          key={option.id}
-          value={option.name}
-          disableRipple
-          disableTouchRipple>
+      {options.map(option => (
+        <MenuItem key={option.id} value={option.name}>
           {option.name}
         </MenuItem>
       ))}

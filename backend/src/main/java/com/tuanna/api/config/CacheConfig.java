@@ -38,14 +38,15 @@ public class CacheConfig {
       redisConfig.setPassword(redisPassword);
     }
 
-    LettuceClientConfiguration clientConfig =
-        LettuceClientConfiguration.builder().commandTimeout(Duration.ofSeconds(5)) // Set
-                                                                                   // timeout
-            .shutdownTimeout(Duration.ofMillis(100)) // Faster
-                                                     // shutdown
-            .useSsl() // use Ssl
-                      // connection
-            .build();
+    LettuceClientConfiguration clientConfig = LettuceClientConfiguration
+        .builder()
+        .commandTimeout(Duration.ofSeconds(5)) // Set
+                                               // timeout
+        .shutdownTimeout(Duration.ofMillis(100)) // Faster
+                                                 // shutdown
+        .useSsl() // use Ssl
+                  // connection
+        .build();
 
     return new LettuceConnectionFactory(redisConfig, clientConfig);
   }
@@ -56,16 +57,23 @@ public class CacheConfig {
     RedisCacheConfiguration defaultCacheConfig = createCacheConfig(Duration.ofMinutes(10));
 
     // Custom cache settings
-    Map<String, RedisCacheConfiguration> cacheConfigurations = Map.of("grades",
-        createCacheConfig(Duration.ofHours(1)), "events", createCacheConfig(Duration.ofHours(4)),
-        "hashtags", createCacheConfig(Duration.ofDays(1)));
+    Map<String, RedisCacheConfiguration> cacheConfigurations = Map
+        .of("grades", createCacheConfig(Duration.ofHours(1)), "events",
+            createCacheConfig(Duration.ofHours(4)), "hashtags",
+            createCacheConfig(Duration.ofDays(1)));
 
-    return RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(defaultCacheConfig)
-        .withInitialCacheConfigurations(cacheConfigurations).build();
+    return RedisCacheManager
+        .builder(redisConnectionFactory)
+        .cacheDefaults(defaultCacheConfig)
+        .withInitialCacheConfigurations(cacheConfigurations)
+        .build();
   }
 
   private RedisCacheConfiguration createCacheConfig(Duration ttl) {
-    return RedisCacheConfiguration.defaultCacheConfig().entryTtl(ttl).disableCachingNullValues()
+    return RedisCacheConfiguration
+        .defaultCacheConfig()
+        .entryTtl(ttl)
+        .disableCachingNullValues()
         .serializeValuesWith(RedisSerializationContext.SerializationPair
             .fromSerializer(new GenericJackson2JsonRedisSerializer()));
   }

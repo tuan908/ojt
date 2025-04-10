@@ -1,7 +1,9 @@
 import {eq} from 'drizzle-orm';
 import {Hono} from 'hono';
+import {ErrorCodes} from '~/shared/constants';
+import json from '~/shared/i18n/locales/ja.json';
 import {tryCatch} from '~/shared/utils';
-import {createSuccessResponse} from '../lib/api-response';
+import {createErrorResponse, createSuccessResponse} from '../lib/api-response';
 import DbSchema from '../schema';
 import type {IHashtagDetailDto} from '../types';
 
@@ -10,10 +12,28 @@ const trackingRouter = new Hono().get('/', async c => {
 
   const db = c.get('db');
 
-  const trackingPromise = db
+  const [student] = await db
     .select({
       id: DbSchema.Student.id,
       code: DbSchema.Student.code,
+      fullname: DbSchema.User.name,
+    })
+    .from(DbSchema.Student)
+    .innerJoin(DbSchema.User, eq(DbSchema.Student.userId, DbSchema.User.id))
+    .where(eq(DbSchema.Student.code, studentCode!));
+
+  if (!student) {
+    return c.json(
+      createErrorResponse({
+        code: ErrorCodes.NOT_FOUND,
+        message: json.error.notFound,
+        statusCode: 404,
+      }),
+    );
+  }
+
+  const trackingPromise = db
+    .select({
       studentHashtagValue: DbSchema.StudentHashtag.value,
       hashtagName: DbSchema.Hashtag.name,
       fullname: DbSchema.User.name,
@@ -45,9 +65,9 @@ const trackingRouter = new Hono().get('/', async c => {
   }));
 
   const response = createSuccessResponse({
-    id: rawRows[0]!?.id,
-    code: rawRows[0]!?.code,
-    name: rawRows[0]!?.fullname,
+    id: student.id,
+    code: student.code,
+    name: student.fullname,
     hashtags: {
       doughnut: {
         _data: rows.map(row => ({

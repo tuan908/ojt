@@ -1,6 +1,7 @@
 package com.tuanna.api.dto;
 
-public record Pagination(int page, // Current page number
+public record Pagination(
+    int page, // Current page number
     int size, // Items per page
     long totalItems, // Total number of items
     int totalPages // Total pages calculated from totalItems & size

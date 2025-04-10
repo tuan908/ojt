@@ -1,32 +1,41 @@
 import {ChevronLeft} from 'lucide-react';
 import Link from 'next/link';
 import {UserRole} from '~/shared/constants';
-import {getSession} from '~/shared/lib/session';
+import {getSession, ISession} from '~/shared/lib/session';
+
+/**
+ * Determines the appropriate redirect URL based on user session status and role
+ */
+function getRedirectUrl(session?: ISession): string {
+  if (!session) {
+    return '/auth/login';
+  }
+
+  return session.role === UserRole.Student
+    ? `/students/${session.code}`
+    : '/students';
+}
 
 export default async function NotFound() {
   const session = await getSession();
-
-  let href = '';
-  if (!session) {
-    href = '/auth/login';
-  } else if (session?.role === UserRole.Student) {
-    href = '/students/' + session?.code;
-  } else {
-    href = '/students';
-  }
+  const redirectUrl = getRedirectUrl(session);
 
   return (
-    <div className="w-full h-screen flex flex-col">
-      <div className="px-12 py-8 flex items-center">
-        <ChevronLeft size="1.5rem" />
-        <Link href={href} className="text-base font-semibold">
-          戻る
+    <main className="w-full h-screen flex flex-col">
+      <nav className="px-12 py-8 flex items-center">
+        <Link
+          href={redirectUrl}
+          className="flex items-center gap-2 text-base font-semibold"
+          aria-label="戻る">
+          <ChevronLeft size="1.5rem" aria-hidden="true" />
+          <span>戻る</span>
         </Link>
-      </div>
-      <div className="w-full flex-1 flex flex-col items-center justify-center gap-y-4">
+      </nav>
+
+      <section className="flex-1 flex flex-col items-center justify-center gap-y-4">
         <h1 className="text-9xl font-semibold">404</h1>
-        <h3 className="text-4xl font-semibold">ページが見つかりません</h3>
-      </div>
-    </div>
+        <h2 className="text-4xl font-semibold">ページが見つかりません</h2>
+      </section>
+    </main>
   );
 }
