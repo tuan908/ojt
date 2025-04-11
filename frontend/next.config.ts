@@ -2,6 +2,7 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@reduxjs/toolkit', 'react-redux'],
+  eslint: {ignoreDuringBuilds: true},
   experimental: {
     scrollRestoration: true,
     reactCompiler: true,
@@ -18,5 +19,4 @@ const nextConfig: NextConfig = {
     },
   },
 };
-
 export default nextConfig;

@@ -38,14 +38,11 @@ public class CacheConfig {
       redisConfig.setPassword(redisPassword);
     }
 
-    LettuceClientConfiguration clientConfig = LettuceClientConfiguration
+    var clientConfig = LettuceClientConfiguration
         .builder()
-        .commandTimeout(Duration.ofSeconds(5)) // Set
-                                               // timeout
-        .shutdownTimeout(Duration.ofMillis(100)) // Faster
-                                                 // shutdown
-        .useSsl() // use Ssl
-                  // connection
+        .commandTimeout(Duration.ofSeconds(5))
+        .shutdownTimeout(Duration.ofMillis(100))
+        .useSsl()
         .build();
 
     return new LettuceConnectionFactory(redisConfig, clientConfig);
@@ -57,7 +54,7 @@ public class CacheConfig {
     RedisCacheConfiguration defaultCacheConfig = createCacheConfig(Duration.ofMinutes(10));
 
     // Custom cache settings
-    Map<String, RedisCacheConfiguration> cacheConfigurations = Map
+    var cacheConfigurations = Map
         .of("grades", createCacheConfig(Duration.ofHours(1)), "events",
             createCacheConfig(Duration.ofHours(4)), "hashtags",
             createCacheConfig(Duration.ofDays(1)));

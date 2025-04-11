@@ -12,7 +12,6 @@ import com.tuanna.api.dto.CreateStudentEventDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.dto.UpdateStudentEventDto;
 import com.tuanna.api.dto.response.UpdateEventStatusResponseDto;
-import com.tuanna.api.entity.Grade;
 import com.tuanna.api.entity.StudentEvent;
 import com.tuanna.api.repository.StudentEventRepository;
 import com.tuanna.api.repository.StudentRepository;
@@ -26,20 +25,20 @@ public class StudentEventServiceImpl implements StudentEventService {
 
   private final EntityManager entityManager;
   private final StudentRepository studentRepository;
-  private final CommonService commonService;
   private final StudentEventRepository studentEventRepository;
+  private final CommonService commonService;
   private final ResourceBundle resourceBundle;
 
   public StudentEventServiceImpl(
       EntityManager entityManager,
       StudentRepository studentRepository,
-      CommonService commonService,
-      StudentEventRepository studentEventRepository) {
+      StudentEventRepository studentEventRepository,
+      CommonService commonService) {
     super();
     this.entityManager = entityManager;
     this.studentRepository = studentRepository;
-    this.commonService = commonService;
     this.studentEventRepository = studentEventRepository;
+    this.commonService = commonService;
     this.resourceBundle = ResourceBundle.getBundle("messages");
   }
 
@@ -68,15 +67,13 @@ public class StudentEventServiceImpl implements StudentEventService {
     sql.append("update                                  ");
     sql.append("  com.tuanna.api.entity.StudentEvent    ");
     sql.append("set                                     ");
-    sql.append("  status = :status,                     ");
-    sql.append("  updatedBy = :updatedBy                ");
+    sql.append("  eventStatus = :status                 ");
     sql.append("where                                   ");
     sql.append("  id = :id                              ");
 
     var query = this.entityManager.createQuery(sql.toString());
     query.setParameter("id", dto.event_id());
     query.setParameter("status", EventStatus.COMPLETED);
-    query.setParameter("updatedBy", dto.updated_by());
 
     query.executeUpdate();
 
@@ -87,14 +84,8 @@ public class StudentEventServiceImpl implements StudentEventService {
   @Transactional
   public ApiResponse<CreateDto> create(CreateStudentEventDto dto) {
     var student = this.studentRepository.findByUsername(dto.getUsername()).orElse(null);
-
     var event = this.commonService.findEventByName(dto.getData().eventName());
-
-    var gradeQlString = "select g from com.tuanna.api.entity.Grade g where g.name = :gradeName";
-
-    var gradeQuery = this.entityManager.createQuery(gradeQlString, Grade.class);
-    gradeQuery.setParameter("gradeName", dto.getGradeName());
-    var grade = gradeQuery.getResultStream().findFirst().orElse(null);
+    var grade = this.commonService.findGradeByName(dto.getGradeName());
 
     if (student == null || event == null || grade == null) {
       return null;

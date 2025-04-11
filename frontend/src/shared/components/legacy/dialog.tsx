@@ -5,12 +5,8 @@ import {
   DialogTitle,
   Dialog as MuiDialog,
 } from '@mui/material';
-import {useMemo} from 'react';
 import json from '~/shared/i18n/locales/ja.json';
-import {cn} from '~/shared/utils';
-import Button from './button';
-
-type ButtonColor = 'info' | 'success' | 'danger';
+import {Button} from '../ui/button';
 
 type DialogProps = {
   open: boolean;
@@ -19,7 +15,6 @@ type DialogProps = {
   content: string;
   onCancelClick: () => void;
   onActionClick: () => void | Promise<void>;
-  buttonColor?: ButtonColor;
 };
 
 export default function Dialog({
@@ -28,25 +23,8 @@ export default function Dialog({
   title,
   content,
   onCancelClick,
-  onActionClick,
-  buttonColor = 'info', // ✅ Provide a default value
+  onActionClick, // ✅ Provide a default value
 }: DialogProps) {
-  const backgroundColor = useMemo<string>(() => {
-    switch (buttonColor) {
-      case 'danger':
-        return 'bg-red-400';
-
-      case 'info':
-        return 'bg-blue-400';
-
-      case 'success':
-        return 'bg-green-400';
-
-      default:
-        return 'bg-blue-400'; // ✅ Fallback to prevent runtime errors
-    }
-  }, [buttonColor]);
-
   return (
     <MuiDialog
       open={open}
@@ -60,20 +38,11 @@ export default function Dialog({
         <DialogContentText id="dialog-description">{content}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button
-          classes="px-4 py-1 border font-medium bg-slate-200 rounded-md"
-          onClick={onCancelClick}
-          aria-label="Cancel">
-          {json.dialog.cancel}
+        <Button onClick={onActionClick} aria-label="Confirm">
+          {json.dialog.confirm}
         </Button>
-        <Button
-          classes={cn(
-            'px-4 py-1 font-medium border rounded-md text-white',
-            backgroundColor,
-          )}
-          onClick={onActionClick}
-          aria-label="Confirm">
-          {json.dialog.confirmation}
+        <Button onClick={onCancelClick} aria-label="Cancel">
+          {json.dialog.cancel}
         </Button>
       </DialogActions>
     </MuiDialog>

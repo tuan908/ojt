@@ -81,7 +81,7 @@
             "content": "このイベントを削除しますか?"
         },
         "unsavedChanges": "このページを離れると、変更内容が失われます。保存せずに終了してもよろしいですか？",
-        "confirmation": "確かめる",
+        "confirm": "確認",
         "cancel": "キャンセル",
         "exitWithoutSaving": "保存せずに終了",
         "saveAndExit": "保存して終了"

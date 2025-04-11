@@ -30,7 +30,7 @@ export default function StatusLabel({status}: IStatusLabelProps) {
   return (
     <span
       className={cn(
-        'text-white px-3 py-1 font-medium rounded-2xl shadow-md',
+        'block w-18 text-center text-white px-3 py-1 font-medium rounded-2xl shadow-md',
         color,
       )}>
       {label}

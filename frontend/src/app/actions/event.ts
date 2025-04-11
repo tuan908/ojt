@@ -32,8 +32,9 @@ import {tryCatch} from '~/shared/utils';
  * @param code Student Code
  */
 export async function updateEventStatus(dto: IUpdateEventStatusDto) {
-  const data = await ApiClient.Spring.post(
-    `/students-events/${dto.event_id}`,
+  console.log(dto);
+  const data = await ApiClient.Spring.patch(
+    `/student-events/${dto.event_id}`,
     dto,
   );
   return data;
@@ -111,7 +112,7 @@ export async function deleteEventDetailById(
   id: number,
 ): Promise<IStudentDto['events'] | undefined> {
   const res = await ApiClient.Spring.delete<IStudentDto['events']>(
-    `/events/${id}`,
+    `/student-events/${id}`,
   );
   return res;
 }

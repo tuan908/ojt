@@ -1,6 +1,5 @@
 'use client';
 
-import * as stylex from '@stylexjs/stylex';
 import {PieChart} from 'echarts/charts';
 import {TitleComponent, TooltipComponent} from 'echarts/components';
 import {use as echartUse} from 'echarts/core';
@@ -72,7 +71,7 @@ const DoughnutChart = memo(
           formatter: '{b}: {c} ({d}%)',
         },
         title: {
-          text: data.text,
+          text: data?.text,
           left: 'center',
           top: 'center',
           textStyle: {
@@ -102,30 +101,29 @@ const DoughnutChart = memo(
             labelLine: {
               show: false,
             },
-            data: data._data,
+            data: data?._data,
             color: COLOR_PALETTE,
           },
         ],
       };
     }, [data]);
 
-    const reactEChartHeight = `calc(${height} + 2rem)`;
-
-    const styles = stylex.create({
-      chart: {
+    const chartStyle = useMemo(
+      () => ({
         width: '100%',
-        position: 'absolute',
-        height: reactEChartHeight,
+        position: 'absolute' as const,
+        height: `calc(${height} + 2rem)`,
         top: '-0.75rem',
-      },
-    });
+      }),
+      [height],
+    );
 
     return (
       <div
         className={cn('relative bg-white shadow-2xl rounded-2xl', className)}
         style={{width, height}}>
         <ReactEChart
-          {...stylex.props(styles.chart)}
+          style={chartStyle}
           option={chartOptions}
           notMerge={true}
           lazyUpdate={true}

@@ -1,14 +1,14 @@
 import {eq} from 'drizzle-orm';
 import {Hono} from 'hono';
-import {ErrorCodes} from '~/shared/constants';
+import {ErrorCodes, STRING_EMPTY} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
-import {tryCatch} from '~/shared/utils';
+import {nullsToUndefined, tryCatch} from '~/shared/utils';
 import {createErrorResponse, createSuccessResponse} from '../lib/api-response';
 import DbSchema from '../schema';
 import type {IHashtagDetailDto} from '../types';
 
 const trackingRouter = new Hono().get('/', async c => {
-  const {studentCode} = c.req.query();
+  const {student_code} = c.req.query();
 
   const db = c.get('db');
 
@@ -20,7 +20,7 @@ const trackingRouter = new Hono().get('/', async c => {
     })
     .from(DbSchema.Student)
     .innerJoin(DbSchema.User, eq(DbSchema.Student.userId, DbSchema.User.id))
-    .where(eq(DbSchema.Student.code, studentCode!));
+    .where(eq(DbSchema.Student.code, student_code!));
 
   if (!student) {
     return c.json(
@@ -48,7 +48,7 @@ const trackingRouter = new Hono().get('/', async c => {
       DbSchema.Hashtag,
       eq(DbSchema.StudentHashtag.hashtagId, DbSchema.Hashtag.id),
     )
-    .where(eq(DbSchema.Student.code, studentCode!))
+    .where(eq(DbSchema.Student.code, student_code!))
     .orderBy(DbSchema.Hashtag.name);
 
   const {data: rawRows, error} = await tryCatch(trackingPromise);
@@ -64,29 +64,35 @@ const trackingRouter = new Hono().get('/', async c => {
       : 0,
   }));
 
-  const response = createSuccessResponse({
-    id: student.id,
-    code: student.code,
-    name: student.fullname,
-    hashtags: {
-      doughnut: {
-        _data: rows.map(row => ({
-          name: row.hashtagName,
-          value: row.studentHashtagValue,
+  const response = createSuccessResponse(
+    nullsToUndefined({
+      id: student.id,
+      code: student.code,
+      name: student.fullname,
+      hashtags: {
+        doughnut: {
+          _data: rows.map(row => ({
+            name: row.hashtagName ?? STRING_EMPTY,
+            value: row.studentHashtagValue,
+          })),
+          text: rows
+            .reduce(
+              (sum, {studentHashtagValue}) => sum + studentHashtagValue,
+              0,
+            )
+            .toString(),
+        },
+        stacked: rawRows.map(row => ({
+          name: row.hashtagName ?? STRING_EMPTY,
+          data: Array.isArray(row.studentHashtagValue)
+            ? (row.studentHashtagValue as number[])
+            : [],
+          type: 'bar' as const,
+          stack: 'Hashtags',
         })),
-        text: rows.reduce(
-          (sum, {studentHashtagValue}) => sum + studentHashtagValue,
-          0,
-        ),
       },
-      stacked: rawRows.map(row => ({
-        name: row.hashtagName,
-        data: row.studentHashtagValue,
-        type: 'bar',
-        stack: 'Hashtags',
-      })),
-    },
-  });
+    }),
+  );
 
   return c.json(response);
 });

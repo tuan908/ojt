@@ -1,5 +1,4 @@
-import * as stylex from '@stylexjs/stylex';
-import {type ComponentProps} from 'react';
+import {useCallback, type ComponentProps} from 'react';
 
 type TextHashtagProps = ComponentProps<'span'> & {
   color: string;
@@ -13,12 +12,13 @@ export default function TextHashtag({
   px = 0, // ✅ Set default to avoid undefined
   ...otherProps
 }: TextHashtagProps) {
-  const styles = stylex.create({
-    span: (color, px) => ({color, padding: `0 ${px}rem`}),
-  });
+  const spanStyle = useCallback(
+    (color: string, px: number) => ({color, padding: `0 ${px}rem`}),
+    [color, px],
+  );
 
   return (
-    <span {...stylex.props(styles.span(color, px))} {...otherProps}>
+    <span style={spanStyle(color, px)} {...otherProps}>
       {children}
     </span>
   );

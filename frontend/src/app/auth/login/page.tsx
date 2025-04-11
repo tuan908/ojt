@@ -82,13 +82,15 @@ export default function Page() {
             name="username"
             placeholder={json.signIn.username}
             inputRef={inputRef}
-            className="w-full"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <PersonOutline />
-                </InputAdornment>
-              ),
+            fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonOutline />
+                  </InputAdornment>
+                ),
+              },
             }}
             autoComplete="off"
             disabled={isPending}
@@ -101,24 +103,26 @@ export default function Page() {
             name="password"
             placeholder={json.signIn.password}
             type={state.type}
-            className="w-full"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Https />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <button
-                    className="cursor-pointer"
-                    onClick={showOrHidePassword}
-                    onMouseDown={e => e.preventDefault()}
-                    onMouseUp={e => e.preventDefault()}>
-                    {state.show ? <VisibilityOff /> : <Visibility />}
-                  </button>
-                </InputAdornment>
-              ),
+            fullWidth
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Https />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <button
+                      className="cursor-pointer"
+                      onClick={showOrHidePassword}
+                      onMouseDown={e => e.preventDefault()}
+                      onMouseUp={e => e.preventDefault()}>
+                      {state.show ? <VisibilityOff /> : <Visibility />}
+                    </button>
+                  </InputAdornment>
+                ),
+              },
             }}
             autoComplete="off"
             disabled={isPending}

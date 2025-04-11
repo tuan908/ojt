@@ -49,7 +49,7 @@ export default async function Page({params}: IPageProps) {
   const grade = student.data?.grade;
 
   return (
-    <div className="flex flex-col w-full h-full m-auto">
+    <div className="flex flex-col w-full">
       {user.role === UserRole.Student && (
         <NewEventForm
           studentCode={code}
@@ -69,6 +69,7 @@ export default async function Page({params}: IPageProps) {
           grades={grades}
           events={events}
           role={user.role}
+          username={user.username}
         />
       </Container>
     </div>

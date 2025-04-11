@@ -639,7 +639,7 @@ export default function StudentEventDetail({
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogOverlay>
             <DialogHeader>
-              <DialogTitle>{json.dialog.confirmation}</DialogTitle>
+              <DialogTitle>{json.dialog.confirm}</DialogTitle>
             </DialogHeader>
             <DialogContent>
               <p className="text-red-400 text-xl text-wrap">

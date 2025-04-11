@@ -81,7 +81,7 @@ export default function BubbleMessage({
       <div className="w-28">
         <div className="w-full hidden md:flex flex-col gap-y-2 items-center ">
           <Avatar sx={{width: 56, height: 56, bgcolor: '#d87579'}} />
-          <span className="bg-[#00c853] text-white font-medium rounded-xl text-center px-2 py-1">
+          <span className="block w-28 bg-[#00c853] text-white font-medium rounded-xl text-center px-2 py-2 leading-none">
             {convertRole(comment.roleName)}
           </span>
         </div>

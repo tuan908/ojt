@@ -9,7 +9,7 @@ interface IContainerProps {
 
 export default function Container({
   children,
-  className = 'bg-white w-11/12 lg:w-24/25 h-[76dvh] rounded-lg shadow-2xl flex flex-col m-auto',
+  className = 'bg-white w-24/25 lg:h-[78dvh] rounded-lg shadow-2xl flex flex-col m-auto',
   gapY = false,
 }: IContainerProps) {
   const classes = useMemo(() => {

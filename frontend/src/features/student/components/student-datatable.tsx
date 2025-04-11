@@ -132,7 +132,6 @@ export default function StudentEventsDataTable({
     await updateEventStatus({
       event_id: statusDialog.id,
       student_code: code,
-      updated_by: username,
     });
 
     refetchDataRows();
@@ -150,17 +149,20 @@ export default function StudentEventsDataTable({
     ({id, status}: {id: number; status: EventStatus}) => {
       if (!role) return null;
 
+      const isConfirmed = status === EventStatus.CONFIRMED;
+
       if (role === UserRole.Counselor) {
         return (
           <Tooltip title={json.common.done}>
             <button
               onClick={() => setStatusDialog({open: true, id})}
-              disabled={status === EventStatus.CONFIRMED}>
+              disabled={isConfirmed}>
               <Done
-                size="1.5rem"
+                size="2.25rem"
                 stroke={
-                  status === EventStatus.CONFIRMED ? '#31bafd' : '#7d7e7e'
+                  status !== EventStatus.CONFIRMED ? '#31bafd' : '#7d7e7e'
                 }
+                strokeWidth="0.225rem"
               />
             </button>
           </Tooltip>
@@ -173,12 +175,13 @@ export default function StudentEventsDataTable({
             <Tooltip title={json.common.edit}>
               <button
                 className="cursor-pointer"
-                onClick={() => router.push(getHref(id, ScreenMode.EDIT))}>
+                onClick={() => router.push(getHref(id, ScreenMode.EDIT))}
+                disabled={isConfirmed}>
                 <Pencil
                   size="1.5rem"
                   className={cn(
                     'text-icon-default',
-                    status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
+                    isConfirmed && 'text-[#7d7e7e]',
                   )}
                 />
               </button>
@@ -186,13 +189,13 @@ export default function StudentEventsDataTable({
             <Tooltip title={json.common.delete}>
               <button
                 className="cursor-pointer"
-                disabled={status === EventStatus.CONFIRMED}
+                disabled={isConfirmed}
                 onClick={() => setDeleteDialog({open: true, id})}>
                 <Trash2
                   size="1.5rem"
                   className={cn(
                     'text-red-500',
-                    status === EventStatus.CONFIRMED && 'text-[#7d7e7e]',
+                    isConfirmed && 'text-[#7d7e7e]',
                   )}
                 />
               </button>
@@ -263,14 +266,21 @@ export default function StudentEventsDataTable({
     [getHref, renderActionButtons],
   );
 
-  return (
-    <>
+  const MemoizedTable = useCallback(
+    () => (
       <DataTable
         columns={columns}
         rows={rows}
         pagination={pagination}
         setPagination={setPagination}
       />
+    ),
+    [rows, pagination, setPagination, columns],
+  );
+
+  return (
+    <>
+      <MemoizedTable />
 
       <Dialog
         open={deleteDialog.open}
@@ -279,7 +289,6 @@ export default function StudentEventsDataTable({
         content={json.dialog.delete.content}
         onCancelClick={() => setDeleteDialog({open: false, id: -1})}
         onActionClick={handleDelete}
-        buttonColor="danger"
       />
 
       <Dialog
@@ -289,7 +298,6 @@ export default function StudentEventsDataTable({
         content={json.dialog.update.content}
         onCancelClick={() => setStatusDialog({open: false, id: -1})}
         onActionClick={handleDone}
-        buttonColor="info"
       />
     </>
   );

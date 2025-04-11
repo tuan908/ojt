@@ -1,4 +1,3 @@
-import * as stylex from '@stylexjs/stylex';
 import {CircleX as Clear} from 'lucide-react';
 import {useCallback, type ReactNode} from 'react';
 
@@ -18,22 +17,16 @@ export default function ColorHashtag({
   // ✅ Ensure `onRemove` is included in dependencies to avoid stale closure issues
   const handleClick = useCallback(() => onRemove(index), [onRemove, index]);
 
-  const styles = stylex.create({
-    span: color => ({color, fontWeight: 600}),
-    button: {
-      border: 'none',
-      outline: 'none',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-  });
+  const spanStyle = useCallback(
+    (color: string) => ({color, fontWeight: 600}),
+    [color],
+  );
 
   return (
     <div className="flex items-center justify-center leading-none bg-white shadow-md rounded-xl px-2 py-3 gap-x-2">
-      <span {...stylex.props(styles.span(color))}>{children}</span>
+      <span style={spanStyle(color)}>{children}</span>
       <button
-        {...stylex.props(styles.button)}
+        className="flex justify-center items-center border-none outline-none"
         onClick={handleClick}
         aria-label="Remove hashtag">
         <Clear size="1.25rem" />

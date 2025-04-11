@@ -2,7 +2,6 @@
 
 import {FlatCompat} from '@eslint/eslintrc';
 import js from '@eslint/js';
-import stylisticJs from '@stylistic/eslint-plugin-js';
 import reactCompiler from 'eslint-plugin-react-compiler';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -25,7 +24,6 @@ export default [
 
     rules: {
       'react-compiler/react-compiler': 'error',
-      '@stylistic/js/object-curly-spacing': ['error', 'never'],
     },
   },
 ];

@@ -223,7 +223,7 @@ export default function StudentDetail({
           rows={rows}
           code={code}
           role={role}
-          username={username || ''}
+          username={username}
           pagination={pagination}
           setPagination={setPagination}
           getQueryKey={getQueryKey}

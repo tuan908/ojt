@@ -126,3 +126,11 @@ export const ErrorCodes = {
 
 // Type-safe error code union type
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];
+
+export const MediaQueries = {
+  SM: `@media (width >= 40rem)`,
+  MD: `@media (width >= 48rem)`,
+  LG: `@media (width >= 64rem)`,
+  XL: `@media (width >= 80rem)`,
+  '2XL': `@media (width >= 96rem)`,
+} as const;
