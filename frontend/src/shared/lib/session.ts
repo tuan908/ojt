@@ -1,7 +1,8 @@
 import {SignJWT, jwtVerify, type JWTPayload} from 'jose';
 import {cookies} from 'next/headers';
 import {cache} from 'react';
-import {SESSION} from '~/shared/constants';
+import {ACCESS_TOKEN} from '~/shared/constants';
+import {env} from '../../../env.mjs';
 
 export interface ISession extends JWTPayload {
   code: string;
@@ -12,7 +13,7 @@ export interface ISession extends JWTPayload {
 }
 
 function getJwtSecretKey(): Uint8Array {
-  const sessionSecret = process.env.SESSION_SECRET;
+  const sessionSecret = env.JWT_TOKEN_SECRET;
 
   if (!sessionSecret) {
     throw new Error('JWT Secret key is not defined');
@@ -46,7 +47,7 @@ export async function encrypt(dto: ISession) {
 
 export const getSession = cache(async () => {
   const reqCookies = await cookies();
-  const session = reqCookies.get(SESSION)?.value;
+  const session = reqCookies.get(ACCESS_TOKEN)?.value;
 
   if (!session || !(await decrypt(session))) {
     return undefined;

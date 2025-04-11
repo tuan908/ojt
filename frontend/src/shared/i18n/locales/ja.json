@@ -1,7 +1,7 @@
 {
     "error": {
         "missingRequiredFields": "必要な項目が欠けています。",
-        "invalidCredentials": "ユーザー名またはパスワードが間違っています。",
+        "invalidCredentials": "無効な認証情報です。再度ご確認ください。",
         "usernameRequired": "ユーザー名は必須です。",
         "passwordRequired": "パスワードが必要。",
         "passwordMinLength": "パスワードは8文字以上である必要があります。",

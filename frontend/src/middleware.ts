@@ -1,13 +1,19 @@
 import {NextResponse, type NextRequest} from 'next/server';
-import {decrypt} from '~/shared/lib/session';
-import {Route, UserRole} from './shared/constants';
+import {decrypt, ISession} from '~/shared/lib/session';
+import {ACCESS_TOKEN, Route, UserRole} from './shared/constants';
+import {tryCatch} from './shared/utils';
 
 export const config = {
   matcher: ['/', '/home', '/students', '/students/:id*'],
 };
 
 export async function middleware(request: NextRequest) {
-  const session = request.cookies.get('session');
+  const accessTokenCookie = request.cookies.get(ACCESS_TOKEN);
+
+  if (!accessTokenCookie) {
+    return NextResponse.next();
+  }
+
   const currentPath = request.nextUrl.pathname;
   const isLoginPath = currentPath === Route.Login.toString();
 
@@ -16,7 +22,14 @@ export async function middleware(request: NextRequest) {
   loginUrl.searchParams.set('from', currentPath);
 
   // Try to get valid token if session exists
-  const tokenPayload = session ? await decrypt(session.value) : null;
+  let tokenPayload: ISession | undefined = undefined;
+
+  if (accessTokenCookie) {
+    const {data} = await tryCatch(decrypt(accessTokenCookie.value));
+    if (data) {
+      tokenPayload = data;
+    }
+  }
 
   // Handle login page separately
   if (isLoginPath) {
@@ -32,6 +45,11 @@ export async function middleware(request: NextRequest) {
 
   // Handle authenticated user navigation
   const {role, code} = tokenPayload;
+
+  if (role === UserRole.Student.toString() && !code) {
+    return NextResponse.redirect(loginUrl); // Or show error
+  }
+
   const isRootOrHome = ['/', '/home'].includes(currentPath);
   const redirectUrl =
     role === UserRole.Student.toString()

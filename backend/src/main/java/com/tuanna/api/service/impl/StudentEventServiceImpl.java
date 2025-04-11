@@ -1,22 +1,25 @@
 package com.tuanna.api.service.impl;
 
-import java.util.ResourceBundle;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.tuanna.api.constant.EventStatus;
+
 import com.tuanna.api.constant.ErrorCodes;
+import com.tuanna.api.constant.EventStatus;
+import com.tuanna.api.constant.MessageKey;
 import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.CreateDto;
-import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.CreateStudentEventDto;
+import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.dto.UpdateStudentEventDto;
-import com.tuanna.api.dto.response.UpdateEventStatusResponseDto;
+import com.tuanna.api.dto.response.UpdateResponseDto;
 import com.tuanna.api.entity.StudentEvent;
 import com.tuanna.api.repository.StudentEventRepository;
 import com.tuanna.api.repository.StudentRepository;
 import com.tuanna.api.service.CommonService;
+import com.tuanna.api.service.MessageService;
 import com.tuanna.api.service.StudentEventService;
+
 import jakarta.persistence.EntityManager;
 
 @Service
@@ -27,24 +30,25 @@ public class StudentEventServiceImpl implements StudentEventService {
   private final StudentRepository studentRepository;
   private final StudentEventRepository studentEventRepository;
   private final CommonService commonService;
-  private final ResourceBundle resourceBundle;
+  private final MessageService messageService;
 
   public StudentEventServiceImpl(
       EntityManager entityManager,
       StudentRepository studentRepository,
       StudentEventRepository studentEventRepository,
-      CommonService commonService) {
+      CommonService commonService,
+      MessageService messageService) {
     super();
     this.entityManager = entityManager;
     this.studentRepository = studentRepository;
     this.studentEventRepository = studentEventRepository;
     this.commonService = commonService;
-    this.resourceBundle = ResourceBundle.getBundle("messages");
+    this.messageService = messageService;
   }
 
   @Override
   @Transactional
-  public ApiResponse<UpdateEventStatusResponseDto> changeStatus(UpdateEventStatusDto dto) {
+  public ApiResponse<UpdateResponseDto> changeStatus(UpdateEventStatusDto dto) {
     var selectQl = new StringBuffer();
     selectQl.append("select                                   ");
     selectQl.append("  se.id                                  ");
@@ -60,8 +64,8 @@ public class StudentEventServiceImpl implements StudentEventService {
 
     if (queryResult == null)
       return ApiResponse
-          .error(ErrorCodes.NOT_FOUND.getValue(), this.resourceBundle.getString("error.notFound"),
-              null);
+          .error(ErrorCodes.NOT_FOUND.getValue(),
+              this.messageService.get(MessageKey.ERROR_NOT_FOUND, null), null);
 
     var sql = new StringBuffer();
     sql.append("update                                  ");
@@ -77,7 +81,7 @@ public class StudentEventServiceImpl implements StudentEventService {
 
     query.executeUpdate();
 
-    return ApiResponse.success(new UpdateEventStatusResponseDto(queryResult), null);
+    return ApiResponse.success(new UpdateResponseDto(dto.event_id()), null);
   }
 
   @Override
@@ -96,12 +100,11 @@ public class StudentEventServiceImpl implements StudentEventService {
     sql.append("select                                  ");
     sql.append("  e                                     ");
     sql.append("from                                    ");
-    sql.append("  com.tuanna.api.entity.StudentEvent e   ");
+    sql.append("  com.tuanna.api.entity.StudentEvent e  ");
     sql.append("where                                   ");
     sql.append("  e.student.code = :code                ");
-    sql.append("  and e.student.grade.name = :gradeName ");
-    sql.append("  and e.event.name = :eventName        ");
-    sql.append("  and e.isDeleted = false               ");
+    sql.append("  and e.grade.name = :gradeName         ");
+    sql.append("  and e.event.name = :eventName         ");
 
     var query = this.entityManager.createQuery(sql.toString(), StudentEvent.class);
     query.setParameter("code", student.getCode());
@@ -159,7 +162,7 @@ public class StudentEventServiceImpl implements StudentEventService {
 
   @Override
   @Transactional
-  public ApiResponse<Object> update(UpdateStudentEventDto dto) {
+  public ApiResponse<?> update(UpdateStudentEventDto dto) {
     var student = this.studentRepository.findByUsername(dto.getUsername()).orElse(null);
 
     var detail = this.commonService.findEventByName(dto.getData().eventName());
@@ -176,17 +179,20 @@ public class StudentEventServiceImpl implements StudentEventService {
     sql.append("  com.tuanna.api.entity.StudentEvent e  ");
     sql.append("where                                   ");
     sql.append("  e.student.code = :code                ");
-    sql.append("  and e.student.grade.name = :gradeName ");
+    sql.append("  and e.grade.name = :gradeName ");
     sql.append("  and e.event.name = :eventName        ");
 
     var query = this.entityManager.createQuery(sql.toString(), StudentEvent.class);
     query.setParameter("code", student.getCode());
-    query.setParameter("gradeName", student.getGrade().getName());
+    query.setParameter("gradeName", dto.getGradeName());
     query.setParameter("eventName", detail.getName());
 
-    var result = query.getResultStream().findFirst();
+    var event = query.getResultStream().findFirst().orElse(null);
 
-    var event = result.get();
+    if (event == null)
+      return ApiResponse
+          .error(ErrorCodes.NOT_FOUND.getValue(),
+              this.messageService.get(MessageKey.ERROR_NOT_FOUND, null), null);
     var eventData = event.getData();
 
     eventData.setEventName(dto.getData().eventName());
@@ -200,6 +206,6 @@ public class StudentEventServiceImpl implements StudentEventService {
 
     this.entityManager.merge(event);
     this.entityManager.flush();
-    return ApiResponse.success(null, null);
+    return ApiResponse.success(new UpdateResponseDto(event.getId()), null);
   }
 }

@@ -39,8 +39,8 @@ public class StudentController {
     List<String> _hashtags = !StringUtils.hasText(hashtags) ? Collections.emptyList()
         : Arrays.asList(hashtags.split(","));
     var request = new StudentEventRequestDto(name, grade, event, _hashtags, page, pageSize);
-    var data = this.studentService.findAll(request);
-    return ResponseEntity.ok(data);
+    var responseBody = this.studentService.findAll(request);
+    return ResponseEntity.ok(responseBody);
   }
 
   @GetMapping("/{studentCode}")
@@ -52,8 +52,8 @@ public class StudentController {
       @RequestParam(required = false, defaultValue = "1") int page,
       @RequestParam(required = false, defaultValue = "10", value = "page_size") int pageSize) {
     var request = new StudentEventsDto(studentCode, grade, eventName, status, page, pageSize);
-    var data = this.studentService.findByStudentCode(request);
-    return ResponseEntity.ok(data);
+    var responseBody = this.studentService.findByStudentCode(request);
+    return ResponseEntity.ok(responseBody);
   }
 
 }

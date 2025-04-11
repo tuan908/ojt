@@ -1,13 +1,14 @@
 'use server';
 
+import {setCookie} from 'cookies-next/server';
 import {isRedirectError} from 'next/dist/client/components/redirect-error';
 import {cookies} from 'next/headers';
 import {redirect} from 'next/navigation';
 import type {ILoginResponseDto} from '~/features/auth/types';
-import {Route, SESSION, UserRole} from '~/shared/constants';
+import {ACCESS_TOKEN, Route, UserRole} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
 import ApiClient from '~/shared/lib/api-client';
-import {encrypt} from '~/shared/lib/session';
+import {decrypt} from '~/shared/lib/session';
 import {SignInSchema} from '~/shared/lib/validations';
 import type {IApiResponse} from '~/shared/types';
 import {tryCatch} from '~/shared/utils';
@@ -30,7 +31,7 @@ export async function signIn(_previousState: any, formData: FormData) {
     const parse = SignInSchema.safeParse({username, password});
     if (!parse.success) {
       return {
-        error: json.error.missingRequiredFields,
+        message: json.error.missingRequiredFields,
         username,
         password,
       };
@@ -44,57 +45,41 @@ export async function signIn(_previousState: any, formData: FormData) {
       ),
     );
 
-    if (!response || !response.data) {
+    if (!response?.success) {
       return {
-        error: json.error.invalidCredentials,
+        message: json.error.invalidCredentials,
         username,
         password,
       };
     }
 
     // Extract user data and JWT token
-    const {accessToken: token, ...userProps} = response.data;
-
-    if (!userProps.username || !token) {
-      return {
-        error: json.error.invalidResponse,
-        username,
-        password,
-      };
-    }
+    const {accessToken} = response.data!;
 
     // Set HttpOnly Cookie (Prevents XSS Attacks)
+    await setCookie(ACCESS_TOKEN, accessToken, {
+      cookies,
+    });
 
-    const {data: headers} = await tryCatch(
-      Promise.all([cookies(), encrypt(userProps)]),
-    );
+    const session = await decrypt(accessToken);
 
-    if (headers) {
-      const [reqCookies, session] = headers;
+    // Determine Redirect Path Based on Role
 
-      reqCookies.set(SESSION, session, {
-        path: '/',
-        secure: process.env.NODE_ENV === 'production', // Secure in production
-      });
+    redirectPath =
+      session?.role !== UserRole.Student
+        ? '/students'
+        : `/students/${session.code}`;
 
-      // Determine Redirect Path Based on Role
-
-      redirectPath =
-        userProps.role !== UserRole.Student
-          ? '/students'
-          : `/students/${userProps.code}`;
-
-      // Only redirect if we have a valid path
-      if (redirectPath) {
-        redirect(redirectPath);
-      }
+    // Only redirect if we have a valid path
+    if (redirectPath) {
+      redirect(redirectPath);
     }
 
     // If we get here without redirecting, return success
     return {
       success: true,
       error: false,
-      message: null,
+      message: '',
     };
   } catch (error) {
     if (isRedirectError(error)) throw error;
@@ -114,6 +99,6 @@ export async function signIn(_previousState: any, formData: FormData) {
  */
 export async function logOut() {
   const reqCookies = await cookies();
-  reqCookies.delete(SESSION);
+  reqCookies.delete(ACCESS_TOKEN);
   redirect(Route.Login.toString());
 }

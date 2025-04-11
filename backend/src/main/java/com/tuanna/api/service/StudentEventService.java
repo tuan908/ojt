@@ -6,7 +6,7 @@ import com.tuanna.api.dto.StudentEventDto;
 import com.tuanna.api.dto.CreateStudentEventDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.dto.UpdateStudentEventDto;
-import com.tuanna.api.dto.response.UpdateEventStatusResponseDto;
+import com.tuanna.api.dto.response.UpdateResponseDto;
 
 public interface StudentEventService {
 
@@ -14,10 +14,10 @@ public interface StudentEventService {
 
   ApiResponse<CreateDto> create(CreateStudentEventDto dto);
 
-  ApiResponse<Object> update(UpdateStudentEventDto dto);
+  ApiResponse<?> update(UpdateStudentEventDto dto);
 
   ApiResponse<Object> delete(Long id);
 
-  ApiResponse<UpdateEventStatusResponseDto> changeStatus(UpdateEventStatusDto dto);
+  ApiResponse<UpdateResponseDto> changeStatus(UpdateEventStatusDto dto);
 
 }

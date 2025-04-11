@@ -1,18 +1,21 @@
 package com.tuanna.api.entity;
 
 import java.io.Serial;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.hibernate.annotations.DialectOverride.SQLRestriction;
 import org.hibernate.annotations.SQLDelete;
 
 import com.tuanna.api.dto.EventDto;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,8 +51,9 @@ public class Event extends BaseEntity {
   @Column(columnDefinition = "text")
   private String description;
 
-  @OneToOne(mappedBy = "event")
-  private StudentEvent studentEvent;
+  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Builder.Default
+  private List<StudentEvent> studentEvents = new LinkedList<>();
 
   public EventDto toDto() {
     var dto = new EventDto(this.getId(), this.getName());

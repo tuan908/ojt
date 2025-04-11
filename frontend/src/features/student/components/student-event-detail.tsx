@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import {useQuery, useQueryClient} from '@tanstack/react-query';
 import {X as Close, Send} from 'lucide-react';
+import {useRouter} from 'next/navigation';
 import {
   startTransition,
   useCallback,
@@ -77,6 +78,7 @@ export default function StudentEventDetail({
   studentCode,
   session,
 }: IStudentEventDetailProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const queryKey = useMemo(
     () => [QUERY_KEY.EVENT, studentCode, studentEventId],
@@ -90,6 +92,7 @@ export default function StudentEventDetail({
         studentCode,
         studentEventId: String(studentEventId),
       });
+      console.log(response);
 
       return response!;
     },
@@ -239,10 +242,11 @@ export default function StudentEventDetail({
         username: session?.username!,
         data: studentEventData,
         studentCode: session?.code!,
-        gradeName: session?.grade!,
+        gradeName: studentEvent!?.grade!,
       });
     }
     startTransition(async () => {
+      router.back();
       const updatedValues = await getStudentEvent({
         studentCode,
         studentEventId: String(studentEventId),

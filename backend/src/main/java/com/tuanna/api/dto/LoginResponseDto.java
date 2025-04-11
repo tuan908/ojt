@@ -1,12 +1,5 @@
 package com.tuanna.api.dto;
 
-public record LoginResponseDto(
-    Long id,
-    String name,
-    String username,
-    String role,
-    String grade,
-    String code,
-    String accessToken) {
+public record LoginResponseDto(String accessToken) {
 
 }

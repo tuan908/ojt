@@ -14,7 +14,6 @@ import {cn} from '~/shared/utils';
 type LoginFormState = {
   username: string;
   password: string;
-  error?: string;
   success: boolean;
   message?: string;
   type: 'text' | 'password';
@@ -45,7 +44,10 @@ export default function Page() {
     form.append('username', state.username);
     form.append('password', state.password);
 
-    await signIn(null, form);
+    const result = await signIn(null, form);
+    console.log(result);
+    if (result?.message) setState(x => ({...x, message: result.message!}));
+    setIsPending(false);
   }
 
   function showOrHidePassword(e: SyntheticEvent<HTMLButtonElement>) {
@@ -58,10 +60,10 @@ export default function Page() {
   }
 
   useEffect(() => {
-    if (state.error && inputRef.current) {
+    if (state?.message && inputRef.current) {
       inputRef.current?.focus();
     }
-  }, [state.error]);
+  }, [state?.message]);
 
   return (
     <div
@@ -76,6 +78,7 @@ export default function Page() {
         <form
           className="w-10/12 md:w-4/5 m-auto bg-white flex flex-col gap-y-4 py-4 md:py-12"
           ref={formRef}
+          method="POST"
           onSubmit={handleSubmit}>
           <TextField
             variant="standard"
@@ -157,9 +160,9 @@ export default function Page() {
           <Link href="/forgot-password" className="m-auto pb-2 font-medium">
             {json.signIn.forgotPassword}
           </Link>
-          {state.error ? (
+          {state.message ? (
             <span className="text-red-500 m-auto text-[0.875rem] leading-none md:whitespace-nowrap">
-              {state.error}
+              {state.message}
             </span>
           ) : null}
         </form>

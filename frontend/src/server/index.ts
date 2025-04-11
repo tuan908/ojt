@@ -1,4 +1,5 @@
 import {Hono} from 'hono';
+import {env} from '../../env.mjs';
 import {MiddlewareFactory} from './middlewares';
 import commentRouter from './routers/comment';
 import eventRouter from './routers/event';
@@ -11,12 +12,10 @@ import type {IEnvironment} from './types';
 
 const app = new Hono<IEnvironment>().basePath('/api/hono/v1');
 
-const dbMiddleware = MiddlewareFactory.createDbMiddleware(
-  process.env.DATABASE_URL,
-);
+const dbMiddleware = MiddlewareFactory.createDbMiddleware(env.DATABASE_URL);
 const cacheMiddleware = MiddlewareFactory.createCacheMiddleware({
-  REDIS_URL: process.env.REDIS_URL,
-  REDIS_TOKEN: process.env.REDIS_TOKEN,
+  REDIS_URL: env.REDIS_URL,
+  REDIS_TOKEN: env.REDIS_TOKEN,
   ttl: 300, // 5 minutes
 });
 

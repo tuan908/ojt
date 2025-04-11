@@ -1,11 +1,10 @@
 package com.tuanna.api.service.impl;
 
-import java.util.ResourceBundle;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.tuanna.api.constant.MessageKey;
 import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.LoginDto;
 import com.tuanna.api.dto.LoginResponseDto;
@@ -16,6 +15,7 @@ import com.tuanna.api.repository.UserRepository;
 import com.tuanna.api.security.CustomUserDetails;
 import com.tuanna.api.security.JwtService;
 import com.tuanna.api.service.AuthService;
+import com.tuanna.api.service.MessageService;
 
 import jakarta.persistence.EntityManager;
 
@@ -31,25 +31,26 @@ public class AuthServiceImpl implements AuthService {
 
   private final JwtService jwtService;
 
-  private final ResourceBundle messagesBundle;
+  private final MessageService messageService;
 
   public AuthServiceImpl(
       StudentRepository studentRepository,
       UserRepository userRepository,
       PasswordEncoder passwordEncoder,
       EntityManager entityManager,
-      JwtService jwtService) {
+      JwtService jwtService,
+      MessageService messageService) {
     super();
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.entityManager = entityManager;
     this.jwtService = jwtService;
-    messagesBundle = ResourceBundle.getBundle("messages");
+    this.messageService = messageService;
   }
 
   @Override
   public ApiResponse<LoginResponseDto> login(LoginDto loginDto) throws BusinessException {
-    var msg = messagesBundle.getString("error.invalidCredentials");
+    var msg = this.messageService.get(MessageKey.ERROR_INVALID_CREDENTIALS, null);
 
     var user = userRepository.findByUsername(loginDto.username()).orElse(null);
 
@@ -62,20 +63,10 @@ public class AuthServiceImpl implements AuthService {
     var q = this.entityManager.createQuery(qlString, Student.class);
     q.setParameter("id", user.getId());
 
-    Student student = q.getResultStream().findFirst().orElse(null);
-
     // Generate JWT token
-    String token = jwtService.generateToken(new CustomUserDetails(user));
+    String accessToken = jwtService.generateToken(new CustomUserDetails(user));
 
-    return ApiResponse
-        .success(new LoginResponseDto(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            user.getUserRole().getValue(),
-            (student != null) ? student.getGrade().getName() : null,
-            (student != null) ? student.getCode() : null,
-            token), null);
+    return ApiResponse.success(new LoginResponseDto(accessToken), null);
   }
 
   @Override

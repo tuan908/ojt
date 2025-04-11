@@ -90,7 +90,7 @@ export const MEDIA_QUERY = {
   '2XL': '(min-width:1536px)',
 } as const;
 
-export const SESSION = 'session';
+export const ACCESS_TOKEN = 'access_token';
 
 export const QUERY_KEY = {
   STUDENTS: 'Students',

@@ -6,19 +6,33 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.tuanna.api.constant.Constant;
+import com.tuanna.api.filter.JwtAuthenticationFilter;
+import com.tuanna.api.security.JwtAuthenticationEntryPoint;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+  private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+  public SecurityConfig(
+      JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+      JwtAuthenticationFilter jwtAuthenticationFilter) {
+    this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+  }
+
   @Bean
   SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
-    final String pattern = Constant.API_BASE_PATH + "/**";
+    final String pattern = Constant.API_BASE_PATH + "/auth/**";
     http
         .csrf(CsrfConfigurer::disable)
         .cors(Customizer.withDefaults())
@@ -26,7 +40,12 @@ public class SecurityConfig {
             .requestMatchers(pattern)
             .permitAll()
             .anyRequest()
-            .authenticated());
+            .authenticated())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(
+            exceptions -> exceptions.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

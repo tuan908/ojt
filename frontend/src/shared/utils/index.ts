@@ -84,7 +84,7 @@ export function removeUndefined<T extends object>(
 }
 
 export function getUrl() {
-  if (process.env.VERCEL_ENV) {
+  if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
   return 'http://localhost:3000';

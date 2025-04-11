@@ -1,25 +1,25 @@
 package com.tuanna.api.security;
 
 import java.text.MessageFormat;
-import java.util.ResourceBundle;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.tuanna.api.constant.MessageKey;
 import com.tuanna.api.repository.UserRepository;
+import com.tuanna.api.service.MessageService;
 
 @Service("customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
-  private final ResourceBundle messageBundle;
-
   private final UserRepository userRepository;
+  private final MessageService messageService;
 
-  public CustomUserDetailsService(UserRepository userRepository) {
+  public CustomUserDetailsService(UserRepository userRepository, MessageService messageService) {
     this.userRepository = userRepository;
-    messageBundle = ResourceBundle.getBundle("messages");
+    this.messageService = messageService;
   }
 
   @Override
@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     var user = this.userRepository.findByUsername(username).orElse(null);
     if (user == null) {
       throw new UsernameNotFoundException(
-          MessageFormat.format(messageBundle.getString("message.error.notFound"), username));
+          MessageFormat.format(messageService.get(MessageKey.ERROR_NOT_FOUND, null), username));
     }
 
     return new CustomUserDetails(user);

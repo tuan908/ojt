@@ -4,6 +4,7 @@ import {ICreateCommentDto} from '~/features/comment/types';
 import {ErrorCodes} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
 import {nullsToUndefined, tryCatch} from '~/shared/utils';
+import {env} from '../../../env.mjs';
 import {createErrorResponse, createSuccessResponse} from '../lib/api-response';
 import {invalidateCache} from '../lib/cache';
 import DbSchema from '../schema';
@@ -65,7 +66,7 @@ const commentRouter = new Hono()
         userId: user.id,
       })
       .returning();
-    await invalidateCache(process.env.REDIS_URL!, process.env.REDIS_TOKEN!);
+    await invalidateCache(env.REDIS_URL!, env.REDIS_TOKEN!);
 
     return c.json(createSuccessResponse({id: newComment!?.id}));
   })
@@ -99,7 +100,7 @@ const commentRouter = new Hono()
       throw error;
     }
 
-    await invalidateCache(process.env.REDIS_URL!, process.env.REDIS_TOKEN!);
+    await invalidateCache(env.REDIS_URL!, env.REDIS_TOKEN!);
 
     return c.json(
       createSuccessResponse<{id: number}>({
@@ -144,7 +145,7 @@ const commentRouter = new Hono()
       .where(eq(DbSchema.Comment.id, commentId))
       .returning();
 
-    await invalidateCache(process.env.REDIS_URL!, process.env.REDIS_TOKEN!);
+    await invalidateCache(env.REDIS_URL!, env.REDIS_TOKEN!);
 
     return c.json(createSuccessResponse({id: commentId}, {code: 200}));
   });

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tuanna.api.constant.Constant;
-import com.tuanna.api.dto.ApiResponse;
 import com.tuanna.api.dto.CreateStudentEventDto;
 import com.tuanna.api.dto.UpdateEventStatusDto;
 import com.tuanna.api.dto.UpdateStudentEventDto;
@@ -34,8 +33,8 @@ public class StudentEventController {
   @GetMapping
   public ResponseEntity<?> findByStudentCodeEventId(@RequestParam String studentCode,
       @RequestParam Long studentEventId) {
-    var result = this.studentEventService.findById(studentEventId);
-    return ResponseEntity.ok(result);
+    var responseBody = this.studentEventService.findById(studentEventId);
+    return ResponseEntity.ok(responseBody);
   }
 
   @PostMapping
@@ -48,20 +47,20 @@ public class StudentEventController {
   @PatchMapping(path = "/{studentEventId}")
   public ResponseEntity<?> updateStatus(@PathVariable Long studentEventId,
       @RequestBody UpdateEventStatusDto dto) {
-    var result = this.studentEventService.changeStatus(dto);
-    return ResponseEntity.ok().body(result);
+    var responseBody = this.studentEventService.changeStatus(dto);
+    return ResponseEntity.ok().body(responseBody);
   }
 
   @PutMapping(path = "/{studentEventId}")
   public ResponseEntity<?> update(@PathVariable Long studentEventId,
       @RequestBody UpdateStudentEventDto dto) {
-    var data = this.studentEventService.update(dto);
-    return ResponseEntity.ok().body(ApiResponse.success(null, null));
+    var responseBody = this.studentEventService.update(dto);
+    return ResponseEntity.ok().body(responseBody);
   }
-  
+
   @DeleteMapping(path = "/{studentEventId}")
   public ResponseEntity<?> delete(@PathVariable Long studentEventId) {
-    var data = this.studentEventService.delete(studentEventId);
-    return ResponseEntity.ok().body(data);
+    var responseBody = this.studentEventService.delete(studentEventId);
+    return ResponseEntity.ok().body(responseBody);
   }
 }

@@ -8,7 +8,6 @@ import json from '~/shared/i18n/locales/ja.json';
 import ReactQueryProvider from '~/shared/providers/react-query';
 import theme from '~/shared/styles/theme';
 import {cn} from '~/shared/utils';
-import ReduxProvider from '../shared/providers/redux';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -33,14 +32,12 @@ export default function RootLayout({children}: PropsWithChildren) {
           notoSansJp.className,
         )}>
         <ReactQueryProvider>
-          <ReduxProvider>
-            <AppRouterCacheProvider
-              options={{enableCssLayer: true, speedy: true}}>
-              <ThemeProvider theme={theme}>
-                <main>{children}</main>
-              </ThemeProvider>
-            </AppRouterCacheProvider>
-          </ReduxProvider>
+          <AppRouterCacheProvider
+            options={{enableCssLayer: true, speedy: true}}>
+            <ThemeProvider theme={theme}>
+              <main>{children}</main>
+            </ThemeProvider>
+          </AppRouterCacheProvider>
         </ReactQueryProvider>
         <Toaster />
       </body>

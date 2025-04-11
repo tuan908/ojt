@@ -30,7 +30,8 @@ public class UserController {
   @PostMapping()
   public ResponseEntity<ApiResponse<UserDto>> getOneBy(@RequestBody UserDto request) {
     var body = this.userService.findByUsername(request);
-    return ResponseEntity.ok(ApiResponse.success(body, null));
+    var responseBody = ApiResponse.success(body, null);
+    return ResponseEntity.ok(responseBody);
   }
 
   @GetMapping("/{username}/async")

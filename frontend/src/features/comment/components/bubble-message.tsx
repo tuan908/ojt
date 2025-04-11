@@ -4,8 +4,8 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import {useQueryClient} from '@tanstack/react-query';
 import {type RefObject, useCallback, useState} from 'react';
-import {deleteComment} from '~/app/actions/event';
 import json from '~/shared/i18n/locales/ja.json';
+import {client} from '~/shared/lib/hono-client';
 import {cn, convertRole} from '~/shared/utils';
 import type {ICommentDto} from '../types';
 
@@ -37,10 +37,17 @@ export default function BubbleMessage({
   const queryClient = useQueryClient();
 
   const handleDelete = useCallback(async () => {
-    await deleteComment({
-      commentId: comment.id!,
-      studentEventId,
-    });
+    await client.comments[':id'].$delete(
+      {param: {id: String(comment.id!)}},
+      {
+        init: {
+          body: JSON.stringify({
+            studentEventId: studentEventId,
+            commentId: comment.id!,
+          }),
+        },
+      },
+    );
 
     queryClient.invalidateQueries({
       queryKey,

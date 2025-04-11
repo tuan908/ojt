@@ -1,7 +1,7 @@
 package com.tuanna.api.security;
 
 import java.util.Date;
-import java.util.Map;
+import java.util.HashMap;
 
 import javax.crypto.SecretKey;
 
@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.tuanna.api.entity.Student;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.persistence.EntityManager;
 
 @Component
 public class JwtService {
@@ -24,16 +27,19 @@ public class JwtService {
   private final SecretKey refreshTokenKey;
   private final long accessTokenExpiration;
   private final long refreshTokenExpiration;
+  private final EntityManager entityManager;
 
   public JwtService(
       @Value("${jwt.token.secret}") String accessTokenSecret,
       @Value("${jwt.token.expiration}") long accessTokenExpiration,
       @Value("${jwt.refresh.secret}") String refreshTokenSecret,
-      @Value("${jwt.refresh.expiration}") long refreshTokenExpiration) {
+      @Value("${jwt.refresh.expiration}") long refreshTokenExpiration,
+      EntityManager entityManager) {
     this.accessTokenKey = Keys.hmacShaKeyFor(accessTokenSecret.getBytes());
     this.refreshTokenKey = Keys.hmacShaKeyFor(refreshTokenSecret.getBytes());
     this.accessTokenExpiration = accessTokenExpiration;
     this.refreshTokenExpiration = refreshTokenExpiration;
+    this.entityManager = entityManager;
   }
 
   public String generateToken(CustomUserDetails userDetails) {
@@ -49,9 +55,27 @@ public class JwtService {
     var now = new Date();
     var expiryDate = new Date(now.getTime() + expirationTime);
 
-    var claims = Map
-        .of("name", userDetails.getUser().getName(), "role",
-            userDetails.getUser().getUserRole().getValue());
+    var claims = new HashMap<String, String>();
+    claims.put("name", userDetails.getUser().getName());
+    claims.put("role", userDetails.getUser().getUserRole().getValue());
+    claims.put("username", userDetails.getUser().getUsername());
+
+    var sb = new StringBuffer();
+    sb.append("select                           ");
+    sb.append(" s                               ");
+    sb.append("from                             ");
+    sb.append(" com.tuanna.api.entity.Student s ");
+    sb.append("where                            ");
+    sb.append("s.user.username = :username      ");
+
+    var studentQuery = this.entityManager.createQuery(sb.toString(), Student.class);
+    studentQuery.setParameter("username", userDetails.getUsername());
+    var student = studentQuery.getResultStream().findFirst().orElse(null);
+
+    if (student != null) {
+      claims.put("grade", student.getGrade().getName());
+      claims.put("code", student.getCode());
+    }
 
     return Jwts
         .builder()

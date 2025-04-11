@@ -1,10 +1,6 @@
 'use server';
 
 import {cache} from 'react';
-import type {
-  ICreateCommentDto,
-  IDeleteCommentDto,
-} from '~/features/comment/types';
 import type {IUpdateEventStatusDto} from '~/features/student-regist/types';
 import type {
   ICreateStudentEventDto,
@@ -79,7 +75,7 @@ export async function editStudentEvent(dto: IEditStudentEventDto) {
   if (!parseResult.success) {
     throw new Error('Internal Server Error');
   } else {
-    await ApiClient.Spring.put(
+    await ApiClient.Spring.put<IApiResponse>(
       `/student-events/${parseResult.data.id}`,
       parseResult.data,
     );
@@ -129,24 +125,4 @@ export async function addEvent(req: ICreateStudentEventDto) {
   return {
     code: 'ng',
   };
-}
-
-export async function deleteComment({
-  studentEventId,
-  commentId,
-}: IDeleteCommentDto) {
-  await tryCatch(
-    ApiClient.Hono.delete(`/comments/${commentId}`, {
-      body: JSON.stringify({studentEventId, commentId}),
-    }),
-  );
-}
-
-export async function addComment(req: ICreateCommentDto) {
-  await tryCatch<IApiResponse>(
-    ApiClient.Spring.post(
-      `/student-events/${req.studentEventId}/comments`,
-      req,
-    ),
-  );
 }
