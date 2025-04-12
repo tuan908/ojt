@@ -1,20 +1,17 @@
 'use client';
 
-import Clear from '@mui/icons-material/Clear';
+import {Input, Tooltip} from '@mui/material';
 import {
-  Autocomplete,
-  Input,
-  TextField,
-  Tooltip,
-  UseAutocompleteProps,
-  type AutocompleteInputChangeReason,
-} from '@mui/material';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {PaginationState} from '@tanstack/react-table';
 import {Search} from 'lucide-react';
 import {useState, type SyntheticEvent} from 'react';
 import {getStudents} from '~/app/actions/students';
 import ColorHashtag from '~/features/students/components/color-hashtag';
+import {Autocomplete} from '~/shared/components/legacy/autocomplete';
 import LegacySelect from '~/shared/components/legacy/select';
 import {QUERY_KEY, STRING_EMPTY} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
@@ -37,13 +34,6 @@ interface ISkill {
   color: string;
 }
 
-type TAutocompleteChangeHandler = UseAutocompleteProps<
-  {id: number; label: string},
-  false,
-  false,
-  true
->['onChange'];
-
 const INIT_PAGINATION = {
   pageIndex: 0,
   pageSize: 10,
@@ -56,7 +46,7 @@ export default function StudentsDetail({
 }: IStudentsDetailProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [skills, setSkills] = useState<ISkill[]>([]);
+  const [selectedHashtags, setSelectedHashtags] = useState<ISkill[]>([]);
   const [inputValue, setInputValue] = useState(STRING_EMPTY);
   const [searchCondition, setSearchCondition] = useState<IStudentDto>({
     event: STRING_EMPTY,
@@ -64,57 +54,6 @@ export default function StudentsDetail({
   });
   const [pagination, setPagination] =
     useState<PaginationState>(INIT_PAGINATION);
-
-  function handleInputChange(
-    event: SyntheticEvent,
-    input: string | {label: string; value: string} | null,
-    reason: AutocompleteInputChangeReason,
-  ): void {
-    event?.preventDefault();
-
-    if (input === null) return;
-
-    let content = '';
-
-    if (typeof input === 'string' && input.trim().startsWith('#') && !open) {
-      setOpen(true);
-      content = input.trim();
-    } else if (typeof input === 'object') {
-      content = input.value;
-    }
-
-    setInputValue(content);
-
-    if (reason === 'reset') {
-      setInputValue(STRING_EMPTY);
-      setOpen(false);
-    }
-  }
-
-  const handleChange: TAutocompleteChangeHandler = (event, input, reason) => {
-    event?.preventDefault();
-    if (
-      typeof input === 'string' &&
-      !skills.find(x => x.label === input.trim())
-    ) {
-      const hashtag = hashtags!?.find(x => x.name === input);
-      setSkills([...skills, {label: hashtag?.name!, color: hashtag?.color!}]);
-    }
-
-    if (
-      typeof input === 'object' &&
-      input &&
-      !skills.find(x => x.label === input.label)
-    ) {
-      const hashtag = hashtags!?.find(x => x.id === input.id);
-      setSkills([...skills, {label: hashtag?.name!, color: hashtag?.color!}]);
-    }
-
-    if (reason === 'selectOption' && open) {
-      setOpen(false);
-      if (inputValue !== STRING_EMPTY) setInputValue(STRING_EMPTY);
-    }
-  };
 
   const {data: rows} = useQuery({
     queryKey: [QUERY_KEY.STUDENTS, pagination.pageIndex, pagination.pageSize],
@@ -125,9 +64,8 @@ export default function StudentsDetail({
       });
       return queryResult?.data ?? [];
     },
+    placeholderData: keepPreviousData,
   });
-
-  console.log(rows);
 
   async function handleSearch(event: SyntheticEvent) {
     event?.preventDefault();
@@ -150,8 +88,8 @@ export default function StudentsDetail({
       request.event = searchCondition.event;
     }
 
-    if (searchCondition.hashtags) {
-      request.hashtags = searchCondition.hashtags;
+    if (selectedHashtags.length > 0) {
+      request.hashtags = selectedHashtags.map(tag => tag.label).join(',');
     }
     const searchResult = await getStudents({
       ...request,
@@ -166,7 +104,9 @@ export default function StudentsDetail({
   }
 
   function handleRemoveHashtag(_index: number): void {
-    setSkills(skills.filter((_, index) => index !== _index));
+    setSelectedHashtags(
+      selectedHashtags.filter((_, index) => index !== _index),
+    );
   }
 
   return (
@@ -216,41 +156,13 @@ export default function StudentsDetail({
 
         {/* ハッシュタグ */}
         <Autocomplete
-          sx={{
-            width: 224,
-            '& .MuiAutocomplete-inputRoot': {
-              flexWrap: 'nowrap',
-              bgcolor: '#ffffff',
-              paddingX: 1,
-            },
-          }}
-          options={hashtags!?.map(x => ({
-            id: x.id,
-            label: x.name,
-          }))}
-          renderInput={params => (
-            <TextField
-              {...params}
-              placeholder={json.label.hashtag}
-              variant="standard"
-            />
-          )}
-          onInputChange={handleInputChange}
-          onChange={handleChange}
+          hashtags={hashtags}
           open={open}
+          setOpen={setOpen}
           inputValue={inputValue}
-          slotProps={{
-            chip: {
-              sx: {
-                bgcolor: 'transparent',
-              },
-              clickable: false,
-              deleteIcon: <Clear />,
-            },
-          }}
-          disableListWrap
-          disablePortal
-          freeSolo
+          setInputValue={setInputValue}
+          selectedHashtags={selectedHashtags}
+          setSelectedHashtags={setSelectedHashtags}
         />
 
         {/* Search Button */}
@@ -263,7 +175,7 @@ export default function StudentsDetail({
         </Tooltip>
       </div>
       <div className="w-full px-12 flex gap-x-2 flex-wrap">
-        {skills.map((skill, index) => (
+        {selectedHashtags.map((skill, index) => (
           <ColorHashtag
             key={`skill#${index}`}
             onRemove={() => handleRemoveHashtag(index)}

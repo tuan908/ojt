@@ -1,7 +1,11 @@
 'use client';
 
 import {Tooltip} from '@mui/material';
-import {useQuery, useQueryClient} from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {PaginationState} from '@tanstack/react-table';
 import {Search} from 'lucide-react';
 import {usePathname, useRouter, useSearchParams} from 'next/navigation';
@@ -111,6 +115,7 @@ export default function StudentDetail({
 
       return res?.data || [];
     },
+    placeholderData: keepPreviousData,
   });
 
   // Search function that updates URL and refetches data

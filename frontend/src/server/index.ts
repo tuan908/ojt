@@ -18,10 +18,16 @@ const cacheMiddleware = MiddlewareFactory.createCacheMiddleware({
   REDIS_TOKEN: env.REDIS_TOKEN,
   ttl: 300, // 5 minutes
 });
+const jwtMiddleware = MiddlewareFactory.createJwtMiddleware({
+  secret: env.JWT_TOKEN_SECRET,
+  algorithm: 'HS256',
+});
+const logMiddleware = MiddlewareFactory.createLogMiddleware();
 
+app.use('*', jwtMiddleware);
 app.use('*', dbMiddleware);
 app.use('*', cacheMiddleware);
-app.use('*', MiddlewareFactory.createLogMiddleware);
+app.use('*', logMiddleware);
 
 const route = app
   .route('/students', studentRouter)

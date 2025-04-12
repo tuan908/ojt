@@ -92,10 +92,9 @@ export interface IStudentsDto
     hashtags: IHashtagDto[];
   }> {}
 
-export interface IStudentDto
-  extends Partial<{
-    name: string;
-    grade: string;
-    event: string;
-    hashtags: string;
-  }> {}
+export interface IStudentDto {
+  name?: string;
+  grade?: string;
+  event?: string;
+  hashtags?: string;
+}

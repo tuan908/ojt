@@ -16,7 +16,9 @@
         "notFound": "リソースが見つかりません",
         "badRequest": "要求の形式が正しくありません",
         "unknown": "不明なエラーが発生しました",
-        "unauthorized": "この操作を行うにはログインが必要です。"
+        "unauthorized": "この操作を行うにはログインが必要です。",
+        "forbidden": "アクセスが拒否されました。この操作を実行する権限がありません。",
+        "tokenExpired": "セッショントークンの有効期限が切れています。再ログインしてください。"
     },
     "successOperation": "イベントが作成されました",
     "tableHeader": {
@@ -51,7 +53,8 @@
         "emoji": "絵文字",
         "viewStatistics": "追跡データ",
         "done": "終わり",
-        "search": "検索"
+        "search": "検索",
+        "noOptions": "該当する選択肢が見つかりません"
     },
     "role": {
         "student": "学生",
