@@ -79,6 +79,9 @@ public class StudentEvent extends BaseEntity {
   @Column(columnDefinition = "jsonb")
   private Data data;
 
+  @OneToMany(mappedBy = "studentEvent", cascade = CascadeType.ALL)
+  private Set<StudentHashtag> studentHashtags;
+
   @Getter
   @Setter
   @AllArgsConstructor

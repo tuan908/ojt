@@ -215,11 +215,25 @@ const StudentHashtag = pgTable(
     hashtagId: integer('hashtag_id')
       .references(() => Hashtag.id)
       .notNull(),
-    value: jsonb('value'),
+    studentEventId: integer('student_event_id')
+      .references(() => Hashtag.id)
+      .notNull(),
+    count: integer('count').default(0),
+    createdAt: timestamp('created_at', {
+      mode: 'string',
+      precision: 6,
+      withTimezone: true,
+    }),
+    updatedAt: timestamp('updated_at', {
+      mode: 'string',
+      precision: 6,
+      withTimezone: true,
+    }),
+    isDeleted: boolean('is_deleted'),
   },
   t => [
     {
-      pk: primaryKey({columns: [t.studentId, t.hashtagId]}),
+      pk: primaryKey({columns: [t.studentId, t.hashtagId, t.studentEventId]}),
     },
   ],
 );

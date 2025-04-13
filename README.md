@@ -1,16 +1,12 @@
-Here's your improved and detailed **README.md** with added information about the project structure, frontend, backend, and missing installation steps.
-
----
-
 # 社会人基礎力
 
-*Empowering Students Through Seamless Event Management*
+<h3>Empowering Students Through Seamless Event Management</h3>
 
 ![Last Commit](https://img.shields.io/github/last-commit/tuan908/ojt)
 ![TypeScript](https://img.shields.io/badge/typescript-68.0%25-blue)
 ![Languages](https://img.shields.io/badge/languages-5-gray)
 
-## Built with the tools and technologies:
+Built with the tools and technologies
 
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-000000?logo=nextdotjs&logoColor=white" />
@@ -19,9 +15,7 @@ Here's your improved and detailed **README.md** with added information about the
   <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" />
 </p>
 
----
-
-# Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Project Structure](#project-structure)
@@ -31,9 +25,7 @@ Here's your improved and detailed **README.md** with added information about the
   - [Usage](#usage)
   - [Testing](#testing)
 
----
-
-# Overview
+## Overview
 
 ### Why OJT?
 
@@ -49,13 +41,11 @@ Key Features:
 - ⚡ **Caching with Redis**: Improves performance by minimizing database queries.
 - 🔒 **Role-Based Access Control (RBAC)**: Ensures secure access to resources.
 
----
+## Project Structure
 
-# Project Structure
-
-```
+```text
 ojt/
-│── backend/                   # Spring Boot Backend
+│── backend/                           # Spring Boot Backend
 │   ├── src/main/java/com/tuanna/api   # Main Java code
 │   ├── src/main/resources/            # Configuration files (application.yml)
 │   ├── Dockerfile
@@ -84,11 +74,9 @@ ojt/
 │── README.md
 ```
 
----
+## Getting Started
 
-# Getting Started
-
-## Prerequisites
+### Prerequisites
 
 Ensure you have the following installed:
 
@@ -102,7 +90,7 @@ Ensure you have the following installed:
 
 Follow these steps to set up the project locally.
 
-### 1. Clone the repository:
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/tuan908/ojt

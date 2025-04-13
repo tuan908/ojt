@@ -51,7 +51,10 @@ export const getStudentEventsByStudentCode = async (
 };
 
 export const getStudentByCode = async (code: string) => {
-  const apiResponse = await client.students[':code'].$get({param: {code}});
-  const response = await apiResponse.json();
-  return response;
+  const url = client.students[':code'].$url({param: {code}}).toString();
+  const apiResponse = await ApiClient.Hono.get<IApiResponse<IStudentDto>>(url);
+  if (!apiResponse.success) {
+    return undefined;
+  }
+  return apiResponse?.data;
 };

@@ -1,5 +1,5 @@
 import {notFound} from 'next/navigation';
-import {getGrades, getHashtags} from '~/app/actions/shared';
+import {getHashtags} from '~/app/actions/shared';
 import {getTracking} from '~/app/actions/tracking';
 import DoughnutChart from '~/features/tracking/components/doughnut-chart';
 import HashtagCard from '~/features/tracking/components/hashtag-card';
@@ -16,25 +16,24 @@ export default async function Page({searchParams}: ITrackingPageProps) {
 
   if (!student_code) notFound();
 
-  const [_hashtags, grades, studentInfo] = await Promise.all([
+  const [_hashtags, student] = await Promise.all([
     getHashtags(),
-    getGrades(),
     getTracking(student_code),
   ]);
 
-  const labels = Array.isArray(grades) ? grades.map(x => x.name) : [];
   const hashtags = Array.isArray(_hashtags) ? _hashtags : [];
+  const stacked = student?.hashtags.stacked!;
 
   return (
     <div className="grid grid-cols-1 gap-y-8">
       <div className="w-full flex gap-x-10 justify-between items-center">
         {/* Student Info */}
-        <StudentCard code={studentInfo?.code!} name={studentInfo?.name!} />
-        <DoughnutChart data={studentInfo?.hashtags.doughnut!} />
+        <StudentCard code={student?.code!} name={student?.name!} />
+        <DoughnutChart data={student?.hashtags.doughnut!} />
         <HashtagCard hashtags={hashtags} />
       </div>
 
-      <StackedBarChart labels={labels} data={studentInfo?.hashtags.stacked!} />
+      <StackedBarChart labels={stacked?.xAxis?.data} series={stacked?.series} />
     </div>
   );
 }

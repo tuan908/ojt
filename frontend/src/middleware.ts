@@ -1,5 +1,5 @@
 import {NextResponse, type NextRequest} from 'next/server';
-import {decrypt, ISession} from '~/shared/lib/session';
+import {decrypt, type ISession} from '~/shared/lib/session';
 import {ACCESS_TOKEN, Route, UserRole} from './shared/constants';
 import {tryCatch} from './shared/utils';
 
@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   const accessTokenCookie = request.cookies.get(ACCESS_TOKEN);
 
   if (!accessTokenCookie) {
-    return NextResponse.next();
+    return NextResponse.redirect(new URL(Route.Login.toString(), request.url));
   }
 
   const currentPath = request.nextUrl.pathname;
@@ -78,7 +78,16 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('Authorization', `Bearer ${accessTokenCookie.value}`);
+  requestHeaders.set('Accept', 'application/json');
+  requestHeaders.set('Content-Type', 'application/json');
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 // Helper function to get the appropriate redirect based on user role

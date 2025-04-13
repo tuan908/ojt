@@ -1,14 +1,22 @@
 import {eq} from 'drizzle-orm';
 import {Hono} from 'hono';
-import {ErrorCodes, STRING_EMPTY} from '~/shared/constants';
+import {ErrorCodes} from '~/shared/constants';
 import json from '~/shared/i18n/locales/ja.json';
 import {nullsToUndefined, tryCatch} from '~/shared/utils';
 import {createErrorResponse, createSuccessResponse} from '../lib/api-response';
 import DbSchema from '../schema';
-import type {IHashtagDetailDto} from '../types';
 
 const trackingRouter = new Hono().get('/', async c => {
   const {student_code} = c.req.query();
+  if (!student_code) {
+    return c.json(
+      createErrorResponse({
+        code: ErrorCodes.BAD_REQUEST,
+        message: json.error.badRequest,
+        statusCode: 404,
+      }),
+    );
+  }
 
   const db = c.get('db');
 
@@ -32,37 +40,106 @@ const trackingRouter = new Hono().get('/', async c => {
     );
   }
 
+  // First, fetch all grades from the database
+  const allGradesPromise = db
+    .select({
+      id: DbSchema.Grade.id,
+      name: DbSchema.Grade.name,
+    })
+    .from(DbSchema.Grade)
+    .orderBy(DbSchema.Grade.id);
+
   const trackingPromise = db
     .select({
-      studentHashtagValue: DbSchema.StudentHashtag.value,
+      hashtagId: DbSchema.StudentHashtag.hashtagId,
       hashtagName: DbSchema.Hashtag.name,
-      fullname: DbSchema.User.name,
+      count: DbSchema.StudentHashtag.count,
+      gradeName: DbSchema.Grade.name,
     })
-    .from(DbSchema.Student)
-    .innerJoin(DbSchema.User, eq(DbSchema.Student.userId, DbSchema.User.id))
-    .leftJoin(
-      DbSchema.StudentHashtag,
-      eq(DbSchema.Student.id, DbSchema.StudentHashtag.studentId),
+    .from(DbSchema.StudentHashtag)
+    .innerJoin(
+      DbSchema.Student,
+      eq(DbSchema.StudentHashtag.studentId, DbSchema.Student.id),
     )
-    .leftJoin(
+    .innerJoin(
       DbSchema.Hashtag,
       eq(DbSchema.StudentHashtag.hashtagId, DbSchema.Hashtag.id),
     )
-    .where(eq(DbSchema.Student.code, student_code!))
-    .orderBy(DbSchema.Hashtag.name);
+    .leftJoin(
+      DbSchema.StudentEvent,
+      eq(DbSchema.Student.id, DbSchema.StudentEvent.studentId),
+    )
+    .leftJoin(
+      DbSchema.Grade,
+      eq(DbSchema.StudentEvent.gradeId, DbSchema.Grade.id),
+    )
+    .where(eq(DbSchema.Student.code, student_code))
+    .groupBy(
+      DbSchema.StudentHashtag.hashtagId,
+      DbSchema.Hashtag.name,
+      DbSchema.StudentHashtag.count,
+      DbSchema.Grade.name,
+    )
+    .orderBy(DbSchema.StudentHashtag.hashtagId);
 
-  const {data: rawRows, error} = await tryCatch(trackingPromise);
+  // Execute both queries in parallel
+  const [{data: allGrades = []}, {data: rows = [], error}] = await Promise.all([
+    tryCatch(allGradesPromise),
+    tryCatch(trackingPromise),
+  ]);
 
-  if (error || rawRows.length === 0) throw error;
+  if (error) throw error;
 
-  const rows = rawRows.map(rawRow => ({
-    ...rawRow,
-    studentHashtagValue: Array.isArray(rawRow.studentHashtagValue)
-      ? rawRow.studentHashtagValue
-          .map(x => x as IHashtagDetailDto)
-          .reduce((sum, x) => sum + x.value, 0)
-      : 0,
-  }));
+  if (!rows || !allGrades || rows?.length === 0)
+    return c.json(createSuccessResponse(null));
+
+  // Get all unique hashtag names
+  const hashtagNames = [
+    ...new Set(rows.map(row => row.hashtagName!).filter(Boolean)),
+  ];
+
+  // Get all grade names (including N/A)
+  const gradeNamesFromData = [
+    ...new Set(rows.map(row => row.gradeName ?? 'N/A')),
+  ];
+  const allGradeNames = [
+    ...new Set([
+      ...allGrades.map(grade => grade.name!),
+      ...(gradeNamesFromData.includes('N/A') ? ['N/A'] : []),
+    ]),
+  ];
+
+  // Create a mapping of hashtag to grade counts
+  const hashtagGradeCounts: Record<string, Record<string, number>> = {};
+
+  // Initialize with zeros for all hashtags and all grades
+  hashtagNames.forEach(hashtagName => {
+    hashtagGradeCounts[hashtagName] = {};
+    allGradeNames.forEach(gradeName => {
+      hashtagGradeCounts[hashtagName]![gradeName] = 0;
+    });
+  });
+
+  // Fill in the actual counts
+  rows.forEach(row => {
+    const gradeName = row.gradeName ?? 'N/A';
+    const hashtagName = row.hashtagName;
+    if (hashtagName) {
+      hashtagGradeCounts[hashtagName]![gradeName] = row.count ?? 0;
+    }
+  });
+
+  // Build the series data for all hashtags
+  const series = hashtagNames.map(hashtagName => {
+    return {
+      name: hashtagName,
+      data: allGradeNames.map(
+        gradeName => hashtagGradeCounts[hashtagName]![gradeName],
+      ),
+      type: 'bar',
+      stack: '#ハッシュタグ',
+    };
+  });
 
   const response = createSuccessResponse(
     nullsToUndefined({
@@ -72,24 +149,17 @@ const trackingRouter = new Hono().get('/', async c => {
       hashtags: {
         doughnut: {
           _data: rows.map(row => ({
-            name: row.hashtagName ?? STRING_EMPTY,
-            value: row.studentHashtagValue,
+            name: row.hashtagName,
+            value: row.count ?? 0,
           })),
-          text: rows
-            .reduce(
-              (sum, {studentHashtagValue}) => sum + studentHashtagValue,
-              0,
-            )
-            .toString(),
+          text: rows.reduce((sum, {count}) => sum + (count ?? 0), 0).toString(),
         },
-        stacked: rawRows.map(row => ({
-          name: row.hashtagName ?? STRING_EMPTY,
-          data: Array.isArray(row.studentHashtagValue)
-            ? (row.studentHashtagValue as number[])
-            : [],
-          type: 'bar' as const,
-          stack: 'Hashtags',
-        })),
+        stacked: {
+          xAxis: {
+            data: allGradeNames,
+          },
+          series: series,
+        },
       },
     }),
   );

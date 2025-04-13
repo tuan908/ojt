@@ -29,7 +29,6 @@ export const createJwtMiddleware = (
   return async (c: Context, next: Next) => {
     let token: string | undefined = undefined;
 
-    console.log(c.req.header());
     if (options.tokenFromHeader) {
       const authHeader = c.req.header('Authorization');
       if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -64,8 +63,6 @@ export const createJwtMiddleware = (
         401,
       );
     }
-
-    c.set('jwtUser', data);
 
     await next();
   };

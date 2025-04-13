@@ -32,7 +32,7 @@ interface IBarChartOptions {
 
 interface IStackedBarChartProps {
   labels: string[];
-  data: IStackedData[];
+  series: IStackedData['series'];
 }
 
 const getBarChartOptions = ({series, xAxisData}: IBarChartOptions) => {
@@ -65,7 +65,7 @@ const getBarChartOptions = ({series, xAxisData}: IBarChartOptions) => {
 
 export default function StackedBarChart({
   labels,
-  data: series,
+  series,
 }: IStackedBarChartProps) {
   const option = useMemo(
     () =>

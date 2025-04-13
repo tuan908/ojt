@@ -77,7 +77,9 @@ export default function DataTable({
                 onClick={() => onRowClick?.(row.original)}
                 className="cursor-pointer hover:bg-gray-100">
                 {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id}>
+                  <TableCell
+                    key={cell.id}
+                    className="max-w-72 overflow-hidden text-ellipsis whitespace-nowrap">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

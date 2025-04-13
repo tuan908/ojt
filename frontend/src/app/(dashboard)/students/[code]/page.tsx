@@ -1,4 +1,3 @@
-import type {Metadata} from 'next';
 import {notFound, unauthorized} from 'next/navigation';
 import {getEvents, getGrades} from '~/app/actions/shared';
 import {getStudentByCode} from '~/app/actions/student';
@@ -9,20 +8,6 @@ import Container from '~/features/students/components/container';
 import {UserRole} from '~/shared/constants';
 import {getSession} from '~/shared/lib/session';
 import type {IPageProps} from '~/shared/types';
-
-export async function generateMetadata({
-  params,
-}: IPageProps): Promise<Metadata> {
-  // read route params
-  const {code} = await params;
-
-  // fetch data
-  const student = await getStudentByCode(code);
-
-  return {
-    title: student?.data?.code,
-  };
-}
 
 export default async function Page({params}: IPageProps) {
   const {code} = await params;
@@ -45,8 +30,8 @@ export default async function Page({params}: IPageProps) {
   if (!student) {
     notFound();
   }
-  const name = student.data?.name;
-  const grade = student.data?.grade;
+  const name = student?.name;
+  const grade = student?.grade;
 
   return (
     <div className="flex flex-col w-full">

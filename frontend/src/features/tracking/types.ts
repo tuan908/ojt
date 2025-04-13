@@ -6,10 +6,13 @@ export interface IEChartsOption
   extends ComposeOption<TooltipComponentOption | PieSeriesOption> {}
 
 export interface IStackedData {
-  name: string;
-  data: number[];
-  type: 'bar';
-  stack: string;
+  xAxis: {data: string[]};
+  series: {
+    name: string;
+    type: 'bar';
+    stack: string;
+    data: number[];
+  }[];
 }
 
 export interface IDoughnutData {
@@ -24,6 +27,6 @@ export interface ITrackingData {
   count: number;
   hashtags: {
     doughnut: IDoughnutData;
-    stacked: IStackedData[];
+    stacked: IStackedData;
   };
 }
