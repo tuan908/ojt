@@ -19,7 +19,6 @@ export default [
   {
     plugins: {
       'react-compiler': reactCompiler,
-      '@stylistic/js': stylisticJs,
     },
 
     rules: {
