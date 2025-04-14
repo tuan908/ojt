@@ -1,13 +1,12 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@reduxjs/toolkit', 'react-redux'],
   eslint: {ignoreDuringBuilds: true},
   experimental: {
     scrollRestoration: true,
     reactCompiler: true,
     optimizeServerReact: true,
-    optimizePackageImports: ['react-redux', '@reduxjs/toolkit', 'echarts'],
+    optimizePackageImports: ['echarts'],
     authInterrupts: true,
   },
   compiler: {
